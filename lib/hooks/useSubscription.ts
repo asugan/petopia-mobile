@@ -227,6 +227,8 @@ export function useSubscription(): UseSubscriptionReturn {
     }
   }, [startTrialMutation, refetchStatusMutation, t]);
 
+  const willRenewValue = willRenew();
+
   return {
     // Status
     isProUser,
@@ -245,7 +247,7 @@ export function useSubscription(): UseSubscriptionReturn {
     customerInfo,
     activeEntitlements,
     expirationDate,
-    willRenew: willRenew(),
+    willRenew: willRenewValue,
     productIdentifier,
 
     // Loading
