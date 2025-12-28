@@ -1,5 +1,5 @@
-import { api, ApiError, ApiResponse, download } from '../api/client';
-import { ENV } from '../config/env';
+import { api, ApiError, ApiResponse, download } from '@/lib/api/client';
+import { ENV } from '@/lib/config/env';
 import type {
   Expense,
   CreateExpenseInput,
@@ -7,7 +7,7 @@ import type {
   ExpenseStats,
   MonthlyExpense,
   YearlyExpense
-} from '../types';
+} from '@/lib/types';
 import * as FileSystem from 'expo-file-system/legacy';
 import * as Sharing from 'expo-sharing';
 import { Buffer } from 'buffer';
@@ -68,8 +68,8 @@ export class ExpenseService {
       return {
         success: false,
         error: {
-          code: 'FETCH_ERROR',
-          message: 'serviceResponse.expense.fetchError',
+          code: 'CREATE_ERROR',
+          message: 'serviceResponse.expense.createError',
         },
       };
       }
@@ -141,7 +141,7 @@ export class ExpenseService {
         success: false,
         error: {
           code: 'FETCH_ERROR',
-          message: 'expense.fetchError',
+          message: 'serviceResponse.expense.fetchError',
         },
       };
     }

@@ -1,6 +1,6 @@
-import { api, ApiError, ApiResponse } from '../api/client';
-import { ENV } from '../config/env';
-import type { FeedingSchedule, CreateFeedingScheduleInput, UpdateFeedingScheduleInput } from '../types';
+import { api, ApiError, ApiResponse } from '@/lib/api/client';
+import { ENV } from '@/lib/config/env';
+import type { FeedingSchedule, CreateFeedingScheduleInput, UpdateFeedingScheduleInput } from '@/lib/types';
 
 /**
  * Feeding Schedule Service - Tüm feeding schedule API operasyonlarını yönetir
@@ -60,7 +60,8 @@ export class FeedingScheduleService {
           success: false,
           error: {
             code: error.code || 'FETCH_ERROR',
-            message: error.message,
+            message: 'serviceResponse.feedingSchedule.fetchError',
+            details: { rawMessage: error.message },
           },
         };
       }
@@ -94,7 +95,8 @@ export class FeedingScheduleService {
           success: false,
           error: {
             code: error.code || 'FETCH_ERROR',
-            message: error.message,
+            message: 'serviceResponse.feedingSchedule.fetchError',
+            details: { rawMessage: error.message },
           },
         };
       }
@@ -137,7 +139,8 @@ export class FeedingScheduleService {
           success: false,
           error: {
             code: error.code || 'FETCH_ERROR',
-            message: error.message,
+            message: 'serviceResponse.feedingSchedule.fetchError',
+            details: { rawMessage: error.message },
           },
         };
       }
@@ -180,7 +183,8 @@ export class FeedingScheduleService {
           success: false,
           error: {
             code: error.code || 'UPDATE_ERROR',
-            message: error.message,
+            message: 'serviceResponse.feedingSchedule.updateError',
+            details: { rawMessage: error.message },
           },
         };
       }
@@ -222,7 +226,8 @@ export class FeedingScheduleService {
           success: false,
           error: {
             code: error.code || 'DELETE_ERROR',
-            message: error.message,
+            message: 'serviceResponse.feedingSchedule.deleteError',
+            details: { rawMessage: error.message },
           },
         };
       }
@@ -256,7 +261,8 @@ export class FeedingScheduleService {
           success: false,
           error: {
             code: error.code || 'FETCH_ERROR',
-            message: error.message,
+            message: 'serviceResponse.feedingSchedule.fetchActiveError',
+            details: { rawMessage: error.message },
           },
         };
       }
@@ -290,7 +296,8 @@ export class FeedingScheduleService {
           success: false,
           error: {
             code: error.code || 'FETCH_ERROR',
-            message: error.message,
+            message: 'serviceResponse.feedingSchedule.fetchTodayError',
+            details: { rawMessage: error.message },
           },
         };
       }
@@ -324,7 +331,8 @@ export class FeedingScheduleService {
           success: false,
           error: {
             code: error.code || 'FETCH_ERROR',
-            message: error.message,
+            message: 'serviceResponse.feedingSchedule.fetchNextError',
+            details: { rawMessage: error.message },
           },
         };
       }
@@ -362,7 +370,8 @@ export class FeedingScheduleService {
           success: false,
           error: {
             code: error.code || 'FETCH_ERROR',
-            message: error.message,
+            message: 'serviceResponse.feedingSchedule.fetchActiveByPetError',
+            details: { rawMessage: error.message },
           },
         };
       }
@@ -392,7 +401,8 @@ export class FeedingScheduleService {
           success: false,
           error: {
             code: error.code || 'TOGGLE_ERROR',
-            message: error.message,
+            message: 'serviceResponse.feedingSchedule.toggleError',
+            details: { rawMessage: error.message },
           },
         };
       }

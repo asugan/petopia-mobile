@@ -1,6 +1,6 @@
-import { api, ApiError, ApiResponse } from '../api/client';
-import { ENV } from '../config/env';
-import type { HealthRecord, CreateHealthRecordInput, UpdateHealthRecordInput } from '../types';
+import { api, ApiError, ApiResponse } from '@/lib/api/client';
+import { ENV } from '@/lib/config/env';
+import type { HealthRecord, CreateHealthRecordInput, UpdateHealthRecordInput } from '@/lib/types';
 
 /**
  * Health Record Service - Tüm health record API operasyonlarını yönetir
@@ -26,7 +26,8 @@ export class HealthRecordService {
           success: false,
           error: {
             code: error.code || 'CREATE_ERROR',
-            message: error.message,
+            message: 'serviceResponse.healthRecord.createError',
+            details: { rawMessage: error.message },
           },
         };
       }
@@ -60,7 +61,8 @@ export class HealthRecordService {
           success: false,
           error: {
             code: error.code || 'FETCH_ERROR',
-            message: error.message,
+            message: 'serviceResponse.healthRecord.fetchError',
+            details: { rawMessage: error.message },
           },
         };
       }
@@ -94,7 +96,8 @@ export class HealthRecordService {
           success: false,
           error: {
             code: error.code || 'FETCH_ERROR',
-            message: error.message,
+            message: 'serviceResponse.healthRecord.fetchError',
+            details: { rawMessage: error.message },
           },
         };
       }
@@ -137,7 +140,8 @@ export class HealthRecordService {
           success: false,
           error: {
             code: error.code || 'FETCH_ERROR',
-            message: error.message,
+            message: 'serviceResponse.healthRecord.fetchError',
+            details: { rawMessage: error.message },
           },
         };
       }
@@ -180,7 +184,8 @@ export class HealthRecordService {
           success: false,
           error: {
             code: error.code || 'UPDATE_ERROR',
-            message: error.message,
+            message: 'serviceResponse.healthRecord.updateError',
+            details: { rawMessage: error.message },
           },
         };
       }
@@ -222,7 +227,8 @@ export class HealthRecordService {
           success: false,
           error: {
             code: error.code || 'DELETE_ERROR',
-            message: error.message,
+            message: 'serviceResponse.healthRecord.deleteError',
+            details: { rawMessage: error.message },
           },
         };
       }
@@ -260,7 +266,8 @@ export class HealthRecordService {
           success: false,
           error: {
             code: error.code || 'FETCH_ERROR',
-            message: error.message,
+            message: 'serviceResponse.healthRecord.fetchByTypeError',
+            details: { rawMessage: error.message },
           },
         };
       }
