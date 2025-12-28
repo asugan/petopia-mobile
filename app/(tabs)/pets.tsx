@@ -28,6 +28,7 @@ export default function PetsScreen() {
     hasNextPage,
     isFetchingNextPage,
     refetch,
+    isRefetching,
   } = useInfinitePets();
 
   // Flatten all pages for filtering and display
@@ -171,7 +172,7 @@ export default function PetsScreen() {
           keyboardShouldPersistTaps="handled"
           refreshControl={
             <RefreshControl
-              refreshing={isLoading}
+              refreshing={isRefetching}
               onRefresh={handleRefresh}
               colors={[theme.colors.primary]}
               tintColor={theme.colors.primary}
