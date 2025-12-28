@@ -25,8 +25,8 @@ export class FeedingScheduleService {
       return {
         success: false,
         error: {
-          code: 'FETCH_ERROR',
-          message: 'serviceResponse.feedingSchedule.fetchError',
+          code: 'CREATE_ERROR',
+          message: 'serviceResponse.feedingSchedule.createError',
         },
       };
       }
@@ -51,7 +51,7 @@ export class FeedingScheduleService {
       return {
         success: true,
         data: response.data || [],
-        message: 'feedingSchedule.fetchSuccess',
+        message: 'serviceResponse.feedingSchedule.fetchSuccess',
       };
     } catch (error) {
       console.error('❌ Get feeding schedules error:', error);
@@ -68,7 +68,7 @@ export class FeedingScheduleService {
         success: false,
         error: {
           code: 'FETCH_ERROR',
-          message: 'feedingSchedule.fetchError',
+          message: 'serviceResponse.feedingSchedule.fetchError',
         },
       };
     }
@@ -85,7 +85,7 @@ export class FeedingScheduleService {
       return {
         success: true,
         data: response.data || [],
-        message: 'feedingSchedule.fetchSuccess',
+        message: 'serviceResponse.feedingSchedule.fetchSuccess',
       };
     } catch (error) {
       console.error('❌ Get feeding schedules by pet error:', error);
@@ -102,7 +102,7 @@ export class FeedingScheduleService {
         success: false,
         error: {
           code: 'FETCH_ERROR',
-          message: 'feedingSchedule.fetchError',
+          message: 'serviceResponse.feedingSchedule.fetchError',
         },
       };
     }
@@ -145,7 +145,7 @@ export class FeedingScheduleService {
         success: false,
         error: {
           code: 'FETCH_ERROR',
-          message: 'feedingSchedule.fetchError',
+          message: 'serviceResponse.feedingSchedule.fetchError',
         },
       };
     }

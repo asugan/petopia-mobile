@@ -65,13 +65,13 @@ export class ExpenseService {
     } catch (error) {
       console.error('❌ Create expense error:', error);
       if (error instanceof ApiError) {
-        return {
-          success: false,
-          error: {
-            code: 'FILE_SYSTEM_ERROR',
-            message: 'serviceResponse.expense.fileSystemError',
-          },
-        };
+      return {
+        success: false,
+        error: {
+          code: 'FETCH_ERROR',
+          message: 'serviceResponse.expense.fetchError',
+        },
+      };
       }
       return {
         success: false,
@@ -182,7 +182,7 @@ export class ExpenseService {
         success: false,
         error: {
           code: 'FETCH_ERROR',
-          message: 'expense.fetchError',
+          message: 'serviceResponse.expense.fetchError',
         },
       };
     }
@@ -540,11 +540,11 @@ export class ExpenseService {
       const base64 = Buffer.from(response.data).toString('base64');
       const cacheDir = FileSystem.cacheDirectory ?? FileSystem.documentDirectory;
       if (!cacheDir) {
-        return { 
-          success: false, 
+        return {
+          success: false,
           error: {
             code: 'FILE_SYSTEM_ERROR',
-            message: 'expense.fileSystemError',
+            message: 'serviceResponse.expense.fileSystemError',
           },
         };
       }
@@ -588,11 +588,11 @@ export class ExpenseService {
       const base64 = Buffer.from(response.data).toString('base64');
       const cacheDir = FileSystem.cacheDirectory ?? FileSystem.documentDirectory;
       if (!cacheDir) {
-        return { 
-          success: false, 
+        return {
+          success: false,
           error: {
             code: 'FILE_SYSTEM_ERROR',
-            message: 'expense.fileSystemError',
+            message: 'serviceResponse.expense.fileSystemError',
           },
         };
       }

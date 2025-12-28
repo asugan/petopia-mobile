@@ -172,7 +172,7 @@ export class HealthRecordService {
             success: false,
             error: {
               code: 'NOT_FOUND',
-              message: 'serviceResponse.serviceResponse.healthRecord.notFoundUpdate',
+              message: 'serviceResponse.healthRecord.notFoundUpdate',
             },
           };
         }
@@ -214,7 +214,7 @@ export class HealthRecordService {
             success: false,
             error: {
               code: 'NOT_FOUND',
-              message: 'serviceResponse.serviceResponse.healthRecord.notFoundDelete',
+              message: 'serviceResponse.healthRecord.notFoundDelete',
             },
           };
         }

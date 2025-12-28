@@ -1,12 +1,12 @@
-import { api, ApiError, ApiResponse } from "../api/client";
-import { ENV } from "../config/env";
+import { api, ApiError, ApiResponse } from '@/lib/api/client';
+import { ENV } from '@/lib/config/env';
 import type {
   UserBudget,
   UserBudgetStatus,
   SetUserBudgetInput,
   PetBreakdown,
   BudgetAlert,
-} from "../types";
+} from '@/lib/types';
 
 /**
  * User Budget Service - Manages simplified user budget API operations

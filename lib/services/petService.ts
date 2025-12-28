@@ -33,8 +33,8 @@ export class PetService {
       return {
         success: false,
         error: {
-          code: 'FETCH_ERROR',
-          message: 'serviceResponse.pet.fetchError',
+          code: 'CREATE_ERROR',
+          message: 'serviceResponse.pet.createError',
         },
       };
       }
@@ -97,7 +97,7 @@ export class PetService {
         success: false,
         error: {
           code: 'FETCH_ERROR',
-          message: 'pet.fetchError',
+          message: 'serviceResponse.pet.fetchError',
         },
       };
     }
@@ -140,7 +140,7 @@ export class PetService {
         success: false,
         error: {
           code: 'FETCH_ERROR',
-          message: 'pet.fetchError',
+          message: 'serviceResponse.pet.fetchError',
         },
       };
     }
@@ -266,7 +266,7 @@ export class PetService {
         success: false,
         error: {
           code: 'FETCH_ERROR',
-          message: 'pet.fetchError',
+          message: 'serviceResponse.pet.fetchError',
         },
       };
     }
