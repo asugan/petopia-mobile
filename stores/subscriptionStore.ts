@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import type { CustomerInfo, PurchasesOfferings, PurchasesPackage } from 'react-native-purchases';
+import Purchases from 'react-native-purchases';
 import { restorePurchases as restorePurchasesApi } from '@/lib/revenuecat/initialize';
 import { REVENUECAT_CONFIG } from '@/lib/revenuecat/config';
 
@@ -42,8 +43,6 @@ const initialState: SubscriptionState = {
   offerings: null,
   isLoadingOfferings: false,
 };
-
-import Purchases from 'react-native-purchases';
 
 export const useSubscriptionStore = create<SubscriptionState & SubscriptionActions>()(
   (set, get) => ({
