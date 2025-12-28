@@ -92,11 +92,18 @@ export class SubscriptionApiService {
         { deviceId }
       );
 
+      if (!response.data) {
+        return {
+          success: false,
+          error: 'Invalid response from server',
+        };
+      }
+
       console.log('✅ Trial started successfully');
       return {
         success: true,
-        data: response.data!,
-        message: 'Trial başarıyla başlatıldı',
+        data: response.data,
+        message: 'subscription.trialStarted',
       };
     } catch (error) {
       console.error('❌ Start trial error:', error);
