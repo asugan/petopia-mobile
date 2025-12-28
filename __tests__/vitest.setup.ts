@@ -56,22 +56,6 @@ vi.mock(
 
 // Mock Expo modules
 vi.mock(
-  'expo-constants',
-  () => ({
-    default: {
-      expoConfig: {
-        version: '1.0.0',
-        extra: {
-          apiBaseUrl: 'http://localhost:3000',
-        },
-      },
-      executionEnvironment: 'storeClient',
-    },
-  }),
-  { virtual: true }
-);
-
-vi.mock(
   'expo-font',
   () => ({
     loadAsync: vi.fn(),
@@ -193,15 +177,6 @@ vi.mock(
     Ionicons: 'Ionicons',
     AntDesign: 'AntDesign',
     FontAwesome: 'FontAwesome',
-  }),
-  { virtual: true }
-);
-
-// Mock expo modules that have internal dependencies
-vi.mock(
-  'expo',
-  () => ({
-    Constants: { expoConfig: { version: '1.0.0' } },
   }),
   { virtual: true }
 );
