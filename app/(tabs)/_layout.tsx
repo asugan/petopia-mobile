@@ -1,16 +1,36 @@
-import { Tabs } from 'expo-router';
+import { Tabs, useRouter, useSegments } from 'expo-router';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useTheme } from '@/lib/theme';
 import { useTranslation } from 'react-i18next';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import CustomTabHeader from '@/components/CustomTabHeader';
+import { useEffect } from 'react';
+import { authClient } from '@/lib/auth/client';
 
 export default function TabLayout() {
   const { theme } = useTheme();
   const { t } = useTranslation();
   const insets = useSafeAreaInsets();
+  const router = useRouter();
+  const segments = useSegments();
 
-  // Base tab bar height (without safe area)
+  const { data: session, isPending } = authClient.useSession();
+  const isAuthenticated = !!session?.user;
+
+  useEffect(() => {
+    if (isPending) return;
+
+    const inAuthGroup = segments[0] === '(auth)';
+
+    if (!isAuthenticated && !inAuthGroup) {
+      router.replace('/(auth)/login');
+    }
+  }, [isAuthenticated, isPending, segments, router]);
+
+  if (isPending) {
+    return null;
+  }
+
   const TAB_BAR_HEIGHT = 60;
 
   return (

@@ -14,6 +14,7 @@ import { StatusBar } from 'expo-status-bar';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { useTheme } from '@/lib/theme';
 import { useThemeStore } from '@/stores/themeStore';
+import { setOnUnauthorized } from '@/lib/api/client';
 import "../lib/i18n"; // Initialize i18n
 
 // Enhanced QueryClient with better configuration
@@ -21,7 +22,6 @@ const queryClient = new QueryClient(MOBILE_QUERY_CONFIG);
 
 // Custom hook for app state management
 function onAppStateChange(status: AppStateStatus) {
-  // React Query already handles refetching on app focus by default
   if (status === 'active') {
     focusManager.setFocused(true);
   } else {
@@ -30,8 +30,13 @@ function onAppStateChange(status: AppStateStatus) {
 }
 
 // Enhanced App Providers with better state management
-// Theme is now managed by Zustand store (useThemeStore) - no provider needed
 function AppProviders({ children }: { children: React.ReactNode }) {
+  useEffect(() => {
+    setOnUnauthorized(() => {
+      queryClient.clear();
+    });
+  }, [queryClient]);
+
   return (
     <QueryClientProvider client={queryClient}>
       <OnlineManagerProvider>
@@ -53,10 +58,8 @@ function AppProviders({ children }: { children: React.ReactNode }) {
 
 // Separate component for online management to ensure QueryClient context is available
 function OnlineManagerProvider({ children }: { children: React.ReactNode }) {
-  // Handle online/offline state - now has access to QueryClient
   useOnlineManager();
 
-  // Listen to app state changes
   useEffect(() => {
     const subscription = AppState.addEventListener('change', onAppStateChange);
     return () => subscription.remove();

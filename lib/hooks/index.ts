@@ -5,6 +5,8 @@ export * from "./core/useResources";
 export * from "./core/useConditionalQuery";
 export type * from "./core/types";
 
+export * from "./useAuthQueryEnabled";
+
 // Resource-specific hooks
 export * from "./usePets";
 export * from "./useHealthRecords";

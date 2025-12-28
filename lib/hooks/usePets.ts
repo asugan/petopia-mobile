@@ -7,6 +7,7 @@ import { useCreateResource, useDeleteResource, useUpdateResource } from './useCr
 import { createQueryKeys } from './core/createQueryKeys';
 import { useResource } from './core/useResource';
 import { useConditionalQuery } from './core/useConditionalQuery';
+import { useAuthQueryEnabled } from './useAuthQueryEnabled';
 
 interface PetFilters extends QueryFilters {
   search?: string;
@@ -27,9 +28,12 @@ export const petKeys = {
 };
 
 export function usePets(filters: PetFilters = {}) {
+  const { enabled } = useAuthQueryEnabled();
+
   return useConditionalQuery<Pet[]>({
     queryKey: petKeys.list(filters),
     queryFn: () => petService.getPets(filters),
+    enabled,
     staleTime: CACHE_TIMES.MEDIUM,
     defaultValue: [],
     errorMessage: 'Evcil hayvanlar yüklenemedi',

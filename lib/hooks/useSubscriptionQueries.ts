@@ -3,7 +3,7 @@ import { subscriptionApiService, SubscriptionStatus } from '../services/subscrip
 import { CACHE_TIMES } from '../config/queryConfig';
 import { createQueryKeys } from './core/createQueryKeys';
 import { useConditionalQuery } from './core/useConditionalQuery';
-import { authClient } from '@/lib/auth/client';
+import { useAuthQueryEnabled } from './useAuthQueryEnabled';
 
 // Query keys factory
 const baseSubscriptionKeys = createQueryKeys('subscription');
@@ -14,12 +14,12 @@ export const subscriptionKeys = {
 };
 
 export function useSubscriptionStatus() {
-  const { data: session } = authClient.useSession();
-  const userId = session?.user?.id;
+  const { enabled, userId } = useAuthQueryEnabled();
 
   return useConditionalQuery<SubscriptionStatus>({
     queryKey: subscriptionKeys.status(userId),
     queryFn: () => subscriptionApiService.getSubscriptionStatus(),
+    enabled,
     staleTime: CACHE_TIMES.MEDIUM, // 5 minutes
     gcTime: CACHE_TIMES.LONG,      // 15 minutes
     defaultValue: {
