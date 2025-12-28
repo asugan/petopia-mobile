@@ -36,13 +36,13 @@ export interface StartTrialResponse {
  * Note: Request deduplication is handled by React Query automatically
  */
 export class SubscriptionApiService {
-  /**
-   * Get unified subscription status from backend
-   * This is the main method - use this for all status checks
-   * React Query handles caching and deduplication automatically
-   *
-   * @param options.bypassCache - if true, appends timestamp to bypass HTTP/browser cache
-   */
+   /**
+    * Get unified subscription status from backend
+    * This is the main method - use this for all status checks
+    * React Query handles caching and deduplication automatically
+    *
+    * @param options.bypassCache - if true, appends timestamp to force a fresh request from the server
+    */
   async getSubscriptionStatus(
     options?: { bypassCache?: boolean }
   ): Promise<ApiResponse<SubscriptionStatus>> {
@@ -51,7 +51,7 @@ export class SubscriptionApiService {
       const params: Record<string, unknown> = { deviceId };
 
       if (options?.bypassCache) {
-        params._t = Date.now();
+        params._t = Date.now().toString();
       }
 
       const response = await api.get<SubscriptionStatus>(
@@ -64,7 +64,7 @@ export class SubscriptionApiService {
           success: false,
           error: {
             code: 'INVALID_RESPONSE',
-            message: 'Invalid response from server',
+            message: 'subscription.invalidResponse',
           },
         };
       }
@@ -111,7 +111,10 @@ export class SubscriptionApiService {
       if (!response.data) {
         return {
           success: false,
-          error: 'Invalid response from server',
+          error: {
+            code: 'INVALID_RESPONSE',
+            message: 'subscription.invalidResponse',
+          },
         };
       }
 
@@ -127,14 +130,17 @@ export class SubscriptionApiService {
         return {
           success: false,
           error: {
-            code: error.code ?? 'UNKNOWN_ERROR',
+            code: error.code ?? 'START_TRIAL_ERROR',
             message: error.message,
           },
         };
       }
       return {
         success: false,
-        error: 'subscription.startTrialError',
+        error: {
+          code: 'START_TRIAL_ERROR',
+          message: 'subscription.startTrialError',
+        },
       };
     }
   }

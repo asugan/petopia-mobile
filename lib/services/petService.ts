@@ -25,19 +25,25 @@ export class PetService {
       return {
         success: true,
         data: response.data!,
-        message: 'Pet başarıyla oluşturuldu',
+        message: 'pet.createSuccess',
       };
     } catch (error) {
       console.error('❌ Create pet error:', error);
       if (error instanceof ApiError) {
         return {
           success: false,
-          error: error.message,
+          error: {
+            code: error.code || 'CREATE_ERROR',
+            message: error.message,
+          },
         };
       }
       return {
         success: false,
-        error: 'Pet oluşturulamadı. Lütfen bilgileri kontrol edip tekrar deneyin.',
+        error: {
+          code: 'CREATE_ERROR',
+          message: 'pet.createError',
+        },
       };
     }
   }
@@ -74,19 +80,25 @@ export class PetService {
       return {
         success: true,
         data: response.data || [],
-        message: `${response.data?.length || 0} pet başarıyla yüklendi`,
+        message: 'pet.fetchSuccess',
       };
     } catch (error) {
       console.error('❌ Get pets error:', error);
       if (error instanceof ApiError) {
         return {
           success: false,
-          error: error.message,
+          error: {
+            code: error.code || 'FETCH_ERROR',
+            message: error.message,
+          },
         };
       }
       return {
         success: false,
-        error: 'Petler yüklenemedi. Lütfen internet bağlantınızı kontrol edin.',
+        error: {
+          code: 'FETCH_ERROR',
+          message: 'pet.fetchError',
+        },
       };
     }
   }
@@ -102,7 +114,7 @@ export class PetService {
       return {
         success: true,
         data: response.data!,
-        message: 'Pet başarıyla yüklendi',
+        message: 'pet.fetchOneSuccess',
       };
     } catch (error) {
       console.error('❌ Get pet error:', error);
@@ -110,17 +122,26 @@ export class PetService {
         if (error.status === 404) {
           return {
             success: false,
-            error: 'Pet bulunamadı',
+            error: {
+              code: 'NOT_FOUND',
+              message: 'pet.notFound',
+            },
           };
         }
         return {
           success: false,
-          error: error.message,
+          error: {
+            code: error.code || 'FETCH_ERROR',
+            message: error.message,
+          },
         };
       }
       return {
         success: false,
-        error: 'Pet yüklenemedi. Lütfen tekrar deneyin.',
+        error: {
+          code: 'FETCH_ERROR',
+          message: 'pet.fetchError',
+        },
       };
     }
   }
@@ -143,7 +164,7 @@ export class PetService {
       return {
         success: true,
         data: response.data!,
-        message: 'Pet başarıyla güncellendi',
+        message: 'pet.updateSuccess',
       };
     } catch (error) {
       console.error('❌ Update pet error:', error);
@@ -151,17 +172,26 @@ export class PetService {
         if (error.status === 404) {
           return {
             success: false,
-            error: 'Güncellenecek pet bulunamadı',
+            error: {
+              code: 'NOT_FOUND',
+              message: 'pet.notFoundUpdate',
+            },
           };
         }
         return {
           success: false,
-          error: error.message,
+          error: {
+            code: error.code || 'UPDATE_ERROR',
+            message: error.message,
+          },
         };
       }
       return {
         success: false,
-        error: 'Pet güncellenemedi. Lütfen bilgileri kontrol edip tekrar deneyin.',
+        error: {
+          code: 'UPDATE_ERROR',
+          message: 'pet.updateError',
+        },
       };
     }
   }
@@ -176,7 +206,7 @@ export class PetService {
       console.log('✅ Pet deleted successfully:', id);
       return {
         success: true,
-        message: 'Pet başarıyla silindi',
+        message: 'pet.deleteSuccess',
       };
     } catch (error) {
       console.error('❌ Delete pet error:', error);
@@ -184,17 +214,26 @@ export class PetService {
         if (error.status === 404) {
           return {
             success: false,
-            error: 'Silinecek pet bulunamadı',
+            error: {
+              code: 'NOT_FOUND',
+              message: 'pet.notFoundDelete',
+            },
           };
         }
         return {
           success: false,
-          error: error.message,
+          error: {
+            code: error.code || 'DELETE_ERROR',
+            message: error.message,
+          },
         };
       }
       return {
         success: false,
-        error: 'Pet silinemedi. Lütfen tekrar deneyin.',
+        error: {
+          code: 'DELETE_ERROR',
+          message: 'pet.deleteError',
+        },
       };
     }
   }
@@ -210,19 +249,25 @@ export class PetService {
       return {
         success: true,
         data: response.data || [],
-        message: `${response.data?.length || 0} adet ${type} türünde pet bulundu`,
+        message: 'pet.fetchByTypeSuccess',
       };
     } catch (error) {
       console.error('❌ Get pets by type error:', error);
       if (error instanceof ApiError) {
         return {
           success: false,
-          error: error.message,
+          error: {
+            code: error.code || 'FETCH_ERROR',
+            message: error.message,
+          },
         };
       }
       return {
         success: false,
-        error: 'Petler yüklenemedi. Lütfen tekrar deneyin.',
+        error: {
+          code: 'FETCH_ERROR',
+          message: 'pet.fetchError',
+        },
       };
     }
   }
@@ -238,19 +283,25 @@ export class PetService {
       return {
         success: true,
         data: response.data || [],
-        message: `${response.data?.length || 0} pet bulundu`,
+        message: 'pet.searchSuccess',
       };
     } catch (error) {
       console.error('❌ Search pets error:', error);
       if (error instanceof ApiError) {
         return {
           success: false,
-          error: error.message,
+          error: {
+            code: error.code || 'SEARCH_ERROR',
+            message: error.message,
+          },
         };
       }
       return {
         success: false,
-        error: 'Arama yapılırken hata oluştu. Lütfen tekrar deneyin.',
+        error: {
+          code: 'SEARCH_ERROR',
+          message: 'pet.searchError',
+        },
       };
     }
   }
@@ -275,7 +326,7 @@ export class PetService {
       return {
         success: true,
         data: response.data!,
-        message: 'Pet fotoğrafı başarıyla yüklendi',
+        message: 'pet.uploadPhotoSuccess',
       };
     } catch (error) {
       console.error('❌ Upload pet photo error:', error);
@@ -293,7 +344,7 @@ export class PetService {
         success: false,
         error: {
           code: 'UPLOAD_ERROR',
-          message: 'Pet fotoğrafı yüklenemedi. Lütfen tekrar deneyin.',
+          message: 'pet.uploadError',
         },
       };
     }
@@ -346,7 +397,7 @@ export class PetService {
           byGender,
           averageAge: Math.round(averageAge * 10) / 10, // 1 decimal basamak
         },
-        message: 'Pet istatistikleri başarıyla hesaplandı',
+        message: 'pet.statsCalculatedSuccess',
       };
     } catch (error) {
       console.error('❌ Get pet stats error:', error);
@@ -364,7 +415,7 @@ export class PetService {
         success: false,
         error: {
           code: 'STATS_ERROR',
-          message: 'İstatistikler yüklenemedi. Lütfen tekrar deneyin.',
+          message: 'pet.statsError',
         },
       };
     }

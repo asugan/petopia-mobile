@@ -17,19 +17,25 @@ export class FeedingScheduleService {
       return {
         success: true,
         data: response.data!,
-        message: 'Beslenme takvimi başarıyla oluşturuldu',
+        message: 'feedingSchedule.createSuccess',
       };
     } catch (error) {
       console.error('❌ Create feeding schedule error:', error);
       if (error instanceof ApiError) {
         return {
           success: false,
-          error: error.message,
+          error: {
+            code: error.code || 'CREATE_ERROR',
+            message: error.message,
+          },
         };
       }
       return {
         success: false,
-        error: 'Beslenme takvimi oluşturulamadı. Lütfen bilgileri kontrol edip tekrar deneyin.',
+        error: {
+          code: 'CREATE_ERROR',
+          message: 'feedingSchedule.createError',
+        },
       };
     }
   }
@@ -45,19 +51,25 @@ export class FeedingScheduleService {
       return {
         success: true,
         data: response.data || [],
-        message: `${response.data?.length || 0} beslenme takvimi başarıyla yüklendi`,
+        message: 'feedingSchedule.fetchSuccess',
       };
     } catch (error) {
       console.error('❌ Get feeding schedules error:', error);
       if (error instanceof ApiError) {
         return {
           success: false,
-          error: error.message,
+          error: {
+            code: error.code || 'FETCH_ERROR',
+            message: error.message,
+          },
         };
       }
       return {
         success: false,
-        error: 'Beslenme takvimleri yüklenemedi. Lütfen internet bağlantınızı kontrol edin.',
+        error: {
+          code: 'FETCH_ERROR',
+          message: 'feedingSchedule.fetchError',
+        },
       };
     }
   }
@@ -73,19 +85,25 @@ export class FeedingScheduleService {
       return {
         success: true,
         data: response.data || [],
-        message: `${response.data?.length || 0} beslenme takvimi başarıyla yüklendi`,
+        message: 'feedingSchedule.fetchSuccess',
       };
     } catch (error) {
       console.error('❌ Get feeding schedules by pet error:', error);
       if (error instanceof ApiError) {
         return {
           success: false,
-          error: error.message,
+          error: {
+            code: error.code || 'FETCH_ERROR',
+            message: error.message,
+          },
         };
       }
       return {
         success: false,
-        error: 'Beslenme takvimleri yüklenemedi. Lütfen tekrar deneyin.',
+        error: {
+          code: 'FETCH_ERROR',
+          message: 'feedingSchedule.fetchError',
+        },
       };
     }
   }
@@ -101,7 +119,7 @@ export class FeedingScheduleService {
       return {
         success: true,
         data: response.data!,
-        message: 'Beslenme takvimi başarıyla yüklendi',
+        message: 'feedingSchedule.fetchOneSuccess',
       };
     } catch (error) {
       console.error('❌ Get feeding schedule error:', error);
@@ -109,17 +127,26 @@ export class FeedingScheduleService {
         if (error.status === 404) {
           return {
             success: false,
-            error: 'Beslenme takvimi bulunamadı',
+            error: {
+              code: 'NOT_FOUND',
+              message: 'feedingSchedule.notFound',
+            },
           };
         }
         return {
           success: false,
-          error: error.message,
+          error: {
+            code: error.code || 'FETCH_ERROR',
+            message: error.message,
+          },
         };
       }
       return {
         success: false,
-        error: 'Beslenme takvimi yüklenemedi. Lütfen tekrar deneyin.',
+        error: {
+          code: 'FETCH_ERROR',
+          message: 'feedingSchedule.fetchError',
+        },
       };
     }
   }
@@ -135,7 +162,7 @@ export class FeedingScheduleService {
       return {
         success: true,
         data: response.data!,
-        message: 'Beslenme takvimi başarıyla güncellendi',
+        message: 'feedingSchedule.updateSuccess',
       };
     } catch (error) {
       console.error('❌ Update feeding schedule error:', error);
@@ -143,17 +170,26 @@ export class FeedingScheduleService {
         if (error.status === 404) {
           return {
             success: false,
-            error: 'Güncellenecek beslenme takvimi bulunamadı',
+            error: {
+              code: 'NOT_FOUND',
+              message: 'feedingSchedule.notFoundUpdate',
+            },
           };
         }
         return {
           success: false,
-          error: error.message,
+          error: {
+            code: error.code || 'UPDATE_ERROR',
+            message: error.message,
+          },
         };
       }
       return {
         success: false,
-        error: 'Beslenme takvimi güncellenemedi. Lütfen bilgileri kontrol edip tekrar deneyin.',
+        error: {
+          code: 'UPDATE_ERROR',
+          message: 'feedingSchedule.updateError',
+        },
       };
     }
   }
@@ -168,7 +204,7 @@ export class FeedingScheduleService {
       console.log('✅ Feeding schedule deleted successfully:', id);
       return {
         success: true,
-        message: 'Beslenme takvimi başarıyla silindi',
+        message: 'feedingSchedule.deleteSuccess',
       };
     } catch (error) {
       console.error('❌ Delete feeding schedule error:', error);
@@ -176,17 +212,26 @@ export class FeedingScheduleService {
         if (error.status === 404) {
           return {
             success: false,
-            error: 'Silinecek beslenme takvimi bulunamadı',
+            error: {
+              code: 'NOT_FOUND',
+              message: 'feedingSchedule.notFoundDelete',
+            },
           };
         }
         return {
           success: false,
-          error: error.message,
+          error: {
+            code: error.code || 'DELETE_ERROR',
+            message: error.message,
+          },
         };
       }
       return {
         success: false,
-        error: 'Beslenme takvimi silinemedi. Lütfen tekrar deneyin.',
+        error: {
+          code: 'DELETE_ERROR',
+          message: 'feedingSchedule.deleteError',
+        },
       };
     }
   }
@@ -202,19 +247,25 @@ export class FeedingScheduleService {
       return {
         success: true,
         data: response.data || [],
-        message: `${response.data?.length || 0} aktif beslenme takvimi bulundu`,
+        message: 'feedingSchedule.fetchActiveSuccess',
       };
     } catch (error) {
       console.error('❌ Get active feeding schedules error:', error);
       if (error instanceof ApiError) {
         return {
           success: false,
-          error: error.message,
+          error: {
+            code: error.code || 'FETCH_ERROR',
+            message: error.message,
+          },
         };
       }
       return {
         success: false,
-        error: 'Aktif beslenme takvimleri yüklenemedi. Lütfen tekrar deneyin.',
+        error: {
+          code: 'FETCH_ERROR',
+          message: 'feedingSchedule.fetchActiveError',
+        },
       };
     }
   }
@@ -230,19 +281,25 @@ export class FeedingScheduleService {
       return {
         success: true,
         data: response.data || [],
-        message: `Bugün için ${response.data?.length || 0} beslenme takvimi bulundu`,
+        message: 'feedingSchedule.fetchTodaySuccess',
       };
     } catch (error) {
       console.error('❌ Get today feeding schedules error:', error);
       if (error instanceof ApiError) {
         return {
           success: false,
-          error: error.message,
+          error: {
+            code: error.code || 'FETCH_ERROR',
+            message: error.message,
+          },
         };
       }
       return {
         success: false,
-        error: 'Bugünün beslenme takvimleri yüklenemedi. Lütfen tekrar deneyin.',
+        error: {
+          code: 'FETCH_ERROR',
+          message: 'feedingSchedule.fetchTodayError',
+        },
       };
     }
   }
@@ -258,19 +315,25 @@ export class FeedingScheduleService {
       return {
         success: true,
         data: response.data || null,
-        message: response.data ? 'Sonraki beslenme zamanı bulundu' : 'Planlanmış beslenme bulunamadı',
+        message: response.data ? 'feedingSchedule.fetchNextFound' : 'feedingSchedule.fetchNextNotFound',
       };
     } catch (error) {
       console.error('❌ Get next feeding error:', error);
       if (error instanceof ApiError) {
         return {
           success: false,
-          error: error.message,
+          error: {
+            code: error.code || 'FETCH_ERROR',
+            message: error.message,
+          },
         };
       }
       return {
         success: false,
-        error: 'Sonraki beslenme zamanı yüklenemedi. Lütfen tekrar deneyin.',
+        error: {
+          code: 'FETCH_ERROR',
+          message: 'feedingSchedule.fetchNextError',
+        },
       };
     }
   }
@@ -290,19 +353,25 @@ export class FeedingScheduleService {
       return {
         success: true,
         data: activeSchedules,
-        message: `${activeSchedules.length} aktif beslenme takvimi bulundu`,
+        message: 'feedingSchedule.fetchActiveByPetSuccess',
       };
     } catch (error) {
       console.error('❌ Get active feeding schedules by pet error:', error);
       if (error instanceof ApiError) {
         return {
           success: false,
-          error: error.message,
+          error: {
+            code: error.code || 'FETCH_ERROR',
+            message: error.message,
+          },
         };
       }
       return {
         success: false,
-        error: 'Aktif beslenme takvimleri yüklenemedi. Lütfen tekrar deneyin.',
+        error: {
+          code: 'FETCH_ERROR',
+          message: 'feedingSchedule.fetchActiveByPetError',
+        },
       };
     }
   }
@@ -321,12 +390,18 @@ export class FeedingScheduleService {
       if (error instanceof ApiError) {
         return {
           success: false,
-          error: error.message,
+          error: {
+            code: error.code || 'TOGGLE_ERROR',
+            message: error.message,
+          },
         };
       }
       return {
         success: false,
-        error: 'Beslenme takvimi durumu değiştirilemedi. Lütfen tekrar deneyin.',
+        error: {
+          code: 'TOGGLE_ERROR',
+          message: 'feedingSchedule.toggleError',
+        },
       };
     }
   }

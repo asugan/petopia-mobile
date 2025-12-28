@@ -60,19 +60,25 @@ export class ExpenseService {
       return {
         success: true,
         data: response.data!,
-        message: 'Expense created successfully'
+        message: 'expense.createSuccess'
       };
     } catch (error) {
       console.error('❌ Create expense error:', error);
       if (error instanceof ApiError) {
         return {
           success: false,
-          error: error.message
+          error: {
+            code: error.code || 'CREATE_ERROR',
+            message: error.message,
+          },
         };
       }
       return {
         success: false,
-        error: 'Failed to create expense. Please check the information and try again.'
+        error: {
+          code: 'CREATE_ERROR',
+          message: 'expense.createError',
+        },
       };
     }
   }
@@ -125,12 +131,18 @@ export class ExpenseService {
       if (error instanceof ApiError) {
         return {
           success: false,
-          error: error.message
+          error: {
+            code: error.code || 'FETCH_ERROR',
+            message: error.message,
+          },
         };
       }
       return {
         success: false,
-        error: 'Failed to fetch expenses'
+        error: {
+          code: 'FETCH_ERROR',
+          message: 'expense.fetchError',
+        },
       };
     }
   }
@@ -149,14 +161,29 @@ export class ExpenseService {
     } catch (error) {
       console.error('❌ Get expense error:', error);
       if (error instanceof ApiError) {
+        if (error.status === 404) {
+          return {
+            success: false,
+            error: {
+              code: 'NOT_FOUND',
+              message: 'expense.notFound',
+            },
+          };
+        }
         return {
           success: false,
-          error: error.message
+          error: {
+            code: error.code || 'FETCH_ERROR',
+            message: error.message,
+          },
         };
       }
       return {
         success: false,
-        error: 'Failed to fetch expense'
+        error: {
+          code: 'FETCH_ERROR',
+          message: 'expense.fetchError',
+        },
       };
     }
   }
@@ -177,19 +204,34 @@ export class ExpenseService {
       return {
         success: true,
         data: response.data!,
-        message: 'Expense updated successfully'
+        message: 'expense.updateSuccess'
       };
     } catch (error) {
       console.error('❌ Update expense error:', error);
       if (error instanceof ApiError) {
+        if (error.status === 404) {
+          return {
+            success: false,
+            error: {
+              code: 'NOT_FOUND',
+              message: 'expense.notFoundUpdate',
+            },
+          };
+        }
         return {
           success: false,
-          error: error.message
+          error: {
+            code: error.code || 'UPDATE_ERROR',
+            message: error.message,
+          },
         };
       }
       return {
         success: false,
-        error: 'Failed to update expense'
+        error: {
+          code: 'UPDATE_ERROR',
+          message: 'expense.updateError',
+        },
       };
     }
   }
@@ -204,19 +246,34 @@ export class ExpenseService {
       console.log('✅ Expense deleted successfully:', id);
       return {
         success: true,
-        message: 'Expense deleted successfully'
+        message: 'expense.deleteSuccess'
       };
     } catch (error) {
       console.error('❌ Delete expense error:', error);
       if (error instanceof ApiError) {
+        if (error.status === 404) {
+          return {
+            success: false,
+            error: {
+              code: 'NOT_FOUND',
+              message: 'expense.notFoundDelete',
+            },
+          };
+        }
         return {
           success: false,
-          error: error.message
+          error: {
+            code: error.code || 'DELETE_ERROR',
+            message: error.message,
+          },
         };
       }
       return {
         success: false,
-        error: 'Failed to delete expense'
+        error: {
+          code: 'DELETE_ERROR',
+          message: 'expense.deleteError',
+        },
       };
     }
   }
@@ -249,12 +306,18 @@ export class ExpenseService {
       if (error instanceof ApiError) {
         return {
           success: false,
-          error: error.message
+          error: {
+            code: error.code || 'FETCH_STATS_ERROR',
+            message: error.message,
+          },
         };
       }
       return {
         success: false,
-        error: 'Failed to fetch expense statistics'
+        error: {
+          code: 'FETCH_STATS_ERROR',
+          message: 'expense.fetchStatsError',
+        },
       };
     }
   }
@@ -285,12 +348,18 @@ export class ExpenseService {
       if (error instanceof ApiError) {
         return {
           success: false,
-          error: error.message
+          error: {
+            code: error.code || 'FETCH_MONTHLY_ERROR',
+            message: error.message,
+          },
         };
       }
       return {
         success: false,
-        error: 'Failed to fetch monthly expenses'
+        error: {
+          code: 'FETCH_MONTHLY_ERROR',
+          message: 'expense.fetchMonthlyError',
+        },
       };
     }
   }
@@ -319,12 +388,18 @@ export class ExpenseService {
       if (error instanceof ApiError) {
         return {
           success: false,
-          error: error.message
+          error: {
+            code: error.code || 'FETCH_YEARLY_ERROR',
+            message: error.message,
+          },
         };
       }
       return {
         success: false,
-        error: 'Failed to fetch yearly expenses'
+        error: {
+          code: 'FETCH_YEARLY_ERROR',
+          message: 'expense.fetchYearlyError',
+        },
       };
     }
   }
@@ -352,12 +427,18 @@ export class ExpenseService {
       if (error instanceof ApiError) {
         return {
           success: false,
-          error: error.message
+          error: {
+            code: error.code || 'FETCH_BY_CATEGORY_ERROR',
+            message: error.message,
+          },
         };
       }
       return {
         success: false,
-        error: 'Failed to fetch expenses by category'
+        error: {
+          code: 'FETCH_BY_CATEGORY_ERROR',
+          message: 'expense.fetchByCategoryError',
+        },
       };
     }
   }
@@ -388,12 +469,18 @@ export class ExpenseService {
       if (error instanceof ApiError) {
         return {
           success: false,
-          error: error.message
+          error: {
+            code: error.code || 'FETCH_BY_DATE_RANGE_ERROR',
+            message: error.message,
+          },
         };
       }
       return {
         success: false,
-        error: 'Failed to fetch expenses by date range'
+        error: {
+          code: 'FETCH_BY_DATE_RANGE_ERROR',
+          message: 'expense.fetchByDateRangeError',
+        },
       };
     }
   }
@@ -424,12 +511,18 @@ export class ExpenseService {
       if (error instanceof ApiError) {
         return {
           success: false,
-          error: error.message
+          error: {
+            code: error.code || 'EXPORT_CSV_ERROR',
+            message: error.message,
+          },
         };
       }
       return {
         success: false,
-        error: 'Failed to export expenses'
+        error: {
+          code: 'EXPORT_CSV_ERROR',
+          message: 'expense.exportCSVError',
+        },
       };
     }
   }
@@ -462,9 +555,21 @@ export class ExpenseService {
     } catch (error) {
       console.error('❌ Export expenses PDF error:', error);
       if (error instanceof ApiError) {
-        return { success: false, error: error.message };
+        return { 
+          success: false, 
+          error: {
+            code: error.code || 'EXPORT_PDF_ERROR',
+            message: error.message,
+          },
+        };
       }
-      return { success: false, error: 'Failed to export expenses PDF' };
+      return { 
+        success: false, 
+        error: {
+          code: 'EXPORT_PDF_ERROR',
+          message: 'expense.exportPDFError',
+        },
+      };
     }
   }
 
@@ -492,9 +597,21 @@ export class ExpenseService {
     } catch (error) {
       console.error('❌ Export vet summary PDF error:', error);
       if (error instanceof ApiError) {
-        return { success: false, error: error.message };
+        return { 
+          success: false, 
+          error: {
+            code: error.code || 'EXPORT_VET_SUMMARY_PDF_ERROR',
+            message: error.message,
+          },
+        };
       }
-      return { success: false, error: 'Failed to export vet summary PDF' };
+      return { 
+        success: false, 
+        error: {
+          code: 'EXPORT_VET_SUMMARY_PDF_ERROR',
+          message: 'expense.exportVetSummaryPDFError',
+        },
+      };
     }
   }
 
@@ -512,7 +629,22 @@ export class ExpenseService {
       return { success: true, message: 'Shared successfully' };
     } catch (error) {
       console.error('❌ Share PDF error:', error);
-      return { success: false, error: 'Failed to share PDF' };
+      if (error instanceof ApiError) {
+        return { 
+          success: false, 
+          error: {
+            code: error.code || 'SHARE_PDF_ERROR',
+            message: error.message,
+          },
+        };
+      }
+      return { 
+        success: false, 
+        error: {
+          code: 'SHARE_PDF_ERROR',
+          message: 'expense.sharePDFError',
+        },
+      };
     }
   }
 }

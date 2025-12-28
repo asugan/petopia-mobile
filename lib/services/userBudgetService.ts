@@ -24,7 +24,7 @@ export class UserBudgetService {
       return {
         success: true,
         data: response.data!,
-        message: "User budget loaded successfully",
+        message: "budget.fetchSuccess",
       };
     } catch (error) {
       console.error("❌ Get user budget error:", error);
@@ -32,17 +32,26 @@ export class UserBudgetService {
         if (error.status === 404) {
           return {
             success: false,
-            error: "No budget found for user",
+            error: {
+              code: 'NOT_FOUND',
+              message: 'budget.notFound',
+            },
           };
         }
         return {
           success: false,
-          error: error.message,
+          error: {
+            code: error.code || 'FETCH_ERROR',
+            message: error.message,
+          },
         };
       }
       return {
         success: false,
-        error: "Failed to fetch user budget",
+        error: {
+          code: 'FETCH_ERROR',
+          message: 'budget.fetchError',
+        },
       };
     }
   }
@@ -69,20 +78,25 @@ export class UserBudgetService {
       return {
         success: true,
         data: response.data!,
-        message: "User budget updated successfully",
+        message: "budget.updateSuccess",
       };
     } catch (error) {
       console.error("❌ Set user budget error:", error);
       if (error instanceof ApiError) {
         return {
           success: false,
-          error: error.message,
+          error: {
+            code: error.code || 'SET_ERROR',
+            message: error.message,
+          },
         };
       }
       return {
         success: false,
-        error:
-          "Failed to set user budget. Please check the information and try again.",
+        error: {
+          code: 'SET_ERROR',
+          message: 'budget.setError',
+        },
       };
     }
   }
@@ -97,7 +111,7 @@ export class UserBudgetService {
       console.log("✅ User budget deleted successfully");
       return {
         success: true,
-        message: "User budget deleted successfully",
+        message: "budget.deleteSuccess",
       };
     } catch (error) {
       console.error("❌ Delete user budget error:", error);
@@ -105,17 +119,26 @@ export class UserBudgetService {
         if (error.status === 404) {
           return {
             success: false,
-            error: "No budget found to delete",
+            error: {
+              code: 'NOT_FOUND',
+              message: 'budget.notFoundDelete',
+            },
           };
         }
         return {
           success: false,
-          error: error.message,
+          error: {
+            code: error.code || 'DELETE_ERROR',
+            message: error.message,
+          },
         };
       }
       return {
         success: false,
-        error: "Failed to delete user budget",
+        error: {
+          code: 'DELETE_ERROR',
+          message: 'budget.deleteError',
+        },
       };
     }
   }
@@ -133,7 +156,7 @@ export class UserBudgetService {
       return {
         success: true,
         data: response.data!,
-        message: "Budget status loaded successfully",
+        message: "budget.fetchStatusSuccess",
       };
     } catch (error) {
       console.error("❌ Get budget status error:", error);
@@ -141,17 +164,26 @@ export class UserBudgetService {
         if (error.status === 404) {
           return {
             success: false,
-            error: "No budget found for status calculation",
+            error: {
+              code: 'NOT_FOUND',
+              message: 'budget.notFoundStatus',
+            },
           };
         }
         return {
           success: false,
-          error: error.message,
+          error: {
+            code: error.code || 'FETCH_STATUS_ERROR',
+            message: error.message,
+          },
         };
       }
       return {
         success: false,
-        error: "Failed to fetch budget status",
+        error: {
+          code: 'FETCH_STATUS_ERROR',
+          message: 'budget.fetchStatusError',
+        },
       };
     }
   }
@@ -169,7 +201,7 @@ export class UserBudgetService {
       return {
         success: true,
         data: response.data!,
-        message: "Budget alerts checked successfully",
+        message: "budget.checkAlertsSuccess",
       };
     } catch (error) {
       console.error("❌ Check budget alerts error:", error);
@@ -177,17 +209,26 @@ export class UserBudgetService {
         if (error.status === 404) {
           return {
             success: false,
-            error: "No budget found for alert checking",
+            error: {
+              code: 'NOT_FOUND',
+              message: 'budget.notFoundAlerts',
+            },
           };
         }
         return {
           success: false,
-          error: error.message,
+          error: {
+            code: error.code || 'CHECK_ALERTS_ERROR',
+            message: error.message,
+          },
         };
       }
       return {
         success: false,
-        error: "Failed to check budget alerts",
+        error: {
+          code: 'CHECK_ALERTS_ERROR',
+          message: 'budget.checkAlertsError',
+        },
       };
     }
   }
@@ -213,13 +254,16 @@ export class UserBudgetService {
       return {
         success: true,
         data: statusResponse.data.petBreakdown,
-        message: "Pet spending breakdown loaded successfully",
+        message: "budget.fetchBreakdownSuccess",
       };
     } catch (error) {
       console.error("❌ Get pet spending breakdown error:", error);
       return {
         success: false,
-        error: "Failed to get pet spending breakdown",
+        error: {
+          code: 'FETCH_BREAKDOWN_ERROR',
+          message: 'budget.fetchBreakdownError',
+        },
       };
     }
   }
@@ -247,14 +291,17 @@ export class UserBudgetService {
         success: true,
         data: hasBudget,
         message: hasBudget
-          ? "User has active budget"
-          : "User has no active budget",
+          ? "budget.hasActiveBudgetTrue"
+          : "budget.hasActiveBudgetFalse",
       };
     } catch (error) {
       console.error("❌ Check active budget error:", error);
       return {
         success: false,
-        error: "Failed to check active budget status",
+        error: {
+          code: 'CHECK_ACTIVE_ERROR',
+          message: 'budget.checkActiveError',
+        },
       };
     }
   }
@@ -303,13 +350,16 @@ export class UserBudgetService {
           hasActiveBudget,
           alerts,
         },
-        message: "Budget summary loaded successfully",
+        message: "budget.fetchSummarySuccess",
       };
     } catch (error) {
       console.error("❌ Get budget summary error:", error);
       return {
         success: false,
-        error: "Failed to get budget summary",
+        error: {
+          code: 'FETCH_SUMMARY_ERROR',
+          message: 'budget.fetchSummaryError',
+        },
       };
     }
   }

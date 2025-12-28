@@ -673,6 +673,22 @@
         "receiptUrl": "Fiş fotoğrafı geçerli bir URL olmalıdır",
         "vendorMax": "Satıcı adı en fazla 200 karakter olabilir",
         "notesMax": "Notlar en fazla 1000 karakter olabilir",
+        "createError": "Gider oluşturulamadı. Lütfen bilgileri kontrol edip tekrar deneyin.",
+        "fetchError": "Giderler alınamadı",
+        "notFound": "Gider bulunamadı",
+        "notFoundUpdate": "Güncellenecek gider bulunamadı",
+        "notFoundDelete": "Silinecek gider bulunamadı",
+        "updateError": "Gider güncellenemedi",
+        "deleteError": "Gider silinemedi",
+        "fetchStatsError": "Gider istatistikleri alınamadı",
+        "fetchMonthlyError": "Aylık giderler alınamadı",
+        "fetchYearlyError": "Yıllık giderler alınamadı",
+        "fetchByCategoryError": "Kategoriye göre giderler alınamadı",
+        "fetchByDateRangeError": "Tarih aralığına göre giderler alınamadı",
+        "exportCSVError": "Giderler dışa aktarılamadı",
+        "exportPDFError": "Gider PDF'i dışa aktarılamadı",
+        "exportVetSummaryPDFError": "Veteriner özeti PDF'i dışa aktarılamadı",
+        "sharePDFError": "PDF paylaşılamadı",
         "query": {
           "pageInvalidType": "Sayfa numarası sayı olmalıdır",
           "pageInteger": "Sayfa numarası tam sayı olmalıdır",
@@ -750,7 +766,19 @@
         "alertThresholdMin": "Uyarı eşiği en az 0 olmalıdır",
         "alertThresholdMax": "Uyarı eşiği en fazla 1 olmalıdır",
         "alertThresholdRange": "Uyarı eşiği 0 ile 1 arasında olmalıdır",
-        "amountAndCurrencyRequired": "Tutar ve para birimi zorunludur"
+        "amountAndCurrencyRequired": "Tutar ve para birimi zorunludur",
+        "notFound": "Kullanıcı için bütçe bulunamadı",
+        "notFoundDelete": "Silinecek bütçe bulunamadı",
+        "notFoundStatus": "Durum hesaplaması için bütçe bulunamadı",
+        "notFoundAlerts": "Uyarı kontrolü için bütçe bulunamadı",
+        "fetchError": "Kullanıcı bütçesi alınamadı",
+        "setError": "Bütçe ayarlanamadı. Lütfen bilgileri kontrol edip tekrar deneyin.",
+        "deleteError": "Bütçe silinemedi",
+        "fetchStatusError": "Bütçe durumu alınamadı",
+        "checkAlertsError": "Bütçe uyarıları kontrol edilemedi",
+        "fetchBreakdownError": "Pet harcama özeti alınamadı",
+        "checkActiveError": "Aktif bütçe durumu kontrol edilemedi",
+        "fetchSummaryError": "Bütçe özeti alınamadı"
       }
     },
     "dropdown": {
@@ -988,6 +1016,65 @@
       "button": "Ana Sayfaya Git"
     }
   },
+  "serviceResponse": {
+    "event": {
+      "createSuccess": "Etkinlik başarıyla oluşturuldu",
+      "fetchSuccess": "Etkinlikler başarıyla yüklendi",
+      "fetchOneSuccess": "Etkinlik başarıyla yüklendi",
+      "updateSuccess": "Etkinlik başarıyla güncellendi",
+      "deleteSuccess": "Etkinlik başarıyla silindi",
+      "fetchByDateSuccess": "Bu tarih için etkinlikler yüklendi",
+      "fetchUpcomingSuccess": "Yaklaşan etkinlikler başarıyla yüklendi",
+      "fetchTodaySuccess": "Bugünün etkinlikleri başarıyla yüklendi"
+    },
+    "expense": {
+      "createSuccess": "Harcama başarıyla oluşturuldu",
+      "updateSuccess": "Harcama başarıyla güncellendi",
+      "deleteSuccess": "Harcama başarıyla silindi"
+    },
+    "feedingSchedule": {
+      "createSuccess": "Besleme programı başarıyla oluşturuldu",
+      "fetchSuccess": "Besleme programları başarıyla yüklendi",
+      "fetchOneSuccess": "Besleme programı başarıyla yüklendi",
+      "updateSuccess": "Besleme programı başarıyla güncellendi",
+      "deleteSuccess": "Besleme programı başarıyla silindi",
+      "fetchActiveSuccess": "Aktif besleme programları başarıyla yüklendi",
+      "fetchTodaySuccess": "Bugünün besleme programları başarıyla yüklendi",
+      "fetchNextFound": "Sıradaki besleme programı bulundu",
+      "fetchNextNotFound": "Planlanmış besleme yok",
+      "fetchActiveByPetSuccess": "Bu pet için aktif besleme programları yüklendi"
+    },
+    "healthRecord": {
+      "createSuccess": "Sağlık kaydı başarıyla oluşturuldu",
+      "fetchSuccess": "Sağlık kayıtları başarıyla yüklendi",
+      "fetchOneSuccess": "Sağlık kaydı başarıyla yüklendi",
+      "updateSuccess": "Sağlık kaydı başarıyla güncellendi",
+      "deleteSuccess": "Sağlık kaydı başarıyla silindi",
+      "fetchByTypeSuccess": "Tür bazlı sağlık kayıtları başarıyla yüklendi"
+    },
+    "pet": {
+      "createSuccess": "Pet başarıyla oluşturuldu",
+      "fetchSuccess": "Petler başarıyla yüklendi",
+      "fetchOneSuccess": "Pet başarıyla yüklendi",
+      "updateSuccess": "Pet başarıyla güncellendi",
+      "deleteSuccess": "Pet başarıyla silindi",
+      "fetchByTypeSuccess": "Tür bazlı petler başarıyla yüklendi",
+      "searchSuccess": "Pet araması başarıyla tamamlandı",
+      "uploadPhotoSuccess": "Pet fotoğrafı başarıyla yüklendi",
+      "statsCalculatedSuccess": "Pet istatistikleri başarıyla hesaplandı"
+    },
+    "budget": {
+      "fetchSuccess": "Kullanıcı bütçesi başarıyla yüklendi",
+      "updateSuccess": "Kullanıcı bütçesi başarıyla güncellendi",
+      "deleteSuccess": "Kullanıcı bütçesi başarıyla silindi",
+      "fetchStatusSuccess": "Bütçe durumu başarıyla yüklendi",
+      "checkAlertsSuccess": "Bütçe uyarıları başarıyla kontrol edildi",
+      "fetchBreakdownSuccess": "Pet harcama özeti başarıyla yüklendi",
+      "hasActiveBudgetTrue": "Kullanıcının aktif bütçesi var",
+      "hasActiveBudgetFalse": "Kullanıcının aktif bütçesi yok",
+      "fetchSummarySuccess": "Bütçe özeti başarıyla yüklendi"
+    }
+  },
   "subscription": {
     "title": "Abonelik",
     "pro": "Pro",
@@ -1018,6 +1105,9 @@
     "trialAlreadySubscribed": "Zaten aktif bir aboneliğiniz var",
     "trialAlreadyUsed": "Bu cihazda ücretsiz deneme daha önce kullanıldı",
     "trialStartFailed": "Ücretsiz deneme başlatılamadı. Lütfen tekrar deneyin.",
+    "loadError": "Abonelik durumu yüklenemiyor. Lütfen tekrar deneyin.",
+    "invalidResponse": "Sunucudan geçersiz yanıt",
+    "startTrialError": "Ücretsiz deneme başlatılamadı. Lütfen tekrar deneyin.",
     "terms": "Hizmet Şartları",
     "privacy": "Gizlilik Politikası",
     "unlockFeature": "{{feature}} Özelliğini Aç",
