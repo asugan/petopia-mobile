@@ -40,15 +40,23 @@ export class SubscriptionApiService {
    * Get unified subscription status from backend
    * This is the main method - use this for all status checks
    * React Query handles caching and deduplication automatically
+   *
+   * @param options.bypassCache - if true, appends timestamp to bypass HTTP/browser cache
    */
   async getSubscriptionStatus(
     options?: { bypassCache?: boolean }
   ): Promise<ApiResponse<SubscriptionStatus>> {
     try {
       const deviceId = await getDeviceId();
+      const params: Record<string, unknown> = { deviceId };
+
+      if (options?.bypassCache) {
+        params._t = Date.now();
+      }
+
       const response = await api.get<SubscriptionStatus>(
         ENV.ENDPOINTS.SUBSCRIPTION_STATUS,
-        { deviceId }
+        params
       );
 
       console.log('✅ Subscription status loaded successfully');
