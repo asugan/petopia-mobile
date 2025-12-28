@@ -150,6 +150,7 @@ export function useUploadPetPhoto() {
 
 export function useInfinitePets(filters?: Omit<PetFilters, 'page'>) {
   const defaultLimit = ENV.DEFAULT_LIMIT || 20;
+  const { enabled } = useAuthQueryEnabled();
 
   return useInfiniteQuery({
     queryKey: petKeys.infinite(filters),
@@ -189,6 +190,7 @@ export function useInfinitePets(filters?: Omit<PetFilters, 'page'>) {
     },
     staleTime: CACHE_TIMES.MEDIUM,
     gcTime: CACHE_TIMES.LONG,
+    enabled,
   });
 }
 
