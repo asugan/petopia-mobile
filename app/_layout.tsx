@@ -1,19 +1,19 @@
 import { Stack } from "expo-router";
 import { QueryClient, QueryClientProvider, focusManager } from '@tanstack/react-query';
-import { MOBILE_QUERY_CONFIG } from "../lib/config/queryConfig";
-import { LanguageProvider } from "../providers/LanguageProvider";
-import { AuthProvider } from "../providers/AuthProvider";
-import { SubscriptionProvider } from "../providers/SubscriptionProvider";
-import { NetworkStatus } from "../lib/components/NetworkStatus";
-import { ApiErrorBoundary } from "../lib/components/ApiErrorBoundary";
-import { useOnlineManager } from "../lib/hooks/useOnlineManager";
+import { MOBILE_QUERY_CONFIG } from "@/lib/config/queryConfig";
+import { LanguageProvider } from "@/providers/LanguageProvider";
+import { AuthProvider } from "@/providers/AuthProvider";
+import { SubscriptionProvider } from "@/providers/SubscriptionProvider";
+import { NetworkStatus } from "@/lib/components/NetworkStatus";
+import { ApiErrorBoundary } from "@/lib/components/ApiErrorBoundary";
+import { useOnlineManager } from "@/lib/hooks/useOnlineManager";
 import { AppState, AppStateStatus } from 'react-native';
 import { useEffect } from 'react';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { StatusBar } from 'expo-status-bar';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
-import { useTheme } from '../lib/theme';
-import { useThemeStore } from '../stores/themeStore';
+import { useTheme } from '@/lib/theme';
+import { useThemeStore } from '@/stores/themeStore';
 import "../lib/i18n"; // Initialize i18n
 
 // Enhanced QueryClient with better configuration

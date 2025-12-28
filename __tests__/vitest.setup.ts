@@ -140,6 +140,7 @@ vi.mock('react-hook-form', () => ({
 
 // Mock react-i18next
 vi.mock('react-i18next', () => {
+  const t = (key: string) => key;
   const i18nInstance = {
     changeLanguage: vi.fn(),
     language: 'en',
@@ -150,7 +151,7 @@ vi.mock('react-i18next', () => {
   return {
     initReactI18next: { type: '3rdParty', init: vi.fn() },
     useTranslation: () => ({
-      t: (key: string) => key,
+      t,
       i18n: i18nInstance,
     }),
     I18nextProvider: ({ children }: any) => children,
@@ -165,6 +166,19 @@ vi.mock('i18next', () => ({
     }),
     init: vi.fn(),
     createInstance: vi.fn(),
+  },
+}));
+
+// Mock Better Auth client for hooks that read session info
+vi.mock('@/lib/auth/client', () => ({
+  authClient: {
+    useSession: vi.fn(() => ({
+      data: {
+        user: {
+          id: 'test-user-id',
+        },
+      },
+    })),
   },
 }));
 

@@ -6,11 +6,11 @@ import React, { useState } from 'react';
 import { Alert, ScrollView, Share, StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useTranslation } from 'react-i18next';
-import EmptyState from '../../components/EmptyState';
-import { HealthRecordForm } from '../../components/forms/HealthRecordForm';
-import LoadingSpinner from '../../components/LoadingSpinner';
-import { HEALTH_RECORD_COLORS, HEALTH_RECORD_ICONS, TURKCE_LABELS } from '../../constants';
-import { useDeleteHealthRecord, useHealthRecord } from '../../lib/hooks/useHealthRecords';
+import EmptyState from '@/components/EmptyState';
+import { HealthRecordForm } from '@/components/forms/HealthRecordForm';
+import LoadingSpinner from '@/components/LoadingSpinner';
+import { HEALTH_RECORD_COLORS, HEALTH_RECORD_ICONS, TURKCE_LABELS } from '@/constants';
+import { useDeleteHealthRecord, useHealthRecord } from '@/lib/hooks/useHealthRecords';
 
 export default function HealthRecordDetailScreen() {
   const { t } = useTranslation();

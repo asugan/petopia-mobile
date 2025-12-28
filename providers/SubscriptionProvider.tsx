@@ -35,28 +35,11 @@ export function SubscriptionProvider({ children }: SubscriptionProviderProps) {
   const trialInitRef = useRef(false);
   const isActivatingTrialRef = useRef(false);
   const syncedUserIdRef = useRef<string | null>(null);
-
-  const handleCustomerInfoUpdate = useCallback(async (info: CustomerInfo) => {
-    console.log('[SubscriptionProvider] CustomerInfo updated');
-    setCustomerInfo(info);
-  }, [setCustomerInfo]);
-
-  const migrateLocalTrialStorage = useCallback(async () => {
-    try {
-      const migrated = await AsyncStorage.getItem(TRIAL_MIGRATION_KEY);
-      if (migrated) {
-        console.log('[SubscriptionProvider] Trial migration already done');
-        return;
-      }
-
-      await AsyncStorage.removeItem('subscription-storage');
-      await AsyncStorage.setItem(TRIAL_MIGRATION_KEY, 'true');
-
-      console.log('[SubscriptionProvider] Migrated from local trial storage');
-    } catch (error) {
-      console.error('[SubscriptionProvider] Migration error:', error);
-    }
-  }, []);
+  const initializeStatusRef = useRef<(() => Promise<void>) | null>(null);
+  const handleUserLoginRef = useRef<(() => Promise<void>) | null>(null);
+  const handleUserLogoutRef = useRef<(() => Promise<void>) | null>(null);
+  const subscriptionStatusRef = useRef(subscriptionStatus);
+  const startTrialMutateAsyncRef = useRef(startTrialMutation.mutateAsync);
 
   const initializeSubscriptionStatus = useCallback(async () => {
     if (trialInitRef.current || !isAuthenticated || isPending) {
@@ -67,21 +50,22 @@ export function SubscriptionProvider({ children }: SubscriptionProviderProps) {
     try {
       console.log('[SubscriptionProvider] Initializing subscription status');
 
-      const canStartTrial = subscriptionStatus?.canStartTrial ?? false;
+      const canStartTrial = subscriptionStatusRef.current?.canStartTrial ?? false;
 
       if (canStartTrial && !isActivatingTrialRef.current) {
         console.log('[SubscriptionProvider] New user detected, starting trial...');
         isActivatingTrialRef.current = true;
 
-        await startTrialMutation.mutateAsync();
+        await startTrialMutateAsyncRef.current();
 
         isActivatingTrialRef.current = false;
       }
     } catch (error) {
       console.error('[SubscriptionProvider] Error initializing subscription status:', error);
       isActivatingTrialRef.current = false;
+      trialInitRef.current = false;
     }
-  }, [isAuthenticated, isPending, subscriptionStatus, startTrialMutation]);
+  }, [isAuthenticated, isPending]);
 
   const initializeSDK = useCallback(async () => {
     if (isInitialized) {
@@ -93,7 +77,12 @@ export function SubscriptionProvider({ children }: SubscriptionProviderProps) {
       setLoading(true);
       setError(null);
 
-      await migrateLocalTrialStorage();
+      const migrated = await AsyncStorage.getItem(TRIAL_MIGRATION_KEY);
+      if (!migrated) {
+        await AsyncStorage.removeItem('subscription-storage');
+        await AsyncStorage.setItem(TRIAL_MIGRATION_KEY, 'true');
+        console.log('[SubscriptionProvider] Migrated from local trial storage');
+      }
 
       const userId = isAuthenticated ? user?.id ?? null : null;
       await initializeRevenueCat(userId);
@@ -104,10 +93,6 @@ export function SubscriptionProvider({ children }: SubscriptionProviderProps) {
 
       setInitialized(true);
       console.log('[SubscriptionProvider] SDK initialized successfully');
-
-      if (isAuthenticated && !isStatusLoading && subscriptionStatus) {
-        await initializeSubscriptionStatus();
-      }
     } catch (error) {
       console.error('[SubscriptionProvider] SDK initialization error:', error);
       setError((error as Error).message);
@@ -122,10 +107,6 @@ export function SubscriptionProvider({ children }: SubscriptionProviderProps) {
     setInitialized,
     setLoading,
     setError,
-    migrateLocalTrialStorage,
-    initializeSubscriptionStatus,
-    isStatusLoading,
-    subscriptionStatus,
   ]);
 
   const handleUserLogin = useCallback(async () => {
@@ -144,7 +125,7 @@ export function SubscriptionProvider({ children }: SubscriptionProviderProps) {
       setCustomerInfo(customerInfo);
       syncedUserIdRef.current = user.id;
 
-      await initializeSubscriptionStatus();
+      await initializeStatusRef.current?.();
 
       console.log('[SubscriptionProvider] User identity synced');
     } catch (error) {
@@ -153,7 +134,13 @@ export function SubscriptionProvider({ children }: SubscriptionProviderProps) {
     } finally {
       setLoading(false);
     }
-  }, [user?.id, isAuthenticated, setCustomerInfo, setLoading, setError, initializeSubscriptionStatus]);
+  }, [
+    user?.id,
+    isAuthenticated,
+    setCustomerInfo,
+    setLoading,
+    setError,
+  ]);
 
   const handleUserLogout = useCallback(async () => {
     try {
@@ -175,18 +162,34 @@ export function SubscriptionProvider({ children }: SubscriptionProviderProps) {
     }
   }, [setCustomerInfo, setLoading, setError]);
 
+  const handleCustomerInfoUpdate = useCallback((info: CustomerInfo) => {
+    console.log('[SubscriptionProvider] CustomerInfo updated');
+    setCustomerInfo(info);
+  }, [setCustomerInfo]);
+
+  useEffect(() => {
+    subscriptionStatusRef.current = subscriptionStatus;
+  }, [subscriptionStatus]);
+
+  useEffect(() => {
+    startTrialMutateAsyncRef.current = startTrialMutation.mutateAsync;
+  }, [startTrialMutation.mutateAsync]);
+
+  initializeStatusRef.current = initializeSubscriptionStatus;
+  handleUserLoginRef.current = handleUserLogin;
+  handleUserLogoutRef.current = handleUserLogout;
+
   useEffect(() => {
     if (isPending) {
       return;
     }
 
-    if (!isAuthenticated) {
-      console.log('[SubscriptionProvider] Skipping SDK initialization');
+    if (!isAuthenticated || isInitialized) {
       return;
     }
 
     initializeSDK();
-  }, [isPending, isAuthenticated, initializeSDK]);
+  }, [isPending, isAuthenticated, isInitialized, initializeSDK]);
 
   useEffect(() => {
     if (isPending || !isInitialized) {
@@ -194,10 +197,10 @@ export function SubscriptionProvider({ children }: SubscriptionProviderProps) {
     }
 
     if (!isAuthenticated) {
-      handleUserLogout();
+      handleUserLogoutRef.current?.();
       resetStore();
     }
-  }, [isAuthenticated, isPending, isInitialized, handleUserLogout, resetStore]);
+  }, [isAuthenticated, isPending, isInitialized, resetStore]);
 
   useEffect(() => {
     if (!isInitialized) return;
@@ -218,16 +221,25 @@ export function SubscriptionProvider({ children }: SubscriptionProviderProps) {
   useEffect(() => {
     if (!isInitialized || isPending) return;
 
-    if (isAuthenticated && user?.id) {
-      handleUserLogin();
+    if (isAuthenticated && user?.id && syncedUserIdRef.current !== user.id) {
+      handleUserLoginRef.current?.();
     }
-  }, [isAuthenticated, user?.id, isInitialized, isPending, handleUserLogin]);
+  }, [isAuthenticated, user?.id, isInitialized, isPending]);
 
   useEffect(() => {
-    if (isAuthenticated && !isPending && !isStatusLoading && !trialInitRef.current) {
-      initializeSubscriptionStatus();
+    if (
+      isAuthenticated &&
+      !isPending &&
+      !isStatusLoading &&
+      !trialInitRef.current
+    ) {
+      initializeStatusRef.current?.();
     }
-  }, [isAuthenticated, isPending, isStatusLoading, subscriptionStatus, initializeSubscriptionStatus]);
+  }, [
+    isAuthenticated,
+    isPending,
+    isStatusLoading,
+  ]);
 
   return <>{children}</>;
 }

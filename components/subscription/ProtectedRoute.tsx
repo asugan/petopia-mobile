@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState, useCallback, useRef } from 'react';
 import { View, StyleSheet } from 'react-native';
 import { useFocusEffect } from 'expo-router';
 import { useIsFocused } from '@react-navigation/native';
@@ -42,32 +42,25 @@ export function ProtectedRoute({ children, featureName, requirePro = true }: Pro
   } = useSubscription();
 
   const [showModal, setShowModal] = useState(false);
-  const isFocused = useIsFocused(); // Mevcut sayfanın odaklanıp odaklanmadığını kontrol et
+  const isFocused = useIsFocused();
+  const refreshStatusRef = useRef<(() => void) | null>(null);
 
-  // Refresh subscription status and check whenever tab is focused
-  // useFocusEffect automatically runs only when the screen/tab is focused
+  refreshStatusRef.current = refreshSubscriptionStatus;
+
   useFocusEffect(
     useCallback(() => {
-      refreshSubscriptionStatus();
-      
-      // Re-check subscription and show modal if needed
-      // This ensures modal reappears when navigating back to the tab
-      // No need for isFocused check here as useFocusEffect only runs when focused
-      if (!isSubscriptionLoading && requirePro && !isProUser) {
-        setShowModal(true);
-      }
-      
+      refreshStatusRef.current?.();
       return () => {};
-    }, [refreshSubscriptionStatus, isSubscriptionLoading, requirePro, isProUser])
+    }, [])
   );
 
-  // Also control modal visibility based on subscription status changes
-  // FIX: Sadece sayfa odaklanmışsa modalı aç, aksi takdirde arka plandaki tüm sekmeler modal açar.
   useEffect(() => {
-    if (isFocused && !isSubscriptionLoading && requirePro && !isProUser) {
+    if (isProUser) {
+      setShowModal(false);
+    } else if (isFocused && !isSubscriptionLoading && requirePro && !isProUser) {
       setShowModal(true);
     }
-  }, [isProUser, isSubscriptionLoading, requirePro, isFocused]);
+  }, [isProUser, isFocused, isSubscriptionLoading, requirePro]);
 
   const handleCloseModal = () => {
     setShowModal(false);

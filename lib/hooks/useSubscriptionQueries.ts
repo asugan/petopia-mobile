@@ -3,22 +3,22 @@ import { subscriptionApiService, SubscriptionStatus } from '../services/subscrip
 import { CACHE_TIMES } from '../config/queryConfig';
 import { createQueryKeys } from './core/createQueryKeys';
 import { useConditionalQuery } from './core/useConditionalQuery';
+import { authClient } from '@/lib/auth/client';
 
 // Query keys factory
-export const subscriptionKeys = createQueryKeys('subscription');
+const baseSubscriptionKeys = createQueryKeys('subscription');
 
-/**
- * Hook for fetching subscription status from backend
- * This replaces the Zustand-based approach with React Query
- * Features:
- * - Automatic caching and deduplication
- * - Built-in retry logic and error handling
- * - Type-safe status checks
- * - Background refresh with configurable stale time
- */
+export const subscriptionKeys = {
+  ...baseSubscriptionKeys,
+  status: (userId?: string) => [...baseSubscriptionKeys.all, 'status', userId] as const,
+};
+
 export function useSubscriptionStatus() {
+  const { data: session } = authClient.useSession();
+  const userId = session?.user?.id;
+
   return useConditionalQuery<SubscriptionStatus>({
-    queryKey: subscriptionKeys.all,
+    queryKey: subscriptionKeys.status(userId),
     queryFn: () => subscriptionApiService.getSubscriptionStatus(),
     staleTime: CACHE_TIMES.MEDIUM, // 5 minutes
     gcTime: CACHE_TIMES.LONG,      // 15 minutes
@@ -37,32 +37,30 @@ export function useSubscriptionStatus() {
   });
 }
 
-/**
- * Hook for starting a trial subscription
- * This mutation automatically invalidates the subscription status query after success
- */
 export function useStartTrial() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: subscriptionApiService.startTrial,
+    mutationFn: async () => {
+      const result = await subscriptionApiService.startTrial();
+      if (!result.success) {
+        throw new Error(typeof result.error === 'string' ? result.error : 'Trial başlatılamadı');
+      }
+      return result.data;
+    },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: subscriptionKeys.all });
+      queryClient.invalidateQueries({ predicate: (query) => query.queryKey[0] === 'subscription' && query.queryKey[1] === 'status' });
     },
   });
 }
 
-/**
- * Hook for refetching subscription status immediately (bypasses cache)
- */
 export function useRefetchSubscriptionStatus() {
   const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: () => subscriptionApiService.getSubscriptionStatus({ bypassCache: true }),
     onSuccess: () => {
-      // Invalidate to force all queries to use fresh data
-      queryClient.invalidateQueries({ queryKey: subscriptionKeys.all });
+      queryClient.invalidateQueries({ predicate: (query) => query.queryKey[0] === 'subscription' && query.queryKey[1] === 'status' });
     },
   });
 }

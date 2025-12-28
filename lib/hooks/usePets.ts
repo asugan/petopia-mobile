@@ -150,9 +150,6 @@ export function useInfinitePets(filters?: Omit<PetFilters, 'page'>) {
   return useInfiniteQuery({
     queryKey: petKeys.infinite(filters),
     queryFn: async ({ pageParam = 1 }) => {
-      const sortBy = 'createdAt';
-      const sortOrder: 'asc' | 'desc' = 'desc';
-
       const queryFilters: {
         page: number;
         limit: number;
@@ -163,12 +160,12 @@ export function useInfinitePets(filters?: Omit<PetFilters, 'page'>) {
       } = {
         page: pageParam,
         limit: defaultLimit,
-        sortBy: filters?.sortBy ?? sortBy,
-        sortOrder: filters?.sortOrder ?? sortOrder,
+        sortBy: (filters?.sortBy as 'name' | 'createdAt' | 'updatedAt' | 'type' | undefined) ?? 'createdAt',
+        sortOrder: (filters?.sortOrder as 'asc' | 'desc' | undefined) ?? 'desc',
       };
 
-      if (filters?.type) queryFilters.type = filters.type;
-      if (filters?.search) queryFilters.search = filters.search;
+      if (filters?.type) queryFilters.type = filters.type as string;
+      if (filters?.search) queryFilters.search = filters.search as string;
 
       const result = await petService.getPets(queryFilters);
 

@@ -3,7 +3,7 @@ import { useRouter } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { MaterialIcons } from '@expo/vector-icons';
-import { useOnboardingStore } from '../../stores/onboardingStore';
+import { useOnboardingStore } from '@/stores/onboardingStore';
 import { useTranslation } from 'react-i18next';
 import { Gesture, GestureDetector, Directions } from 'react-native-gesture-handler';
 import { scheduleOnRN } from 'react-native-worklets';

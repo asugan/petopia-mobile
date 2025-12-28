@@ -15,7 +15,7 @@ import { BudgetInsights } from "@/components/BudgetInsights";
 import { ProtectedRoute } from "@/components/subscription";
 import { useTheme } from "@/lib/theme";
 import { expenseService } from "@/lib/services/expenseService";
-import { usePets } from "../../lib/hooks/usePets";
+import { usePets } from "@/lib/hooks/usePets";
 import {
   useExpenses,
   useInfiniteExpenses,
@@ -27,28 +27,28 @@ import {
   useExportExpensesCSV,
   useExportExpensesPDF,
   useExportVetSummaryPDF,
-} from "../../lib/hooks/useExpenses";
+} from "@/lib/hooks/useExpenses";
 import {
   useUserBudget,
   useUserBudgetStatus,
   useSetUserBudget,
   useDeleteUserBudget,
   useBudgetAlertNotifications,
-} from "../../lib/hooks/useUserBudget";
-import ExpenseCard from "../../components/ExpenseCard";
-import ExpenseFormModal from "../../components/ExpenseFormModal";
-import UserBudgetCard from "../../components/UserBudgetCard";
-import UserBudgetFormModal from "../../components/UserBudgetFormModal";
-import LoadingSpinner from "../../components/LoadingSpinner";
-import EmptyState from "../../components/EmptyState";
+} from "@/lib/hooks/useUserBudget";
+import ExpenseCard from "@/components/ExpenseCard";
+import ExpenseFormModal from "@/components/ExpenseFormModal";
+import UserBudgetCard from "@/components/UserBudgetCard";
+import UserBudgetFormModal from "@/components/UserBudgetFormModal";
+import LoadingSpinner from "@/components/LoadingSpinner";
+import EmptyState from "@/components/EmptyState";
 import {
   CreateExpenseInput,
   Expense,
   SetUserBudgetInput,
   UserBudget,
-} from "../../lib/types";
-import { LAYOUT } from "../../constants";
-import { ENV } from "../../lib/config/env";
+} from "@/lib/types";
+import { LAYOUT } from "@/constants";
+import { ENV } from "@/lib/config/env";
 
 type FinanceTabValue = 'budget' | 'expenses';
 
@@ -469,11 +469,17 @@ export default function FinanceScreen() {
 
   // Render expenses list with responsive grid
   const renderExpensesList = () => {
-    if (expensesLoading && page === 1) {
+    if (expensesLoading && page === 1 && !useInfinite) {
+      return <LoadingSpinner />;
+    }
+    if (expensesLoading && useInfinite && infiniteLoading) {
       return <LoadingSpinner />;
     }
 
-    if (allExpenses.length === 0 && page === 1) {
+    const hasNoExpenses = useInfinite ? allExpensesFromInfinite.length === 0 : allExpenses.length === 0;
+    const isLoadingFirstPage = useInfinite ? infiniteLoading : (regularLoading && page === 1);
+
+    if (hasNoExpenses && !isLoadingFirstPage) {
       return (
         <EmptyState
           title={t("expenses.noExpenses")}

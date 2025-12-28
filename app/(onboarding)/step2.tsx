@@ -7,7 +7,7 @@ import { useTranslation } from 'react-i18next';
 import { Gesture, GestureDetector, Directions } from 'react-native-gesture-handler';
 import { scheduleOnRN } from 'react-native-worklets';
 import { useTheme } from '@/lib/theme';
-import { useOnboardingStore } from '../../stores/onboardingStore';
+import { useOnboardingStore } from '@/stores/onboardingStore';
 import { useMemo } from 'react';
 
 const FEATURES = [

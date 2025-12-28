@@ -7,13 +7,13 @@ import { Button, FAB, Portal, Snackbar, Text } from '@/components/ui';
 import { ProtectedRoute } from '@/components/subscription';
 import PetListCard from '@/components/PetListCard';
 import { useTheme } from '@/lib/theme';
-import { PetCardSkeleton } from '../../components/PetCardSkeleton';
-import { PetModal } from '../../components/PetModal';
-import PetDetailModal from '../../components/PetDetailModal';
-import LoadingSpinner from '../../components/LoadingSpinner';
-import { LAYOUT } from '../../constants';
-import { Pet } from '../../lib/types';
-import { useInfinitePets } from '../../lib/hooks/usePets';
+import { PetCardSkeleton } from '@/components/PetCardSkeleton';
+import { PetModal } from '@/components/PetModal';
+import PetDetailModal from '@/components/PetDetailModal';
+import LoadingSpinner from '@/components/LoadingSpinner';
+import { LAYOUT } from '@/constants';
+import { Pet } from '@/lib/types';
+import { useInfinitePets } from '@/lib/hooks/usePets';
 
 export default function PetsScreen() {
   const { theme } = useTheme();

@@ -341,6 +341,9 @@
     "testTitle": "Petopia hatırlatması",
     "testBody": "Bildirimler hazır. Pet bakım etkinliklerini sana hatırlatacağız."
   },
+  "network": {
+    "noConnection": "İnternet bağlantısı yok. Lütfen bağlantınızı kontrol edin."
+  },
   "settings": {
     "appearance": "Görünüm",
     "darkMode": "Karanlık Mod",
@@ -429,7 +432,11 @@
     "daysAgo": "{{count}} gün önce"
   },
   "errors": {
-    "loadingFailed": "Yükleme Başarısız"
+    "loadingFailed": "Yükleme Başarısız",
+    "title": "Bir Hata Oluştu",
+    "networkError": "İnternet bağlantınızda bir sorun var. Lütfen bağlantınızı kontrol edip tekrar deneyin.",
+    "generalError": "Veriler yüklenirken bir hata oluştu. Lütfen tekrar deneyin.",
+    "retry": "Tekrar Dene"
   },
   "petTypes": {
     "dog": "Köpek",

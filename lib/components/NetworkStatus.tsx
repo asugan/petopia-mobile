@@ -2,6 +2,7 @@ import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { useNetInfo } from '@react-native-community/netinfo';
 import { useTheme } from '@/lib/theme';
+import { useTranslation } from 'react-i18next';
 
 interface NetworkStatusProps {
   children: React.ReactNode;
@@ -10,12 +11,13 @@ interface NetworkStatusProps {
 export function NetworkStatus({ children }: NetworkStatusProps) {
   const netInfo = useNetInfo();
   const { theme } = useTheme();
+  const { t } = useTranslation();
 
   if (netInfo.isConnected === false) {
     return (
       <View style={[styles.container, { backgroundColor: theme.colors.errorContainer }]}>
         <Text style={[styles.message, { color: theme.colors.onErrorContainer }]}>
-          📵 İnternet bağlantısı yok. Lütfen bağlantınızı kontrol edin.
+          📵 {t('network.noConnection')}
         </Text>
         {children}
       </View>

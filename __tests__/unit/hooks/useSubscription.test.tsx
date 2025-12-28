@@ -2,6 +2,7 @@
 import React from 'react';
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { act, render } from '@testing-library/react';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { useSubscription } from '@/lib/hooks/useSubscription';
 import { useSubscriptionStore } from '@/stores/subscriptionStore';
 
@@ -71,6 +72,20 @@ vi.mock(
 );
 
 describe('useSubscription', () => {
+  const createWrapper = () => {
+    const client = new QueryClient({
+      defaultOptions: {
+        queries: {
+          retry: false,
+          gcTime: 0,
+        },
+      },
+    });
+
+    return ({ children }: { children: React.ReactNode }) =>
+      React.createElement(QueryClientProvider, { client }, children);
+  };
+
   beforeEach(() => {
     useSubscriptionStore.getState().resetSubscription();
   });
@@ -90,7 +105,7 @@ describe('useSubscription', () => {
       return <Child onGetOfferings={getOfferings} />;
     };
 
-    render(<Parent />);
+    render(<Parent />, { wrapper: createWrapper() });
 
     expect(childRenders).toBe(1);
 

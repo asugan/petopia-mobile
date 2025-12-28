@@ -10,9 +10,9 @@ import { useRouter } from "expo-router";
 import { useTranslation } from "react-i18next";
 import { Alert, ScrollView, StyleSheet, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { LAYOUT } from "../../constants";
-import { useLanguageStore } from "../../stores/languageStore";
-import { useThemeStore } from "../../stores/themeStore";
+import { LAYOUT } from "@/constants";
+import { useLanguageStore } from "@/stores/languageStore";
+import { useThemeStore } from "@/stores/themeStore";
 import { useOnboardingStore } from "@/stores/onboardingStore";
 
 export default function SettingsScreen() {

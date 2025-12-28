@@ -60,7 +60,7 @@ export const expenseKeys = {
   monthly: (params?: PeriodParams) => [...baseExpenseKeys.all, 'monthly', params] as const,
   yearly: (params?: Omit<PeriodParams, 'month'>) => [...baseExpenseKeys.all, 'yearly', params] as const,
   dateRange: (params: DateRangeParams) => [...baseExpenseKeys.all, 'date-range', params] as const,
-  infinite: (filters?: Omit<ExpenseFilters, 'petId' | 'page'>) => [...baseExpenseKeys.all, 'infinite', filters] as const,
+  infinite: (petId: string, filters?: Omit<ExpenseFilters, 'petId' | 'page'>) => [...baseExpenseKeys.all, 'infinite', petId, filters] as const,
 };
 
 // Hook for fetching expenses by pet ID with filters
@@ -131,7 +131,7 @@ export function useInfiniteExpenses(petId: string, filters?: Omit<ExpenseFilters
   const defaultLimit = ENV.DEFAULT_LIMIT || 20;
 
   return useInfiniteQuery({
-    queryKey: expenseKeys.infinite(filters),
+    queryKey: expenseKeys.infinite(petId, filters),
     queryFn: async ({ pageParam = 1 }) => {
       const queryFilters: ExpenseFilters = {
         page: pageParam,
@@ -230,6 +230,12 @@ export function useCreateExpense() {
       listQueryKey: expenseKeys.all, // Ideally should be more specific but existing code invalidated 'all'
       onSuccess: (data) => {
         queryClient.invalidateQueries({ queryKey: expenseKeys.byPet(data.petId) });
+        queryClient.invalidateQueries({ 
+          predicate: (query) => 
+            query.queryKey[0] === 'expenses' && 
+            query.queryKey[1] === 'infinite' &&
+            query.queryKey[2] === data.petId
+        });
         queryClient.invalidateQueries({ queryKey: userBudgetKeys.status() });
         queryClient.invalidateQueries({ queryKey: userBudgetKeys.summary() });
       },
@@ -251,6 +257,12 @@ export function useUpdateExpense() {
       detailQueryKey: expenseKeys.detail,
       onSuccess: (data) => {
         queryClient.invalidateQueries({ queryKey: expenseKeys.byPet(data.petId) });
+        queryClient.invalidateQueries({ 
+          predicate: (query) => 
+            query.queryKey[0] === 'expenses' && 
+            query.queryKey[1] === 'infinite' &&
+            query.queryKey[2] === data.petId
+        });
         queryClient.invalidateQueries({ queryKey: userBudgetKeys.status() });
         queryClient.invalidateQueries({ queryKey: userBudgetKeys.summary() });
       },
@@ -275,6 +287,7 @@ export function useDeleteExpense() {
       detailQueryKey: expenseKeys.detail,
       onSettled: () => {
         queryClient.invalidateQueries({ queryKey: expenseKeys.all });
+        queryClient.invalidateQueries({ predicate: (query) => query.queryKey[0] === 'expenses' && query.queryKey[1] === 'infinite' });
         queryClient.invalidateQueries({ queryKey: userBudgetKeys.status() });
         queryClient.invalidateQueries({ queryKey: userBudgetKeys.summary() });
       }

@@ -7,7 +7,7 @@ import Purchases, {
 import RevenueCatUI, { PAYWALL_RESULT } from 'react-native-purchases-ui';
 import { useTranslation } from 'react-i18next';
 import { useSubscriptionStore } from '@/stores/subscriptionStore';
-import { useComputedSubscriptionStatus, useRefetchSubscriptionStatus } from './useSubscriptionQueries';
+import { useComputedSubscriptionStatus, useRefetchSubscriptionStatus, useStartTrial } from './useSubscriptionQueries';
 import { REVENUECAT_CONFIG } from '@/lib/revenuecat/config';
 import { showAlert } from '@/lib/utils/alert';
 
@@ -83,6 +83,7 @@ export function useSubscription(): UseSubscriptionReturn {
   } = useComputedSubscriptionStatus();
 
   const refetchStatusMutation = useRefetchSubscriptionStatus();
+  const startTrialMutation = useStartTrial();
 
   const isSubscribed = isProUser;
 
@@ -216,6 +217,16 @@ export function useSubscription(): UseSubscriptionReturn {
     refetchStatusMutation.mutate();
   }, [refetchStatusMutation]);
 
+  const startTrial = useCallback(async () => {
+    try {
+      await startTrialMutation.mutateAsync();
+      refetchStatusMutation.mutate();
+    } catch (error) {
+      showAlert(t('common.error'), t('subscription.startTrialError', 'Failed to start trial.'));
+      throw error;
+    }
+  }, [startTrialMutation, refetchStatusMutation, t]);
+
   return {
     // Status
     isProUser,
@@ -250,7 +261,7 @@ export function useSubscription(): UseSubscriptionReturn {
     purchasePackage: storePurchasePackage,
     getOfferings: getOfferingsForPaywall,
     checkEntitlement,
-    startTrial: async () => {},
+    startTrial,
     refreshSubscriptionStatus,
   };
 }

@@ -5,9 +5,9 @@ export const ENV = {
   // API Base URL - reads from EXPO_PUBLIC_API_URL or falls back to defaults
   // Priority: EXPO_PUBLIC_API_URL env var > Constants.expoConfig.extra > hardcoded fallback
   API_BASE_URL:
+    process.env.EXPO_PUBLIC_API_URL ??
     Constants.expoConfig?.extra?.apiBaseUrl ??
-    (process.env.EXPO_PUBLIC_API_URL ??
-      (__DEV__ ? 'https://0a4fa817fce2.ngrok-free.app' : 'https://your-production-api.com')),
+    (__DEV__ ? 'https://0a4fa817fce2.ngrok-free.app' : 'https://your-production-api.com'),
 
   // Auth configuration
   AUTH: {

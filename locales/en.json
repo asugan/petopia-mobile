@@ -341,6 +341,9 @@
     "testTitle": "Petopia reminder",
     "testBody": "Notifications are set up. We'll remind you about pet care events."
   },
+  "network": {
+    "noConnection": "No internet connection. Please check your connection."
+  },
   "settings": {
     "appearance": "Appearance",
     "darkMode": "Dark Mode",
@@ -429,7 +432,11 @@
     "daysAgo": "{{count}} days ago"
   },
   "errors": {
-    "loadingFailed": "Loading Failed"
+    "loadingFailed": "Loading Failed",
+    "title": "An Error Occurred",
+    "networkError": "There's a problem with your internet connection. Please check your connection and try again.",
+    "generalError": "An error occurred while loading data. Please try again.",
+    "retry": "Try Again"
   },
   "petTypes": {
     "dog": "Dog",

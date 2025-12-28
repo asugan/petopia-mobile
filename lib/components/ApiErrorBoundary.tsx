@@ -1,6 +1,7 @@
 import React, { Component, ReactNode } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { useTheme } from '@/lib/theme';
+import { useTranslation } from 'react-i18next';
 
 interface Props {
   children: ReactNode;
@@ -45,25 +46,27 @@ class ApiErrorBoundaryClass extends Component<Props, State> {
 
 function ApiErrorFallback({ error, reset }: { error: Error; reset: () => void }) {
   const { theme } = useTheme();
+  const { t } = useTranslation();
+
+  const isNetworkError = error.message.includes('Ağ bağlantısı') ||
+                        error.message.includes('network') ||
+                        error.message.includes(' Network request failed');
 
   return (
     <View style={[styles.container, { backgroundColor: theme.colors.surface }]}>
       <View style={[styles.errorCard, { backgroundColor: theme.colors.errorContainer }]}>
         <Text style={[styles.errorTitle, { color: theme.colors.onErrorContainer }]}>
-          ❌ Bir Hata Oluştu
+          ❌ {t('errors.title')}
         </Text>
         <Text style={[styles.errorMessage, { color: theme.colors.onErrorContainer }]}>
-          {error.message.includes('Ağ bağlantısı')
-            ? 'İnternet bağlantınızda bir sorun var. Lütfen bağlantınızı kontrol edip tekrar deneyin.'
-            : 'Veriler yüklenirken bir hata oluştu. Lütfen tekrar deneyin.'
-          }
+          {isNetworkError ? t('errors.networkError') : t('errors.generalError')}
         </Text>
         <TouchableOpacity
           style={[styles.retryButton, { backgroundColor: theme.colors.primary }]}
           onPress={reset}
         >
           <Text style={[styles.retryButtonText, { color: theme.colors.onPrimary }]}>
-            Tekrar Dene
+            {t('errors.retry')}
           </Text>
         </TouchableOpacity>
       </View>
