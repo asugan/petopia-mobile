@@ -244,9 +244,10 @@ export class UserBudgetService {
       if (!statusResponse.success || !statusResponse.data) {
         return {
           success: false,
-          error:
-            statusResponse.error ||
-            "Failed to get budget status for pet breakdown",
+          error: statusResponse.error || {
+            code: 'FETCH_BREAKDOWN_ERROR',
+            message: 'budget.fetchBreakdownError',
+          },
         };
       }
 
@@ -280,7 +281,7 @@ export class UserBudgetService {
         return {
           success: true,
           data: false,
-          message: "No budget found",
+          message: "budget.hasActiveBudgetFalse",
         };
       }
 

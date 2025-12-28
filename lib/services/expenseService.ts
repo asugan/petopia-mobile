@@ -540,7 +540,13 @@ export class ExpenseService {
       const base64 = Buffer.from(response.data).toString('base64');
       const cacheDir = FileSystem.cacheDirectory ?? FileSystem.documentDirectory;
       if (!cacheDir) {
-        return { success: false, error: 'File system cache not available' };
+        return { 
+          success: false, 
+          error: {
+            code: 'FILE_SYSTEM_ERROR',
+            message: 'expense.fileSystemError',
+          },
+        };
       }
       const uri = `${cacheDir}expenses-report.pdf`;
       await FileSystem.writeAsStringAsync(uri, base64, {
@@ -582,7 +588,13 @@ export class ExpenseService {
       const base64 = Buffer.from(response.data).toString('base64');
       const cacheDir = FileSystem.cacheDirectory ?? FileSystem.documentDirectory;
       if (!cacheDir) {
-        return { success: false, error: 'File system cache not available' };
+        return { 
+          success: false, 
+          error: {
+            code: 'FILE_SYSTEM_ERROR',
+            message: 'expense.fileSystemError',
+          },
+        };
       }
       const uri = `${cacheDir}vet-summary-${petId}.pdf`;
       await FileSystem.writeAsStringAsync(uri, base64, {
@@ -622,22 +634,19 @@ export class ExpenseService {
     try {
       const canShare = await Sharing.isAvailableAsync();
       if (!canShare) {
-        return { success: false, error: 'Sharing is not available on this device' };
+        return { 
+          success: false, 
+          error: {
+            code: 'SHARING_UNAVAILABLE',
+            message: 'expense.sharingUnavailable',
+          },
+        };
       }
 
       await Sharing.shareAsync(uri, { dialogTitle });
       return { success: true, message: 'Shared successfully' };
     } catch (error) {
       console.error('❌ Share PDF error:', error);
-      if (error instanceof ApiError) {
-        return { 
-          success: false, 
-          error: {
-            code: error.code || 'SHARE_PDF_ERROR',
-            message: error.message,
-          },
-        };
-      }
       return { 
         success: false, 
         error: {
