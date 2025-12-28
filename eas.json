@@ -12,10 +12,7 @@
       "distribution": "internal"
     },
     "production": {
-      "autoIncrement": true,
-      "env": {
-        "EXPO_PUBLIC_API_URL": "https://your-production-api.com"
-      }
+      "autoIncrement": true
     }
   },
   "submit": {
