@@ -3,7 +3,7 @@ import Purchases, { CustomerInfo } from 'react-native-purchases';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useAuth } from '@/lib/auth';
 import { useSubscriptionStore } from '@/stores/subscriptionStore';
-import { useSubscriptionStatus, useStartTrial } from '@/lib/hooks/useSubscriptionQueries';
+import { useSubscriptionStatus, useStartTrial, useRefetchSubscriptionStatus } from '@/lib/hooks/useSubscriptionQueries';
 import {
   initializeRevenueCat,
   syncUserIdentity,
@@ -31,6 +31,7 @@ export function SubscriptionProvider({ children }: SubscriptionProviderProps) {
 
   const { data: subscriptionStatus, isLoading: isStatusLoading } = useSubscriptionStatus();
   const startTrialMutation = useStartTrial();
+  const refetchStatusMutation = useRefetchSubscriptionStatus();
 
   const trialInitRef = useRef(false);
   const isActivatingTrialRef = useRef(false);
@@ -86,7 +87,10 @@ export function SubscriptionProvider({ children }: SubscriptionProviderProps) {
 
       const userId = isAuthenticated ? user?.id ?? null : null;
       await initializeRevenueCat(userId);
-      syncedUserIdRef.current = userId;
+
+      const currentAppUserId = await Purchases.getAppUserID();
+      const isAnonymous = currentAppUserId.startsWith('$RCAnonymousID');
+      syncedUserIdRef.current = isAnonymous ? null : currentAppUserId;
 
       const customerInfo = await getCustomerInfo();
       setCustomerInfo(customerInfo);
@@ -112,18 +116,22 @@ export function SubscriptionProvider({ children }: SubscriptionProviderProps) {
   const handleUserLogin = useCallback(async () => {
     if (!user?.id || !isAuthenticated) return;
 
-    if (syncedUserIdRef.current === user.id) {
-      console.log('[SubscriptionProvider] User already synced, skipping');
-      return;
-    }
-
     try {
       setLoading(true);
       console.log('[SubscriptionProvider] Syncing user identity:', user.id);
 
       const customerInfo = await syncUserIdentity(user.id);
       setCustomerInfo(customerInfo);
-      syncedUserIdRef.current = user.id;
+
+      const currentAppUserId = await Purchases.getAppUserID();
+      syncedUserIdRef.current = currentAppUserId;
+
+      try {
+        await refetchStatusMutation.mutateAsync();
+        console.log('[SubscriptionProvider] Subscription status refetched after sync');
+      } catch (refetchError) {
+        console.error('[SubscriptionProvider] Error refetching subscription status:', refetchError);
+      }
 
       await initializeStatusRef.current?.();
 
@@ -140,6 +148,7 @@ export function SubscriptionProvider({ children }: SubscriptionProviderProps) {
     setCustomerInfo,
     setLoading,
     setError,
+    refetchStatusMutation,
   ]);
 
   const handleUserLogout = useCallback(async () => {
@@ -149,8 +158,8 @@ export function SubscriptionProvider({ children }: SubscriptionProviderProps) {
 
       const customerInfo = await resetUserIdentity();
       setCustomerInfo(customerInfo);
-      syncedUserIdRef.current = null;
 
+      syncedUserIdRef.current = null;
       trialInitRef.current = false;
 
       console.log('[SubscriptionProvider] Reset to anonymous user');

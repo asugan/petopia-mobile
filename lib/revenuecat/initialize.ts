@@ -24,26 +24,48 @@ export async function initializeRevenueCat(userId: string | null): Promise<void>
 
   // Check if already configured
   const isConfigured = await Purchases.isConfigured();
-  if (isConfigured) {
-    console.log('[RevenueCat] SDK already configured');
-    return;
+  if (!isConfigured) {
+    // Configure the SDK
+    const apiKey = getRevenueCatApiKey(Platform.OS === 'ios' ? 'ios' : 'android');
+    if (!apiKey) {
+      throw new Error('[RevenueCat] Missing API key. Set EXPO_PUBLIC_REVENUECAT_IOS_API_KEY and EXPO_PUBLIC_REVENUECAT_ANDROID_API_KEY.');
+    }
+
+    await Purchases.configure({
+      apiKey,
+      appUserID: userId ?? undefined, // null creates anonymous user
+    });
+
+    console.log('[RevenueCat] SDK initialized', {
+      userId: userId ?? 'anonymous',
+      platform: Platform.OS,
+    });
+  } else {
+    // If already configured, sync identity to the provided userId
+    // This ensures proper identity switching when users change during same app session
+    console.log('[RevenueCat] SDK already configured, syncing identity...');
+
+    if (userId) {
+      try {
+        await syncUserIdentity(userId);
+        console.log('[RevenueCat] Identity synced to user:', userId);
+      } catch (error) {
+        console.error('[RevenueCat] Error syncing identity:', error);
+        throw error;
+      }
+    } else {
+      // No userId provided, ensure we're anonymous
+      try {
+        const currentUserId = await Purchases.getAppUserID();
+        if (currentUserId && !currentUserId.startsWith('$RCAnonymousID')) {
+          await resetUserIdentity();
+          console.log('[RevenueCat] Reset to anonymous user');
+        }
+      } catch (error) {
+        console.error('[RevenueCat] Error resetting to anonymous:', error);
+      }
+    }
   }
-
-  // Configure the SDK
-  const apiKey = getRevenueCatApiKey(Platform.OS === 'ios' ? 'ios' : 'android');
-  if (!apiKey) {
-    throw new Error('[RevenueCat] Missing API key. Set EXPO_PUBLIC_REVENUECAT_IOS_API_KEY and EXPO_PUBLIC_REVENUECAT_ANDROID_API_KEY.');
-  }
-
-  await Purchases.configure({
-    apiKey,
-    appUserID: userId ?? undefined, // null creates anonymous user
-  });
-
-  console.log('[RevenueCat] SDK initialized', {
-    userId: userId ?? 'anonymous',
-    platform: Platform.OS,
-  });
 }
 
 /**
@@ -83,6 +105,12 @@ export async function resetUserIdentity(): Promise<CustomerInfo> {
   const isConfigured = await Purchases.isConfigured();
   if (!isConfigured) {
     throw new Error('[RevenueCat] SDK not configured. Call initializeRevenueCat first.');
+  }
+
+  const currentUserId = await Purchases.getAppUserID();
+  if (currentUserId && currentUserId.startsWith('$RCAnonymousID')) {
+    console.log('[RevenueCat] Already anonymous user, skipping logout');
+    return Purchases.getCustomerInfo();
   }
 
   const customerInfo = await Purchases.logOut();
