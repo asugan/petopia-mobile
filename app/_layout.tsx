@@ -35,7 +35,8 @@ function AppProviders({ children }: { children: React.ReactNode }) {
     setOnUnauthorized(() => {
       queryClient.clear();
     });
-  }, [queryClient]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <QueryClientProvider client={queryClient}>
