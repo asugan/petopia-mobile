@@ -59,10 +59,17 @@ export class SubscriptionApiService {
         params
       );
 
+      if (!response.data) {
+        return {
+          success: false,
+          error: 'Invalid response from server',
+        };
+      }
+
       console.log('✅ Subscription status loaded successfully');
       return {
         success: true,
-        data: response.data!,
+        data: response.data,
       };
     } catch (error) {
       console.error('❌ Get subscription status error:', error);
@@ -74,7 +81,7 @@ export class SubscriptionApiService {
       }
       return {
         success: false,
-        error: 'Abonelik durumu yüklenemedi. Lütfen tekrar deneyin.',
+        error: 'subscription.loadError',
       };
     }
   }
@@ -118,7 +125,7 @@ export class SubscriptionApiService {
       }
       return {
         success: false,
-        error: 'Trial başlatılamadı. Lütfen tekrar deneyin.',
+        error: 'subscription.startTrialError',
       };
     }
   }
