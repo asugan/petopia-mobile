@@ -1,6 +1,6 @@
-import { api, ApiError, ApiResponse } from '../api/client';
-import { ENV } from '../config/env';
-import { getDeviceId } from '../utils/deviceId';
+import { api, ApiError, ApiResponse } from '@/lib/api/client';
+import { ENV } from '@/lib/config/env';
+import { getDeviceId } from '@/lib/utils/deviceId';
 
 /**
  * Unified subscription status from backend - single source of truth
@@ -62,7 +62,10 @@ export class SubscriptionApiService {
       if (!response.data) {
         return {
           success: false,
-          error: 'Invalid response from server',
+          error: {
+            code: 'INVALID_RESPONSE',
+            message: 'Invalid response from server',
+          },
         };
       }
 
@@ -76,12 +79,18 @@ export class SubscriptionApiService {
       if (error instanceof ApiError) {
         return {
           success: false,
-          error: error.message,
+          error: {
+            code: error.code ?? 'UNKNOWN_ERROR',
+            message: error.message,
+          },
         };
       }
       return {
         success: false,
-        error: 'subscription.loadError',
+        error: {
+          code: 'LOAD_ERROR',
+          message: 'subscription.loadError',
+        },
       };
     }
   }

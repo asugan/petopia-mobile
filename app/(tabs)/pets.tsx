@@ -10,7 +10,6 @@ import { useTheme } from '@/lib/theme';
 import { PetCardSkeleton } from '@/components/PetCardSkeleton';
 import { PetModal } from '@/components/PetModal';
 import PetDetailModal from '@/components/PetDetailModal';
-import LoadingSpinner from '@/components/LoadingSpinner';
 import { LAYOUT } from '@/constants';
 import { Pet } from '@/lib/types';
 import { useInfinitePets } from '@/lib/hooks/usePets';
@@ -33,7 +32,7 @@ export default function PetsScreen() {
 
   // Flatten all pages for filtering and display
   const allPets = useMemo(
-    () => data?.pages?.flatMap((page) => page) || [],
+    () => data?.pages?.flat() || [],
     [data?.pages]
   );
 
@@ -284,12 +283,6 @@ export default function PetsScreen() {
               </View>
             )}
 
-            {isFetchingNextPage && (
-              <View style={styles.loadingFooter}>
-                <LoadingSpinner size="small" />
-              </View>
-            )}
-
             <Pressable
               onPress={handleAddPet}
               style={({ pressed }) => [
@@ -454,10 +447,6 @@ const styles = StyleSheet.create({
   addCta: {
     marginTop: 6,
     fontWeight: '700',
-  },
-  loadingFooter: {
-    paddingVertical: 20,
-    alignItems: 'center',
   },
   loadMoreContainer: {
     paddingVertical: 16,
