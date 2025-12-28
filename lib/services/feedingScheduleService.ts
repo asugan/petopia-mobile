@@ -350,70 +350,28 @@ export class FeedingScheduleService {
    * Pet'e ait aktif beslenme takvimlerini getirir
    */
   async getActiveFeedingSchedulesByPet(petId: string): Promise<ApiResponse<FeedingSchedule[]>> {
-    try {
-      const response = await this.getFeedingSchedulesByPetId(petId);
-      if (!response.success) {
-        return response;
-      }
-      const activeSchedules = (response.data || []).filter((schedule: FeedingSchedule) => schedule.isActive);
-
-      console.log(`✅ ${activeSchedules.length} active schedules loaded for pet ${petId}`);
-      return {
-        success: true,
-        data: activeSchedules,
-        message: 'serviceResponse.feedingSchedule.fetchActiveByPetSuccess',
-      };
-    } catch (error) {
-      console.error('❌ Get active feeding schedules by pet error:', error);
-      if (error instanceof ApiError) {
-        return {
-          success: false,
-          error: {
-            code: error.code || 'FETCH_ERROR',
-            message: 'serviceResponse.feedingSchedule.fetchActiveByPetError',
-            details: { rawMessage: error.message },
-          },
-        };
-      }
-      return {
-        success: false,
-        error: {
-          code: 'FETCH_ERROR',
-          message: 'serviceResponse.feedingSchedule.fetchActiveByPetError',
-        },
-      };
+    const response = await this.getFeedingSchedulesByPetId(petId);
+    if (!response.success) {
+      return response;
     }
+    const activeSchedules = (response.data || []).filter((schedule: FeedingSchedule) => schedule.isActive);
+
+    console.log(`✅ ${activeSchedules.length} active schedules loaded for pet ${petId}`);
+    return {
+      success: true,
+      data: activeSchedules,
+      message: 'serviceResponse.feedingSchedule.fetchActiveByPetSuccess',
+    };
   }
 
   /**
    * Beslenme takvimini aktif/pasif hale getirir
    */
   async toggleFeedingSchedule(id: string, isActive: boolean): Promise<ApiResponse<FeedingSchedule>> {
-    try {
-      const response = await this.updateFeedingSchedule(id, { isActive });
+    const response = await this.updateFeedingSchedule(id, { isActive });
 
-      console.log(`✅ Feeding schedule toggled successfully: ${id}`);
-      return response;
-    } catch (error) {
-      console.error('❌ Toggle feeding schedule error:', error);
-      if (error instanceof ApiError) {
-        return {
-          success: false,
-          error: {
-            code: error.code || 'TOGGLE_ERROR',
-            message: 'serviceResponse.feedingSchedule.toggleError',
-            details: { rawMessage: error.message },
-          },
-        };
-      }
-      return {
-        success: false,
-        error: {
-          code: 'TOGGLE_ERROR',
-          message: 'serviceResponse.feedingSchedule.toggleError',
-        },
-      };
-    }
+    console.log(`✅ Feeding schedule toggled successfully: ${id}`);
+    return response;
   }
 }
 
