@@ -81,7 +81,7 @@ export default function FinanceScreen() {
   const { data: pets = [], isLoading: petsLoading } = usePets();
 
   // Conditional hook: Use infinite query for single pet, regular query for all pets
-  const infiniteQuery = useInfiniteExpenses(selectedPetId!, {
+  const infiniteQuery = useInfiniteExpenses(selectedPetId, {
     category: undefined,
     startDate: undefined,
     endDate: undefined,

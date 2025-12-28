@@ -60,7 +60,7 @@ export const expenseKeys = {
   monthly: (params?: PeriodParams) => [...baseExpenseKeys.all, 'monthly', params] as const,
   yearly: (params?: Omit<PeriodParams, 'month'>) => [...baseExpenseKeys.all, 'yearly', params] as const,
   dateRange: (params: DateRangeParams) => [...baseExpenseKeys.all, 'date-range', params] as const,
-  infinite: (petId: string, filters?: Omit<ExpenseFilters, 'petId' | 'page'>) => [...baseExpenseKeys.all, 'infinite', petId, filters] as const,
+  infinite: (petId: string | undefined, filters?: Omit<ExpenseFilters, 'petId' | 'page'>) => [...baseExpenseKeys.all, 'infinite', petId, filters] as const,
 };
 
 // Hook for fetching expenses by pet ID with filters
@@ -127,12 +127,16 @@ export function useExpense(id?: string) {
 }
 
 // Hook for infinite scrolling expenses (single pet only - requires petId)
-export function useInfiniteExpenses(petId: string, filters?: Omit<ExpenseFilters, 'petId' | 'page'>) {
+export function useInfiniteExpenses(petId: string | undefined, filters?: Omit<ExpenseFilters, 'petId' | 'page'>) {
   const defaultLimit = ENV.DEFAULT_LIMIT || 20;
 
   return useInfiniteQuery({
     queryKey: expenseKeys.infinite(petId, filters),
     queryFn: async ({ pageParam = 1 }) => {
+      if (!petId) {
+        return [];
+      }
+
       const queryFilters: ExpenseFilters = {
         page: pageParam,
         limit: defaultLimit,
