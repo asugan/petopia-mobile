@@ -184,9 +184,11 @@ export function SubscriptionProvider({ children }: SubscriptionProviderProps) {
     startTrialMutateAsyncRef.current = startTrialMutation.mutateAsync;
   }, [startTrialMutation.mutateAsync]);
 
-  initializeStatusRef.current = initializeSubscriptionStatus;
-  handleUserLoginRef.current = handleUserLogin;
-  handleUserLogoutRef.current = handleUserLogout;
+  useEffect(() => {
+    initializeStatusRef.current = initializeSubscriptionStatus;
+    handleUserLoginRef.current = handleUserLogin;
+    handleUserLogoutRef.current = handleUserLogout;
+  }, [initializeSubscriptionStatus, handleUserLogin, handleUserLogout]);
 
   useEffect(() => {
     if (isPending) {
