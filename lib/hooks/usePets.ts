@@ -1,13 +1,13 @@
-import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { useInfiniteQuery, useQuery, useQueryClient } from '@tanstack/react-query';
 import { petService } from '../services/petService';
 import type { CreatePetInput, Pet, QueryFilters, UpdatePetInput } from '../types';
 import { CACHE_TIMES } from '../config/queryConfig';
+import { ENV } from '../config/env';
 import { useCreateResource, useDeleteResource, useUpdateResource } from './useCrud';
 import { createQueryKeys } from './core/createQueryKeys';
 import { useResource } from './core/useResource';
 import { useConditionalQuery } from './core/useConditionalQuery';
 
-// Type-safe filters for pets
 interface PetFilters extends QueryFilters {
   search?: string;
   type?: string;
@@ -17,18 +17,15 @@ interface PetFilters extends QueryFilters {
   limit?: number;
 }
 
-// Query keys factory
 const basePetKeys = createQueryKeys('pets');
 
-// Extended query keys with custom keys
 export const petKeys = {
   ...basePetKeys,
   stats: () => [...basePetKeys.all, 'stats'] as const,
   byType: (type: string) => [...basePetKeys.all, 'type', type] as const,
+  infinite: (filters?: Omit<PetFilters, 'page'>) => [...basePetKeys.all, 'infinite', filters] as const,
 };
 
-// Hook for fetching all pets with type-safe filters
-// Supports pagination, type filtering, search, and client-side sorting
 export function usePets(filters: PetFilters = {}) {
   return useConditionalQuery<Pet[]>({
     queryKey: petKeys.list(filters),
@@ -37,7 +34,6 @@ export function usePets(filters: PetFilters = {}) {
     defaultValue: [],
     errorMessage: 'Evcil hayvanlar yüklenemedi',
     select: filters.sortBy ? (data) => {
-      // Apply client-side sorting if specified
       return [...data].sort((a, b) => {
         const aValue = a[filters.sortBy!];
         const bValue = b[filters.sortBy!];
@@ -51,7 +47,6 @@ export function usePets(filters: PetFilters = {}) {
   });
 }
 
-// Hook for searching pets
 export function useSearchPets(query: string) {
   return useConditionalQuery<Pet[]>({
     queryKey: petKeys.search(query),
@@ -63,7 +58,6 @@ export function useSearchPets(query: string) {
   });
 }
 
-// Hook for pets by type
 export function usePetsByType(type: string) {
   return useConditionalQuery<Pet[]>({
     queryKey: petKeys.byType(type),
@@ -75,7 +69,6 @@ export function usePetsByType(type: string) {
   });
 }
 
-// Hook for fetching a single pet
 export function usePet(id: string) {
   return useResource<Pet>({
     queryKey: petKeys.detail(id),
@@ -86,7 +79,6 @@ export function usePet(id: string) {
   });
 }
 
-// Hook for pet statistics
 export function usePetStats() {
   return useQuery({
     queryKey: petKeys.stats(),
@@ -96,10 +88,9 @@ export function usePetStats() {
   });
 }
 
-// Hook for creating a pet with optimistic updates
 export function useCreatePet() {
   const queryClient = useQueryClient();
-  
+
   return useCreateResource<Pet, CreatePetInput>(
     (data) => petService.createPet(data).then(res => res.data!),
     {
@@ -111,7 +102,6 @@ export function useCreatePet() {
   );
 }
 
-// Hook for updating a pet with optimistic updates
 export function useUpdatePet() {
   const queryClient = useQueryClient();
 
@@ -127,7 +117,6 @@ export function useUpdatePet() {
   );
 }
 
-// Hook for deleting a pet with optimistic updates
 export function useDeletePet() {
   const queryClient = useQueryClient();
 
@@ -143,7 +132,6 @@ export function useDeletePet() {
   );
 }
 
-// Hook for uploading pet photo with optimistic updates
 export function useUploadPetPhoto() {
   const queryClient = useQueryClient();
 
@@ -156,5 +144,51 @@ export function useUploadPetPhoto() {
   );
 }
 
-// Export type for external use
+export function useInfinitePets(filters?: Omit<PetFilters, 'page'>) {
+  const defaultLimit = ENV.DEFAULT_LIMIT || 20;
+
+  return useInfiniteQuery({
+    queryKey: petKeys.infinite(filters),
+    queryFn: async ({ pageParam = 1 }) => {
+      const sortBy = 'createdAt';
+      const sortOrder: 'asc' | 'desc' = 'desc';
+
+      const queryFilters: {
+        page: number;
+        limit: number;
+        sortBy: string;
+        sortOrder: 'asc' | 'desc';
+        type?: string;
+        search?: string;
+      } = {
+        page: pageParam,
+        limit: defaultLimit,
+        sortBy: filters?.sortBy ?? sortBy,
+        sortOrder: filters?.sortOrder ?? sortOrder,
+      };
+
+      if (filters?.type) queryFilters.type = filters.type;
+      if (filters?.search) queryFilters.search = filters.search;
+
+      const result = await petService.getPets(queryFilters);
+
+      if (!result.success) {
+        const errorMessage = typeof result.error === 'string' ? result.error : result.error?.message || 'Pet yüklenemedi';
+        throw new Error(errorMessage);
+      }
+
+      return result.data!;
+    },
+    initialPageParam: 1,
+    getNextPageParam: (lastPage, allPages, lastPageParam) => {
+      if (lastPage.length < defaultLimit) {
+        return undefined;
+      }
+      return (lastPageParam as number) + 1;
+    },
+    staleTime: CACHE_TIMES.MEDIUM,
+    gcTime: CACHE_TIMES.LONG,
+  });
+}
+
 export type { PetFilters };

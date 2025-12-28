@@ -2,7 +2,6 @@ import React, { useMemo, useState, useEffect } from 'react';
 import { View, StyleSheet, ScrollView, RefreshControl, TextInput, Pressable } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
-import { useQueryClient } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 import { Button, FAB, Portal, Snackbar, Text } from '@/components/ui';
 import { ProtectedRoute } from '@/components/subscription';
@@ -13,25 +12,29 @@ import { PetModal } from '../../components/PetModal';
 import PetDetailModal from '../../components/PetDetailModal';
 import LoadingSpinner from '../../components/LoadingSpinner';
 import { LAYOUT } from '../../constants';
-import { ENV } from '../../lib/config/env';
 import { Pet } from '../../lib/types';
-import { usePets, petKeys } from '../../lib/hooks/usePets';
+import { useInfinitePets } from '../../lib/hooks/usePets';
 
 export default function PetsScreen() {
   const { theme } = useTheme();
   const { t } = useTranslation();
-  const queryClient = useQueryClient();
 
-  // Pagination state
-  const [page, setPage] = useState(1);
-  const [allPets, setAllPets] = useState<Pet[]>([]);
-  const [hasMore, setHasMore] = useState(true);
+  // React Query infinite query for pets
+  const {
+    data,
+    isLoading,
+    error,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+    refetch,
+  } = useInfinitePets();
 
-  // React Query hooks for server state with pagination
-  const { data: pets = [], isLoading, error, isFetching } = usePets({
-    page,
-    limit: ENV.DEFAULT_LIMIT,
-  });
+  // Flatten all pages for filtering and display
+  const allPets = useMemo(
+    () => data?.pages?.flatMap((page) => page) || [],
+    [data?.pages]
+  );
 
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedPet, setSelectedPetState] = useState<Pet | undefined>();
@@ -42,29 +45,6 @@ export default function PetsScreen() {
   const [searchQuery, setSearchQuery] = useState('');
   const [activeFilter, setActiveFilter] = useState<'all' | 'dog' | 'cat' | 'urgent'>('all');
   const [urgentStatus, setUrgentStatus] = useState<Record<string, { urgent: boolean; loading: boolean }>>({});
-
-  // Accumulate pets when new data is loaded
-  useEffect(() => {
-    if (pets && pets.length > 0) {
-      if (page === 1) {
-        // First page - replace all pets
-        setAllPets(pets);
-      } else {
-        // Subsequent pages - append new pets
-        setAllPets(prev => {
-          // Avoid duplicates
-          const newPets = pets.filter(p => !prev.some(existing => existing._id === p._id));
-          return [...prev, ...newPets];
-        });
-      }
-      // Check if there are more pets to load
-      setHasMore(pets.length === ENV.DEFAULT_LIMIT);
-    } else if (page === 1) {
-      // No pets on first page
-      setAllPets([]);
-      setHasMore(false);
-    }
-  }, [pets, page]);
 
   useEffect(() => {
     if (error) {
@@ -98,19 +78,13 @@ export default function PetsScreen() {
   };
 
   const handleLoadMore = () => {
-    if (!isFetching && hasMore) {
-      setPage(prev => prev + 1);
+    if (hasNextPage && !isFetchingNextPage) {
+      fetchNextPage();
     }
   };
 
   const handleRefresh = async () => {
-    setPage(1);
-    setHasMore(true);
-    // Invalidate all pet list queries to force fresh data from server
-    await queryClient.invalidateQueries({
-      queryKey: petKeys.lists(),
-      refetchType: 'active'
-    });
+    await refetch();
   };
 
   useEffect(() => {
@@ -197,7 +171,7 @@ export default function PetsScreen() {
           keyboardShouldPersistTaps="handled"
           refreshControl={
             <RefreshControl
-              refreshing={isFetching && page === 1}
+              refreshing={isLoading}
               onRefresh={handleRefresh}
               colors={[theme.colors.primary]}
               tintColor={theme.colors.primary}
@@ -287,7 +261,7 @@ export default function PetsScreen() {
               ))
             )}
 
-            {activeFilter === 'urgent' && allPets.length > 0 && !hasMore && !urgentSummary.isLoading && !urgentSummary.hasUrgent && (
+            {activeFilter === 'urgent' && allPets.length > 0 && !hasNextPage && !urgentSummary.isLoading && !urgentSummary.hasUrgent && (
               <View style={styles.emptyUrgent}>
                 <Ionicons name="alert-circle-outline" size={16} color={theme.colors.onSurfaceVariant} />
                 <Text variant="bodySmall" style={[styles.emptyUrgentText, { color: theme.colors.onSurfaceVariant }]}>
@@ -296,20 +270,20 @@ export default function PetsScreen() {
               </View>
             )}
 
-            {hasMore && allPets.length > 0 && (
+            {hasNextPage && allPets.length > 0 && (
               <View style={styles.loadMoreContainer}>
                 <Button
                   mode="outlined"
                   onPress={handleLoadMore}
-                  disabled={isFetching}
+                  disabled={isFetchingNextPage}
                   style={styles.loadMoreButton}
                 >
-                  {isFetching ? t('common.loading') : t('common.loadMore')}
+                  {isFetchingNextPage ? t('common.loading') : t('common.loadMore')}
                 </Button>
               </View>
             )}
 
-            {isFetching && page > 1 && (
+            {isFetchingNextPage && (
               <View style={styles.loadingFooter}>
                 <LoadingSpinner size="small" />
               </View>

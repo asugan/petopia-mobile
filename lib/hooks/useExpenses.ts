@@ -1,8 +1,9 @@
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useInfiniteQuery, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { expenseService } from '../services/expenseService';
 import { petService } from '../services/petService';
 import type { CreateExpenseInput, Expense, ExpenseStats, MonthlyExpense, YearlyExpense, UpdateExpenseInput } from '../types';
 import { CACHE_TIMES } from '../config/queryConfig';
+import { ENV } from '../config/env';
 import { useCreateResource, useDeleteResource, useUpdateResource } from './useCrud';
 import { userBudgetKeys } from './useUserBudget';
 import { createQueryKeys } from './core/createQueryKeys';
@@ -59,6 +60,7 @@ export const expenseKeys = {
   monthly: (params?: PeriodParams) => [...baseExpenseKeys.all, 'monthly', params] as const,
   yearly: (params?: Omit<PeriodParams, 'month'>) => [...baseExpenseKeys.all, 'yearly', params] as const,
   dateRange: (params: DateRangeParams) => [...baseExpenseKeys.all, 'date-range', params] as const,
+  infinite: (filters?: Omit<ExpenseFilters, 'petId' | 'page'>) => [...baseExpenseKeys.all, 'infinite', filters] as const,
 };
 
 // Hook for fetching expenses by pet ID with filters
@@ -121,6 +123,43 @@ export function useExpense(id?: string) {
     staleTime: CACHE_TIMES.MEDIUM,
     enabled: !!id,
     errorMessage: 'Failed to load expense',
+  });
+}
+
+// Hook for infinite scrolling expenses (single pet only - requires petId)
+export function useInfiniteExpenses(petId: string, filters?: Omit<ExpenseFilters, 'petId' | 'page'>) {
+  const defaultLimit = ENV.DEFAULT_LIMIT || 20;
+
+  return useInfiniteQuery({
+    queryKey: expenseKeys.infinite(filters),
+    queryFn: async ({ pageParam = 1 }) => {
+      const queryFilters: ExpenseFilters = {
+        page: pageParam,
+        limit: defaultLimit,
+        ...filters,
+      };
+
+      const result = await expenseService.getExpensesByPetId(petId, queryFilters);
+
+      if (!result.success) {
+        const errorMessage = typeof result.error === 'string'
+          ? result.error
+          : result.error?.message || 'Expense could not be loaded';
+        throw new Error(errorMessage);
+      }
+
+      return result.data?.expenses || [];
+    },
+    initialPageParam: 1,
+    getNextPageParam: (lastPage, _allPages, lastPageParam) => {
+      if (lastPage.length < defaultLimit) {
+        return undefined;
+      }
+      return (lastPageParam as number) + 1;
+    },
+    staleTime: CACHE_TIMES.MEDIUM,
+    gcTime: CACHE_TIMES.LONG,
+    enabled: !!petId,
   });
 }
 

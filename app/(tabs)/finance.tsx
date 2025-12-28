@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import {
   View,
   StyleSheet,
@@ -18,6 +18,7 @@ import { expenseService } from "@/lib/services/expenseService";
 import { usePets } from "../../lib/hooks/usePets";
 import {
   useExpenses,
+  useInfiniteExpenses,
   useExpenseStats,
   useCreateExpense,
   useUpdateExpense,
@@ -79,15 +80,48 @@ export default function FinanceScreen() {
   // Fetch pets
   const { data: pets = [], isLoading: petsLoading } = usePets();
 
-  // Fetch expenses
-  const {
-    data: expensesData = { expenses: [], total: 0 },
-    isLoading: expensesLoading,
-    isFetching: expensesFetching,
-  } = useExpenses(selectedPetId, {
+  // Conditional hook: Use infinite query for single pet, regular query for all pets
+  const infiniteQuery = useInfiniteExpenses(selectedPetId!, {
+    category: undefined,
+    startDate: undefined,
+    endDate: undefined,
+    minAmount: undefined,
+    maxAmount: undefined,
+    currency: undefined,
+    paymentMethod: undefined,
+  });
+
+  const regularQuery = useExpenses(selectedPetId, {
     page,
     limit: ENV.DEFAULT_LIMIT,
   });
+
+  // Use the appropriate query based on whether a pet is selected
+  const useInfinite = !!selectedPetId;
+  const {
+    data: infiniteData,
+    isLoading: infiniteLoading,
+    isFetchingNextPage,
+    hasNextPage,
+    fetchNextPage,
+    refetch: refetchInfinite,
+  } = infiniteQuery;
+
+  const {
+    data: expensesData = { expenses: [], total: 0 },
+    isLoading: regularLoading,
+    isFetching: regularFetching,
+  } = regularQuery;
+
+  // Combine loading states
+  const expensesLoading = useInfinite ? infiniteLoading : regularLoading;
+  const expensesFetching = useInfinite ? isFetchingNextPage : regularFetching;
+
+  // Flatten infinite query pages for display
+  const allExpensesFromInfinite = useMemo(
+    () => infiniteData?.pages?.flatMap((page) => page) || [],
+    [infiniteData?.pages]
+  );
 
   // Fetch expense stats
   const { data: expenseStats } = useExpenseStats({ petId: selectedPetId });
@@ -107,9 +141,12 @@ export default function FinanceScreen() {
   const exportPdfMutation = useExportExpensesPDF();
   const exportVetSummaryMutation = useExportVetSummaryPDF();
 
-  // Effects for pagination
+  // Determine which expenses source to use
+  const displayExpenses = useInfinite ? allExpensesFromInfinite : allExpenses;
+
+  // Effects for pagination (only for regular query - all pets)
   useEffect(() => {
-    if (expensesData?.expenses) {
+    if (!useInfinite && expensesData?.expenses) {
       if (page === 1) {
         setAllExpenses(expensesData.expenses);
       } else {
@@ -117,7 +154,7 @@ export default function FinanceScreen() {
       }
       setHasMore(expensesData.expenses.length >= ENV.DEFAULT_LIMIT);
     }
-  }, [expensesData, page]);
+  }, [expensesData, page, useInfinite]);
 
   // Expense handlers
   const handleAddExpense = () => {
@@ -289,8 +326,14 @@ export default function FinanceScreen() {
 
   // Load more handler
   const handleLoadMoreExpenses = () => {
-    if (!expensesFetching && hasMore) {
-      setPage((prev) => prev + 1);
+    if (useInfinite) {
+      if (hasNextPage && !isFetchingNextPage) {
+        fetchNextPage();
+      }
+    } else {
+      if (!expensesFetching && hasMore) {
+        setPage((prev) => prev + 1);
+      }
     }
   };
 
@@ -453,17 +496,17 @@ export default function FinanceScreen() {
               setRefreshing(true);
               setPage(1);
 
-              // Don't clear allExpenses immediately - let placeholderData handle it
-
-              // Invalidate specific query instead of all expenses
-              const queryKey = expenseKeys.list({
-                petId: selectedPetId,
-                page: 1,
-                limit: ENV.DEFAULT_LIMIT
-              });
-
-              await queryClient.invalidateQueries({ queryKey });
-              await queryClient.refetchQueries({ queryKey });
+              if (useInfinite) {
+                await refetchInfinite();
+              } else {
+                const queryKey = expenseKeys.list({
+                  petId: selectedPetId,
+                  page: 1,
+                  limit: ENV.DEFAULT_LIMIT
+                });
+                await queryClient.invalidateQueries({ queryKey });
+                await queryClient.refetchQueries({ queryKey });
+              }
               setRefreshing(false);
             }}
             colors={[theme.colors.primary]}
@@ -503,7 +546,7 @@ export default function FinanceScreen() {
         </Text>
 
         <View style={styles.expensesGrid}>
-          {allExpenses.map((expense) => (
+          {displayExpenses.map((expense) => (
             <ExpenseCard
               key={expense._id}
               expense={expense}
@@ -513,7 +556,7 @@ export default function FinanceScreen() {
           ))}
         </View>
 
-        {expensesFetching && page > 1 && <LoadingSpinner />}
+        {expensesFetching && !useInfinite && page > 1 && <LoadingSpinner />}
       </ScrollView>
     );
   };
