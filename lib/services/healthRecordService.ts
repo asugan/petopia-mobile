@@ -17,7 +17,7 @@ export class HealthRecordService {
       return {
         success: true,
         data: response.data!,
-        message: 'healthRecord.createSuccess',
+        message: 'serviceResponse.healthRecord.createSuccess',
       };
     } catch (error) {
       console.error('❌ Create health record error:', error);
@@ -34,7 +34,7 @@ export class HealthRecordService {
         success: false,
         error: {
           code: 'CREATE_ERROR',
-          message: 'healthRecord.createError',
+          message: 'serviceResponse.healthRecord.createError',
         },
       };
     }
@@ -51,7 +51,7 @@ export class HealthRecordService {
       return {
         success: true,
         data: response.data || [],
-        message: 'healthRecord.fetchSuccess',
+        message: 'serviceResponse.healthRecord.fetchSuccess',
       };
     } catch (error) {
       console.error('❌ Get health records error:', error);
@@ -68,7 +68,7 @@ export class HealthRecordService {
         success: false,
         error: {
           code: 'FETCH_ERROR',
-          message: 'healthRecord.fetchError',
+          message: 'serviceResponse.healthRecord.fetchError',
         },
       };
     }
@@ -85,7 +85,7 @@ export class HealthRecordService {
       return {
         success: true,
         data: response.data || [],
-        message: 'healthRecord.fetchSuccess',
+        message: 'serviceResponse.healthRecord.fetchSuccess',
       };
     } catch (error) {
       console.error('❌ Get health records by pet error:', error);
@@ -102,7 +102,7 @@ export class HealthRecordService {
         success: false,
         error: {
           code: 'FETCH_ERROR',
-          message: 'healthRecord.fetchError',
+          message: 'serviceResponse.healthRecord.fetchError',
         },
       };
     }
@@ -119,7 +119,7 @@ export class HealthRecordService {
       return {
         success: true,
         data: response.data!,
-        message: 'healthRecord.fetchOneSuccess',
+        message: 'serviceResponse.healthRecord.fetchOneSuccess',
       };
     } catch (error) {
       console.error('❌ Get health record error:', error);
@@ -129,7 +129,7 @@ export class HealthRecordService {
             success: false,
             error: {
               code: 'NOT_FOUND',
-              message: 'healthRecord.notFound',
+              message: 'serviceResponse.healthRecord.notFound',
             },
           };
         }
@@ -145,7 +145,7 @@ export class HealthRecordService {
         success: false,
         error: {
           code: 'FETCH_ERROR',
-          message: 'healthRecord.fetchError',
+          message: 'serviceResponse.healthRecord.fetchError',
         },
       };
     }
@@ -162,7 +162,7 @@ export class HealthRecordService {
       return {
         success: true,
         data: response.data!,
-        message: 'healthRecord.updateSuccess',
+        message: 'serviceResponse.healthRecord.updateSuccess',
       };
     } catch (error) {
       console.error('❌ Update health record error:', error);
@@ -172,7 +172,7 @@ export class HealthRecordService {
             success: false,
             error: {
               code: 'NOT_FOUND',
-              message: 'healthRecord.notFoundUpdate',
+              message: 'serviceResponse.serviceResponse.healthRecord.notFoundUpdate',
             },
           };
         }
@@ -188,7 +188,7 @@ export class HealthRecordService {
         success: false,
         error: {
           code: 'UPDATE_ERROR',
-          message: 'healthRecord.updateError',
+          message: 'serviceResponse.healthRecord.updateError',
         },
       };
     }
@@ -204,7 +204,7 @@ export class HealthRecordService {
       console.log('✅ Health record deleted successfully:', id);
       return {
         success: true,
-        message: 'healthRecord.deleteSuccess',
+        message: 'serviceResponse.healthRecord.deleteSuccess',
       };
     } catch (error) {
       console.error('❌ Delete health record error:', error);
@@ -214,7 +214,7 @@ export class HealthRecordService {
             success: false,
             error: {
               code: 'NOT_FOUND',
-              message: 'healthRecord.notFoundDelete',
+              message: 'serviceResponse.serviceResponse.healthRecord.notFoundDelete',
             },
           };
         }
@@ -230,7 +230,7 @@ export class HealthRecordService {
         success: false,
         error: {
           code: 'DELETE_ERROR',
-          message: 'healthRecord.deleteError',
+          message: 'serviceResponse.healthRecord.deleteError',
         },
       };
     }
@@ -251,7 +251,7 @@ export class HealthRecordService {
       return {
         success: true,
         data: filteredRecords,
-        message: 'healthRecord.fetchByTypeSuccess',
+        message: 'serviceResponse.healthRecord.fetchByTypeSuccess',
       };
     } catch (error) {
       console.error('❌ Get health records by type error:', error);
@@ -268,7 +268,7 @@ export class HealthRecordService {
         success: false,
         error: {
           code: 'FETCH_ERROR',
-          message: 'healthRecord.fetchByTypeError',
+          message: 'serviceResponse.healthRecord.fetchByTypeError',
         },
       };
     }

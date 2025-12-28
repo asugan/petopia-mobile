@@ -842,6 +842,7 @@
       "cancel": "İptal"
     }
   },
+
   "expenses": {
     "title": "Harcamalar",
     "selectPetFirst": "Lütfen önce bir evcil hayvan seçin",
@@ -1025,12 +1026,43 @@
       "deleteSuccess": "Etkinlik başarıyla silindi",
       "fetchByDateSuccess": "Bu tarih için etkinlikler yüklendi",
       "fetchUpcomingSuccess": "Yaklaşan etkinlikler başarıyla yüklendi",
-      "fetchTodaySuccess": "Bugünün etkinlikleri başarıyla yüklendi"
+      "fetchTodaySuccess": "Bugünün etkinlikleri başarıyla yüklendi",
+      "createError": "Etkinlik oluşturulamadı. Lütfen bilgileri kontrol edip tekrar deneyin.",
+      "fetchError": "Etkinlikler alınamadı. Lütfen internet bağlantınızı kontrol edin.",
+      "notFound": "Etkinlik bulunamadı",
+      "notFoundUpdate": "Güncellenecek etkinlik bulunamadı",
+      "notFoundDelete": "Silinecek etkinlik bulunamadı",
+      "updateError": "Etkinlik güncellenemedi. Lütfen bilgileri kontrol edip tekrar deneyin.",
+      "deleteError": "Etkinlik silinemedi",
+      "fetchByDateError": "Bu tarih için etkinlikler alınamadı. Lütfen tekrar deneyin.",
+      "fetchUpcomingError": "Yaklaşan etkinlikler alınamadı. Lütfen tekrar deneyin.",
+      "fetchTodayError": "Bugünün etkinlikleri alınamadı. Lütfen tekrar deneyin."
     },
     "expense": {
       "createSuccess": "Harcama başarıyla oluşturuldu",
       "updateSuccess": "Harcama başarıyla güncellendi",
-      "deleteSuccess": "Harcama başarıyla silindi"
+      "deleteSuccess": "Harcama başarıyla silindi",
+      "exportPDFSuccess": "Harcamalar PDF'i oluşturuldu",
+      "exportVetSummaryPDFSuccess": "Veteriner özeti PDF'i oluşturuldu",
+      "sharePDFSuccess": "Başarıyla paylaşıldı",
+      "createError": "Harcama oluşturulamadı. Lütfen bilgileri kontrol edip tekrar deneyin.",
+      "fetchError": "Harcamalar alınamadı",
+      "notFound": "Harcama bulunamadı",
+      "notFoundUpdate": "Güncellenecek harcama bulunamadı",
+      "notFoundDelete": "Silinecek harcama bulunamadı",
+      "updateError": "Harcama güncellenemedi",
+      "deleteError": "Harcama silinemedi",
+      "fetchStatsError": "Harcama istatistikleri alınamadı",
+      "fetchMonthlyError": "Aylık harcamalar alınamadı",
+      "fetchYearlyError": "Yıllık harcamalar alınamadı",
+      "fetchByCategoryError": "Kategoriye göre harcamalar alınamadı",
+      "fetchByDateRangeError": "Tarih aralığına göre harcamalar alınamadı",
+      "exportCSVError": "Harcamalar dışa aktarılamadı",
+      "exportPDFError": "Harcama PDF'i dışa aktarılamadı",
+      "exportVetSummaryPDFError": "Veteriner özeti PDF'i dışa aktarılamadı",
+      "sharePDFError": "PDF paylaşılamadı",
+      "fileSystemError": "Dosya sistemi hatası. Lütfen depolama izinlerini kontrol edin.",
+      "sharingUnavailable": "Bu cihazda paylaşım kullanılamıyor"
     },
     "feedingSchedule": {
       "createSuccess": "Besleme programı başarıyla oluşturuldu",
@@ -1042,7 +1074,19 @@
       "fetchTodaySuccess": "Bugünün besleme programları başarıyla yüklendi",
       "fetchNextFound": "Sıradaki besleme programı bulundu",
       "fetchNextNotFound": "Planlanmış besleme yok",
-      "fetchActiveByPetSuccess": "Bu pet için aktif besleme programları yüklendi"
+      "fetchActiveByPetSuccess": "Bu pet için aktif besleme programları yüklendi",
+      "createError": "Besleme programı oluşturulamadı",
+      "fetchError": "Besleme programları yüklenemedi",
+      "notFound": "Besleme programı bulunamadı",
+      "notFoundUpdate": "Güncellenecek besleme programı bulunamadı",
+      "notFoundDelete": "Silinecek besleme programı bulunamadı",
+      "updateError": "Besleme programı güncellenemedi",
+      "deleteError": "Besleme programı silinemedi",
+      "fetchActiveError": "Aktif besleme programları yüklenemedi",
+      "fetchTodayError": "Bugünün besleme programları yüklenemedi",
+      "fetchNextError": "Sıradaki besleme yüklenemedi",
+      "fetchActiveByPetError": "Bu pet için aktif besleme programları yüklenemedi",
+      "toggleError": "Program durumu güncellenemedi"
     },
     "healthRecord": {
       "createSuccess": "Sağlık kaydı başarıyla oluşturuldu",
@@ -1050,7 +1094,15 @@
       "fetchOneSuccess": "Sağlık kaydı başarıyla yüklendi",
       "updateSuccess": "Sağlık kaydı başarıyla güncellendi",
       "deleteSuccess": "Sağlık kaydı başarıyla silindi",
-      "fetchByTypeSuccess": "Tür bazlı sağlık kayıtları başarıyla yüklendi"
+      "fetchByTypeSuccess": "Tür bazlı sağlık kayıtları başarıyla yüklendi",
+      "createError": "Sağlık kaydı oluşturulamadı. Lütfen bilgileri kontrol edip tekrar deneyin.",
+      "fetchError": "Sağlık kayıtları alınamadı. Lütfen internet bağlantınızı kontrol edin.",
+      "notFound": "Sağlık kaydı bulunamadı",
+      "notFoundUpdate": "Güncellenecek sağlık kaydı bulunamadı",
+      "notFoundDelete": "Silinecek sağlık kaydı bulunamadı",
+      "updateError": "Sağlık kaydı güncellenemedi. Lütfen bilgileri kontrol edip tekrar deneyin.",
+      "deleteError": "Sağlık kaydı silinemedi. Lütfen tekrar deneyin.",
+      "fetchByTypeError": "Tür bazlı sağlık kayıtları alınamadı. Lütfen tekrar deneyin."
     },
     "pet": {
       "createSuccess": "Pet başarıyla oluşturuldu",
@@ -1061,7 +1113,17 @@
       "fetchByTypeSuccess": "Tür bazlı petler başarıyla yüklendi",
       "searchSuccess": "Pet araması başarıyla tamamlandı",
       "uploadPhotoSuccess": "Pet fotoğrafı başarıyla yüklendi",
-      "statsCalculatedSuccess": "Pet istatistikleri başarıyla hesaplandı"
+      "statsCalculatedSuccess": "Pet istatistikleri başarıyla hesaplandı",
+      "createError": "Pet oluşturulamadı. Lütfen bilgileri kontrol edip tekrar deneyin.",
+      "fetchError": "Petler alınamadı. Lütfen internet bağlantınızı kontrol edin.",
+      "updateError": "Pet güncellenemedi. Lütfen bilgileri kontrol edip tekrar deneyin.",
+      "deleteError": "Pet silinemedi",
+      "notFound": "Pet bulunamadı",
+      "notFoundUpdate": "Güncellenecek pet bulunamadı",
+      "notFoundDelete": "Silinecek pet bulunamadı",
+      "searchError": "Arama sırasında hata oluştu. Lütfen tekrar deneyin.",
+      "uploadError": "Pet fotoğrafı yüklenemedi. Lütfen tekrar deneyin.",
+      "statsError": "İstatistikler yüklenemedi. Lütfen tekrar deneyin."
     },
     "budget": {
       "fetchSuccess": "Kullanıcı bütçesi başarıyla yüklendi",
@@ -1072,7 +1134,19 @@
       "fetchBreakdownSuccess": "Pet harcama özeti başarıyla yüklendi",
       "hasActiveBudgetTrue": "Kullanıcının aktif bütçesi var",
       "hasActiveBudgetFalse": "Kullanıcının aktif bütçesi yok",
-      "fetchSummarySuccess": "Bütçe özeti başarıyla yüklendi"
+      "fetchSummarySuccess": "Bütçe özeti başarıyla yüklendi",
+      "notFound": "Kullanıcı için bütçe bulunamadı",
+      "notFoundDelete": "Silinecek bütçe bulunamadı",
+      "notFoundStatus": "Durum hesaplaması için bütçe bulunamadı",
+      "notFoundAlerts": "Uyarı kontrolü için bütçe bulunamadı",
+      "fetchError": "Kullanıcı bütçesi alınamadı",
+      "setError": "Bütçe ayarlanamadı. Lütfen bilgileri kontrol edip tekrar deneyin.",
+      "deleteError": "Bütçe silinemedi",
+      "fetchStatusError": "Bütçe durumu alınamadı",
+      "checkAlertsError": "Bütçe uyarıları kontrol edilemedi",
+      "fetchBreakdownError": "Pet harcama özeti alınamadı",
+      "checkActiveError": "Aktif bütçe durumu kontrol edilemedi",
+      "fetchSummaryError": "Bütçe özeti alınamadı"
     }
   },
   "subscription": {

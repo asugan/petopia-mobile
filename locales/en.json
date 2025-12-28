@@ -866,6 +866,7 @@
       "cancel": "Cancel"
     }
   },
+
   "expenses": {
     "title": "Expenses",
     "selectPetFirst": "Please select a pet first",
@@ -1049,12 +1050,43 @@
       "deleteSuccess": "Event deleted successfully",
       "fetchByDateSuccess": "Events loaded for this date",
       "fetchUpcomingSuccess": "Upcoming events loaded successfully",
-      "fetchTodaySuccess": "Today's events loaded successfully"
+      "fetchTodaySuccess": "Today's events loaded successfully",
+      "createError": "Failed to create event. Please check the information and try again.",
+      "fetchError": "Failed to fetch events. Please check your internet connection.",
+      "notFound": "Event not found",
+      "notFoundUpdate": "Event not found for update",
+      "notFoundDelete": "Event not found for deletion",
+      "updateError": "Failed to update event. Please check the information and try again.",
+      "deleteError": "Failed to delete event",
+      "fetchByDateError": "Failed to fetch events for this date. Please try again.",
+      "fetchUpcomingError": "Failed to fetch upcoming events. Please try again.",
+      "fetchTodayError": "Failed to fetch today's events. Please try again."
     },
     "expense": {
       "createSuccess": "Expense created successfully",
       "updateSuccess": "Expense updated successfully",
-      "deleteSuccess": "Expense deleted successfully"
+      "deleteSuccess": "Expense deleted successfully",
+      "exportPDFSuccess": "Expenses PDF generated",
+      "exportVetSummaryPDFSuccess": "Vet summary PDF generated",
+      "sharePDFSuccess": "Shared successfully",
+      "createError": "Failed to create expense. Please check the information and try again.",
+      "fetchError": "Failed to fetch expenses",
+      "notFound": "Expense not found",
+      "notFoundUpdate": "Expense not found for update",
+      "notFoundDelete": "Expense not found for deletion",
+      "updateError": "Failed to update expense",
+      "deleteError": "Failed to delete expense",
+      "fetchStatsError": "Failed to fetch expense statistics",
+      "fetchMonthlyError": "Failed to fetch monthly expenses",
+      "fetchYearlyError": "Failed to fetch yearly expenses",
+      "fetchByCategoryError": "Failed to fetch expenses by category",
+      "fetchByDateRangeError": "Failed to fetch expenses by date range",
+      "exportCSVError": "Failed to export expenses",
+      "exportPDFError": "Failed to export expenses PDF",
+      "exportVetSummaryPDFError": "Failed to export vet summary PDF",
+      "sharePDFError": "Failed to share PDF",
+      "fileSystemError": "File system error. Please check storage permissions.",
+      "sharingUnavailable": "Sharing is not available on this device"
     },
     "feedingSchedule": {
       "createSuccess": "Feeding schedule created successfully",
@@ -1066,7 +1098,19 @@
       "fetchTodaySuccess": "Today's feeding schedules loaded successfully",
       "fetchNextFound": "Next feeding schedule found",
       "fetchNextNotFound": "No upcoming feeding scheduled",
-      "fetchActiveByPetSuccess": "Active feeding schedules loaded for this pet"
+      "fetchActiveByPetSuccess": "Active feeding schedules loaded for this pet",
+      "createError": "Failed to create feeding schedule",
+      "fetchError": "Failed to load feeding schedules",
+      "notFound": "Feeding schedule not found",
+      "notFoundUpdate": "Feeding schedule not found for update",
+      "notFoundDelete": "Feeding schedule not found for deletion",
+      "updateError": "Failed to update feeding schedule",
+      "deleteError": "Failed to delete feeding schedule",
+      "fetchActiveError": "Failed to load active feeding schedules",
+      "fetchTodayError": "Failed to load today's feeding schedules",
+      "fetchNextError": "Failed to load next feeding schedule",
+      "fetchActiveByPetError": "Failed to load active feeding schedules for this pet",
+      "toggleError": "Failed to update schedule status"
     },
     "healthRecord": {
       "createSuccess": "Health record created successfully",
@@ -1074,7 +1118,15 @@
       "fetchOneSuccess": "Health record loaded successfully",
       "updateSuccess": "Health record updated successfully",
       "deleteSuccess": "Health record deleted successfully",
-      "fetchByTypeSuccess": "Health records loaded by type successfully"
+      "fetchByTypeSuccess": "Health records loaded by type successfully",
+      "createError": "Failed to create health record. Please check the information and try again.",
+      "fetchError": "Failed to fetch health records. Please check your internet connection.",
+      "notFound": "Health record not found",
+      "notFoundUpdate": "Health record not found for update",
+      "notFoundDelete": "Health record not found for deletion",
+      "updateError": "Failed to update health record. Please check the information and try again.",
+      "deleteError": "Failed to delete health record. Please try again.",
+      "fetchByTypeError": "Failed to fetch health records by type. Please try again."
     },
     "pet": {
       "createSuccess": "Pet created successfully",
@@ -1085,7 +1137,17 @@
       "fetchByTypeSuccess": "Pets loaded by type successfully",
       "searchSuccess": "Pet search completed successfully",
       "uploadPhotoSuccess": "Pet photo uploaded successfully",
-      "statsCalculatedSuccess": "Pet statistics calculated successfully"
+      "statsCalculatedSuccess": "Pet statistics calculated successfully",
+      "createError": "Failed to create pet. Please check the information and try again.",
+      "fetchError": "Failed to fetch pets. Please check your internet connection.",
+      "updateError": "Failed to update pet. Please check the information and try again.",
+      "deleteError": "Failed to delete pet",
+      "notFound": "Pet not found",
+      "notFoundUpdate": "Pet not found for update",
+      "notFoundDelete": "Pet not found for deletion",
+      "searchError": "An error occurred while searching. Please try again.",
+      "uploadError": "Failed to upload pet photo. Please try again.",
+      "statsError": "Failed to load statistics. Please try again."
     },
     "budget": {
       "fetchSuccess": "User budget loaded successfully",
@@ -1096,7 +1158,19 @@
       "fetchBreakdownSuccess": "Pet spending breakdown loaded successfully",
       "hasActiveBudgetTrue": "User has an active budget",
       "hasActiveBudgetFalse": "User has no active budget",
-      "fetchSummarySuccess": "Budget summary loaded successfully"
+      "fetchSummarySuccess": "Budget summary loaded successfully",
+      "notFound": "No budget found for user",
+      "notFoundDelete": "No budget found to delete",
+      "notFoundStatus": "No budget found for status calculation",
+      "notFoundAlerts": "No budget found for alert checking",
+      "fetchError": "Failed to fetch user budget",
+      "setError": "Failed to set user budget. Please check the information and try again.",
+      "deleteError": "Failed to delete user budget",
+      "fetchStatusError": "Failed to fetch budget status",
+      "checkAlertsError": "Failed to check budget alerts",
+      "fetchBreakdownError": "Failed to get pet spending breakdown",
+      "checkActiveError": "Failed to check active budget status",
+      "fetchSummaryError": "Failed to get budget summary"
     }
   },
   "subscription": {

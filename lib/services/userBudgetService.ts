@@ -24,7 +24,7 @@ export class UserBudgetService {
       return {
         success: true,
         data: response.data!,
-        message: "budget.fetchSuccess",
+        message: "serviceResponse.budget.fetchSuccess",
       };
     } catch (error) {
       console.error("❌ Get user budget error:", error);
@@ -34,7 +34,7 @@ export class UserBudgetService {
             success: false,
             error: {
               code: 'NOT_FOUND',
-              message: 'budget.notFound',
+              message: 'serviceResponse.budget.notFound',
             },
           };
         }
@@ -42,7 +42,8 @@ export class UserBudgetService {
           success: false,
           error: {
             code: error.code || 'FETCH_ERROR',
-            message: error.message,
+            message: 'serviceResponse.budget.fetchError',
+            details: { rawMessage: error.message },
           },
         };
       }
@@ -50,7 +51,7 @@ export class UserBudgetService {
         success: false,
         error: {
           code: 'FETCH_ERROR',
-          message: 'budget.fetchError',
+          message: 'serviceResponse.budget.fetchError',
         },
       };
     }
@@ -78,7 +79,7 @@ export class UserBudgetService {
       return {
         success: true,
         data: response.data!,
-        message: "budget.updateSuccess",
+        message: "serviceResponse.budget.updateSuccess",
       };
     } catch (error) {
       console.error("❌ Set user budget error:", error);
@@ -87,7 +88,8 @@ export class UserBudgetService {
           success: false,
           error: {
             code: error.code || 'SET_ERROR',
-            message: error.message,
+            message: 'serviceResponse.budget.setError',
+            details: { rawMessage: error.message },
           },
         };
       }
@@ -95,7 +97,7 @@ export class UserBudgetService {
         success: false,
         error: {
           code: 'SET_ERROR',
-          message: 'budget.setError',
+          message: 'serviceResponse.budget.setError',
         },
       };
     }
@@ -111,7 +113,7 @@ export class UserBudgetService {
       console.log("✅ User budget deleted successfully");
       return {
         success: true,
-        message: "budget.deleteSuccess",
+        message: "serviceResponse.budget.deleteSuccess",
       };
     } catch (error) {
       console.error("❌ Delete user budget error:", error);
@@ -121,7 +123,7 @@ export class UserBudgetService {
             success: false,
             error: {
               code: 'NOT_FOUND',
-              message: 'budget.notFoundDelete',
+              message: 'serviceResponse.budget.notFoundDelete',
             },
           };
         }
@@ -129,7 +131,8 @@ export class UserBudgetService {
           success: false,
           error: {
             code: error.code || 'DELETE_ERROR',
-            message: error.message,
+            message: 'serviceResponse.budget.deleteError',
+            details: { rawMessage: error.message },
           },
         };
       }
@@ -137,7 +140,7 @@ export class UserBudgetService {
         success: false,
         error: {
           code: 'DELETE_ERROR',
-          message: 'budget.deleteError',
+          message: 'serviceResponse.budget.deleteError',
         },
       };
     }
@@ -156,7 +159,7 @@ export class UserBudgetService {
       return {
         success: true,
         data: response.data!,
-        message: "budget.fetchStatusSuccess",
+        message: "serviceResponse.budget.fetchStatusSuccess",
       };
     } catch (error) {
       console.error("❌ Get budget status error:", error);
@@ -166,7 +169,7 @@ export class UserBudgetService {
             success: false,
             error: {
               code: 'NOT_FOUND',
-              message: 'budget.notFoundStatus',
+              message: 'serviceResponse.budget.notFoundStatus',
             },
           };
         }
@@ -174,7 +177,8 @@ export class UserBudgetService {
           success: false,
           error: {
             code: error.code || 'FETCH_STATUS_ERROR',
-            message: error.message,
+            message: 'serviceResponse.budget.fetchStatusError',
+            details: { rawMessage: error.message },
           },
         };
       }
@@ -182,7 +186,7 @@ export class UserBudgetService {
         success: false,
         error: {
           code: 'FETCH_STATUS_ERROR',
-          message: 'budget.fetchStatusError',
+          message: 'serviceResponse.budget.fetchStatusError',
         },
       };
     }
@@ -201,7 +205,7 @@ export class UserBudgetService {
       return {
         success: true,
         data: response.data!,
-        message: "budget.checkAlertsSuccess",
+        message: "serviceResponse.budget.checkAlertsSuccess",
       };
     } catch (error) {
       console.error("❌ Check budget alerts error:", error);
@@ -211,7 +215,7 @@ export class UserBudgetService {
             success: false,
             error: {
               code: 'NOT_FOUND',
-              message: 'budget.notFoundAlerts',
+              message: 'serviceResponse.budget.notFoundAlerts',
             },
           };
         }
@@ -219,7 +223,8 @@ export class UserBudgetService {
           success: false,
           error: {
             code: error.code || 'CHECK_ALERTS_ERROR',
-            message: error.message,
+            message: 'serviceResponse.budget.checkAlertsError',
+            details: { rawMessage: error.message },
           },
         };
       }
@@ -227,7 +232,7 @@ export class UserBudgetService {
         success: false,
         error: {
           code: 'CHECK_ALERTS_ERROR',
-          message: 'budget.checkAlertsError',
+          message: 'serviceResponse.budget.checkAlertsError',
         },
       };
     }
@@ -246,7 +251,7 @@ export class UserBudgetService {
           success: false,
           error: statusResponse.error || {
             code: 'FETCH_BREAKDOWN_ERROR',
-            message: 'budget.fetchBreakdownError',
+            message: 'serviceResponse.budget.fetchBreakdownError',
           },
         };
       }
@@ -255,7 +260,7 @@ export class UserBudgetService {
       return {
         success: true,
         data: statusResponse.data.petBreakdown,
-        message: "budget.fetchBreakdownSuccess",
+        message: "serviceResponse.budget.fetchBreakdownSuccess",
       };
     } catch (error) {
       console.error("❌ Get pet spending breakdown error:", error);
@@ -263,7 +268,7 @@ export class UserBudgetService {
         success: false,
         error: {
           code: 'FETCH_BREAKDOWN_ERROR',
-          message: 'budget.fetchBreakdownError',
+          message: 'serviceResponse.budget.fetchBreakdownError',
         },
       };
     }
@@ -281,7 +286,7 @@ export class UserBudgetService {
         return {
           success: true,
           data: false,
-          message: "budget.hasActiveBudgetFalse",
+          message: "serviceResponse.budget.hasActiveBudgetFalse",
         };
       }
 
@@ -292,8 +297,8 @@ export class UserBudgetService {
         success: true,
         data: hasBudget,
         message: hasBudget
-          ? "budget.hasActiveBudgetTrue"
-          : "budget.hasActiveBudgetFalse",
+          ? "serviceResponse.budget.hasActiveBudgetTrue"
+          : "serviceResponse.budget.hasActiveBudgetFalse",
       };
     } catch (error) {
       console.error("❌ Check active budget error:", error);
@@ -301,7 +306,7 @@ export class UserBudgetService {
         success: false,
         error: {
           code: 'CHECK_ACTIVE_ERROR',
-          message: 'budget.checkActiveError',
+          message: 'serviceResponse.budget.checkActiveError',
         },
       };
     }
@@ -351,7 +356,7 @@ export class UserBudgetService {
           hasActiveBudget,
           alerts,
         },
-        message: "budget.fetchSummarySuccess",
+        message: "serviceResponse.budget.fetchSummarySuccess",
       };
     } catch (error) {
       console.error("❌ Get budget summary error:", error);
@@ -359,7 +364,7 @@ export class UserBudgetService {
         success: false,
         error: {
           code: 'FETCH_SUMMARY_ERROR',
-          message: 'budget.fetchSummaryError',
+          message: 'serviceResponse.budget.fetchSummaryError',
         },
       };
     }

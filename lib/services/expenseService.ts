@@ -60,7 +60,7 @@ export class ExpenseService {
       return {
         success: true,
         data: response.data!,
-        message: 'expense.createSuccess'
+        message: 'serviceResponse.expense.createSuccess'
       };
     } catch (error) {
       console.error('❌ Create expense error:', error);
@@ -68,8 +68,8 @@ export class ExpenseService {
         return {
           success: false,
           error: {
-            code: error.code || 'CREATE_ERROR',
-            message: error.message,
+            code: 'FILE_SYSTEM_ERROR',
+            message: 'serviceResponse.expense.fileSystemError',
           },
         };
       }
@@ -77,7 +77,7 @@ export class ExpenseService {
         success: false,
         error: {
           code: 'CREATE_ERROR',
-          message: 'expense.createError',
+          message: 'serviceResponse.expense.createError',
         },
       };
     }
@@ -166,7 +166,7 @@ export class ExpenseService {
             success: false,
             error: {
               code: 'NOT_FOUND',
-              message: 'expense.notFound',
+              message: 'serviceResponse.expense.notFound',
             },
           };
         }
@@ -204,7 +204,7 @@ export class ExpenseService {
       return {
         success: true,
         data: response.data!,
-        message: 'expense.updateSuccess'
+        message: 'serviceResponse.expense.updateSuccess'
       };
     } catch (error) {
       console.error('❌ Update expense error:', error);
@@ -214,7 +214,7 @@ export class ExpenseService {
             success: false,
             error: {
               code: 'NOT_FOUND',
-              message: 'expense.notFoundUpdate',
+              message: 'serviceResponse.expense.notFoundUpdate',
             },
           };
         }
@@ -230,7 +230,7 @@ export class ExpenseService {
         success: false,
         error: {
           code: 'UPDATE_ERROR',
-          message: 'expense.updateError',
+          message: 'serviceResponse.expense.updateError',
         },
       };
     }
@@ -246,7 +246,7 @@ export class ExpenseService {
       console.log('✅ Expense deleted successfully:', id);
       return {
         success: true,
-        message: 'expense.deleteSuccess'
+        message: 'serviceResponse.expense.deleteSuccess'
       };
     } catch (error) {
       console.error('❌ Delete expense error:', error);
@@ -256,7 +256,7 @@ export class ExpenseService {
             success: false,
             error: {
               code: 'NOT_FOUND',
-              message: 'expense.notFoundDelete',
+              message: 'serviceResponse.expense.notFoundDelete',
             },
           };
         }
@@ -272,7 +272,7 @@ export class ExpenseService {
         success: false,
         error: {
           code: 'DELETE_ERROR',
-          message: 'expense.deleteError',
+          message: 'serviceResponse.expense.deleteError',
         },
       };
     }
@@ -316,7 +316,7 @@ export class ExpenseService {
         success: false,
         error: {
           code: 'FETCH_STATS_ERROR',
-          message: 'expense.fetchStatsError',
+          message: 'serviceResponse.expense.fetchStatsError',
         },
       };
     }
@@ -358,7 +358,7 @@ export class ExpenseService {
         success: false,
         error: {
           code: 'FETCH_MONTHLY_ERROR',
-          message: 'expense.fetchMonthlyError',
+          message: 'serviceResponse.expense.fetchMonthlyError',
         },
       };
     }
@@ -398,7 +398,7 @@ export class ExpenseService {
         success: false,
         error: {
           code: 'FETCH_YEARLY_ERROR',
-          message: 'expense.fetchYearlyError',
+          message: 'serviceResponse.expense.fetchYearlyError',
         },
       };
     }
@@ -437,7 +437,7 @@ export class ExpenseService {
         success: false,
         error: {
           code: 'FETCH_BY_CATEGORY_ERROR',
-          message: 'expense.fetchByCategoryError',
+          message: 'serviceResponse.expense.fetchByCategoryError',
         },
       };
     }
@@ -479,7 +479,7 @@ export class ExpenseService {
         success: false,
         error: {
           code: 'FETCH_BY_DATE_RANGE_ERROR',
-          message: 'expense.fetchByDateRangeError',
+          message: 'serviceResponse.expense.fetchByDateRangeError',
         },
       };
     }
@@ -521,7 +521,7 @@ export class ExpenseService {
         success: false,
         error: {
           code: 'EXPORT_CSV_ERROR',
-          message: 'expense.exportCSVError',
+          message: 'serviceResponse.expense.exportCSVError',
         },
       };
     }
@@ -556,7 +556,7 @@ export class ExpenseService {
       return {
         success: true,
         data: { uri },
-        message: 'Expenses PDF generated',
+        message: 'serviceResponse.expense.exportPDFSuccess',
       };
     } catch (error) {
       console.error('❌ Export expenses PDF error:', error);
@@ -569,11 +569,11 @@ export class ExpenseService {
           },
         };
       }
-      return { 
-        success: false, 
+      return {
+        success: false,
         error: {
           code: 'EXPORT_PDF_ERROR',
-          message: 'expense.exportPDFError',
+          message: 'serviceResponse.expense.exportPDFError',
         },
       };
     }
@@ -604,7 +604,7 @@ export class ExpenseService {
       return {
         success: true,
         data: { uri },
-        message: 'Vet summary PDF generated',
+        message: 'serviceResponse.expense.exportVetSummaryPDFSuccess',
       };
     } catch (error) {
       console.error('❌ Export vet summary PDF error:', error);
@@ -617,11 +617,11 @@ export class ExpenseService {
           },
         };
       }
-      return { 
-        success: false, 
+      return {
+        success: false,
         error: {
           code: 'EXPORT_VET_SUMMARY_PDF_ERROR',
-          message: 'expense.exportVetSummaryPDFError',
+          message: 'serviceResponse.expense.exportVetSummaryPDFError',
         },
       };
     }
@@ -634,24 +634,24 @@ export class ExpenseService {
     try {
       const canShare = await Sharing.isAvailableAsync();
       if (!canShare) {
-        return { 
-          success: false, 
+        return {
+          success: false,
           error: {
             code: 'SHARING_UNAVAILABLE',
-            message: 'expense.sharingUnavailable',
+            message: 'serviceResponse.expense.sharingUnavailable',
           },
         };
       }
 
       await Sharing.shareAsync(uri, { dialogTitle });
-      return { success: true, message: 'Shared successfully' };
+      return { success: true, message: 'serviceResponse.expense.sharePDFSuccess' };
     } catch (error) {
       console.error('❌ Share PDF error:', error);
-      return { 
-        success: false, 
+      return {
+        success: false,
         error: {
           code: 'SHARE_PDF_ERROR',
-          message: 'expense.sharePDFError',
+          message: 'serviceResponse.expense.sharePDFError',
         },
       };
     }

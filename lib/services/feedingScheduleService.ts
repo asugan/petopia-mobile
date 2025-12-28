@@ -17,24 +17,24 @@ export class FeedingScheduleService {
       return {
         success: true,
         data: response.data!,
-        message: 'feedingSchedule.createSuccess',
+        message: 'serviceResponse.feedingSchedule.createSuccess',
       };
     } catch (error) {
       console.error('❌ Create feeding schedule error:', error);
       if (error instanceof ApiError) {
-        return {
-          success: false,
-          error: {
-            code: error.code || 'CREATE_ERROR',
-            message: error.message,
-          },
-        };
+      return {
+        success: false,
+        error: {
+          code: 'FETCH_ERROR',
+          message: 'serviceResponse.feedingSchedule.fetchError',
+        },
+      };
       }
       return {
         success: false,
         error: {
           code: 'CREATE_ERROR',
-          message: 'feedingSchedule.createError',
+          message: 'serviceResponse.feedingSchedule.createError',
         },
       };
     }
@@ -119,7 +119,7 @@ export class FeedingScheduleService {
       return {
         success: true,
         data: response.data!,
-        message: 'feedingSchedule.fetchOneSuccess',
+        message: 'serviceResponse.feedingSchedule.fetchOneSuccess',
       };
     } catch (error) {
       console.error('❌ Get feeding schedule error:', error);
@@ -129,7 +129,7 @@ export class FeedingScheduleService {
             success: false,
             error: {
               code: 'NOT_FOUND',
-              message: 'feedingSchedule.notFound',
+              message: 'serviceResponse.feedingSchedule.notFound',
             },
           };
         }
@@ -162,7 +162,7 @@ export class FeedingScheduleService {
       return {
         success: true,
         data: response.data!,
-        message: 'feedingSchedule.updateSuccess',
+        message: 'serviceResponse.feedingSchedule.updateSuccess',
       };
     } catch (error) {
       console.error('❌ Update feeding schedule error:', error);
@@ -172,7 +172,7 @@ export class FeedingScheduleService {
             success: false,
             error: {
               code: 'NOT_FOUND',
-              message: 'feedingSchedule.notFoundUpdate',
+              message: 'serviceResponse.feedingSchedule.notFoundUpdate',
             },
           };
         }
@@ -188,7 +188,7 @@ export class FeedingScheduleService {
         success: false,
         error: {
           code: 'UPDATE_ERROR',
-          message: 'feedingSchedule.updateError',
+          message: 'serviceResponse.feedingSchedule.updateError',
         },
       };
     }
@@ -204,7 +204,7 @@ export class FeedingScheduleService {
       console.log('✅ Feeding schedule deleted successfully:', id);
       return {
         success: true,
-        message: 'feedingSchedule.deleteSuccess',
+        message: 'serviceResponse.feedingSchedule.deleteSuccess',
       };
     } catch (error) {
       console.error('❌ Delete feeding schedule error:', error);
@@ -214,7 +214,7 @@ export class FeedingScheduleService {
             success: false,
             error: {
               code: 'NOT_FOUND',
-              message: 'feedingSchedule.notFoundDelete',
+              message: 'serviceResponse.feedingSchedule.notFoundDelete',
             },
           };
         }
@@ -230,7 +230,7 @@ export class FeedingScheduleService {
         success: false,
         error: {
           code: 'DELETE_ERROR',
-          message: 'feedingSchedule.deleteError',
+          message: 'serviceResponse.feedingSchedule.deleteError',
         },
       };
     }
@@ -247,7 +247,7 @@ export class FeedingScheduleService {
       return {
         success: true,
         data: response.data || [],
-        message: 'feedingSchedule.fetchActiveSuccess',
+        message: 'serviceResponse.feedingSchedule.fetchActiveSuccess',
       };
     } catch (error) {
       console.error('❌ Get active feeding schedules error:', error);
@@ -264,7 +264,7 @@ export class FeedingScheduleService {
         success: false,
         error: {
           code: 'FETCH_ERROR',
-          message: 'feedingSchedule.fetchActiveError',
+          message: 'serviceResponse.feedingSchedule.fetchActiveError',
         },
       };
     }
@@ -281,7 +281,7 @@ export class FeedingScheduleService {
       return {
         success: true,
         data: response.data || [],
-        message: 'feedingSchedule.fetchTodaySuccess',
+        message: 'serviceResponse.feedingSchedule.fetchTodaySuccess',
       };
     } catch (error) {
       console.error('❌ Get today feeding schedules error:', error);
@@ -298,7 +298,7 @@ export class FeedingScheduleService {
         success: false,
         error: {
           code: 'FETCH_ERROR',
-          message: 'feedingSchedule.fetchTodayError',
+          message: 'serviceResponse.feedingSchedule.fetchTodayError',
         },
       };
     }
@@ -315,7 +315,7 @@ export class FeedingScheduleService {
       return {
         success: true,
         data: response.data || null,
-        message: response.data ? 'feedingSchedule.fetchNextFound' : 'feedingSchedule.fetchNextNotFound',
+        message: response.data ? 'serviceResponse.feedingSchedule.fetchNextFound' : 'serviceResponse.feedingSchedule.fetchNextNotFound',
       };
     } catch (error) {
       console.error('❌ Get next feeding error:', error);
@@ -332,7 +332,7 @@ export class FeedingScheduleService {
         success: false,
         error: {
           code: 'FETCH_ERROR',
-          message: 'feedingSchedule.fetchNextError',
+          message: 'serviceResponse.feedingSchedule.fetchNextError',
         },
       };
     }
@@ -353,7 +353,7 @@ export class FeedingScheduleService {
       return {
         success: true,
         data: activeSchedules,
-        message: 'feedingSchedule.fetchActiveByPetSuccess',
+        message: 'serviceResponse.feedingSchedule.fetchActiveByPetSuccess',
       };
     } catch (error) {
       console.error('❌ Get active feeding schedules by pet error:', error);
@@ -370,7 +370,7 @@ export class FeedingScheduleService {
         success: false,
         error: {
           code: 'FETCH_ERROR',
-          message: 'feedingSchedule.fetchActiveByPetError',
+          message: 'serviceResponse.feedingSchedule.fetchActiveByPetError',
         },
       };
     }
@@ -400,7 +400,7 @@ export class FeedingScheduleService {
         success: false,
         error: {
           code: 'TOGGLE_ERROR',
-          message: 'feedingSchedule.toggleError',
+          message: 'serviceResponse.feedingSchedule.toggleError',
         },
       };
     }

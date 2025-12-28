@@ -25,24 +25,24 @@ export class PetService {
       return {
         success: true,
         data: response.data!,
-        message: 'pet.createSuccess',
+        message: 'serviceResponse.pet.createSuccess',
       };
     } catch (error) {
       console.error('❌ Create pet error:', error);
       if (error instanceof ApiError) {
-        return {
-          success: false,
-          error: {
-            code: error.code || 'CREATE_ERROR',
-            message: error.message,
-          },
-        };
+      return {
+        success: false,
+        error: {
+          code: 'FETCH_ERROR',
+          message: 'serviceResponse.pet.fetchError',
+        },
+      };
       }
       return {
         success: false,
         error: {
           code: 'CREATE_ERROR',
-          message: 'pet.createError',
+          message: 'serviceResponse.pet.createError',
         },
       };
     }
@@ -80,7 +80,7 @@ export class PetService {
       return {
         success: true,
         data: response.data || [],
-        message: 'pet.fetchSuccess',
+        message: 'serviceResponse.pet.fetchSuccess',
       };
     } catch (error) {
       console.error('❌ Get pets error:', error);
@@ -114,7 +114,7 @@ export class PetService {
       return {
         success: true,
         data: response.data!,
-        message: 'pet.fetchOneSuccess',
+        message: 'serviceResponse.pet.fetchOneSuccess',
       };
     } catch (error) {
       console.error('❌ Get pet error:', error);
@@ -124,7 +124,7 @@ export class PetService {
             success: false,
             error: {
               code: 'NOT_FOUND',
-              message: 'pet.notFound',
+              message: 'serviceResponse.pet.notFound',
             },
           };
         }
@@ -164,7 +164,7 @@ export class PetService {
       return {
         success: true,
         data: response.data!,
-        message: 'pet.updateSuccess',
+        message: 'serviceResponse.pet.updateSuccess',
       };
     } catch (error) {
       console.error('❌ Update pet error:', error);
@@ -174,7 +174,7 @@ export class PetService {
             success: false,
             error: {
               code: 'NOT_FOUND',
-              message: 'pet.notFoundUpdate',
+              message: 'serviceResponse.pet.notFoundUpdate',
             },
           };
         }
@@ -190,7 +190,7 @@ export class PetService {
         success: false,
         error: {
           code: 'UPDATE_ERROR',
-          message: 'pet.updateError',
+          message: 'serviceResponse.pet.updateError',
         },
       };
     }
@@ -206,7 +206,7 @@ export class PetService {
       console.log('✅ Pet deleted successfully:', id);
       return {
         success: true,
-        message: 'pet.deleteSuccess',
+        message: 'serviceResponse.pet.deleteSuccess',
       };
     } catch (error) {
       console.error('❌ Delete pet error:', error);
@@ -216,7 +216,7 @@ export class PetService {
             success: false,
             error: {
               code: 'NOT_FOUND',
-              message: 'pet.notFoundDelete',
+              message: 'serviceResponse.pet.notFoundDelete',
             },
           };
         }
@@ -232,7 +232,7 @@ export class PetService {
         success: false,
         error: {
           code: 'DELETE_ERROR',
-          message: 'pet.deleteError',
+          message: 'serviceResponse.pet.deleteError',
         },
       };
     }
@@ -249,7 +249,7 @@ export class PetService {
       return {
         success: true,
         data: response.data || [],
-        message: 'pet.fetchByTypeSuccess',
+        message: 'serviceResponse.pet.fetchByTypeSuccess',
       };
     } catch (error) {
       console.error('❌ Get pets by type error:', error);
@@ -283,7 +283,7 @@ export class PetService {
       return {
         success: true,
         data: response.data || [],
-        message: 'pet.searchSuccess',
+        message: 'serviceResponse.pet.searchSuccess',
       };
     } catch (error) {
       console.error('❌ Search pets error:', error);
@@ -300,7 +300,7 @@ export class PetService {
         success: false,
         error: {
           code: 'SEARCH_ERROR',
-          message: 'pet.searchError',
+          message: 'serviceResponse.pet.searchError',
         },
       };
     }
@@ -326,7 +326,7 @@ export class PetService {
       return {
         success: true,
         data: response.data!,
-        message: 'pet.uploadPhotoSuccess',
+        message: 'serviceResponse.pet.uploadPhotoSuccess',
       };
     } catch (error) {
       console.error('❌ Upload pet photo error:', error);
@@ -344,7 +344,7 @@ export class PetService {
         success: false,
         error: {
           code: 'UPLOAD_ERROR',
-          message: 'pet.uploadError',
+          message: 'serviceResponse.pet.uploadError',
         },
       };
     }
@@ -397,7 +397,7 @@ export class PetService {
           byGender,
           averageAge: Math.round(averageAge * 10) / 10, // 1 decimal basamak
         },
-        message: 'pet.statsCalculatedSuccess',
+        message: 'serviceResponse.pet.statsCalculatedSuccess',
       };
     } catch (error) {
       console.error('❌ Get pet stats error:', error);
@@ -415,7 +415,7 @@ export class PetService {
         success: false,
         error: {
           code: 'STATS_ERROR',
-          message: 'pet.statsError',
+          message: 'serviceResponse.pet.statsError',
         },
       };
     }

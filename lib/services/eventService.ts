@@ -17,24 +17,24 @@ export class EventService {
       return {
         success: true,
         data: response.data!,
-        message: 'event.createSuccess',
+        message: 'serviceResponse.event.createSuccess',
       };
     } catch (error) {
       console.error('❌ Create event error:', error);
       if (error instanceof ApiError) {
-        return {
-          success: false,
-          error: {
-            code: error.code || 'CREATE_ERROR',
-            message: error.message,
-          },
-        };
+      return {
+        success: false,
+        error: {
+          code: 'FETCH_ERROR',
+          message: 'serviceResponse.event.fetchError',
+        },
+      };
       }
       return {
         success: false,
         error: {
           code: 'CREATE_ERROR',
-          message: 'event.createError',
+          message: 'serviceResponse.event.createError',
         },
       };
     }
@@ -119,7 +119,7 @@ export class EventService {
       return {
         success: true,
         data: response.data!,
-        message: 'event.fetchOneSuccess',
+        message: 'serviceResponse.event.fetchOneSuccess',
       };
     } catch (error) {
       console.error('❌ Get event error:', error);
@@ -129,7 +129,7 @@ export class EventService {
             success: false,
             error: {
               code: 'NOT_FOUND',
-              message: 'event.notFound',
+              message: 'serviceResponse.event.notFound',
             },
           };
         }
@@ -162,7 +162,7 @@ export class EventService {
       return {
         success: true,
         data: response.data!,
-        message: 'event.updateSuccess',
+        message: 'serviceResponse.event.updateSuccess',
       };
     } catch (error) {
       console.error('❌ Update event error:', error);
@@ -172,7 +172,7 @@ export class EventService {
             success: false,
             error: {
               code: 'NOT_FOUND',
-              message: 'event.notFoundUpdate',
+              message: 'serviceResponse.event.notFoundUpdate',
             },
           };
         }
@@ -188,7 +188,7 @@ export class EventService {
         success: false,
         error: {
           code: 'UPDATE_ERROR',
-          message: 'event.updateError',
+          message: 'serviceResponse.event.updateError',
         },
       };
     }
@@ -204,7 +204,7 @@ export class EventService {
       console.log('✅ Event deleted successfully:', id);
       return {
         success: true,
-        message: 'event.deleteSuccess',
+        message: 'serviceResponse.event.deleteSuccess',
       };
     } catch (error) {
       console.error('❌ Delete event error:', error);
@@ -214,7 +214,7 @@ export class EventService {
             success: false,
             error: {
               code: 'NOT_FOUND',
-              message: 'event.notFoundDelete',
+              message: 'serviceResponse.event.notFoundDelete',
             },
           };
         }
@@ -230,7 +230,7 @@ export class EventService {
         success: false,
         error: {
           code: 'DELETE_ERROR',
-          message: 'event.deleteError',
+          message: 'serviceResponse.event.deleteError',
         },
       };
     }
@@ -247,7 +247,7 @@ export class EventService {
       return {
         success: true,
         data: response.data || [],
-        message: 'event.fetchByDateSuccess',
+        message: 'serviceResponse.event.fetchTodaySuccess',
       };
     } catch (error) {
       console.error('❌ Get events by date error:', error);
@@ -264,7 +264,7 @@ export class EventService {
         success: false,
         error: {
           code: 'FETCH_ERROR',
-          message: 'event.fetchByDateError',
+          message: 'serviceResponse.event.fetchByDateError',
         },
       };
     }
@@ -281,7 +281,7 @@ export class EventService {
       return {
         success: true,
         data: response.data || [],
-        message: 'event.fetchUpcomingSuccess',
+        message: 'serviceResponse.event.fetchUpcomingSuccess',
       };
     } catch (error) {
       console.error('❌ Get upcoming events error:', error);
@@ -298,7 +298,7 @@ export class EventService {
         success: false,
         error: {
           code: 'FETCH_ERROR',
-          message: 'event.fetchUpcomingError',
+          message: 'serviceResponse.event.fetchUpcomingError',
         },
       };
     }
@@ -315,7 +315,7 @@ export class EventService {
       return {
         success: true,
         data: response.data || [],
-        message: 'event.fetchTodaySuccess',
+        message: 'serviceResponse.event.fetchByDateSuccess',
       };
     } catch (error) {
       console.error('❌ Get today events error:', error);
@@ -332,7 +332,7 @@ export class EventService {
         success: false,
         error: {
           code: 'FETCH_ERROR',
-          message: 'event.fetchTodayError',
+          message: 'serviceResponse.event.fetchTodayError',
         },
       };
     }
