@@ -100,8 +100,8 @@ export function useCreatePet() {
     {
       listQueryKey: petKeys.lists(),
       onSettled: () => {
-        queryClient.invalidateQueries({ queryKey: petKeys.stats() });
-      }
+        queryClient.invalidateQueries({ queryKey: petKeys.all });
+      },
     }
   );
 }
@@ -115,8 +115,8 @@ export function useUpdatePet() {
       listQueryKey: petKeys.lists(),
       detailQueryKey: petKeys.detail,
       onSettled: () => {
-        queryClient.invalidateQueries({ queryKey: petKeys.stats() });
-      }
+        queryClient.invalidateQueries({ queryKey: petKeys.all });
+      },
     }
   );
 }
@@ -130,8 +130,8 @@ export function useDeletePet() {
       listQueryKey: petKeys.lists(),
       detailQueryKey: petKeys.detail,
       onSettled: () => {
-        queryClient.invalidateQueries({ queryKey: petKeys.stats() });
-      }
+        queryClient.invalidateQueries({ queryKey: petKeys.all });
+      },
     }
   );
 }
@@ -144,6 +144,9 @@ export function useUploadPetPhoto() {
     {
       listQueryKey: petKeys.lists(),
       detailQueryKey: petKeys.detail,
+      onSettled: () => {
+        queryClient.invalidateQueries({ queryKey: petKeys.all });
+      },
     }
   );
 }
