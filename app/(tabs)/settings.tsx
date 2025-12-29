@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { useQueryClient } from "@tanstack/react-query";
 import { SubscriptionCard } from "@/components/subscription";
 import { Button, Card, ListItem, Switch, Text } from "@/components/ui";
 import { useAuth } from "@/lib/auth";
@@ -19,6 +20,7 @@ import { LanguageSettings } from "@/components/LanguageSettings";
 export default function SettingsScreen() {
   const { t } = useTranslation();
   const router = useRouter();
+  const queryClient = useQueryClient();
   const { theme, settings, updateSettings, updateBaseCurrency, isLoading: settingsLoading, error } = useUserSettingsStore();
   const { user, signOut } = useAuth();
   const { isLoading: authLoading, setLoading } = useAuthStore();
@@ -109,7 +111,11 @@ export default function SettingsScreen() {
         },
         {
           text: t("common.confirm"),
-          onPress: () => updateBaseCurrency(currency),
+          onPress: async () => {
+            await updateBaseCurrency(currency);
+            await queryClient.invalidateQueries({ predicate: (query) => query.queryKey[0] === "expenses" });
+            await queryClient.invalidateQueries({ predicate: (query) => query.queryKey[0] === "budget" });
+          },
         },
       ]
     );

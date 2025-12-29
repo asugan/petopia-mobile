@@ -13,6 +13,7 @@ import {
   SetUserBudgetInput,
 } from "@/lib/schemas/userBudgetSchema";
 import { UserBudget } from "@/lib/types";
+import { useUserSettingsStore } from "@/stores/userSettingsStore";
 import { StepHeader } from "./forms/StepHeader";
 
 interface UserBudgetFormProps {
@@ -30,6 +31,8 @@ const UserBudgetForm: React.FC<UserBudgetFormProps> = ({
 }) => {
   const { theme } = useTheme();
   const { t } = useTranslation();
+  const { settings } = useUserSettingsStore();
+  const baseCurrency = settings?.baseCurrency ?? "TRY";
   const [currentStep, setCurrentStep] = React.useState(0);
   const [showStepError, setShowStepError] = React.useState(false);
 
@@ -37,7 +40,7 @@ const UserBudgetForm: React.FC<UserBudgetFormProps> = ({
     resolver: zodResolver(SetUserBudgetSchema()),
     defaultValues: {
       amount: initialData?.amount || 0,
-      currency: initialData?.currency || "TRY",
+      currency: initialData?.currency || baseCurrency,
       alertThreshold: initialData?.alertThreshold ?? 0.8,
       isActive: initialData?.isActive ?? true,
     },
@@ -48,9 +51,9 @@ const UserBudgetForm: React.FC<UserBudgetFormProps> = ({
 
   const handleFormSubmit = React.useCallback(
     (data: SetUserBudgetInput) => {
-      onSubmit(data);
+      onSubmit({ ...data, currency: baseCurrency });
     },
-    [onSubmit]
+    [onSubmit, baseCurrency]
   );
 
   const steps = React.useMemo(
