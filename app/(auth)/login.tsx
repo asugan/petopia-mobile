@@ -1,61 +1,59 @@
-import { useState, useEffect as useReactEffect, useRef } from 'react';
+import { useMemo, useState, useEffect, useRef } from 'react';
 import {
   View,
   StyleSheet,
-  KeyboardAvoidingView,
+  TouchableOpacity,
   Platform,
-  ScrollView,
-  Pressable,
-  TextInput,
+  Linking,
+  StatusBar,
+  Dimensions,
 } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { Link, useRouter } from 'expo-router';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { Image } from 'expo-image';
+import { LinearGradient } from 'expo-linear-gradient';
+import { useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useTheme } from '@/lib/theme';
 import { useAuth } from '@/lib/auth';
 import { useAuthStore } from '@/stores/authStore';
-import { Text, Button, Card } from '@/components/ui';
+import { Text, ActivityIndicator } from '@/components/ui';
+
+const { height } = Dimensions.get('window');
+
 
 export default function LoginScreen() {
-  const { theme } = useTheme();
+  const { theme, isDark } = useTheme();
   const { t } = useTranslation();
   const router = useRouter();
+  const insets = useSafeAreaInsets();
   const { signIn, isAuthenticated } = useAuth();
   const { isLoading, setLoading, setError, authError, clearError } = useAuthStore();
 
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [showPassword, setShowPassword] = useState(false);
   const [waitForAuth, setWaitForAuth] = useState(false);
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  // Navigate when session is established after OAuth
-  // Also handle timeout if session doesn't establish within reasonable time
-  useReactEffect(() => {
+  useEffect(() => {
     if (waitForAuth && isAuthenticated) {
       setWaitForAuth(false);
       setLoading(false);
       router.replace('/(tabs)');
 
-      // Clear any existing timeout
       if (timeoutRef.current) {
         clearTimeout(timeoutRef.current);
         timeoutRef.current = null;
       }
     }
 
-    // Start timeout if waiting for auth and not yet authenticated
     if (waitForAuth && !isAuthenticated && !timeoutRef.current) {
       timeoutRef.current = setTimeout(() => {
         setWaitForAuth(false);
         setLoading(false);
         setError(t('auth.socialLoginError'));
         timeoutRef.current = null;
-      }, 3000);
+      }, 5000);
     }
 
-    // Cleanup timeout if we're no longer waiting
     if (!waitForAuth && timeoutRef.current) {
       clearTimeout(timeoutRef.current);
       timeoutRef.current = null;
@@ -68,44 +66,26 @@ export default function LoginScreen() {
     };
   }, [waitForAuth, isAuthenticated, router, t, setLoading, setError]);
 
-  const handleEmailLogin = async () => {
-    if (!email.trim() || !password.trim()) {
-      setError(t('auth.fillAllFields'));
-      return;
-    }
-
+  const handleSocialLogin = async (provider: 'google' | 'apple' | 'facebook') => {
     clearError();
     setLoading(true);
 
     try {
-      const result = await signIn.email(email.trim(), password);
-
-      if (result?.error) {
-        setError(result.error.message || t('auth.loginError'));
-      } else {
-        router.replace('/(tabs)');
+      let result;
+      if (provider === 'google') {
+        result = await signIn.google('/');
+      } else if (provider === 'apple') {
+        result = await signIn.apple('/');
+      } else if (provider === 'facebook') {
+        result = await signIn.facebook('/');
       }
-    } catch {
-      setError(t('auth.loginError'));
-    } finally {
-      setLoading(false);
-    }
-  };
 
-  const handleGoogleLogin = async () => {
-    clearError();
-    setLoading(true);
-
-    try {
-      const result = await signIn.google('/');
       if (result?.error) {
         setError(result.error.message || t('auth.socialLoginError'));
         setLoading(false);
         return;
       }
 
-      // Don't redirect immediately - wait for session to be established (fix OAuth timing race condition)
-      // useEffect will handle navigation when isAuthenticated becomes true
       setWaitForAuth(true);
     } catch {
       setError(t('auth.socialLoginError'));
@@ -113,292 +93,280 @@ export default function LoginScreen() {
     }
   };
 
-  const handleAppleLogin = async () => {
-    clearError();
-    setLoading(true);
-
-    try {
-      const result = await signIn.apple('/');
-      if (result?.error) {
-        setError(result.error.message || t('auth.socialLoginError'));
-        setLoading(false);
-        return;
-      }
-
-      // Don't redirect immediately - wait for session to be established (fix OAuth timing race condition)
-      // useEffect will handle navigation when isAuthenticated becomes true
-      setWaitForAuth(true);
-    } catch {
-      setError(t('auth.socialLoginError'));
-      setLoading(false);
-    }
+  const openLink = (url: string) => {
+    Linking.openURL(url).catch(() => {
+      setError(t('auth.linkOpenError'));
+    });
   };
+
+  const styles = useMemo(
+    () =>
+      StyleSheet.create({
+        container: {
+          flex: 1,
+          backgroundColor: theme.colors.background,
+          justifyContent: 'space-between',
+        },
+        heroContainer: {
+          height: height * 0.6,
+          width: '100%',
+          borderBottomLeftRadius: 32,
+          borderBottomRightRadius: 32,
+          overflow: 'hidden',
+          alignItems: 'center',
+          justifyContent: 'center',
+          position: 'relative',
+        },
+        heroImage: {
+          ...StyleSheet.absoluteFillObject,
+        },
+        brandingContainer: {
+          alignItems: 'center',
+          zIndex: 10,
+          marginTop: 48,
+          paddingHorizontal: 24,
+        },
+        logoCircle: {
+          width: 96,
+          height: 96,
+          borderRadius: 48,
+          backgroundColor: theme.colors.surface + 'CC',
+          borderColor: theme.colors.primary + '33',
+          justifyContent: 'center',
+          alignItems: 'center',
+          marginBottom: 20,
+          elevation: 10,
+        },
+        logoMask: {
+          width: '100%',
+          height: '100%',
+          borderRadius: 46,
+          overflow: 'hidden',
+          backgroundColor: '#2B1E5A',
+          justifyContent: 'center',
+          alignItems: 'center',
+        },
+        logoImage: {
+          width: '100%',
+          height: '100%',
+          transform: [{ scale: 1.15 }],
+        },
+        appName: {
+          color: theme.colors.onBackground,
+          fontSize: 36,
+          lineHeight: 44,
+          fontWeight: '700',
+          letterSpacing: -0.5,
+          marginBottom: 8,
+          textShadowColor: theme.colors.inverseOnSurface + '80',
+          textShadowOffset: { width: 0, height: 2 },
+          textShadowRadius: 4,
+          paddingVertical: 2,
+        },
+        appSubtitle: {
+          color: theme.colors.onSurfaceVariant,
+          fontSize: 18,
+          fontWeight: '500',
+          textAlign: 'center',
+          lineHeight: 28,
+        },
+        actionsContainer: {
+          flex: 1,
+          paddingHorizontal: 24,
+          justifyContent: 'flex-end',
+          paddingBottom: 40,
+          marginTop: -40,
+          zIndex: 20,
+        },
+        buttonsContainer: {
+          gap: 16,
+          width: '100%',
+          maxWidth: 480,
+          alignSelf: 'center',
+        },
+        socialButton: {
+          flexDirection: 'row',
+          alignItems: 'center',
+          backgroundColor: theme.colors.surface,
+          height: 56,
+          borderRadius: theme.roundness / 2,
+          borderWidth: 1,
+          borderColor: theme.colors.outlineVariant + '33',
+          paddingHorizontal: 16,
+          position: 'relative',
+        },
+        iconContainer: {
+          position: 'absolute',
+          left: 24,
+          width: 24,
+          alignItems: 'center',
+        },
+        socialButtonText: {
+          flex: 1,
+          color: theme.colors.onSurface,
+          fontSize: 16,
+          fontWeight: '600',
+          letterSpacing: 0.5,
+          textAlign: 'center',
+          marginLeft: 24,
+        },
+        loader: {
+          position: 'absolute',
+          right: 20,
+        },
+        errorContainer: {
+          flexDirection: 'row',
+          alignItems: 'center',
+          padding: 12,
+          borderRadius: theme.roundness / 2,
+          marginBottom: 16,
+          gap: 8,
+          backgroundColor: theme.colors.error + '1A',
+        },
+        errorText: {
+          flex: 1,
+          fontSize: 14,
+        },
+        footerContainer: {
+          marginTop: 32,
+          paddingHorizontal: 16,
+        },
+        footerText: {
+          color: theme.colors.onSurfaceVariant,
+          fontSize: 12,
+          textAlign: 'center',
+          lineHeight: 18,
+        },
+        linkText: {
+          color: theme.colors.primary,
+          textDecorationLine: 'none',
+        },
+      }),
+    [theme],
+  );
 
   return (
-    <SafeAreaView style={[styles.container, { backgroundColor: theme.colors.background }]}>
-      <KeyboardAvoidingView
-        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-        style={styles.keyboardView}
-      >
-        <ScrollView
-          contentContainerStyle={styles.scrollContent}
-          showsVerticalScrollIndicator={false}
-          keyboardShouldPersistTaps="handled"
-        >
-          {/* Logo and Title */}
-          <View style={styles.header}>
-            <View style={[styles.logoContainer, { backgroundColor: theme.colors.primaryContainer }]}>
-              <MaterialCommunityIcons
-                name="paw"
-                size={48}
-                color={theme.colors.primary}
-              />
-            </View>
-            <Text variant="headlineMedium" style={[styles.title, { color: theme.colors.onSurface }]}>
-              {t('auth.appName')}
-            </Text>
-            <Text variant="bodyLarge" style={[styles.subtitle, { color: theme.colors.onSurfaceVariant }]}>
-              {t('auth.loginSubtitle')}
-            </Text>
-          </View>
+    <View style={styles.container}>
+      <StatusBar
+        barStyle={isDark ? 'light-content' : 'dark-content'}
+        backgroundColor="transparent"
+        translucent
+      />
+      
+      <View style={styles.heroContainer}>
+        <Image
+          source={{ uri: "https://lh3.googleusercontent.com/aida-public/AB6AXuCwHdb5UEA6-PQNnAd2eyZMDNAoT_sMeZpRKOmjJuAlaz6Woq6uODS4NqrSrcT9WIMBUKvnJzoFhxRyknk028l_0-K-Flmjo2kihkclCJ25VjwfDYddS1pFDgwFZn1GzzLEpLfTCcMEkBXojYXaIutolLikF2T6CcxZXeVFNqdUHRfWwaNp7M7Ht3Syw-XQxlOZI4ZG1BGDr7cpT1bDlu3AAFqiAJ8RJr73mET0UiJZEb8Rd2IFrWFv9mBEqK2jkbZkbNgvIIk35v5G" }}
+          style={styles.heroImage}
+          contentFit="cover"
+          transition={1000}
+        />
+        
+        <LinearGradient
+          colors={[theme.colors.inverseOnSurface + '66', 'transparent', theme.colors.background]}
+          style={StyleSheet.absoluteFill}
+        />
+        <LinearGradient
+          colors={[theme.colors.background, theme.colors.background + '99', 'transparent']}
+          start={{ x: 0.5, y: 1 }}
+          end={{ x: 0.5, y: 0 }}
+          style={[StyleSheet.absoluteFill, { opacity: 0.9 }]}
+        />
 
-          {/* Error Message */}
-          {authError && (
-            <View style={[styles.errorContainer, { backgroundColor: theme.colors.errorContainer }]}>
-              <MaterialCommunityIcons name="alert-circle" size={20} color={theme.colors.error} />
-              <Text style={[styles.errorText, { color: theme.colors.error }]}>{authError}</Text>
+          <View style={styles.brandingContainer}>
+            <View style={styles.logoCircle}>
+              <View style={styles.logoMask}>
+                <Image
+                  source={require('../../assets/images/foreground.png')}
+                  style={styles.logoImage}
+                  contentFit="cover"
+                />
+              </View>
             </View>
+            <Text style={styles.appName}>{t('auth.brandName')}</Text>
+          <Text style={styles.appSubtitle}>
+            {t('auth.smartCareSubtitle')}
+          </Text>
+        </View>
+      </View>
+
+      <View style={[styles.actionsContainer, { paddingBottom: 40 + insets.bottom }]}>
+        {authError && (
+          <View style={styles.errorContainer}>
+            <MaterialCommunityIcons name="alert-circle" size={20} color={theme.colors.error} />
+            <Text style={[styles.errorText, { color: theme.colors.error }]}>{authError}</Text>
+          </View>
+        )}
+
+        <View style={styles.buttonsContainer}>
+          {Platform.OS === 'ios' && (
+            <TouchableOpacity
+              style={styles.socialButton}
+              onPress={() => handleSocialLogin('apple')}
+              disabled={isLoading}
+              activeOpacity={0.9}
+            >
+              <View style={styles.iconContainer}>
+                <MaterialCommunityIcons name="apple" size={24} color={theme.colors.onSurface} />
+              </View>
+              <Text style={styles.socialButtonText}>{t('auth.continueWithApple')}</Text>
+               {isLoading && (
+                 <ActivityIndicator size="small" color={theme.colors.onSurface} style={styles.loader} />
+               )}
+            </TouchableOpacity>
           )}
 
-          {/* Login Form */}
-          <Card style={[styles.formCard, { backgroundColor: theme.colors.surface }]}>
-            <View style={styles.formContent}>
-              {/* Email Input */}
-              <View style={styles.inputContainer}>
-                <Text variant="labelLarge" style={{ color: theme.colors.onSurface }}>
-                  {t('auth.email')}
-                </Text>
-                <View
-                  style={[
-                    styles.inputWrapper,
-                    { backgroundColor: theme.colors.surfaceVariant, borderColor: theme.colors.outline },
-                  ]}
-                >
-                  <MaterialCommunityIcons
-                    name="email-outline"
-                    size={20}
-                    color={theme.colors.onSurfaceVariant}
-                  />
-                  <TextInput
-                    style={[styles.textInput, { color: theme.colors.onSurface }]}
-                    value={email}
-                    onChangeText={setEmail}
-                    placeholder={t('auth.emailPlaceholder')}
-                    placeholderTextColor={theme.colors.onSurfaceVariant}
-                    keyboardType="email-address"
-                    autoCapitalize="none"
-                    autoComplete="email"
-                    autoCorrect={false}
-                  />
-                </View>
-              </View>
-
-              {/* Password Input */}
-              <View style={styles.inputContainer}>
-                <Text variant="labelLarge" style={{ color: theme.colors.onSurface }}>
-                  {t('auth.password')}
-                </Text>
-                <View
-                  style={[
-                    styles.inputWrapper,
-                    { backgroundColor: theme.colors.surfaceVariant, borderColor: theme.colors.outline },
-                  ]}
-                >
-                  <MaterialCommunityIcons
-                    name="lock-outline"
-                    size={20}
-                    color={theme.colors.onSurfaceVariant}
-                  />
-                  <TextInput
-                    style={[styles.textInput, { color: theme.colors.onSurface }]}
-                    value={password}
-                    onChangeText={setPassword}
-                    placeholder={t('auth.passwordPlaceholder')}
-                    placeholderTextColor={theme.colors.onSurfaceVariant}
-                    secureTextEntry={!showPassword}
-                    autoCapitalize="none"
-                    autoComplete="password"
-                  />
-                  <Pressable onPress={() => setShowPassword(!showPassword)}>
-                    <MaterialCommunityIcons
-                      name={showPassword ? 'eye-off' : 'eye'}
-                      size={20}
-                      color={theme.colors.onSurfaceVariant}
-                    />
-                  </Pressable>
-                </View>
-              </View>
-
-              {/* Login Button */}
-              <Button
-                mode="contained"
-                onPress={handleEmailLogin}
-                loading={isLoading}
-                disabled={isLoading}
-                style={styles.loginButton}
-              >
-                {t('auth.login')}
-              </Button>
+          <TouchableOpacity
+            style={styles.socialButton}
+            onPress={() => handleSocialLogin('google')}
+            disabled={isLoading}
+            activeOpacity={0.9}
+          >
+            <View style={styles.iconContainer}>
+               <MaterialCommunityIcons name="google" size={24} color={theme.colors.onSurface} />
             </View>
-          </Card>
-
-          {/* Social Login Divider */}
-          <View style={styles.dividerContainer}>
-            <View style={[styles.divider, { backgroundColor: theme.colors.outline }]} />
-            <Text style={[styles.dividerText, { color: theme.colors.onSurfaceVariant }]}>
-              {t('auth.orContinueWith')}
-            </Text>
-            <View style={[styles.divider, { backgroundColor: theme.colors.outline }]} />
-          </View>
-
-          {/* Social Login Buttons */}
-          <View style={styles.socialButtonsContainer}>
-            <Button
-              mode="outlined"
-              onPress={handleGoogleLogin}
-              disabled={isLoading}
-              style={styles.socialButton}
-              icon="google"
-            >
-              Google
-            </Button>
-
-            {Platform.OS === 'ios' && (
-              <Button
-                mode="outlined"
-                onPress={handleAppleLogin}
-                disabled={isLoading}
-                style={styles.socialButton}
-                icon="apple"
-              >
-                Apple
-              </Button>
+            <Text style={styles.socialButtonText}>{t('auth.continueWithGoogle')}</Text>
+            {isLoading && (
+              <ActivityIndicator size="small" color={theme.colors.onSurface} style={styles.loader} />
             )}
-          </View>
+          </TouchableOpacity>
 
-          {/* Sign Up Link */}
-          <View style={styles.signUpContainer}>
-            <Text style={{ color: theme.colors.onSurfaceVariant }}>
-              {t('auth.noAccount')}{' '}
+          <TouchableOpacity
+            style={styles.socialButton}
+            onPress={() => handleSocialLogin('facebook')}
+            disabled={isLoading}
+            activeOpacity={0.9}
+          >
+            <View style={styles.iconContainer}>
+              <MaterialCommunityIcons name="facebook" size={24} color={theme.colors.info} />
+            </View>
+            <Text style={styles.socialButtonText}>{t('auth.continueWithFacebook')}</Text>
+            {isLoading && (
+              <ActivityIndicator size="small" color={theme.colors.onSurface} style={styles.loader} />
+            )}
+          </TouchableOpacity>
+        </View>
+
+        <View style={styles.footerContainer}>
+          <Text style={styles.footerText}>
+            {t('auth.agreementPrefix')}
+            <Text 
+              style={styles.linkText} 
+              onPress={() => openLink('https://petopia.app/terms')}
+            >
+              {t('auth.termsOfUse')}
             </Text>
-            <Link href="/(auth)/signup" asChild>
-              <Pressable>
-                <Text style={{ color: theme.colors.primary, fontWeight: '600' }}>
-                  {t('auth.signUp')}
-                </Text>
-              </Pressable>
-            </Link>
-          </View>
-        </ScrollView>
-      </KeyboardAvoidingView>
-    </SafeAreaView>
+            {t('auth.agreementMiddle')}
+            <Text 
+              style={styles.linkText} 
+              onPress={() => openLink('https://petopia.app/privacy')}
+            >
+              {t('auth.privacyPolicy')}
+            </Text>
+            {t('auth.agreementSuffix')}
+          </Text>
+        </View>
+      </View>
+    </View>
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  keyboardView: {
-    flex: 1,
-  },
-  scrollContent: {
-    flexGrow: 1,
-    padding: 24,
-    justifyContent: 'center',
-  },
-  header: {
-    alignItems: 'center',
-    marginBottom: 32,
-  },
-  logoContainer: {
-    width: 80,
-    height: 80,
-    borderRadius: 40,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginBottom: 16,
-  },
-  title: {
-    fontWeight: 'bold',
-    marginBottom: 8,
-  },
-  subtitle: {
-    textAlign: 'center',
-  },
-  errorContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    padding: 12,
-    borderRadius: 8,
-    marginBottom: 16,
-    gap: 8,
-  },
-  errorText: {
-    flex: 1,
-    fontSize: 14,
-  },
-  formCard: {
-    marginBottom: 24,
-  },
-  formContent: {
-    padding: 20,
-    gap: 16,
-  },
-  inputContainer: {
-    gap: 8,
-  },
-  inputWrapper: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    borderWidth: 1,
-    borderRadius: 8,
-    paddingHorizontal: 12,
-    paddingVertical: 4,
-    gap: 12,
-  },
-  textInput: {
-    flex: 1,
-    fontSize: 16,
-    paddingVertical: 8,
-  },
-  loginButton: {
-    marginTop: 8,
-  },
-  dividerContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 24,
-    gap: 12,
-  },
-  divider: {
-    flex: 1,
-    height: 1,
-  },
-  dividerText: {
-    fontSize: 14,
-  },
-  socialButtonsContainer: {
-    flexDirection: 'row',
-    gap: 12,
-    marginBottom: 24,
-  },
-  socialButton: {
-    flex: 1,
-  },
-  signUpContainer: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-});
