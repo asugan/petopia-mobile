@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { View, StyleSheet, ActivityIndicator, FlatList } from 'react-native';
+import { useRouter } from 'expo-router';
 import { Text, FAB } from '@/components/ui';
 import { useTheme } from '@/lib/theme';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -19,6 +20,7 @@ type CalendarViewType = 'month' | 'week';
 export default function CalendarScreen() {
   const { theme } = useTheme();
   const { t } = useTranslation();
+  const router = useRouter();
 
   const [viewType, setViewType] = useState<CalendarViewType>('week');
   const [currentDate, setCurrentDate] = useState(new Date());
@@ -63,7 +65,7 @@ export default function CalendarScreen() {
   };
 
   const handleEventPress = (event: Event) => {
-    console.log('Event pressed:', event);
+    router.push(`/event/${event._id}`);
   };
 
   const handleAddEvent = () => {

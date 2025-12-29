@@ -120,6 +120,13 @@ export function CalendarEventCard({
             />
           </View>
         </View>
+
+        <MaterialCommunityIcons
+          name="chevron-right"
+          size={24}
+          color={theme.colors.onSurfaceVariant}
+          style={{ marginLeft: 4 }}
+        />
       </View>
     </Pressable>
   );
