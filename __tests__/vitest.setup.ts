@@ -251,12 +251,12 @@ vi.mock('@/stores/userSettingsStore', () => ({
     clear: vi.fn(),
     setAuthenticated: vi.fn(),
   }),
-  isLanguageSupported: (lang: any): lang is 'tr' | 'en' | 'ar' =>
-    ['tr', 'en', 'ar'].includes(lang),
-  getLanguageDirection: (lang: string) => lang === 'ar' ? 'rtl' : 'ltr',
-  getLanguageDisplayName: (lang: string) => ({ tr: 'Türkçe', en: 'English', ar: 'العربية' })[lang] || lang,
-  getLanguageNativeName: (lang: string) => ({ tr: 'Türkçe', en: 'English', ar: 'العربية' })[lang] || lang,
-  getSupportedLanguages: () => ['tr', 'en', 'ar'],
+  isLanguageSupported: (lang: any): lang is 'tr' | 'en' =>
+    ['tr', 'en'].includes(lang),
+  getLanguageDirection: (_lang: string) => 'ltr',
+  getLanguageDisplayName: (lang: string) => ({ tr: 'Türkçe', en: 'English' })[lang] || lang,
+  getLanguageNativeName: (lang: string) => ({ tr: 'Türkçe', en: 'English' })[lang] || lang,
+  getSupportedLanguages: () => ['tr', 'en'], 
   getSupportedCurrencies: () => ['TRY', 'USD', 'EUR', 'GBP'],
   getCurrencyDisplayName: (curr: string) => ({ TRY: 'Turkish Lira', USD: 'US Dollar', EUR: 'Euro', GBP: 'British Pound' })[curr] || curr,
   getCurrencyFlag: (curr: string) => ({ TRY: '🇹🇷', USD: '🇺🇸', EUR: '🇪🇺', GBP: '🇬🇧' })[curr] || '💱',

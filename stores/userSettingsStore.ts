@@ -45,7 +45,7 @@ const defaultSettings: UserSettings = {
   baseCurrency: 'TRY',
   timezone: 'Europe/Istanbul',
   language: 'en',
-  theme: 'light',
+  theme: 'dark',
   createdAt: new Date().toISOString(),
   updatedAt: new Date().toISOString(),
 };

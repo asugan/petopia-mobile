@@ -17,11 +17,30 @@ export class UserSettingsService {
     try {
       const response = await api.get<UserSettings>(ENV.ENDPOINTS.USER_SETTINGS);
 
-      console.log("✅ User settings loaded successfully");
+      if (response.success && response.data) {
+        console.log("✅ User settings loaded successfully");
+        return {
+          success: true,
+          data: response.data,
+          message: "serviceResponse.settings.fetchSuccess",
+        };
+      }
+
+      console.error("❌ Get user settings: missing payload", {
+        endpoint: ENV.ENDPOINTS.USER_SETTINGS,
+        success: response.success,
+      });
+
       return {
-        success: true,
-        data: response.data!,
-        message: "serviceResponse.settings.fetchSuccess",
+        success: false,
+        error: {
+          code: "NO_DATA",
+          message: "serviceResponse.settings.fetchError",
+          details: {
+            reason: "Missing response data",
+            endpoint: ENV.ENDPOINTS.USER_SETTINGS,
+          },
+        },
       };
     } catch (error) {
       console.error("❌ Get user settings error:", error);
@@ -57,11 +76,31 @@ export class UserSettingsService {
         updates
       );
 
-      console.log("✅ User settings updated successfully");
+      if (response.success && response.data) {
+        console.log("✅ User settings updated successfully");
+        return {
+          success: true,
+          data: response.data,
+          message: "serviceResponse.settings.updateSuccess",
+        };
+      }
+
+      console.error("❌ Update user settings: missing payload", {
+        endpoint: ENV.ENDPOINTS.USER_SETTINGS,
+        success: response.success,
+        updates,
+      });
+
       return {
-        success: true,
-        data: response.data!,
-        message: "serviceResponse.settings.updateSuccess",
+        success: false,
+        error: {
+          code: "NO_DATA",
+          message: "serviceResponse.settings.updateError",
+          details: {
+            reason: "Missing response data",
+            endpoint: ENV.ENDPOINTS.USER_SETTINGS,
+          },
+        },
       };
     } catch (error) {
       console.error("❌ Update user settings error:", error);
@@ -97,11 +136,31 @@ export class UserSettingsService {
         { baseCurrency: currency }
       );
 
-      console.log("✅ Base currency updated successfully:", currency);
+      if (response.success && response.data) {
+        console.log("✅ Base currency updated successfully:", currency);
+        return {
+          success: true,
+          data: response.data,
+          message: "serviceResponse.settings.updateBaseCurrencySuccess",
+        };
+      }
+
+      console.error("❌ Update base currency: missing payload", {
+        endpoint: ENV.ENDPOINTS.USER_SETTINGS_CURRENCY,
+        success: response.success,
+        currency,
+      });
+
       return {
-        success: true,
-        data: response.data!,
-        message: "serviceResponse.settings.updateBaseCurrencySuccess",
+        success: false,
+        error: {
+          code: "NO_DATA",
+          message: "serviceResponse.settings.updateBaseCurrencyError",
+          details: {
+            reason: "Missing response data",
+            endpoint: ENV.ENDPOINTS.USER_SETTINGS_CURRENCY,
+          },
+        },
       };
     } catch (error) {
       console.error("❌ Update base currency error:", error);

@@ -1,4 +1,3 @@
-import i18n from '@/lib/i18n';
 import type { Currency } from '@/lib/schemas/expenseSchema';
 
 // Currency to locale mapping for proper number formatting
@@ -79,13 +78,16 @@ export const formatCurrency = (
  */
 export const formatCurrencyIntl = (
   amount: number | null | undefined,
-  currency: Currency
+  currency: Currency,
+  locale?: string
 ): string => {
   if (amount === null || amount === undefined || isNaN(amount)) {
     return `0.00 ${currency}`;
   }
 
-  const formatter = new Intl.NumberFormat('tr-TR', {
+  const targetLocale = locale || CURRENCY_LOCALE_MAP[currency] || 'tr-TR';
+
+  const formatter = new Intl.NumberFormat(targetLocale, {
     style: 'currency',
     currency: currency,
     minimumFractionDigits: 2,
@@ -105,9 +107,46 @@ export const parseCurrencyInput = (text: string): number | undefined => {
     return undefined;
   }
 
-  const cleaned = text.replace(/[^\d.,]/g, '').replace(',', '.');
+  let cleaned = text.replace(/[^\d.,]/g, '');
+  if (!cleaned) {
+    return undefined;
+  }
+
+  const hasDot = cleaned.includes('.');
+  const hasComma = cleaned.includes(',');
+
+  if (hasDot && hasComma) {
+    const lastDotIndex = cleaned.lastIndexOf('.');
+    const lastCommaIndex = cleaned.lastIndexOf(',');
+    const decimalSeparator = lastDotIndex > lastCommaIndex ? '.' : ',';
+    const thousandsSeparator = decimalSeparator === '.' ? ',' : '.';
+
+    cleaned = cleaned
+      .split(thousandsSeparator)
+      .join('')
+      .replace(decimalSeparator, '.');
+  } else {
+    const separator = hasDot ? '.' : hasComma ? ',' : null;
+
+    if (separator) {
+      const firstIndex = cleaned.indexOf(separator);
+      const lastIndex = cleaned.lastIndexOf(separator);
+      const appearsOnce = firstIndex === lastIndex;
+      const digitsAfter = cleaned.length - lastIndex - 1;
+      const isSeparatorNearEnd = lastIndex >= cleaned.length - 3;
+
+      const treatAsDecimal = appearsOnce && isSeparatorNearEnd && digitsAfter > 0;
+
+      if (treatAsDecimal) {
+        cleaned = cleaned.replace(separator, '.');
+      } else {
+        cleaned = cleaned.split(separator).join('');
+      }
+    }
+  }
+
   const parsed = parseFloat(cleaned);
-  return isNaN(parsed) ? undefined : parsed;
+  return Number.isNaN(parsed) ? undefined : parsed;
 };
 
 /**

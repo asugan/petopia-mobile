@@ -49,8 +49,14 @@ export function useDeviceLanguage() {
   }, []);
 
   const applyDeviceLanguage = async () => {
-    if (isDeviceLanguageSupported && deviceLanguage !== settings?.language) {
+    if (!isDeviceLanguageSupported || deviceLanguage === settings?.language) {
+      return;
+    }
+
+    try {
       await updateSettings({ language: deviceLanguage });
+    } catch (error) {
+      console.warn("Error applying device language:", error);
     }
   };
 
