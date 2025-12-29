@@ -30,7 +30,7 @@ const CURRENCY_SYMBOLS: Record<Currency, string> = {
  * @returns Icon name or undefined if not found
  */
 export const getCurrencyIcon = (currency: Currency): string => {
-  return CURRENCY_ICON_MAP[currency] || 'currency-swap'; // Fallback icon
+  return CURRENCY_ICON_MAP[currency] || 'cash';
 };
 
 /**

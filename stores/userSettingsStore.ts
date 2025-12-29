@@ -3,6 +3,8 @@ import { persist, createJSONStorage } from 'zustand/middleware';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import i18n from '@/lib/i18n';
 import { lightTheme, darkTheme } from '@/lib/theme/themes';
+import { userSettingsService } from '@/lib/services/userSettingsService';
+import { getCurrencySymbol as getCurrencySymbolUtil } from '@/lib/utils/currency';
 import type { Theme, ThemeMode } from '@/lib/theme/types';
 import type {
   SupportedCurrency,
@@ -80,7 +82,6 @@ export const useUserSettingsStore = create<UserSettingsState & UserSettingsActio
         set({ isLoading: true, error: null });
 
         try {
-          const { userSettingsService } = await import('@/lib/services/userSettingsService');
           const response = await userSettingsService.getSettings();
 
           if (response.success && response.data) {
@@ -125,7 +126,6 @@ export const useUserSettingsStore = create<UserSettingsState & UserSettingsActio
         set({ isLoading: true, error: null });
 
         try {
-          const { userSettingsService } = await import('@/lib/services/userSettingsService');
           const response = await userSettingsService.updateSettings(updates);
 
           if (response.success && response.data) {
@@ -178,7 +178,6 @@ export const useUserSettingsStore = create<UserSettingsState & UserSettingsActio
         set({ isLoading: true, error: null });
 
         try {
-          const { userSettingsService } = await import('@/lib/services/userSettingsService');
           const response = await userSettingsService.updateBaseCurrency(currency);
 
           if (response.success && response.data) {
@@ -256,7 +255,6 @@ export const useUserSettingsStore = create<UserSettingsState & UserSettingsActio
             i18n.changeLanguage(settings.language);
           }
 
-          console.log('✅ User settings rehydrated from AsyncStorage:', settings);
         }
       },
     }
@@ -312,13 +310,7 @@ export const getCurrencyFlag = (currency: SupportedCurrency): string => {
 };
 
 export const getCurrencySymbol = (currency: SupportedCurrency): string => {
-  const symbols: Record<SupportedCurrency, string> = {
-    TRY: '₺',
-    USD: '$',
-    EUR: '€',
-    GBP: '£',
-  };
-  return symbols[currency] || currency;
+  return getCurrencySymbolUtil(currency);
 };
 
 export type { UserSettingsState };
