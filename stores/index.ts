@@ -2,7 +2,7 @@
 export { usePetUIStore } from './petStore';
 export { useThemeStore } from './themeStore';
 export { useLanguageStore } from './languageStore';
-export { useSubscriptionStore, getSubscriptionStatusSummary } from './subscriptionStore';
+export { useSubscriptionStore } from './subscriptionStore';
 export { useEventReminderStore } from './eventReminderStore';
 
 // Store türleri için type exports

@@ -8,6 +8,7 @@ import { createQueryKeys } from './core/createQueryKeys';
 import { useResource } from './core/useResource';
 import { useResources } from './core/useResources';
 import { useConditionalQuery } from './core/useConditionalQuery';
+import { useAuthQueryEnabled } from './useAuthQueryEnabled';
 import { useMemo } from 'react';
 import { getNextFeedingTime } from '@/lib/schemas/feedingScheduleSchema';
 import { usePets } from './usePets';
@@ -73,9 +74,12 @@ export const useAllFeedingSchedules = () => {
 };
 
 export const useNextFeeding = () => {
+  const { enabled } = useAuthQueryEnabled();
+
   return useConditionalQuery<FeedingSchedule | null>({
     queryKey: feedingScheduleKeys.next(),
     queryFn: () => feedingScheduleService.getNextFeeding(),
+    enabled,
     staleTime: CACHE_TIMES.VERY_SHORT,
     refetchInterval: CACHE_TIMES.VERY_SHORT * 2, // Refresh every minute
     defaultValue: null,

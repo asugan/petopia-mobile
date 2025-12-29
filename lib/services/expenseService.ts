@@ -1,5 +1,9 @@
-import { api, ApiError, ApiResponse, download } from '../api/client';
-import { ENV } from '../config/env';
+import * as FileSystem from 'expo-file-system/legacy';
+import * as Sharing from 'expo-sharing';
+import { Buffer } from 'buffer';
+
+import { api, ApiError, ApiResponse, download } from '@/lib/api/client';
+import { ENV } from '@/lib/config/env';
 import type {
   Expense,
   CreateExpenseInput,
@@ -7,10 +11,7 @@ import type {
   ExpenseStats,
   MonthlyExpense,
   YearlyExpense
-} from '../types';
-import * as FileSystem from 'expo-file-system/legacy';
-import * as Sharing from 'expo-sharing';
-import { Buffer } from 'buffer';
+} from '@/lib/types';
 
 /**
  * Date utility functions for safe date handling
@@ -60,19 +61,25 @@ export class ExpenseService {
       return {
         success: true,
         data: response.data!,
-        message: 'Expense created successfully'
+        message: 'serviceResponse.expense.createSuccess'
       };
     } catch (error) {
       console.error('❌ Create expense error:', error);
       if (error instanceof ApiError) {
-        return {
-          success: false,
-          error: error.message
-        };
+      return {
+        success: false,
+        error: {
+          code: 'CREATE_ERROR',
+          message: 'serviceResponse.expense.createError',
+        },
+      };
       }
       return {
         success: false,
-        error: 'Failed to create expense. Please check the information and try again.'
+        error: {
+          code: 'CREATE_ERROR',
+          message: 'serviceResponse.expense.createError',
+        },
       };
     }
   }
@@ -125,12 +132,18 @@ export class ExpenseService {
       if (error instanceof ApiError) {
         return {
           success: false,
-          error: error.message
+          error: {
+            code: error.code || 'FETCH_ERROR',
+            message: error.message,
+          },
         };
       }
       return {
         success: false,
-        error: 'Failed to fetch expenses'
+        error: {
+          code: 'FETCH_ERROR',
+          message: 'serviceResponse.expense.fetchError',
+        },
       };
     }
   }
@@ -149,14 +162,29 @@ export class ExpenseService {
     } catch (error) {
       console.error('❌ Get expense error:', error);
       if (error instanceof ApiError) {
+        if (error.status === 404) {
+          return {
+            success: false,
+            error: {
+              code: 'NOT_FOUND',
+              message: 'serviceResponse.expense.notFound',
+            },
+          };
+        }
         return {
           success: false,
-          error: error.message
+          error: {
+            code: error.code || 'FETCH_ERROR',
+            message: error.message,
+          },
         };
       }
       return {
         success: false,
-        error: 'Failed to fetch expense'
+        error: {
+          code: 'FETCH_ERROR',
+          message: 'serviceResponse.expense.fetchError',
+        },
       };
     }
   }
@@ -177,19 +205,34 @@ export class ExpenseService {
       return {
         success: true,
         data: response.data!,
-        message: 'Expense updated successfully'
+        message: 'serviceResponse.expense.updateSuccess'
       };
     } catch (error) {
       console.error('❌ Update expense error:', error);
       if (error instanceof ApiError) {
+        if (error.status === 404) {
+          return {
+            success: false,
+            error: {
+              code: 'NOT_FOUND',
+              message: 'serviceResponse.expense.notFoundUpdate',
+            },
+          };
+        }
         return {
           success: false,
-          error: error.message
+          error: {
+            code: error.code || 'UPDATE_ERROR',
+            message: error.message,
+          },
         };
       }
       return {
         success: false,
-        error: 'Failed to update expense'
+        error: {
+          code: 'UPDATE_ERROR',
+          message: 'serviceResponse.expense.updateError',
+        },
       };
     }
   }
@@ -204,19 +247,34 @@ export class ExpenseService {
       console.log('✅ Expense deleted successfully:', id);
       return {
         success: true,
-        message: 'Expense deleted successfully'
+        message: 'serviceResponse.expense.deleteSuccess'
       };
     } catch (error) {
       console.error('❌ Delete expense error:', error);
       if (error instanceof ApiError) {
+        if (error.status === 404) {
+          return {
+            success: false,
+            error: {
+              code: 'NOT_FOUND',
+              message: 'serviceResponse.expense.notFoundDelete',
+            },
+          };
+        }
         return {
           success: false,
-          error: error.message
+          error: {
+            code: error.code || 'DELETE_ERROR',
+            message: error.message,
+          },
         };
       }
       return {
         success: false,
-        error: 'Failed to delete expense'
+        error: {
+          code: 'DELETE_ERROR',
+          message: 'serviceResponse.expense.deleteError',
+        },
       };
     }
   }
@@ -249,12 +307,18 @@ export class ExpenseService {
       if (error instanceof ApiError) {
         return {
           success: false,
-          error: error.message
+          error: {
+            code: error.code || 'FETCH_STATS_ERROR',
+            message: error.message,
+          },
         };
       }
       return {
         success: false,
-        error: 'Failed to fetch expense statistics'
+        error: {
+          code: 'FETCH_STATS_ERROR',
+          message: 'serviceResponse.expense.fetchStatsError',
+        },
       };
     }
   }
@@ -285,12 +349,18 @@ export class ExpenseService {
       if (error instanceof ApiError) {
         return {
           success: false,
-          error: error.message
+          error: {
+            code: error.code || 'FETCH_MONTHLY_ERROR',
+            message: error.message,
+          },
         };
       }
       return {
         success: false,
-        error: 'Failed to fetch monthly expenses'
+        error: {
+          code: 'FETCH_MONTHLY_ERROR',
+          message: 'serviceResponse.expense.fetchMonthlyError',
+        },
       };
     }
   }
@@ -319,12 +389,18 @@ export class ExpenseService {
       if (error instanceof ApiError) {
         return {
           success: false,
-          error: error.message
+          error: {
+            code: error.code || 'FETCH_YEARLY_ERROR',
+            message: error.message,
+          },
         };
       }
       return {
         success: false,
-        error: 'Failed to fetch yearly expenses'
+        error: {
+          code: 'FETCH_YEARLY_ERROR',
+          message: 'serviceResponse.expense.fetchYearlyError',
+        },
       };
     }
   }
@@ -352,12 +428,18 @@ export class ExpenseService {
       if (error instanceof ApiError) {
         return {
           success: false,
-          error: error.message
+          error: {
+            code: error.code || 'FETCH_BY_CATEGORY_ERROR',
+            message: error.message,
+          },
         };
       }
       return {
         success: false,
-        error: 'Failed to fetch expenses by category'
+        error: {
+          code: 'FETCH_BY_CATEGORY_ERROR',
+          message: 'serviceResponse.expense.fetchByCategoryError',
+        },
       };
     }
   }
@@ -388,12 +470,18 @@ export class ExpenseService {
       if (error instanceof ApiError) {
         return {
           success: false,
-          error: error.message
+          error: {
+            code: error.code || 'FETCH_BY_DATE_RANGE_ERROR',
+            message: error.message,
+          },
         };
       }
       return {
         success: false,
-        error: 'Failed to fetch expenses by date range'
+        error: {
+          code: 'FETCH_BY_DATE_RANGE_ERROR',
+          message: 'serviceResponse.expense.fetchByDateRangeError',
+        },
       };
     }
   }
@@ -424,12 +512,18 @@ export class ExpenseService {
       if (error instanceof ApiError) {
         return {
           success: false,
-          error: error.message
+          error: {
+            code: error.code || 'EXPORT_CSV_ERROR',
+            message: error.message,
+          },
         };
       }
       return {
         success: false,
-        error: 'Failed to export expenses'
+        error: {
+          code: 'EXPORT_CSV_ERROR',
+          message: 'serviceResponse.expense.exportCSVError',
+        },
       };
     }
   }
@@ -447,7 +541,13 @@ export class ExpenseService {
       const base64 = Buffer.from(response.data).toString('base64');
       const cacheDir = FileSystem.cacheDirectory ?? FileSystem.documentDirectory;
       if (!cacheDir) {
-        return { success: false, error: 'File system cache not available' };
+        return {
+          success: false,
+          error: {
+            code: 'FILE_SYSTEM_ERROR',
+            message: 'serviceResponse.expense.fileSystemError',
+          },
+        };
       }
       const uri = `${cacheDir}expenses-report.pdf`;
       await FileSystem.writeAsStringAsync(uri, base64, {
@@ -457,14 +557,26 @@ export class ExpenseService {
       return {
         success: true,
         data: { uri },
-        message: 'Expenses PDF generated',
+        message: 'serviceResponse.expense.exportPDFSuccess',
       };
     } catch (error) {
       console.error('❌ Export expenses PDF error:', error);
       if (error instanceof ApiError) {
-        return { success: false, error: error.message };
+        return { 
+          success: false, 
+          error: {
+            code: error.code || 'EXPORT_PDF_ERROR',
+            message: error.message,
+          },
+        };
       }
-      return { success: false, error: 'Failed to export expenses PDF' };
+      return {
+        success: false,
+        error: {
+          code: 'EXPORT_PDF_ERROR',
+          message: 'serviceResponse.expense.exportPDFError',
+        },
+      };
     }
   }
 
@@ -477,7 +589,13 @@ export class ExpenseService {
       const base64 = Buffer.from(response.data).toString('base64');
       const cacheDir = FileSystem.cacheDirectory ?? FileSystem.documentDirectory;
       if (!cacheDir) {
-        return { success: false, error: 'File system cache not available' };
+        return {
+          success: false,
+          error: {
+            code: 'FILE_SYSTEM_ERROR',
+            message: 'serviceResponse.expense.fileSystemError',
+          },
+        };
       }
       const uri = `${cacheDir}vet-summary-${petId}.pdf`;
       await FileSystem.writeAsStringAsync(uri, base64, {
@@ -487,14 +605,26 @@ export class ExpenseService {
       return {
         success: true,
         data: { uri },
-        message: 'Vet summary PDF generated',
+        message: 'serviceResponse.expense.exportVetSummaryPDFSuccess',
       };
     } catch (error) {
       console.error('❌ Export vet summary PDF error:', error);
       if (error instanceof ApiError) {
-        return { success: false, error: error.message };
+        return { 
+          success: false, 
+          error: {
+            code: error.code || 'EXPORT_VET_SUMMARY_PDF_ERROR',
+            message: error.message,
+          },
+        };
       }
-      return { success: false, error: 'Failed to export vet summary PDF' };
+      return {
+        success: false,
+        error: {
+          code: 'EXPORT_VET_SUMMARY_PDF_ERROR',
+          message: 'serviceResponse.expense.exportVetSummaryPDFError',
+        },
+      };
     }
   }
 
@@ -505,14 +635,26 @@ export class ExpenseService {
     try {
       const canShare = await Sharing.isAvailableAsync();
       if (!canShare) {
-        return { success: false, error: 'Sharing is not available on this device' };
+        return {
+          success: false,
+          error: {
+            code: 'SHARING_UNAVAILABLE',
+            message: 'serviceResponse.expense.sharingUnavailable',
+          },
+        };
       }
 
       await Sharing.shareAsync(uri, { dialogTitle });
-      return { success: true, message: 'Shared successfully' };
+      return { success: true, message: 'serviceResponse.expense.sharePDFSuccess' };
     } catch (error) {
       console.error('❌ Share PDF error:', error);
-      return { success: false, error: 'Failed to share PDF' };
+      return {
+        success: false,
+        error: {
+          code: 'SHARE_PDF_ERROR',
+          message: 'serviceResponse.expense.sharePDFError',
+        },
+      };
     }
   }
 }

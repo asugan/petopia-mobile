@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect as useReactEffect, useRef } from 'react';
 import {
   View,
   StyleSheet,
@@ -21,12 +21,52 @@ export default function LoginScreen() {
   const { theme } = useTheme();
   const { t } = useTranslation();
   const router = useRouter();
-  const { signIn } = useAuth();
+  const { signIn, isAuthenticated } = useAuth();
   const { isLoading, setLoading, setError, authError, clearError } = useAuthStore();
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
+  const [waitForAuth, setWaitForAuth] = useState(false);
+  const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  // Navigate when session is established after OAuth
+  // Also handle timeout if session doesn't establish within reasonable time
+  useReactEffect(() => {
+    if (waitForAuth && isAuthenticated) {
+      setWaitForAuth(false);
+      setLoading(false);
+      router.replace('/(tabs)');
+
+      // Clear any existing timeout
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+        timeoutRef.current = null;
+      }
+    }
+
+    // Start timeout if waiting for auth and not yet authenticated
+    if (waitForAuth && !isAuthenticated && !timeoutRef.current) {
+      timeoutRef.current = setTimeout(() => {
+        setWaitForAuth(false);
+        setLoading(false);
+        setError(t('auth.socialLoginError'));
+        timeoutRef.current = null;
+      }, 3000);
+    }
+
+    // Cleanup timeout if we're no longer waiting
+    if (!waitForAuth && timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+      timeoutRef.current = null;
+    }
+
+    return () => {
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+      }
+    };
+  }, [waitForAuth, isAuthenticated, router, t, setLoading, setError]);
 
   const handleEmailLogin = async () => {
     if (!email.trim() || !password.trim()) {
@@ -60,12 +100,15 @@ export default function LoginScreen() {
       const result = await signIn.google('/');
       if (result?.error) {
         setError(result.error.message || t('auth.socialLoginError'));
-      } else {
-        router.replace('/(tabs)');
+        setLoading(false);
+        return;
       }
+
+      // Don't redirect immediately - wait for session to be established (fix OAuth timing race condition)
+      // useEffect will handle navigation when isAuthenticated becomes true
+      setWaitForAuth(true);
     } catch {
       setError(t('auth.socialLoginError'));
-    } finally {
       setLoading(false);
     }
   };
@@ -78,12 +121,15 @@ export default function LoginScreen() {
       const result = await signIn.apple('/');
       if (result?.error) {
         setError(result.error.message || t('auth.socialLoginError'));
-      } else {
-        router.replace('/(tabs)');
+        setLoading(false);
+        return;
       }
+
+      // Don't redirect immediately - wait for session to be established (fix OAuth timing race condition)
+      // useEffect will handle navigation when isAuthenticated becomes true
+      setWaitForAuth(true);
     } catch {
       setError(t('auth.socialLoginError'));
-    } finally {
       setLoading(false);
     }
   };

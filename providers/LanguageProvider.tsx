@@ -7,9 +7,8 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
   const { language, initializeLanguage } = useLanguageStore();
 
   useEffect(() => {
-    // Initialize language on mount
     initializeLanguage();
-  }, [initializeLanguage]);
+  }, []);
 
   useEffect(() => {
     // Update i18n language when store language changes

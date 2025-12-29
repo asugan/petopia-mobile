@@ -17,19 +17,25 @@ export class EventService {
       return {
         success: true,
         data: response.data!,
-        message: 'Event başarıyla oluşturuldu',
+        message: 'serviceResponse.event.createSuccess',
       };
     } catch (error) {
       console.error('❌ Create event error:', error);
       if (error instanceof ApiError) {
-        return {
-          success: false,
-          error: error.message,
-        };
+      return {
+        success: false,
+        error: {
+          code: 'FETCH_ERROR',
+          message: 'serviceResponse.event.fetchError',
+        },
+      };
       }
       return {
         success: false,
-        error: 'Event oluşturulamadı. Lütfen bilgileri kontrol edip tekrar deneyin.',
+        error: {
+          code: 'CREATE_ERROR',
+          message: 'serviceResponse.event.createError',
+        },
       };
     }
   }
@@ -45,19 +51,25 @@ export class EventService {
       return {
         success: true,
         data: response.data || [],
-        message: `${response.data?.length || 0} event başarıyla yüklendi`,
+        message: 'event.fetchSuccess',
       };
     } catch (error) {
       console.error('❌ Get events error:', error);
       if (error instanceof ApiError) {
         return {
           success: false,
-          error: error.message,
+          error: {
+            code: error.code || 'FETCH_ERROR',
+            message: error.message,
+          },
         };
       }
       return {
         success: false,
-        error: 'Eventler yüklenemedi. Lütfen internet bağlantınızı kontrol edin.',
+        error: {
+          code: 'FETCH_ERROR',
+          message: 'event.fetchError',
+        },
       };
     }
   }
@@ -73,19 +85,25 @@ export class EventService {
       return {
         success: true,
         data: response.data || [],
-        message: `${response.data?.length || 0} event başarıyla yüklendi`,
+        message: 'event.fetchSuccess',
       };
     } catch (error) {
       console.error('❌ Get events by pet error:', error);
       if (error instanceof ApiError) {
         return {
           success: false,
-          error: error.message,
+          error: {
+            code: error.code || 'FETCH_ERROR',
+            message: error.message,
+          },
         };
       }
       return {
         success: false,
-        error: 'Eventler yüklenemedi. Lütfen tekrar deneyin.',
+        error: {
+          code: 'FETCH_ERROR',
+          message: 'event.fetchError',
+        },
       };
     }
   }
@@ -101,7 +119,7 @@ export class EventService {
       return {
         success: true,
         data: response.data!,
-        message: 'Event başarıyla yüklendi',
+        message: 'serviceResponse.event.fetchOneSuccess',
       };
     } catch (error) {
       console.error('❌ Get event error:', error);
@@ -109,17 +127,26 @@ export class EventService {
         if (error.status === 404) {
           return {
             success: false,
-            error: 'Event bulunamadı',
+            error: {
+              code: 'NOT_FOUND',
+              message: 'serviceResponse.event.notFound',
+            },
           };
         }
         return {
           success: false,
-          error: error.message,
+          error: {
+            code: error.code || 'FETCH_ERROR',
+            message: error.message,
+          },
         };
       }
       return {
         success: false,
-        error: 'Event yüklenemedi. Lütfen tekrar deneyin.',
+        error: {
+          code: 'FETCH_ERROR',
+          message: 'event.fetchError',
+        },
       };
     }
   }
@@ -135,7 +162,7 @@ export class EventService {
       return {
         success: true,
         data: response.data!,
-        message: 'Event başarıyla güncellendi',
+        message: 'serviceResponse.event.updateSuccess',
       };
     } catch (error) {
       console.error('❌ Update event error:', error);
@@ -143,17 +170,26 @@ export class EventService {
         if (error.status === 404) {
           return {
             success: false,
-            error: 'Güncellenecek event bulunamadı',
+            error: {
+              code: 'NOT_FOUND',
+              message: 'serviceResponse.event.notFoundUpdate',
+            },
           };
         }
         return {
           success: false,
-          error: error.message,
+          error: {
+            code: error.code || 'UPDATE_ERROR',
+            message: error.message,
+          },
         };
       }
       return {
         success: false,
-        error: 'Event güncellenemedi. Lütfen bilgileri kontrol edip tekrar deneyin.',
+        error: {
+          code: 'UPDATE_ERROR',
+          message: 'serviceResponse.event.updateError',
+        },
       };
     }
   }
@@ -168,7 +204,7 @@ export class EventService {
       console.log('✅ Event deleted successfully:', id);
       return {
         success: true,
-        message: 'Event başarıyla silindi',
+        message: 'serviceResponse.event.deleteSuccess',
       };
     } catch (error) {
       console.error('❌ Delete event error:', error);
@@ -176,17 +212,26 @@ export class EventService {
         if (error.status === 404) {
           return {
             success: false,
-            error: 'Silinecek event bulunamadı',
+            error: {
+              code: 'NOT_FOUND',
+              message: 'serviceResponse.event.notFoundDelete',
+            },
           };
         }
         return {
           success: false,
-          error: error.message,
+          error: {
+            code: error.code || 'DELETE_ERROR',
+            message: error.message,
+          },
         };
       }
       return {
         success: false,
-        error: 'Event silinemedi. Lütfen tekrar deneyin.',
+        error: {
+          code: 'DELETE_ERROR',
+          message: 'serviceResponse.event.deleteError',
+        },
       };
     }
   }
@@ -202,19 +247,25 @@ export class EventService {
       return {
         success: true,
         data: response.data || [],
-        message: `${response.data?.length || 0} event bulundu`,
+        message: 'serviceResponse.event.fetchTodaySuccess',
       };
     } catch (error) {
       console.error('❌ Get events by date error:', error);
       if (error instanceof ApiError) {
         return {
           success: false,
-          error: error.message,
+          error: {
+            code: error.code || 'FETCH_ERROR',
+            message: error.message,
+          },
         };
       }
       return {
         success: false,
-        error: 'Calendar eventleri yüklenemedi. Lütfen tekrar deneyin.',
+        error: {
+          code: 'FETCH_ERROR',
+          message: 'serviceResponse.event.fetchByDateError',
+        },
       };
     }
   }
@@ -230,19 +281,25 @@ export class EventService {
       return {
         success: true,
         data: response.data || [],
-        message: `${response.data?.length || 0} yaklaşan event bulundu`,
+        message: 'serviceResponse.event.fetchUpcomingSuccess',
       };
     } catch (error) {
       console.error('❌ Get upcoming events error:', error);
       if (error instanceof ApiError) {
         return {
           success: false,
-          error: error.message,
+          error: {
+            code: error.code || 'FETCH_ERROR',
+            message: error.message,
+          },
         };
       }
       return {
         success: false,
-        error: 'Yaklaşan eventler yüklenemedi. Lütfen tekrar deneyin.',
+        error: {
+          code: 'FETCH_ERROR',
+          message: 'serviceResponse.event.fetchUpcomingError',
+        },
       };
     }
   }
@@ -258,19 +315,25 @@ export class EventService {
       return {
         success: true,
         data: response.data || [],
-        message: `Bugün için ${response.data?.length || 0} event bulundu`,
+        message: 'serviceResponse.event.fetchByDateSuccess',
       };
     } catch (error) {
       console.error('❌ Get today events error:', error);
       if (error instanceof ApiError) {
         return {
           success: false,
-          error: error.message,
+          error: {
+            code: error.code || 'FETCH_ERROR',
+            message: error.message,
+          },
         };
       }
       return {
         success: false,
-        error: 'Bugünün eventleri yüklenemedi. Lütfen tekrar deneyin.',
+        error: {
+          code: 'FETCH_ERROR',
+          message: 'serviceResponse.event.fetchTodayError',
+        },
       };
     }
   }

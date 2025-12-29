@@ -3,6 +3,12 @@ import { ENV } from '../config/env';
 import { ErrorDetails } from '../types';
 import { authClient } from '../auth/client';
 
+let onUnauthorized: (() => void) | undefined;
+
+export const setOnUnauthorized = (callback: () => void) => {
+  onUnauthorized = callback;
+};
+
 // API Response interface
 export interface ApiResponse<T = unknown> {
   success: boolean;
@@ -86,7 +92,7 @@ const errorInterceptor = (error: AxiosError) => {
   // Handle unauthorized (session expired or invalid)
   if (status === 401) {
     console.warn('🔒 Session expired or unauthorized');
-    // Sign out locally to trigger redirect in AuthProvider
+    onUnauthorized?.();
     authClient.signOut();
   }
 

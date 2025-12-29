@@ -56,19 +56,6 @@ vi.mock(
 
 // Mock Expo modules
 vi.mock(
-  'expo-constants',
-  () => ({
-    default: {
-      expoConfig: {
-        version: '1.0.0',
-      },
-      executionEnvironment: 'storeClient',
-    },
-  }),
-  { virtual: true }
-);
-
-vi.mock(
   'expo-font',
   () => ({
     loadAsync: vi.fn(),
@@ -140,6 +127,7 @@ vi.mock('react-hook-form', () => ({
 
 // Mock react-i18next
 vi.mock('react-i18next', () => {
+  const t = (key: string) => key;
   const i18nInstance = {
     changeLanguage: vi.fn(),
     language: 'en',
@@ -150,7 +138,7 @@ vi.mock('react-i18next', () => {
   return {
     initReactI18next: { type: '3rdParty', init: vi.fn() },
     useTranslation: () => ({
-      t: (key: string) => key,
+      t,
       i18n: i18nInstance,
     }),
     I18nextProvider: ({ children }: any) => children,
@@ -168,6 +156,19 @@ vi.mock('i18next', () => ({
   },
 }));
 
+// Mock Better Auth client for hooks that read session info
+vi.mock('@/lib/auth/client', () => ({
+  authClient: {
+    useSession: vi.fn(() => ({
+      data: {
+        user: {
+          id: 'test-user-id',
+        },
+      },
+    })),
+  },
+}));
+
 // Mock @expo/vector-icons
 vi.mock(
   '@expo/vector-icons',
@@ -176,15 +177,6 @@ vi.mock(
     Ionicons: 'Ionicons',
     AntDesign: 'AntDesign',
     FontAwesome: 'FontAwesome',
-  }),
-  { virtual: true }
-);
-
-// Mock expo modules that have internal dependencies
-vi.mock(
-  'expo',
-  () => ({
-    Constants: { expoConfig: { version: '1.0.0' } },
   }),
   { virtual: true }
 );

@@ -8,19 +8,19 @@ import { PetPickerBase } from '@/components/PetPicker';
 import { ProtectedRoute } from '@/components/subscription';
 import { FeedingScheduleCard } from '@/components/feeding/FeedingScheduleCard';
 import { useTheme } from '@/lib/theme';
-import { usePets } from '../../lib/hooks/usePets';
-import { useHealthRecords } from '../../lib/hooks/useHealthRecords';
+import { usePets } from '@/lib/hooks/usePets';
+import { useHealthRecords } from '@/lib/hooks/useHealthRecords';
 import {
   useAllFeedingSchedules,
   useDeleteFeedingSchedule,
   useToggleFeedingSchedule,
-} from '../../lib/hooks/useFeedingSchedules';
-import LoadingSpinner from '../../components/LoadingSpinner';
-import EmptyState from '../../components/EmptyState';
-import { HealthRecordForm } from '../../components/forms/HealthRecordForm';
-import { FeedingScheduleModal } from '../../components/FeedingScheduleModal';
-import { TURKCE_LABELS, HEALTH_RECORD_COLORS, HEALTH_RECORD_ICONS, LAYOUT } from '../../constants';
-import type { HealthRecord, FeedingSchedule } from '../../lib/types';
+} from '@/lib/hooks/useFeedingSchedules';
+import LoadingSpinner from '@/components/LoadingSpinner';
+import EmptyState from '@/components/EmptyState';
+import { HealthRecordForm } from '@/components/forms/HealthRecordForm';
+import { FeedingScheduleModal } from '@/components/FeedingScheduleModal';
+import { TURKCE_LABELS, HEALTH_RECORD_COLORS, HEALTH_RECORD_ICONS, LAYOUT } from '@/constants';
+import type { HealthRecord, FeedingSchedule } from '@/lib/types';
 
 
 type CareTabValue = 'health' | 'feeding';

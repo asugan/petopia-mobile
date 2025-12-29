@@ -1,6 +1,6 @@
-import { api, ApiError, ApiResponse } from '../api/client';
-import { ENV } from '../config/env';
-import type { HealthRecord, CreateHealthRecordInput, UpdateHealthRecordInput } from '../types';
+import { api, ApiError, ApiResponse } from '@/lib/api/client';
+import { ENV } from '@/lib/config/env';
+import type { HealthRecord, CreateHealthRecordInput, UpdateHealthRecordInput } from '@/lib/types';
 
 /**
  * Health Record Service - Tüm health record API operasyonlarını yönetir
@@ -17,19 +17,26 @@ export class HealthRecordService {
       return {
         success: true,
         data: response.data!,
-        message: 'Sağlık kaydı başarıyla oluşturuldu',
+        message: 'serviceResponse.healthRecord.createSuccess',
       };
     } catch (error) {
       console.error('❌ Create health record error:', error);
       if (error instanceof ApiError) {
         return {
           success: false,
-          error: error.message,
+          error: {
+            code: error.code || 'CREATE_ERROR',
+            message: 'serviceResponse.healthRecord.createError',
+            details: { rawMessage: error.message },
+          },
         };
       }
       return {
         success: false,
-        error: 'Sağlık kaydı oluşturulamadı. Lütfen bilgileri kontrol edip tekrar deneyin.',
+        error: {
+          code: 'CREATE_ERROR',
+          message: 'serviceResponse.healthRecord.createError',
+        },
       };
     }
   }
@@ -45,19 +52,26 @@ export class HealthRecordService {
       return {
         success: true,
         data: response.data || [],
-        message: `${response.data?.length || 0} sağlık kaydı başarıyla yüklendi`,
+        message: 'serviceResponse.healthRecord.fetchSuccess',
       };
     } catch (error) {
       console.error('❌ Get health records error:', error);
       if (error instanceof ApiError) {
         return {
           success: false,
-          error: error.message,
+          error: {
+            code: error.code || 'FETCH_ERROR',
+            message: 'serviceResponse.healthRecord.fetchError',
+            details: { rawMessage: error.message },
+          },
         };
       }
       return {
         success: false,
-        error: 'Sağlık kayıtları yüklenemedi. Lütfen internet bağlantınızı kontrol edin.',
+        error: {
+          code: 'FETCH_ERROR',
+          message: 'serviceResponse.healthRecord.fetchError',
+        },
       };
     }
   }
@@ -73,19 +87,26 @@ export class HealthRecordService {
       return {
         success: true,
         data: response.data || [],
-        message: `${response.data?.length || 0} sağlık kaydı başarıyla yüklendi`,
+        message: 'serviceResponse.healthRecord.fetchSuccess',
       };
     } catch (error) {
       console.error('❌ Get health records by pet error:', error);
       if (error instanceof ApiError) {
         return {
           success: false,
-          error: error.message,
+          error: {
+            code: error.code || 'FETCH_ERROR',
+            message: 'serviceResponse.healthRecord.fetchError',
+            details: { rawMessage: error.message },
+          },
         };
       }
       return {
         success: false,
-        error: 'Sağlık kayıtları yüklenemedi. Lütfen tekrar deneyin.',
+        error: {
+          code: 'FETCH_ERROR',
+          message: 'serviceResponse.healthRecord.fetchError',
+        },
       };
     }
   }
@@ -101,7 +122,7 @@ export class HealthRecordService {
       return {
         success: true,
         data: response.data!,
-        message: 'Sağlık kaydı başarıyla yüklendi',
+        message: 'serviceResponse.healthRecord.fetchOneSuccess',
       };
     } catch (error) {
       console.error('❌ Get health record error:', error);
@@ -109,17 +130,27 @@ export class HealthRecordService {
         if (error.status === 404) {
           return {
             success: false,
-            error: 'Sağlık kaydı bulunamadı',
+            error: {
+              code: 'NOT_FOUND',
+              message: 'serviceResponse.healthRecord.notFound',
+            },
           };
         }
         return {
           success: false,
-          error: error.message,
+          error: {
+            code: error.code || 'FETCH_ERROR',
+            message: 'serviceResponse.healthRecord.fetchError',
+            details: { rawMessage: error.message },
+          },
         };
       }
       return {
         success: false,
-        error: 'Sağlık kaydı yüklenemedi. Lütfen tekrar deneyin.',
+        error: {
+          code: 'FETCH_ERROR',
+          message: 'serviceResponse.healthRecord.fetchError',
+        },
       };
     }
   }
@@ -135,7 +166,7 @@ export class HealthRecordService {
       return {
         success: true,
         data: response.data!,
-        message: 'Sağlık kaydı başarıyla güncellendi',
+        message: 'serviceResponse.healthRecord.updateSuccess',
       };
     } catch (error) {
       console.error('❌ Update health record error:', error);
@@ -143,17 +174,27 @@ export class HealthRecordService {
         if (error.status === 404) {
           return {
             success: false,
-            error: 'Güncellenecek sağlık kaydı bulunamadı',
+            error: {
+              code: 'NOT_FOUND',
+              message: 'serviceResponse.healthRecord.notFoundUpdate',
+            },
           };
         }
         return {
           success: false,
-          error: error.message,
+          error: {
+            code: error.code || 'UPDATE_ERROR',
+            message: 'serviceResponse.healthRecord.updateError',
+            details: { rawMessage: error.message },
+          },
         };
       }
       return {
         success: false,
-        error: 'Sağlık kaydı güncellenemedi. Lütfen bilgileri kontrol edip tekrar deneyin.',
+        error: {
+          code: 'UPDATE_ERROR',
+          message: 'serviceResponse.healthRecord.updateError',
+        },
       };
     }
   }
@@ -168,7 +209,7 @@ export class HealthRecordService {
       console.log('✅ Health record deleted successfully:', id);
       return {
         success: true,
-        message: 'Sağlık kaydı başarıyla silindi',
+        message: 'serviceResponse.healthRecord.deleteSuccess',
       };
     } catch (error) {
       console.error('❌ Delete health record error:', error);
@@ -176,17 +217,27 @@ export class HealthRecordService {
         if (error.status === 404) {
           return {
             success: false,
-            error: 'Silinecek sağlık kaydı bulunamadı',
+            error: {
+              code: 'NOT_FOUND',
+              message: 'serviceResponse.healthRecord.notFoundDelete',
+            },
           };
         }
         return {
           success: false,
-          error: error.message,
+          error: {
+            code: error.code || 'DELETE_ERROR',
+            message: 'serviceResponse.healthRecord.deleteError',
+            details: { rawMessage: error.message },
+          },
         };
       }
       return {
         success: false,
-        error: 'Sağlık kaydı silinemedi. Lütfen tekrar deneyin.',
+        error: {
+          code: 'DELETE_ERROR',
+          message: 'serviceResponse.healthRecord.deleteError',
+        },
       };
     }
   }
@@ -206,19 +257,26 @@ export class HealthRecordService {
       return {
         success: true,
         data: filteredRecords,
-        message: `${filteredRecords.length} ${type} kaydı bulundu`,
+        message: 'serviceResponse.healthRecord.fetchByTypeSuccess',
       };
     } catch (error) {
       console.error('❌ Get health records by type error:', error);
       if (error instanceof ApiError) {
         return {
           success: false,
-          error: error.message,
+          error: {
+            code: error.code || 'FETCH_ERROR',
+            message: 'serviceResponse.healthRecord.fetchByTypeError',
+            details: { rawMessage: error.message },
+          },
         };
       }
       return {
         success: false,
-        error: 'Sağlık kayıtları yüklenemedi. Lütfen tekrar deneyin.',
+        error: {
+          code: 'FETCH_ERROR',
+          message: 'serviceResponse.healthRecord.fetchByTypeError',
+        },
       };
     }
   }

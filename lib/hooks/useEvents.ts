@@ -7,6 +7,7 @@ import { createQueryKeys } from './core/createQueryKeys';
 import { useResource } from './core/useResource';
 import { useResources } from './core/useResources';
 import { useConditionalQuery } from './core/useConditionalQuery';
+import { useAuthQueryEnabled } from './useAuthQueryEnabled';
 import { useMemo } from 'react';
 import { filterUpcomingEvents, groupEventsByTime, EventGroups } from '@/lib/utils/events';
 import { useReminderScheduler } from '@/hooks/useReminderScheduler';
@@ -54,18 +55,24 @@ export const useCalendarEvents = (date: string, options?: { enabled?: boolean })
 };
 
 export const useUpcomingEvents = () => {
+  const { enabled } = useAuthQueryEnabled();
+
   return useResources<Event>({
     queryKey: eventKeys.upcoming(),
     queryFn: () => eventService.getUpcomingEvents(),
+    enabled,
     staleTime: CACHE_TIMES.SHORT,
     refetchInterval: CACHE_TIMES.MEDIUM,
   });
 };
 
 export const useTodayEvents = () => {
+  const { enabled } = useAuthQueryEnabled();
+
   return useResources<Event>({
     queryKey: eventKeys.today(),
     queryFn: () => eventService.getTodayEvents(),
+    enabled,
     staleTime: CACHE_TIMES.VERY_SHORT,
     refetchInterval: CACHE_TIMES.VERY_SHORT,
   });

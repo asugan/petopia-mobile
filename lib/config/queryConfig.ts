@@ -90,8 +90,8 @@ export const MOBILE_QUERY_CONFIG: QueryClientConfig = {
       },
       // Mobile app doesn't typically refocus
       refetchOnWindowFocus: false,
-      // Enable background refetch for data freshness
-      refetchOnReconnect: true,
+      // Disable automatic refetch on reconnect - handled manually in useOnlineManager
+      refetchOnReconnect: false,
       // Network-aware refetching
       networkMode: 'online',
       // Prevent unnecessary re-renders

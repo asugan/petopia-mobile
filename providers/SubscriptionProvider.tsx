@@ -3,6 +3,7 @@ import Purchases, { CustomerInfo } from 'react-native-purchases';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useAuth } from '@/lib/auth';
 import { useSubscriptionStore } from '@/stores/subscriptionStore';
+import { useSubscriptionStatus, useStartTrial, useRefetchSubscriptionStatus } from '@/lib/hooks/useSubscriptionQueries';
 import {
   initializeRevenueCat,
   syncUserIdentity,
@@ -14,19 +15,8 @@ interface SubscriptionProviderProps {
   children: React.ReactNode;
 }
 
-// Migration key to track if we've migrated from local trial storage
 const TRIAL_MIGRATION_KEY = 'trial_migration_v2_done';
 
-/**
- * SubscriptionProvider handles RevenueCat SDK lifecycle and subscription status
- *
- * Backend-first approach:
- * 1. Initialize RevenueCat SDK on mount
- * 2. Sync user identity when auth state changes (login/logout)
- * 3. Listen for CustomerInfo updates (for purchases)
- * 4. Fetch subscription status from backend
- * 5. Auto-start trial for new users
- */
 export function SubscriptionProvider({ children }: SubscriptionProviderProps) {
   const { user, isAuthenticated, isPending } = useAuth();
   const {
@@ -34,65 +24,24 @@ export function SubscriptionProvider({ children }: SubscriptionProviderProps) {
     setInitialized,
     setLoading,
     setError,
-    fetchSubscriptionStatus,
-    startTrial,
-    subscriptionStatus,
-    canStartTrial,
+    setOfferings,
     isInitialized,
-    resetSubscription,
+    resetSubscription: resetStore,
   } = useSubscriptionStore();
 
-  // Track if we've started trial initialization to prevent double-calls
+  const { data: subscriptionStatus, isLoading: isStatusLoading } = useSubscriptionStatus();
+  const startTrialMutation = useStartTrial();
+  const refetchStatusMutation = useRefetchSubscriptionStatus();
+
   const trialInitRef = useRef(false);
-
-  // Track trial activation state to prevent race conditions
   const isActivatingTrialRef = useRef(false);
-
-  // Track which user ID was last synced with RevenueCat
   const syncedUserIdRef = useRef<string | null>(null);
+  const initializeStatusRef = useRef<(() => Promise<void>) | null>(null);
+  const handleUserLoginRef = useRef<(() => Promise<void>) | null>(null);
+  const handleUserLogoutRef = useRef<(() => Promise<void>) | null>(null);
+  const subscriptionStatusRef = useRef(subscriptionStatus);
+  const startTrialMutateAsyncRef = useRef(startTrialMutation.mutateAsync);
 
-  /**
-   * Handle CustomerInfo updates from RevenueCat
-   * After update, also refresh backend status
-   * Uses rate-limited refresh to prevent loops
-   */
-  const handleCustomerInfoUpdate = useCallback(async (info: CustomerInfo) => {
-    console.log('[SubscriptionProvider] CustomerInfo updated');
-    setCustomerInfo(info);
-    // Refresh backend status when RevenueCat info changes
-    // Note: refreshSubscriptionStatus has built-in rate limiting
-    if (isAuthenticated) {
-      await fetchSubscriptionStatus();
-    }
-  }, [setCustomerInfo, fetchSubscriptionStatus, isAuthenticated]);
-
-  /**
-   * Migrate from local trial storage to backend
-   * This clears the old local trial data
-   */
-  const migrateLocalTrialStorage = useCallback(async () => {
-    try {
-      const migrated = await AsyncStorage.getItem(TRIAL_MIGRATION_KEY);
-      if (migrated) {
-        console.log('[SubscriptionProvider] Trial migration already done');
-        return;
-      }
-
-      // Clear old subscription storage (local trial data)
-      await AsyncStorage.removeItem('subscription-storage');
-      await AsyncStorage.setItem(TRIAL_MIGRATION_KEY, 'true');
-
-      console.log('[SubscriptionProvider] Migrated from local trial storage');
-    } catch (error) {
-      console.error('[SubscriptionProvider] Migration error:', error);
-    }
-  }, []);
-
-  /**
-   * Initialize subscription status from backend
-   * For new users (canStartTrial = true), auto-start trial
-   * Only runs when user is authenticated
-   */
   const initializeSubscriptionStatus = useCallback(async () => {
     if (trialInitRef.current || !isAuthenticated || isPending) {
       return;
@@ -100,39 +49,25 @@ export function SubscriptionProvider({ children }: SubscriptionProviderProps) {
     trialInitRef.current = true;
 
     try {
-      console.log('[SubscriptionProvider] Initializing subscription status for authenticated user');
+      console.log('[SubscriptionProvider] Initializing subscription status');
 
-      // Fetch current subscription status from backend
-      await fetchSubscriptionStatus();
+      const canStartTrial = subscriptionStatusRef.current?.canStartTrial ?? false;
 
-      // Get updated state after fetch
-      const currentStatus = useSubscriptionStore.getState().subscriptionStatus;
-
-      // If user can start a trial (new user, device not used before), auto-start it
-      if (currentStatus?.canStartTrial && !isActivatingTrialRef.current) {
+      if (canStartTrial && !isActivatingTrialRef.current) {
         console.log('[SubscriptionProvider] New user detected, starting trial...');
         isActivatingTrialRef.current = true;
 
-        const success = await startTrial();
-
-        if (success) {
-          // Immediate refresh without rate limiting using the store method
-          const store = useSubscriptionStore.getState();
-          await store.fetchSubscriptionStatus();
-        }
+        await startTrialMutateAsyncRef.current();
 
         isActivatingTrialRef.current = false;
       }
     } catch (error) {
       console.error('[SubscriptionProvider] Error initializing subscription status:', error);
       isActivatingTrialRef.current = false;
-      // Don't rethrow - allow app to continue even if subscription check fails
+      trialInitRef.current = false;
     }
-  }, [isAuthenticated, isPending, fetchSubscriptionStatus, startTrial]);
+  }, [isAuthenticated, isPending]);
 
-  /**
-   * Initialize the SDK
-   */
   const initializeSDK = useCallback(async () => {
     if (isInitialized) {
       console.log('[SubscriptionProvider] SDK already initialized');
@@ -143,25 +78,25 @@ export function SubscriptionProvider({ children }: SubscriptionProviderProps) {
       setLoading(true);
       setError(null);
 
-      // Migrate local trial storage first
-      await migrateLocalTrialStorage();
+      const migrated = await AsyncStorage.getItem(TRIAL_MIGRATION_KEY);
+      if (!migrated) {
+        await AsyncStorage.removeItem('subscription-storage');
+        await AsyncStorage.setItem(TRIAL_MIGRATION_KEY, 'true');
+        console.log('[SubscriptionProvider] Migrated from local trial storage');
+      }
 
-      // Initialize with user ID if authenticated
       const userId = isAuthenticated ? user?.id ?? null : null;
       await initializeRevenueCat(userId);
-      syncedUserIdRef.current = userId;
 
-      // Get initial customer info (for purchases)
+      const currentAppUserId = await Purchases.getAppUserID();
+      const isAnonymous = currentAppUserId.startsWith('$RCAnonymousID');
+      syncedUserIdRef.current = isAnonymous ? null : currentAppUserId;
+
       const customerInfo = await getCustomerInfo();
       setCustomerInfo(customerInfo);
 
       setInitialized(true);
       console.log('[SubscriptionProvider] SDK initialized successfully');
-
-      // Initialize subscription status from backend after SDK is ready
-      if (isAuthenticated) {
-        await initializeSubscriptionStatus();
-      }
     } catch (error) {
       console.error('[SubscriptionProvider] SDK initialization error:', error);
       setError((error as Error).message);
@@ -176,22 +111,10 @@ export function SubscriptionProvider({ children }: SubscriptionProviderProps) {
     setInitialized,
     setLoading,
     setError,
-    migrateLocalTrialStorage,
-    initializeSubscriptionStatus,
   ]);
 
-  /**
-   * Handle user login - sync identity with RevenueCat and fetch subscription status
-   * Includes guard to prevent duplicate calls
-   */
   const handleUserLogin = useCallback(async () => {
     if (!user?.id || !isAuthenticated) return;
-
-    // Prevent duplicate calls for the same user
-    if (syncedUserIdRef.current === user.id) {
-      console.log('[SubscriptionProvider] User already synced, skipping duplicate sync');
-      return;
-    }
 
     try {
       setLoading(true);
@@ -199,10 +122,18 @@ export function SubscriptionProvider({ children }: SubscriptionProviderProps) {
 
       const customerInfo = await syncUserIdentity(user.id);
       setCustomerInfo(customerInfo);
-      syncedUserIdRef.current = user.id;
 
-      // Fetch subscription status from backend after login
-      await initializeSubscriptionStatus();
+      const currentAppUserId = await Purchases.getAppUserID();
+      syncedUserIdRef.current = currentAppUserId;
+
+      try {
+        await refetchStatusMutation.mutateAsync();
+        console.log('[SubscriptionProvider] Subscription status refetched after sync');
+      } catch (refetchError) {
+        console.error('[SubscriptionProvider] Error refetching subscription status:', refetchError);
+      }
+
+      await initializeStatusRef.current?.();
 
       console.log('[SubscriptionProvider] User identity synced');
     } catch (error) {
@@ -211,11 +142,15 @@ export function SubscriptionProvider({ children }: SubscriptionProviderProps) {
     } finally {
       setLoading(false);
     }
-  }, [user?.id, isAuthenticated, setCustomerInfo, setLoading, setError, initializeSubscriptionStatus]);
+  }, [
+    user?.id,
+    isAuthenticated,
+    setCustomerInfo,
+    setLoading,
+    setError,
+    refetchStatusMutation,
+  ]);
 
-  /**
-   * Handle user logout - reset to anonymous
-   */
   const handleUserLogout = useCallback(async () => {
     try {
       setLoading(true);
@@ -223,9 +158,8 @@ export function SubscriptionProvider({ children }: SubscriptionProviderProps) {
 
       const customerInfo = await resetUserIdentity();
       setCustomerInfo(customerInfo);
-      syncedUserIdRef.current = null;
 
-      // Reset trial init flag for next login
+      syncedUserIdRef.current = null;
       trialInitRef.current = false;
 
       console.log('[SubscriptionProvider] Reset to anonymous user');
@@ -237,65 +171,86 @@ export function SubscriptionProvider({ children }: SubscriptionProviderProps) {
     }
   }, [setCustomerInfo, setLoading, setError]);
 
-  // Initialize SDK after auth state is determined
+  const handleCustomerInfoUpdate = useCallback((info: CustomerInfo) => {
+    console.log('[SubscriptionProvider] CustomerInfo updated');
+    setCustomerInfo(info);
+  }, [setCustomerInfo]);
+
+  useEffect(() => {
+    subscriptionStatusRef.current = subscriptionStatus;
+  }, [subscriptionStatus]);
+
+  useEffect(() => {
+    startTrialMutateAsyncRef.current = startTrialMutation.mutateAsync;
+  }, [startTrialMutation.mutateAsync]);
+
+  useEffect(() => {
+    initializeStatusRef.current = initializeSubscriptionStatus;
+    handleUserLoginRef.current = handleUserLogin;
+    handleUserLogoutRef.current = handleUserLogout;
+  }, [initializeSubscriptionStatus, handleUserLogin, handleUserLogout]);
+
   useEffect(() => {
     if (isPending) {
-      // Wait for auth state to be determined
       return;
     }
 
-    // Only initialize SDK if user will potentially access subscription features
-    // Skip initialization entirely for unauthenticated users to prevent unnecessary API calls
-    if (!isAuthenticated) {
-      console.log('[SubscriptionProvider] Skipping SDK initialization - user not authenticated');
+    if (!isAuthenticated || isInitialized) {
       return;
     }
 
     initializeSDK();
-  }, [isPending, isAuthenticated, initializeSDK]);
+  }, [isPending, isAuthenticated, isInitialized, initializeSDK]);
 
-  // Handle logout transitions
   useEffect(() => {
     if (isPending || !isInitialized) {
       return;
     }
 
     if (!isAuthenticated) {
-      handleUserLogout();
-      resetSubscription();
+      handleUserLogoutRef.current?.();
+      resetStore();
     }
-  }, [isAuthenticated, isPending, isInitialized, handleUserLogout, resetSubscription]);
+  }, [isAuthenticated, isPending, isInitialized, resetStore]);
 
-  // Set up CustomerInfo update listener (runs once after initialization)
   useEffect(() => {
     if (!isInitialized) return;
 
     console.log('[SubscriptionProvider] Setting up CustomerInfo listener');
 
-    // Defer listener setup to next tick to avoid race condition
-    // This prevents the customLogHandler error during SDK initialization
     const setupTimer = setTimeout(() => {
       Purchases.addCustomerInfoUpdateListener(handleCustomerInfoUpdate);
-    }, 100); // Increased delay to ensure SDK is fully ready
+    }, 100);
 
     return () => {
       console.log('[SubscriptionProvider] Removing CustomerInfo listener');
       clearTimeout(setupTimer);
       Purchases.removeCustomerInfoUpdateListener(handleCustomerInfoUpdate);
     };
-    // Note: handleCustomerInfoUpdate is stable due to useCallback with proper deps
-  }, [isInitialized]); // Removed handleCustomerInfoUpdate from deps to prevent re-registration
+  }, [isInitialized, handleCustomerInfoUpdate]);
 
-  // Handle explicit login (when user signs in after initial load)
   useEffect(() => {
     if (!isInitialized || isPending) return;
 
-    // If SDK is initialized and user just logged in, sync identity
-    if (isAuthenticated && user?.id) {
-      // Only sync if we haven't already (check if current RevenueCat user matches)
-      handleUserLogin();
+    if (isAuthenticated && user?.id && syncedUserIdRef.current !== user.id) {
+      handleUserLoginRef.current?.();
     }
-  }, [isAuthenticated, user?.id, isInitialized, isPending, handleUserLogin]);
+  }, [isAuthenticated, user?.id, isInitialized, isPending]);
+
+  useEffect(() => {
+    if (
+      isAuthenticated &&
+      !isPending &&
+      !isStatusLoading &&
+      !trialInitRef.current
+    ) {
+      initializeStatusRef.current?.();
+    }
+  }, [
+    isAuthenticated,
+    isPending,
+    isStatusLoading,
+  ]);
 
   return <>{children}</>;
 }

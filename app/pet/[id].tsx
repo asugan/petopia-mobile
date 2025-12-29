@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useRouter, useLocalSearchParams } from 'expo-router';
-import PetDetailModal from '../../components/PetDetailModal';
+import PetDetailModal from '@/components/PetDetailModal';
 
 /**
  * This route serves as a URL entry point for the pet detail modal.

@@ -292,10 +292,12 @@ For detailed technical documentation, see [Budget Simplification Implementation 
 Create a `.env` file in the root directory with the following variables:
 
 ```env
-EXPO_PUBLIC_API_URL=https://your-api-url.com
+EXPO_PUBLIC_API_URL=https://your-ngrok-url.ngrok-free.app  # For local dev, replace with your actual ngrok URL
 EXPO_PUBLIC_REVENUECAT_API_KEY=your-revenuecat-key
 # Add other environment variables as needed
 ```
+
+**Note**: For local development with ngrok, replace `https://your-ngrok-url.ngrok-free.app` with your actual ngrok tunnel URL (e.g., `https://abc123.ngrok-free.app`). For production, use your actual production API endpoint.
 
 ### Build Configuration
 
