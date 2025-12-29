@@ -8,15 +8,19 @@ import { Gesture, GestureDetector, Directions } from 'react-native-gesture-handl
 import { scheduleOnRN } from 'react-native-worklets';
 import { useTheme } from '@/lib/theme';
 import { useOnboardingStore } from '@/stores/onboardingStore';
-import { useMemo } from 'react';
+import { useMemo, type ComponentProps } from 'react';
 
-const FEATURES = [
+type MaterialIconName = ComponentProps<typeof MaterialIcons>['name'];
+type FeatureKey = 'tracking' | 'health' | 'events' | 'finance';
+type Feature = { icon: MaterialIconName; key: FeatureKey };
+
+const FEATURES: Feature[] = [
   {
     icon: 'pets',
     key: 'tracking',
   },
   {
-    icon: 'healing', 
+    icon: 'healing',
     key: 'health',
   },
   {
@@ -212,7 +216,7 @@ export default function OnboardingStep2() {
             <View key={index} style={styles.featureCard}>
               <View style={styles.featureIconContainer}>
                 <View style={styles.iconCircle}>
-                  <MaterialIcons name={item.icon as any} size={28} color={theme.colors.primary} />
+                  <MaterialIcons name={item.icon} size={28} color={theme.colors.primary} />
                 </View>
                 <View style={styles.featureTextContent}>
                   <Text style={styles.featureTitle} numberOfLines={1}>
