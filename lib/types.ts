@@ -29,6 +29,7 @@ import {
   HealthRecordUpdateInput,
 } from "./schemas/healthRecordSchema";
 import { Pet, PetCreateInput, PetUpdateInput } from "./schemas/petSchema";
+import type { ThemeMode } from "./theme/types";
 
 // ============================================================================
 // SCHEMA TYPE RE-EXPORTLERİ
@@ -182,6 +183,27 @@ export interface BudgetAlert {
     severity: "warning" | "critical";
   };
 }
+
+// ============================================================================
+// USER SETTINGS TYPES
+// ============================================================================
+export type SupportedLanguage = "tr" | "en";
+export type SupportedCurrency = "TRY" | "USD" | "EUR" | "GBP";
+
+export interface UserSettings {
+  id: string;
+  userId: string;
+  baseCurrency: SupportedCurrency;
+  timezone: string;
+  language: SupportedLanguage;
+  theme: ThemeMode;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export type UserSettingsUpdate = Partial<
+  Omit<UserSettings, "id" | "userId" | "createdAt" | "updatedAt">
+>;
 
 export type PetWithFinances = Pet & {
   expenses?: Expense[];

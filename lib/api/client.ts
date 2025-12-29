@@ -171,6 +171,12 @@ export const api = {
     return response.data;
   },
 
+  // PATCH request
+  patch: async <T = unknown>(url: string, data?: unknown): Promise<ApiResponse<T>> => {
+    const response = await apiClient.patch<ApiResponse<T>>(url, data);
+    return response.data;
+  },
+
   // File upload (multipart/form-data)
   upload: async <T = unknown>(url: string, formData: FormData): Promise<ApiResponse<T>> => {
     const response = await apiClient.post<ApiResponse<T>>(url, formData, {

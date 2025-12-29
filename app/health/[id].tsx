@@ -11,6 +11,9 @@ import { HealthRecordForm } from '@/components/forms/HealthRecordForm';
 import LoadingSpinner from '@/components/LoadingSpinner';
 import { HEALTH_RECORD_COLORS, HEALTH_RECORD_ICONS, TURKCE_LABELS } from '@/constants';
 import { useDeleteHealthRecord, useHealthRecord } from '@/lib/hooks/useHealthRecords';
+import { formatCurrency, getCurrencyIcon } from '@/lib/utils/currency';
+import { useUserSettingsStore } from '@/stores/userSettingsStore';
+import type { IconName } from '@/lib/types';
 
 export default function HealthRecordDetailScreen() {
   const { t } = useTranslation();
@@ -19,6 +22,13 @@ export default function HealthRecordDetailScreen() {
   const router = useRouter();
   const [isEditModalVisible, setIsEditModalVisible] = useState(false);
   const [editFormKey, setEditFormKey] = useState(0);
+  const { settings } = useUserSettingsStore();
+  const baseCurrency = settings?.baseCurrency || 'TRY';
+  const dateLocale = settings?.language === 'tr' ? 'tr-TR' : 'en-US';
+
+  const isMaterialIconName = (name: string): name is IconName => {
+    return name in MaterialCommunityIcons.glyphMap;
+  };
 
   const deleteMutation = useDeleteHealthRecord();
   const { data: healthRecord, isLoading, refetch } = useHealthRecord(id as string);
@@ -71,10 +81,11 @@ export default function HealthRecordDetailScreen() {
     const shareContent = `
 ${healthRecord.title}
 ${t('pets.type')}: ${TURKCE_LABELS.HEALTH_RECORD_TYPES[healthRecord.type as keyof typeof TURKCE_LABELS.HEALTH_RECORD_TYPES]}
-${t('events.date')}: ${new Date(healthRecord.date).toLocaleDateString('tr-TR')}
+ ${t('events.date')}: ${new Date(healthRecord.date).toLocaleDateString(dateLocale)}
+
 ${healthRecord.veterinarian ? `${t('healthRecords.veterinarian')}: Dr. ${healthRecord.veterinarian}` : ''}
 ${healthRecord.clinic ? `${t('healthRecords.clinic')}: ${healthRecord.clinic}` : ''}
-${healthRecord.cost ? `${t('healthRecords.cost')}: ₺${healthRecord.cost.toLocaleString('tr-TR')}` : ''}
+${healthRecord.cost ? `${t('healthRecords.cost')}: ${formatCurrency(healthRecord.cost, baseCurrency)}` : ''}
 ${healthRecord.description ? `${t('healthRecords.descriptionField')}: ${healthRecord.description}` : ''}
 ${healthRecord.notes ? `${t('common.notes')}: ${healthRecord.notes}` : ''}
     `.trim();
@@ -158,7 +169,7 @@ ${healthRecord.notes ? `${t('common.notes')}: ${healthRecord.notes}` : ''}
                 {TURKCE_LABELS.HEALTH_RECORD_TYPES[healthRecord.type as keyof typeof TURKCE_LABELS.HEALTH_RECORD_TYPES]}
               </Chip>
               <Text variant="bodyMedium" style={{ color: theme.colors.onSurfaceVariant }}>
-                {new Date(healthRecord.date).toLocaleDateString('tr-TR', {
+                {new Date(healthRecord.date).toLocaleDateString(dateLocale, {
                   day: '2-digit',
                   month: 'long',
                   year: 'numeric',
@@ -206,9 +217,13 @@ ${healthRecord.notes ? `${t('common.notes')}: ${healthRecord.notes}` : ''}
           <Card style={styles.card}>
             <View style={styles.cardContent}>
               <ListItem
-                title={`₺${healthRecord.cost.toLocaleString('tr-TR')}`}
+                title={formatCurrency(healthRecord.cost, baseCurrency)}
                 description={t('healthRecords.cost')}
-                left={<MaterialCommunityIcons name="currency-try" size={24} color={theme.colors.onSurfaceVariant} />}
+                left={(() => {
+                  const iconName = getCurrencyIcon(baseCurrency);
+                  const safeIconName: IconName = isMaterialIconName(iconName) ? iconName : 'cash';
+                  return <MaterialCommunityIcons name={safeIconName} size={24} color={theme.colors.onSurfaceVariant} />;
+                })()}
               />
             </View>
           </Card>
@@ -232,7 +247,7 @@ ${healthRecord.notes ? `${t('common.notes')}: ${healthRecord.notes}` : ''}
         <Card style={styles.card}>
           <View style={styles.cardContent}>
             <Text variant="bodySmall" style={{ color: theme.colors.onSurfaceVariant, textAlign: 'center' }}>
-              {t('common.created')}: {new Date(healthRecord.createdAt).toLocaleString('tr-TR')}
+              {t('common.created')}: {new Date(healthRecord.createdAt).toLocaleString(dateLocale)}
             </Text>
           </View>
         </Card>

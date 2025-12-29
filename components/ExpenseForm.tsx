@@ -6,10 +6,9 @@ import { useTranslation } from 'react-i18next';
 import { Button, Text, TextInput } from '@/components/ui';
 import { useTheme } from '@/lib/theme';
 import { ExpenseCreateFormInput, ExpenseCreateSchema } from '../lib/schemas/expenseSchema';
-import { CreateExpenseInput as CreateExpenseInputType, Currency, Expense, ExpenseCategory } from '../lib/types';
+import { CreateExpenseInput as CreateExpenseInputType, Expense, ExpenseCategory } from '../lib/types';
 import { toISODateString } from '../lib/utils/dateConversion';
 import { SmartCategoryPicker } from './forms/SmartCategoryPicker';
-import { SmartCurrencyPicker } from './forms/SmartCurrencyPicker';
 import { SmartDatePicker } from './forms/SmartDatePicker';
 import { SmartInput } from './forms/SmartInput';
 import { SmartNumberInput } from './forms/SmartNumberInput';
@@ -42,7 +41,6 @@ const ExpenseForm: React.FC<ExpenseFormProps> = ({
     petId,
     category: initialData?.category || ('food' as ExpenseCategory),
     amount: initialData?.amount || 0,
-    currency: (initialData?.currency as Currency) || ('TRY' as Currency),
     paymentMethod: initialData?.paymentMethod || undefined,
     description: initialData?.description || '',
     date: initialData?.date || toISODateString(new Date()) || '',
@@ -74,7 +72,7 @@ const ExpenseForm: React.FC<ExpenseFormProps> = ({
       {
         key: 'amount',
         title: t('expenses.steps.amount'),
-        fields: ['amount', 'currency', 'paymentMethod'] as (keyof ExpenseCreateFormInput)[],
+        fields: ['amount', 'paymentMethod'] as (keyof ExpenseCreateFormInput)[],
       },
       {
         key: 'details',
@@ -152,12 +150,6 @@ const ExpenseForm: React.FC<ExpenseFormProps> = ({
               precision={2}
               min={0.01}
               left={<TextInput.Icon icon="cash-outline" />}
-            />
-
-            {/* Currency Picker */}
-            <SmartCurrencyPicker
-              name="currency"
-              label={t('expenses.currency', 'Currency')}
             />
 
             {/* Payment Method Picker */}

@@ -120,6 +120,14 @@ export function CalendarEventCard({
             />
           </View>
         </View>
+
+        <View style={styles.chevronContainer}>
+          <MaterialCommunityIcons
+            name="chevron-right"
+            size={24}
+            color={theme.colors.onSurfaceVariant}
+          />
+        </View>
       </View>
     </Pressable>
   );
@@ -199,6 +207,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     borderWidth: 2,
+  },
+  chevronContainer: {
+    marginLeft: 4,
   },
 });
 

@@ -1,18 +1,14 @@
 import { useEffect } from 'react';
-import { useLanguageStore } from '../stores/languageStore';
+import { useUserSettingsStore } from '../stores/userSettingsStore';
 import { I18nextProvider } from 'react-i18next';
 import i18n from '../lib/i18n';
 
 export function LanguageProvider({ children }: { children: React.ReactNode }) {
-  const { language, initializeLanguage } = useLanguageStore();
+  const { settings } = useUserSettingsStore();
+  const language = settings?.language;
 
   useEffect(() => {
-    initializeLanguage();
-  }, []);
-
-  useEffect(() => {
-    // Update i18n language when store language changes
-    if (i18n.language !== language) {
+    if (language && i18n.language !== language) {
       i18n.changeLanguage(language);
     }
   }, [language]);

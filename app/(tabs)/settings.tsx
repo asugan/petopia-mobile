@@ -1,30 +1,31 @@
 import React, { useEffect, useState } from "react";
+import { useQueryClient } from "@tanstack/react-query";
 import { SubscriptionCard } from "@/components/subscription";
 import { Button, Card, ListItem, Switch, Text } from "@/components/ui";
 import { useAuth } from "@/lib/auth";
-import { useTheme } from "@/lib/theme";
 import { notificationService, requestNotificationPermissions } from "@/lib/services/notificationService";
 import { useAuthStore } from "@/stores/authStore";
+import { SupportedCurrency, useUserSettingsStore } from "@/stores/userSettingsStore";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import { useTranslation } from "react-i18next";
 import { Alert, ScrollView, StyleSheet, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { LAYOUT } from "@/constants";
-import { useLanguageStore } from "@/stores/languageStore";
-import { useThemeStore } from "@/stores/themeStore";
 import { useOnboardingStore } from "@/stores/onboardingStore";
+import CurrencyPicker from "@/components/CurrencyPicker";
+import LoadingSpinner from "@/components/LoadingSpinner";
+import { LanguageSettings } from "@/components/LanguageSettings";
 
 export default function SettingsScreen() {
-  const { theme } = useTheme();
   const { t } = useTranslation();
   const router = useRouter();
-  const { themeMode, toggleTheme } = useThemeStore();
-  const { language, setLanguage } = useLanguageStore();
+  const queryClient = useQueryClient();
+  const { theme, settings, updateSettings, updateBaseCurrency, isLoading: settingsLoading, error } = useUserSettingsStore();
   const { user, signOut } = useAuth();
-  const { isLoading, setLoading } = useAuthStore();
+  const { isLoading: authLoading, setLoading } = useAuthStore();
   const { resetOnboarding } = useOnboardingStore();
-  const isDarkMode = themeMode === "dark";
+  const isDarkMode = settings?.theme === "dark";
   const [notificationsEnabled, setNotificationsEnabled] = useState(false);
   const [notificationLoading, setNotificationLoading] = useState(true);
 
@@ -96,6 +97,30 @@ export default function SettingsScreen() {
     ]);
   };
 
+  const handleCurrencySelect = (currency: SupportedCurrency) => {
+    if (currency === settings?.baseCurrency) {
+      return;
+    }
+    Alert.alert(
+      t("settings.currency"),
+      t("settings.currencyWarning"),
+      [
+        {
+          text: t("common.cancel"),
+          style: "cancel",
+        },
+        {
+          text: t("common.confirm"),
+          onPress: async () => {
+            await updateBaseCurrency(currency);
+            await queryClient.invalidateQueries({ predicate: (query) => query.queryKey[0] === "expenses" });
+            await queryClient.invalidateQueries({ predicate: (query) => query.queryKey[0] === "budget" });
+          },
+        },
+      ]
+    );
+  };
+
   return (
     <SafeAreaView
       style={[styles.container, { backgroundColor: theme.colors.background }]}
@@ -104,6 +129,20 @@ export default function SettingsScreen() {
         style={styles.scrollView}
         showsVerticalScrollIndicator={false}
       >
+        {settingsLoading && (
+          <View style={styles.loadingContainer}>
+            <LoadingSpinner />
+          </View>
+        )}
+
+        {error && (
+          <View style={[styles.errorContainer, { backgroundColor: theme.colors.errorContainer }]}>
+            <Text variant="bodyMedium" style={{ color: theme.colors.onErrorContainer }}>
+              {error}
+            </Text>
+          </View>
+        )}
+
         {/* User Profile */}
         {user && (
           <Card
@@ -175,7 +214,7 @@ export default function SettingsScreen() {
               right={
                 <Switch
                   value={isDarkMode}
-                  onValueChange={toggleTheme}
+                  onValueChange={() => updateSettings({ theme: isDarkMode ? 'light' : 'dark' })}
                   color={theme.colors.primary}
                 />
               }
@@ -216,39 +255,27 @@ export default function SettingsScreen() {
                 />
               }
             />
-            <ListItem
-              title={t("settings.language")}
-              description={
-                language === "tr"
-                  ? t("settings.languages.turkish")
-                  : t("settings.languages.english")
-              }
-              left={
-                <MaterialCommunityIcons
-                  name="translate"
-                  size={24}
-                  color={theme.colors.onSurfaceVariant}
-                />
-              }
-              onPress={() => {
-                const newLanguage = language === "en" ? "tr" : "en";
-                setLanguage(newLanguage, true);
-              }}
-              right={
-                <View style={styles.languageIndicator}>
-                  <Text
-                    style={[
-                      styles.languageText,
-                      { color: theme.colors.onSurface },
-                    ]}
-                  >
-                    {language === "en"
-                      ? t("settings.enIndicator")
-                      : t("settings.trIndicator")}
-                  </Text>
-                </View>
-              }
-            />
+            <LanguageSettings variant="embedded" />
+
+            <View style={styles.currencyPickerContainer}>
+              <Text
+                variant="titleMedium"
+                style={[styles.sectionTitle, { color: theme.colors.onSurface }]}
+              >
+                {t("settings.currency")}
+              </Text>
+              <CurrencyPicker
+                selectedCurrency={settings?.baseCurrency || 'TRY'}
+                onSelect={(currency) => handleCurrencySelect(currency as SupportedCurrency)}
+                label={t("settings.defaultCurrency")}
+              />
+              <Text
+                variant="bodySmall"
+                style={[styles.currencyWarning, { color: theme.colors.onSurfaceVariant }]}
+              >
+                {t("settings.currencyWarning")}
+              </Text>
+            </View>
           </View>
         </Card>
 
@@ -411,8 +438,8 @@ export default function SettingsScreen() {
             textColor={theme.colors.error}
             style={[styles.logoutButton, { borderColor: theme.colors.error }]}
             onPress={handleLogout}
-            loading={isLoading}
-            disabled={isLoading}
+            loading={authLoading}
+            disabled={authLoading}
           >
             {t("auth.logout")}
           </Button>
@@ -464,16 +491,20 @@ const styles = StyleSheet.create({
   logoutButton: {
     borderWidth: 1,
   },
-  languageIndicator: {
-    flexDirection: "row",
-    alignItems: "center",
+  currencyPickerContainer: {
+    marginTop: 16,
   },
-  languageText: {
-    fontSize: 14,
-    fontWeight: "600",
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    backgroundColor: "rgba(0, 0, 0, 0.05)",
-    borderRadius: 4,
+  currencyWarning: {
+    marginTop: 8,
+    lineHeight: 18,
+  },
+  loadingContainer: {
+    padding: 20,
+    alignItems: 'center',
+  },
+  errorContainer: {
+    padding: 16,
+    marginTop: 16,
+    borderRadius: 8,
   },
 });

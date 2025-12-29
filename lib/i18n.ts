@@ -1,6 +1,6 @@
 import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
-import { Platform } from 'react-native';
+import * as Localization from 'expo-localization';
 
 // Import translation files
 import en from '../locales/en.json';
@@ -18,10 +18,14 @@ const resources = {
 
 // Get device language or fallback to English
 const getDeviceLanguage = () => {
-  // For now, default to English
-  // In a production app with Expo managed workflow, we could use
-  // Expo Localization module or ask user to select language on first launch
-  return 'en';
+  try {
+    const locales = Localization.getLocales();
+    const languageCode = locales[0]?.languageCode?.toLowerCase() || 'en';
+    return languageCode === 'tr' ? 'tr' : 'en';
+  } catch (error) {
+    console.warn('Error detecting device language:', error);
+    return 'en';
+  }
 };
 
 // Initialize i18n

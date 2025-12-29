@@ -8,6 +8,7 @@ import { getExpenseCategoryConfig } from '@/constants/expenseConfig';
 import { formatCurrency } from '@/lib/utils/currency';
 import { formatDate } from '@/lib/utils/date';
 import { Expense } from '@/lib/types';
+import { useUserSettingsStore } from '@/stores/userSettingsStore';
 
 interface CompactExpenseItemProps {
   expense: Expense;
@@ -20,6 +21,8 @@ const CompactExpenseItem: React.FC<CompactExpenseItemProps> = ({
 }) => {
   const { theme } = useTheme();
   const { t } = useTranslation();
+  const { settings } = useUserSettingsStore();
+  const baseCurrency = settings?.baseCurrency || 'TRY';
 
   const categoryConfig = getExpenseCategoryConfig(expense.category);
 
@@ -89,6 +92,11 @@ const CompactExpenseItem: React.FC<CompactExpenseItemProps> = ({
         <Text variant="labelMedium" style={{ fontWeight: 'bold' }}>
           {formatCurrency(expense.amount, expense.currency)}
         </Text>
+        {expense.currency !== baseCurrency && expense.amountBase && (
+          <Text variant="bodySmall" style={{ color: theme.colors.onSurfaceVariant, fontSize: 11 }}>
+            ≈ {formatCurrency(expense.amountBase, baseCurrency)}
+          </Text>
+        )}
         <Text
           variant="bodySmall"
           style={{

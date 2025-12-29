@@ -7,7 +7,7 @@ export const ENV = {
   API_BASE_URL:
     process.env.EXPO_PUBLIC_API_URL ??
     Constants.expoConfig?.extra?.apiBaseUrl ??
-    (__DEV__ ? 'https://1de657301772.ngrok-free.app' : 'https://your-production-api.com'),
+    (__DEV__ ? 'https://93e987ff4d68.ngrok-free.app' : 'https://your-production-api.com'),
 
   // Auth configuration
   AUTH: {
@@ -49,6 +49,10 @@ export const ENV = {
     BUDGET: "/api/budget",
     BUDGET_STATUS: "/api/budget/status",
     BUDGET_ALERTS: "/api/budget/alerts",
+
+    // User settings endpoints
+    USER_SETTINGS: "/api/settings",
+    USER_SETTINGS_CURRENCY: "/api/settings/currency",
 
     // Expense export endpoints
     EXPENSES_EXPORT_CSV: "/api/expenses/export/csv",

@@ -1,13 +1,15 @@
 import React, { useMemo, useState } from 'react';
-import { View, StyleSheet, ScrollView } from 'react-native';
+import { View, StyleSheet, ScrollView, Pressable } from 'react-native';
+import { useRouter } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useTranslation } from 'react-i18next';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { FAB, IconButton, SegmentedButtons, Text } from '@/components/ui';
+import { FAB, SegmentedButtons, Text } from '@/components/ui';
 import { PetPickerBase } from '@/components/PetPicker';
 import { ProtectedRoute } from '@/components/subscription';
 import { FeedingScheduleCard } from '@/components/feeding/FeedingScheduleCard';
 import { useTheme } from '@/lib/theme';
+import { formatCurrency } from '@/lib/utils/currency';
 import { usePets } from '@/lib/hooks/usePets';
 import { useHealthRecords } from '@/lib/hooks/useHealthRecords';
 import {
@@ -20,6 +22,7 @@ import EmptyState from '@/components/EmptyState';
 import { HealthRecordForm } from '@/components/forms/HealthRecordForm';
 import { FeedingScheduleModal } from '@/components/FeedingScheduleModal';
 import { TURKCE_LABELS, HEALTH_RECORD_COLORS, HEALTH_RECORD_ICONS, LAYOUT } from '@/constants';
+import { useUserSettingsStore } from '@/stores/userSettingsStore';
 import type { HealthRecord, FeedingSchedule } from '@/lib/types';
 
 
@@ -28,12 +31,14 @@ type CareTabValue = 'health' | 'feeding';
 export default function CareScreen() {
   const { theme } = useTheme();
   const { t } = useTranslation();
+  const router = useRouter();
+  const { settings } = useUserSettingsStore();
+  const baseCurrency = settings?.baseCurrency || 'TRY';
   const [activeTab, setActiveTab] = useState<CareTabValue>('health');
   
   // Health state
   const [selectedPetId, setSelectedPetId] = useState<string | undefined>();
   const [isHealthFormVisible, setIsHealthFormVisible] = useState(false);
-  const [editingRecord, setEditingRecord] = useState<HealthRecord | undefined>();
   const [healthFormKey, setHealthFormKey] = useState(0);
   
   // Feeding state
@@ -75,32 +80,19 @@ export default function CareScreen() {
 
   // Health handlers
   const handleAddHealthRecord = () => {
-    setEditingRecord(undefined);
     setHealthFormKey((current) => current + 1);
     setIsHealthFormVisible(true);
   };
 
   const handleHealthFormSuccess = () => {
     setIsHealthFormVisible(false);
-    setEditingRecord(undefined);
     refetchHealth();
   };
 
   const handleHealthFormCancel = () => {
     setIsHealthFormVisible(false);
-    setEditingRecord(undefined);
   };
 
-
-
-  const handleEditRecord = (record: HealthRecord) => {
-    setEditingRecord({
-      ...record,
-      petId: record.petId, // Ensure petId is preserved when editing
-    });
-    setHealthFormKey((current) => current + 1);
-    setIsHealthFormVisible(true);
-  };
 
   // Feeding handlers
   const handleAddSchedule = () => {
@@ -187,9 +179,16 @@ export default function CareScreen() {
     return (
       <View style={styles.listContainer}>
         {filteredHealthRecords.map((record: HealthRecord) => (
-          <View
+          <Pressable
             key={record._id}
-            style={[styles.healthCard, { backgroundColor: theme.colors.surface }]}
+            onPress={() => router.push(`/health/${record._id}`)}
+            style={({ pressed }) => [
+              styles.healthCard,
+              {
+                backgroundColor: theme.colors.surface,
+                opacity: pressed ? 0.9 : 1,
+              },
+            ]}
           >
             <View
               style={[
@@ -201,66 +200,73 @@ export default function CareScreen() {
                 },
               ]}
             />
-            <View style={styles.healthContent}>
-              <View style={styles.healthHeader}>
-                <View style={styles.healthTitleRow}>
-                  <View
-                    style={[
-                      styles.healthIconWrapper,
-                      {
-                        backgroundColor: `${
+            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+              <View style={[styles.healthContent, { flex: 1 }]}>
+                <View style={styles.healthHeader}>
+                  <View style={styles.healthTitleRow}>
+                    <View
+                      style={[
+                        styles.healthIconWrapper,
+                        {
+                          backgroundColor: `${
+                            HEALTH_RECORD_COLORS[
+                              record.type as keyof typeof HEALTH_RECORD_COLORS
+                            ] || theme.colors.outline
+                          }1A`,
+                        },
+                      ]}
+                    >
+                      <MaterialCommunityIcons
+                        name={
+                          HEALTH_RECORD_ICONS[
+                            record.type as keyof typeof HEALTH_RECORD_ICONS
+                          ] || 'medical-bag'
+                        }
+                        size={18}
+                        color={
                           HEALTH_RECORD_COLORS[
                             record.type as keyof typeof HEALTH_RECORD_COLORS
                           ] || theme.colors.outline
-                        }1A`,
-                      },
-                    ]}
-                  >
-                    <MaterialCommunityIcons
-                      name={
-                        HEALTH_RECORD_ICONS[
-                          record.type as keyof typeof HEALTH_RECORD_ICONS
-                        ] || 'medical-bag'
-                      }
-                      size={18}
-                      color={
-                        HEALTH_RECORD_COLORS[
-                          record.type as keyof typeof HEALTH_RECORD_COLORS
-                        ] || theme.colors.outline
-                      }
-                    />
+                        }
+                      />
+                    </View>
+                    <Text variant="titleMedium" style={{ color: theme.colors.onSurface, flex: 1 }}>
+                      {record.title}
+                    </Text>
                   </View>
-                  <Text variant="titleMedium" style={{ color: theme.colors.onSurface, flex: 1 }}>
-                    {record.title}
+                </View>
+                <Text variant="bodySmall" style={{ color: theme.colors.onSurfaceVariant }}>
+                  {TURKCE_LABELS.HEALTH_RECORD_TYPES[record.type as keyof typeof TURKCE_LABELS.HEALTH_RECORD_TYPES]}
+                </Text>
+                <View style={[styles.healthDatePill, { backgroundColor: theme.colors.surfaceVariant }]}>
+                  <MaterialCommunityIcons
+                    name="calendar-blank"
+                    size={14}
+                    color={theme.colors.onSurfaceVariant}
+                  />
+                  <Text variant="labelSmall" style={{ color: theme.colors.onSurfaceVariant }}>
+                    {new Date(record.date).toLocaleDateString('tr-TR')}
                   </Text>
                 </View>
-                <IconButton
-                  icon="pencil"
-                  size={18}
-                  iconColor={theme.colors.onSurfaceVariant}
-                  onPress={() => handleEditRecord(record)}
-                />
+                {record.veterinarian && (
+                  <Text variant="bodySmall" style={{ color: theme.colors.onSurfaceVariant }}>
+                    Dr. {record.veterinarian}
+                  </Text>
+                )}
+                {record.cost !== undefined && record.cost !== null && (
+                  <Text variant="bodySmall" style={{ color: theme.colors.onSurfaceVariant }}>
+                    {formatCurrency(record.cost, baseCurrency)}
+                  </Text>
+                )}
               </View>
-              <Text variant="bodySmall" style={{ color: theme.colors.onSurfaceVariant }}>
-                {TURKCE_LABELS.HEALTH_RECORD_TYPES[record.type as keyof typeof TURKCE_LABELS.HEALTH_RECORD_TYPES]}
-              </Text>
-              <View style={[styles.healthDatePill, { backgroundColor: theme.colors.surfaceVariant }]}>
-                <MaterialCommunityIcons
-                  name="calendar-blank"
-                  size={14}
-                  color={theme.colors.onSurfaceVariant}
-                />
-                <Text variant="labelSmall" style={{ color: theme.colors.onSurfaceVariant }}>
-                  {new Date(record.date).toLocaleDateString('tr-TR')}
-                </Text>
-              </View>
-              {record.veterinarian && (
-                <Text variant="bodySmall" style={{ color: theme.colors.onSurfaceVariant }}>
-                  Dr. {record.veterinarian}
-                </Text>
-              )}
+              <MaterialCommunityIcons
+                name="chevron-right"
+                size={24}
+                color={theme.colors.onSurfaceVariant}
+                style={{ marginLeft: 8 }}
+              />
             </View>
-          </View>
+          </Pressable>
         ))}
       </View>
     );
@@ -376,7 +382,6 @@ export default function CareScreen() {
           visible={isHealthFormVisible}
           onSuccess={handleHealthFormSuccess}
           onCancel={handleHealthFormCancel}
-          initialData={editingRecord}
         />
 
         <FeedingScheduleModal

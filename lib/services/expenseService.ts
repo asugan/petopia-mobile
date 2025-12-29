@@ -54,6 +54,9 @@ export class ExpenseService {
         description: data.description || undefined,
         paymentMethod: data.paymentMethod || undefined
       };
+      if (!cleanedData.currency) {
+        delete cleanedData.currency;
+      }
 
       const response = await api.post<Expense>('/api/expenses', cleanedData);
 

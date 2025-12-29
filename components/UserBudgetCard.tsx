@@ -5,6 +5,7 @@ import { useTheme } from "@/lib/theme";
 import { UserBudget, UserBudgetStatus } from "@/lib/types";
 import { useTranslation } from "react-i18next";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
+import { formatCurrency } from "@/lib/utils/currency";
 
 interface UserBudgetCardProps {
   budget: UserBudget;
@@ -24,27 +25,7 @@ const UserBudgetCard: React.FC<UserBudgetCardProps> = ({
   showActions = true,
 }) => {
   const { theme } = useTheme();
-  const { t, i18n } = useTranslation();
-
-  const formatCurrency = (amount: number, currency: string): string => {
-    const currencySymbols: Record<string, string> = {
-      TRY: "₺",
-      USD: "$",
-      EUR: "€",
-      GBP: "£",
-    };
-
-    const symbol = currencySymbols[currency] || currency;
-    const formatted = amount.toLocaleString(
-      i18n.language === "tr" ? "tr-TR" : "en-US",
-      {
-        minimumFractionDigits: 2,
-        maximumFractionDigits: 2,
-      }
-    );
-
-    return `${symbol}${formatted}`;
-  };
+  const { t } = useTranslation();
 
   const getProgressColor = (percentage: number): string => {
     if (percentage >= 100) return theme.colors.error;

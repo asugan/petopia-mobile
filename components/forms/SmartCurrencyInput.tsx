@@ -3,6 +3,7 @@ import React from 'react';
 import { Controller, useFormContext } from 'react-hook-form';
 import { StyleSheet, View } from 'react-native';
 import { CurrencyInput } from '../CurrencyInput';
+import type { Currency } from '@/lib/schemas/expenseSchema';
 
 interface SmartCurrencyInputProps {
   name: string;
@@ -10,6 +11,7 @@ interface SmartCurrencyInputProps {
   disabled?: boolean;
   placeholder?: string;
   testID?: string;
+  currency?: Currency;
 }
 
 export const SmartCurrencyInput = ({
@@ -18,6 +20,7 @@ export const SmartCurrencyInput = ({
   disabled = false,
   placeholder,
   testID,
+  currency,
 }: SmartCurrencyInputProps) => {
   const formContext = useFormContext();
   const { control } = formContext || { control: undefined };
@@ -34,6 +37,7 @@ export const SmartCurrencyInput = ({
         errorText={undefined}
         placeholder={placeholder}
         testID={testID}
+        currency={currency}
       />
     );
   }
@@ -53,6 +57,7 @@ export const SmartCurrencyInput = ({
             errorText={error?.message}
             placeholder={placeholder}
             testID={testID}
+            currency={currency}
           />
           {error && (
             <HelperText type="error" visible={!!error}>
