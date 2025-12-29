@@ -111,6 +111,7 @@ export const ExpenseSchema = () => {
   return BaseExpenseSchema().extend({
     _id: objectIdSchema,
     createdAt: z.string().datetime(),
+    amountBase: z.number().optional(),
   });
 };
 

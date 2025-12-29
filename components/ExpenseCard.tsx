@@ -3,6 +3,7 @@ import { getExpenseCategoryConfig } from '@/constants/expenseConfig';
 import { useTheme } from '@/lib/theme';
 import { formatCurrency } from '@/lib/utils/currency';
 import { formatDate } from '@/lib/utils/date';
+import { useUserSettingsStore } from '@/stores/userSettingsStore';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
@@ -26,6 +27,8 @@ const ExpenseCard: React.FC<ExpenseCardProps> = ({
 }) => {
   const { theme } = useTheme();
   const { t } = useTranslation();
+  const { settings } = useUserSettingsStore();
+  const baseCurrency = settings?.baseCurrency || 'TRY';
 
   const categoryConfig = getExpenseCategoryConfig(expense.category);
   const resolveColor = (colorValue: string) => {
@@ -80,9 +83,16 @@ const ExpenseCard: React.FC<ExpenseCardProps> = ({
               </Text>
             </View>
           </View>
-          <Text variant="titleLarge" style={[styles.amount, { color: theme.colors.primary }]}>
-            {formatCurrency(expense.amount, expense.currency)}
-          </Text>
+          <View style={styles.headerRight}>
+            <Text variant="titleLarge" style={[styles.amount, { color: theme.colors.primary }]}>
+              {formatCurrency(expense.amount, expense.currency)}
+            </Text>
+            {expense.currency !== baseCurrency && expense.amountBase && (
+              <Text variant="bodySmall" style={[styles.baseAmount, { color: theme.colors.onSurfaceVariant }]}>
+                ≈ {formatCurrency(expense.amountBase, baseCurrency)}
+              </Text>
+            )}
+          </View>
         </View>
 
         {expense.description && (
@@ -201,8 +211,15 @@ const styles = StyleSheet.create({
   headerText: {
     flex: 1,
   },
+  headerRight: {
+    alignItems: 'flex-end',
+  },
   amount: {
     fontWeight: 'bold',
+    marginLeft: 8,
+  },
+  baseAmount: {
+    marginTop: 2,
     marginLeft: 8,
   },
   description: {
