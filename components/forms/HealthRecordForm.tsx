@@ -7,6 +7,7 @@ import { Button, Text } from '@/components/ui';
 import { useHealthRecordForm } from '@/hooks/useHealthRecordForm';
 import { useTheme } from '@/lib/theme';
 import { useCreateHealthRecord, useUpdateHealthRecord } from '../../lib/hooks/useHealthRecords';
+import { useUserSettingsStore } from '@/stores/userSettingsStore';
 import {
   formatValidationErrors,
   getHealthRecordSchema,
@@ -45,6 +46,8 @@ export function HealthRecordForm({
   const createMutation = useCreateHealthRecord();
   const updateMutation = useUpdateHealthRecord();
   const isEditing = !!initialData;
+  const { settings } = useUserSettingsStore();
+  const baseCurrency = settings?.baseCurrency || 'TRY';
 
   // Use the custom hook for form management
   const { form, handleSubmit, reset } = useHealthRecordForm(petId || '', initialData);
@@ -291,7 +294,12 @@ export function HealthRecordForm({
             {steps[currentStep].key === 'costNotes' && (
               <>
                 <FormSection title={t('healthRecords.cost')}>
-                  <SmartCurrencyInput name="cost" label={t('healthRecords.cost')} placeholder={t('healthRecords.costPlaceholder')} />
+                  <SmartCurrencyInput
+                    name="cost"
+                    label={t('healthRecords.cost')}
+                    placeholder={t('healthRecords.costPlaceholder')}
+                    currency={baseCurrency}
+                  />
                 </FormSection>
 
                 <FormSection title={t('common.notes')}>

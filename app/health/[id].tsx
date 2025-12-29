@@ -11,6 +11,8 @@ import { HealthRecordForm } from '@/components/forms/HealthRecordForm';
 import LoadingSpinner from '@/components/LoadingSpinner';
 import { HEALTH_RECORD_COLORS, HEALTH_RECORD_ICONS, TURKCE_LABELS } from '@/constants';
 import { useDeleteHealthRecord, useHealthRecord } from '@/lib/hooks/useHealthRecords';
+import { formatCurrency, getCurrencyIcon } from '@/lib/utils/currency';
+import { useUserSettingsStore } from '@/stores/userSettingsStore';
 
 export default function HealthRecordDetailScreen() {
   const { t } = useTranslation();
@@ -19,6 +21,8 @@ export default function HealthRecordDetailScreen() {
   const router = useRouter();
   const [isEditModalVisible, setIsEditModalVisible] = useState(false);
   const [editFormKey, setEditFormKey] = useState(0);
+  const { settings } = useUserSettingsStore();
+  const baseCurrency = settings?.baseCurrency || 'TRY';
 
   const deleteMutation = useDeleteHealthRecord();
   const { data: healthRecord, isLoading, refetch } = useHealthRecord(id as string);
@@ -74,7 +78,7 @@ ${t('pets.type')}: ${TURKCE_LABELS.HEALTH_RECORD_TYPES[healthRecord.type as keyo
 ${t('events.date')}: ${new Date(healthRecord.date).toLocaleDateString('tr-TR')}
 ${healthRecord.veterinarian ? `${t('healthRecords.veterinarian')}: Dr. ${healthRecord.veterinarian}` : ''}
 ${healthRecord.clinic ? `${t('healthRecords.clinic')}: ${healthRecord.clinic}` : ''}
-${healthRecord.cost ? `${t('healthRecords.cost')}: ₺${healthRecord.cost.toLocaleString('tr-TR')}` : ''}
+${healthRecord.cost ? `${t('healthRecords.cost')}: ${formatCurrency(healthRecord.cost, baseCurrency)}` : ''}
 ${healthRecord.description ? `${t('healthRecords.descriptionField')}: ${healthRecord.description}` : ''}
 ${healthRecord.notes ? `${t('common.notes')}: ${healthRecord.notes}` : ''}
     `.trim();
@@ -206,9 +210,9 @@ ${healthRecord.notes ? `${t('common.notes')}: ${healthRecord.notes}` : ''}
           <Card style={styles.card}>
             <View style={styles.cardContent}>
               <ListItem
-                title={`₺${healthRecord.cost.toLocaleString('tr-TR')}`}
+                title={formatCurrency(healthRecord.cost, baseCurrency)}
                 description={t('healthRecords.cost')}
-                left={<MaterialCommunityIcons name="currency-try" size={24} color={theme.colors.onSurfaceVariant} />}
+                left={<MaterialCommunityIcons name={getCurrencyIcon(baseCurrency) as any} size={24} color={theme.colors.onSurfaceVariant} />}
               />
             </View>
           </Card>

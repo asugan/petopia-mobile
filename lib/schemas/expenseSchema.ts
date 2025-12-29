@@ -114,8 +114,13 @@ export const ExpenseSchema = () => {
   });
 };
 
-// Schema for creating a new expense
-export const ExpenseCreateSchema = () => BaseExpenseSchema();
+// Schema for creating a new expense (currency defaults to user base currency)
+export const ExpenseCreateSchema = () =>
+  BaseExpenseSchema().extend({
+    currency: z.enum(CURRENCIES, {
+      message: t('forms.validation.expense.currencyInvalid'),
+    }).optional(),
+  });
 
 // Schema for updating an existing expense (all fields optional)
 export const ExpenseUpdateSchema = () => BaseExpenseSchema().partial().omit({ petId: true });

@@ -2,6 +2,8 @@ import React from 'react';
 import { TextInput } from '@/components/ui';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useTheme } from '@/lib/theme';
+import { parseCurrencyInput, getCurrencyIcon } from '@/lib/utils/currency';
+import type { Currency } from '@/lib/schemas/expenseSchema';
 
 interface CurrencyInputProps {
   value?: number | null;
@@ -12,6 +14,7 @@ interface CurrencyInputProps {
   errorText?: string;
   placeholder?: string;
   testID?: string;
+  currency?: Currency;
 }
 
 export function CurrencyInput({
@@ -23,6 +26,7 @@ export function CurrencyInput({
   errorText,
   placeholder,
   testID,
+  currency = 'TRY',
 }: CurrencyInputProps) {
   const { theme } = useTheme();
 
@@ -35,9 +39,7 @@ export function CurrencyInput({
   };
 
   const parseValue = (text: string) => {
-    const cleaned = text.replace(/[^\d.,]/g, '').replace(',', '.');
-    const parsed = parseFloat(cleaned);
-    return isNaN(parsed) ? undefined : parsed;
+    return parseCurrencyInput(text);
   };
 
   const handleChangeText = (text: string) => {
@@ -59,7 +61,7 @@ export function CurrencyInput({
       error={error}
       placeholder={placeholder}
       testID={testID}
-      left={<MaterialCommunityIcons name="currency-try" size={24} color={theme.colors.onSurfaceVariant} />}
+      left={<MaterialCommunityIcons name={getCurrencyIcon(currency) as any} size={24} color={theme.colors.onSurfaceVariant} />}
       style={{
         backgroundColor: disabled
           ? theme.colors.surfaceDisabled

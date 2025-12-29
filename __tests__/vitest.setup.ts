@@ -3,6 +3,8 @@
  * Mocks React Native and Expo modules that aren't available in Node.js
  */
 
+import { vi, afterEach } from 'vitest';
+
 // Mock __DEV__ global (used in React Native)
 (globalThis as any).__DEV__ = false;
 
@@ -35,7 +37,6 @@ vi.mock(
   SafeAreaView: 'SafeAreaView',
   StatusBar: 'StatusBar',
   }),
-  { virtual: true }
 );
 
 // Mock AsyncStorage (used by Zustand persist)
@@ -51,7 +52,6 @@ vi.mock(
     multiGet: vi.fn(),
     multiRemove: vi.fn(),
   }),
-  { virtual: true }
 );
 
 // Mock Expo modules
@@ -61,7 +61,6 @@ vi.mock(
     loadAsync: vi.fn(),
     isLoaded: vi.fn(() => true),
   }),
-  { virtual: true }
 );
 
 // Mock React Navigation
@@ -78,7 +77,6 @@ vi.mock(
       name: 'test',
     }),
   }),
-  { virtual: true }
 );
 
 // Mock expo-router
@@ -94,7 +92,6 @@ vi.mock(
     useLocalSearchParams: () => ({}),
     useSegments: () => [],
   }),
-  { virtual: true }
 );
 
 // Mock Zustand persist
@@ -178,7 +175,6 @@ vi.mock(
     AntDesign: 'AntDesign',
     FontAwesome: 'FontAwesome',
   }),
-  { virtual: true }
 );
 
 // Mock expo-notifications
@@ -198,7 +194,6 @@ vi.mock(
     iOSNotificationCategoryActionIdentifier: { DEFAULT: 'default' },
     NotificationBehaviorAndroid: { DEFAULT: 'default' },
   }),
-  { virtual: true }
 );
 
 // Mock reminder scheduler hook
@@ -220,34 +215,52 @@ vi.mock('@/lib/theme', () => ({
         text: '#000000',
       },
     },
+    isDark: false,
   }),
 }));
 
-vi.mock('@/stores/themeStore', () => ({
-  useThemeStore: () => ({
-    themeMode: 'light',
+// Mock user settings store
+vi.mock('@/stores/userSettingsStore', () => ({
+  useUserSettingsStore: () => ({
+    settings: {
+      id: 'test-settings-id',
+      userId: 'test-user-id',
+      baseCurrency: 'TRY',
+      timezone: 'Europe/Istanbul',
+      language: 'en',
+      theme: 'light',
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    },
     theme: {
       colors: {
         primary: '#0000FF',
         background: '#FFFFFF',
+        text: '#000000',
       },
     },
     isDark: false,
-    toggleTheme: vi.fn(),
-    setTheme: vi.fn(),
-  }),
-}));
-
-// Mock language store
-vi.mock('@/stores/languageStore', () => ({
-  useLanguageStore: () => ({
-    language: 'en',
+    isLoading: false,
+    error: null,
+    isAuthenticated: false,
     isRTL: false,
-    hasUserExplicitlySetLanguage: false,
-    setLanguage: vi.fn(),
-    toggleLanguage: vi.fn(),
-    initializeLanguage: vi.fn(),
+    fetchSettings: vi.fn(),
+    updateSettings: vi.fn(),
+    updateBaseCurrency: vi.fn(),
+    initialize: vi.fn(),
+    clear: vi.fn(),
+    setAuthenticated: vi.fn(),
   }),
+  isLanguageSupported: (lang: any): lang is 'tr' | 'en' | 'ar' =>
+    ['tr', 'en', 'ar'].includes(lang),
+  getLanguageDirection: (lang: string) => lang === 'ar' ? 'rtl' : 'ltr',
+  getLanguageDisplayName: (lang: string) => ({ tr: 'Türkçe', en: 'English', ar: 'العربية' })[lang] || lang,
+  getLanguageNativeName: (lang: string) => ({ tr: 'Türkçe', en: 'English', ar: 'العربية' })[lang] || lang,
+  getSupportedLanguages: () => ['tr', 'en', 'ar'],
+  getSupportedCurrencies: () => ['TRY', 'USD', 'EUR', 'GBP'],
+  getCurrencyDisplayName: (curr: string) => ({ TRY: 'Turkish Lira', USD: 'US Dollar', EUR: 'Euro', GBP: 'British Pound' })[curr] || curr,
+  getCurrencyFlag: (curr: string) => ({ TRY: '🇹🇷', USD: '🇺🇸', EUR: '🇪🇺', GBP: '🇬🇧' })[curr] || '💱',
+  getCurrencySymbol: (curr: string) => ({ TRY: '₺', USD: '$', EUR: '€', GBP: '£' })[curr] || curr,
 }));
 
 // Global test utilities

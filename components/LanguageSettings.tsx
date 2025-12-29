@@ -1,42 +1,27 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { useTheme } from '@/lib/theme';
-import { useDeviceLanguage } from '@/lib/hooks/useDeviceLanguage';
-import { useLanguageStore, getLanguageNativeName, SupportedLanguage } from '@/stores/languageStore';
+import { useUserSettingsStore, getLanguageNativeName, SupportedLanguage } from '@/stores/userSettingsStore';
 import { useTranslation } from 'react-i18next';
 
 interface LanguageSettingsProps {
   showDeviceInfo?: boolean;
+  variant?: 'card' | 'embedded';
 }
 
-export function LanguageSettings({ showDeviceInfo = false }: LanguageSettingsProps) {
+export function LanguageSettings({
+  showDeviceInfo = false,
+  variant = 'card',
+}: LanguageSettingsProps) {
   const { theme } = useTheme();
   const { t } = useTranslation();
-  const {
-    deviceLanguage,
-    isDeviceLanguageSupported,
-    shouldAutoDetect,
-    currentLanguage,
-    isLoading,
-    hasUserExplicitlySetLanguage,
-    applyDeviceLanguage,
-    resetToDeviceLanguage,
-  } = useDeviceLanguage();
+  const { settings, updateSettings, isLoading } = useUserSettingsStore();
 
-  const { setLanguage, toggleLanguage } = useLanguageStore();
-  // Currently only support Turkish and English in UI (Arabic infrastructure ready)
+  const currentLanguage = settings?.language || 'en';
   const supportedLanguages: SupportedLanguage[] = ['tr', 'en'];
 
   const handleLanguageSelect = (language: SupportedLanguage) => {
-    setLanguage(language, true); // Mark as explicit user choice
-  };
-
-  const handleUseDeviceLanguage = () => {
-    applyDeviceLanguage();
-  };
-
-  const handleResetToDeviceLanguage = () => {
-    resetToDeviceLanguage();
+    updateSettings({ language });
   };
 
   if (isLoading) {
@@ -50,7 +35,13 @@ export function LanguageSettings({ showDeviceInfo = false }: LanguageSettingsPro
   }
 
   return (
-    <View style={[styles.container, { backgroundColor: theme.colors.surface }]}>
+    <View
+      style={[
+        styles.container,
+        variant === 'embedded' ? styles.containerEmbedded : null,
+        { backgroundColor: variant === 'embedded' ? 'transparent' : theme.colors.surface },
+      ]}
+    >
       {/* Current Language Info */}
       <View style={styles.section}>
         <Text style={[styles.sectionTitle, { color: theme.colors.primary }]}>
@@ -59,30 +50,7 @@ export function LanguageSettings({ showDeviceInfo = false }: LanguageSettingsPro
         <Text style={[styles.currentLanguage, { color: theme.colors.onSurface }]}>
           {getLanguageNativeName(currentLanguage)}
         </Text>
-        {hasUserExplicitlySetLanguage && (
-          <Text style={[styles.explicitIndicator, { color: theme.colors.secondary }]}>
-            {t('settings.languageExplicitlySet')}
-          </Text>
-        )}
       </View>
-
-      {/* Device Language Info */}
-      {showDeviceInfo && (
-        <View style={styles.section}>
-          <Text style={[styles.sectionTitle, { color: theme.colors.primary }]}>
-            {t('settings.deviceLanguage')}
-          </Text>
-          <Text style={[styles.deviceLanguage, { color: theme.colors.onSurface }]}>
-            {getLanguageNativeName(deviceLanguage)}
-            {!isDeviceLanguageSupported && ` (${t('settings.notSupported')})`}
-          </Text>
-          {shouldAutoDetect && isDeviceLanguageSupported && (
-            <Text style={[styles.autoDetectIndicator, { color: theme.colors.secondary }]}>
-              {t('settings.willAutoDetect')}
-            </Text>
-          )}
-        </View>
-      )}
 
       {/* Language Selection */}
       <View style={styles.section}>
@@ -117,43 +85,6 @@ export function LanguageSettings({ showDeviceInfo = false }: LanguageSettingsPro
           </TouchableOpacity>
         ))}
       </View>
-
-      {/* Action Buttons */}
-      {isDeviceLanguageSupported && deviceLanguage !== currentLanguage && (
-        <View style={styles.section}>
-          <TouchableOpacity
-            style={[styles.actionButton, { backgroundColor: theme.colors.secondaryContainer }]}
-            onPress={handleUseDeviceLanguage}
-          >
-            <Text style={[styles.actionButtonText, { color: theme.colors.onSecondaryContainer }]}>
-              {t('settings.useDeviceLanguage')}
-            </Text>
-          </TouchableOpacity>
-
-          {hasUserExplicitlySetLanguage && (
-            <TouchableOpacity
-              style={[styles.actionButton, { backgroundColor: theme.colors.surfaceVariant }]}
-              onPress={handleResetToDeviceLanguage}
-            >
-              <Text style={[styles.actionButtonText, { color: theme.colors.onSurfaceVariant }]}>
-                {t('settings.resetToDeviceLanguage')}
-              </Text>
-            </TouchableOpacity>
-          )}
-        </View>
-      )}
-
-      {/* Quick Toggle */}
-      <View style={styles.section}>
-        <TouchableOpacity
-          style={[styles.toggleButton, { backgroundColor: theme.colors.primary }]}
-          onPress={toggleLanguage}
-        >
-          <Text style={[styles.toggleButtonText, { color: theme.colors.onPrimary }]}>
-            {t('settings.toggleLanguage')}
-          </Text>
-        </TouchableOpacity>
-      </View>
     </View>
   );
 }
@@ -163,6 +94,11 @@ const styles = StyleSheet.create({
     padding: 16,
     borderRadius: 12,
     margin: 16,
+  },
+  containerEmbedded: {
+    padding: 0,
+    margin: 0,
+    borderRadius: 0,
   },
   section: {
     marginBottom: 24,
@@ -176,18 +112,6 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: '500',
     marginBottom: 4,
-  },
-  deviceLanguage: {
-    fontSize: 16,
-    marginBottom: 4,
-  },
-  explicitIndicator: {
-    fontSize: 12,
-    fontStyle: 'italic',
-  },
-  autoDetectIndicator: {
-    fontSize: 12,
-    fontStyle: 'italic',
   },
   loadingText: {
     fontSize: 16,
@@ -208,24 +132,5 @@ const styles = StyleSheet.create({
   checkmark: {
     fontSize: 18,
     fontWeight: 'bold',
-  },
-  actionButton: {
-    padding: 12,
-    borderRadius: 8,
-    alignItems: 'center',
-    marginBottom: 8,
-  },
-  actionButtonText: {
-    fontSize: 14,
-    fontWeight: '500',
-  },
-  toggleButton: {
-    padding: 16,
-    borderRadius: 8,
-    alignItems: 'center',
-  },
-  toggleButtonText: {
-    fontSize: 16,
-    fontWeight: '600',
   },
 });

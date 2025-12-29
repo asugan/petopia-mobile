@@ -16,6 +16,8 @@ import { ProtectedRoute } from "@/components/subscription";
 import { useTheme } from "@/lib/theme";
 import { expenseService } from "@/lib/services/expenseService";
 import { usePets } from "@/lib/hooks/usePets";
+import { formatCurrency } from "@/lib/utils/currency";
+import { useUserSettingsStore } from "@/stores/userSettingsStore";
 import {
   useExpenses,
   useInfiniteExpenses,
@@ -56,6 +58,8 @@ export default function FinanceScreen() {
   const { theme } = useTheme();
   const { t } = useTranslation();
   const queryClient = useQueryClient();
+  const { settings } = useUserSettingsStore();
+  const baseCurrency = settings?.baseCurrency || "TRY";
 
   // Tab state
   const [activeTab, setActiveTab] = useState<FinanceTabValue>('budget');
@@ -534,12 +538,10 @@ export default function FinanceScreen() {
           <Card style={[styles.statsCard, { backgroundColor: theme.colors.surface }]}>
             <View style={styles.statsContent}>
               <Text variant="titleLarge" style={{ color: theme.colors.onSurface }}>
-                {t("expenses.totalSpent")}: {expenseStats.total || 0}{" "}
-                {expenseStats.byCurrency?.[0]?.currency || "TRY"}
+                {t("expenses.totalSpent")}: {formatCurrency(expenseStats.total || 0, baseCurrency)}
               </Text>
               <Text variant="bodyMedium" style={{ color: theme.colors.onSurfaceVariant }}>
-                {t("expenses.average")}: {expenseStats.average || 0}{" "}
-                {expenseStats.byCurrency?.[0]?.currency || "TRY"}
+                {t("expenses.average")}: {formatCurrency(expenseStats.average || 0, baseCurrency)}
               </Text>
             </View>
           </Card>

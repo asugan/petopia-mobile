@@ -12,10 +12,10 @@ import { useEffect } from 'react';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { StatusBar } from 'expo-status-bar';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
-import { useTheme } from '@/lib/theme';
-import { useThemeStore } from '@/stores/themeStore';
+import { useUserSettingsStore } from '@/stores/userSettingsStore';
+import { useAuth } from '@/lib/auth';
 import { setOnUnauthorized } from '@/lib/api/client';
-import "../lib/i18n"; // Initialize i18n
+import "../lib/i18n";
 
 // Enhanced QueryClient with better configuration
 const queryClient = new QueryClient(MOBILE_QUERY_CONFIG);
@@ -35,7 +35,6 @@ function AppProviders({ children }: { children: React.ReactNode }) {
     setOnUnauthorized(() => {
       queryClient.clear();
     });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (
@@ -70,9 +69,22 @@ function OnlineManagerProvider({ children }: { children: React.ReactNode }) {
 }
 
 export default function RootLayout() {
-  const { theme } = useTheme();
-  const { themeMode } = useThemeStore();
-  const isDark = themeMode === 'dark';
+  const { isAuthenticated } = useAuth();
+  const { initialize, theme, setAuthenticated, clear } = useUserSettingsStore();
+
+  useEffect(() => {
+    setAuthenticated(isAuthenticated);
+  }, [isAuthenticated, setAuthenticated]);
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      initialize();
+    } else {
+      clear();
+    }
+  }, [isAuthenticated, initialize, clear]);
+
+  const isDark = theme.mode === 'dark';
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
