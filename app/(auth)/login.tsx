@@ -131,16 +131,25 @@ export default function LoginScreen() {
           height: 96,
           borderRadius: 48,
           backgroundColor: theme.colors.surface + 'CC',
-          borderWidth: 1,
           borderColor: theme.colors.primary + '33',
           justifyContent: 'center',
           alignItems: 'center',
           marginBottom: 20,
-          shadowColor: theme.colors.inverseOnSurface,
-          shadowOffset: { width: 0, height: 10 },
-          shadowOpacity: 0.5,
-          shadowRadius: 20,
           elevation: 10,
+        },
+        logoMask: {
+          width: '100%',
+          height: '100%',
+          borderRadius: 46,
+          overflow: 'hidden',
+          backgroundColor: '#2B1E5A',
+          justifyContent: 'center',
+          alignItems: 'center',
+        },
+        logoImage: {
+          width: '100%',
+          height: '100%',
+          transform: [{ scale: 1.15 }],
         },
         appName: {
           color: theme.colors.onBackground,
@@ -263,11 +272,17 @@ export default function LoginScreen() {
           style={[StyleSheet.absoluteFill, { opacity: 0.9 }]}
         />
 
-        <View style={styles.brandingContainer}>
-          <View style={styles.logoCircle}>
-            <MaterialCommunityIcons name="paw" size={48} color={theme.colors.primary} />
-          </View>
-          <Text style={styles.appName}>{t('auth.brandName')}</Text>
+          <View style={styles.brandingContainer}>
+            <View style={styles.logoCircle}>
+              <View style={styles.logoMask}>
+                <Image
+                  source={require('../../assets/images/foreground.png')}
+                  style={styles.logoImage}
+                  contentFit="cover"
+                />
+              </View>
+            </View>
+            <Text style={styles.appName}>{t('auth.brandName')}</Text>
           <Text style={styles.appSubtitle}>
             {t('auth.smartCareSubtitle')}
           </Text>
