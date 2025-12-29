@@ -9,7 +9,7 @@ import { Gesture, GestureDetector, Directions } from 'react-native-gesture-handl
 import { scheduleOnRN } from 'react-native-worklets';
 import { useTheme } from '@/lib/theme';
 import { useAuth } from '@/lib/auth/useAuth';
-import { useEffect, useMemo } from 'react';
+import { useMemo } from 'react';
 
 export default function OnboardingCompleted() {
   const router = useRouter();
@@ -18,9 +18,6 @@ export default function OnboardingCompleted() {
   const { theme } = useTheme();
   const { isAuthenticated } = useAuth();
 
-  useEffect(() => {
-    setHasSeenOnboarding(true);
-  }, [setHasSeenOnboarding]);
 
   const handleComplete = async () => {
     // Mark onboarding as seen

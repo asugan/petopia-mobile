@@ -63,6 +63,21 @@ vi.mock(
   }),
 );
 
+vi.mock('expo-localization', () => ({
+  locale: 'en-US',
+  locales: ['en-US'],
+  timezone: 'Europe/Istanbul',
+  getLocales: () => [
+    {
+      languageTag: 'en-US',
+      languageCode: 'en',
+      regionCode: 'US',
+      isRTL: false,
+    },
+  ],
+  getCalendars: () => [],
+}));
+
 // Mock React Navigation
 vi.mock(
   '@react-navigation/native',
