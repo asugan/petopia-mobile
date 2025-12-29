@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useMemo, useState, useEffect, useRef } from 'react';
 import {
   View,
   StyleSheet,
@@ -21,15 +21,9 @@ import { Text, ActivityIndicator } from '@/components/ui';
 
 const { height } = Dimensions.get('window');
 
-const COLORS = {
-  backgroundDark: '#102210',
-  surfaceDark: '#1A2E1A',
-  primary: '#13ec13',
-  facebookBlue: '#1877F2',
-};
 
 export default function LoginScreen() {
-  const { theme } = useTheme();
+  const { theme, isDark } = useTheme();
   const { t } = useTranslation();
   const router = useRouter();
   const insets = useSafeAreaInsets();
@@ -105,9 +99,150 @@ export default function LoginScreen() {
     });
   };
 
+  const styles = useMemo(
+    () =>
+      StyleSheet.create({
+        container: {
+          flex: 1,
+          backgroundColor: theme.colors.background,
+          justifyContent: 'space-between',
+        },
+        heroContainer: {
+          height: height * 0.6,
+          width: '100%',
+          borderBottomLeftRadius: 32,
+          borderBottomRightRadius: 32,
+          overflow: 'hidden',
+          alignItems: 'center',
+          justifyContent: 'center',
+          position: 'relative',
+        },
+        heroImage: {
+          ...StyleSheet.absoluteFillObject,
+        },
+        brandingContainer: {
+          alignItems: 'center',
+          zIndex: 10,
+          marginTop: 48,
+          paddingHorizontal: 24,
+        },
+        logoCircle: {
+          width: 96,
+          height: 96,
+          borderRadius: 48,
+          backgroundColor: theme.colors.surface + 'CC',
+          borderWidth: 1,
+          borderColor: theme.colors.primary + '33',
+          justifyContent: 'center',
+          alignItems: 'center',
+          marginBottom: 20,
+          shadowColor: theme.colors.inverseOnSurface,
+          shadowOffset: { width: 0, height: 10 },
+          shadowOpacity: 0.5,
+          shadowRadius: 20,
+          elevation: 10,
+        },
+        appName: {
+          color: theme.colors.onBackground,
+          fontSize: 36,
+          lineHeight: 44,
+          fontWeight: '700',
+          letterSpacing: -0.5,
+          marginBottom: 8,
+          textShadowColor: theme.colors.inverseOnSurface + '80',
+          textShadowOffset: { width: 0, height: 2 },
+          textShadowRadius: 4,
+          paddingVertical: 2,
+        },
+        appSubtitle: {
+          color: theme.colors.onSurfaceVariant,
+          fontSize: 18,
+          fontWeight: '500',
+          textAlign: 'center',
+          lineHeight: 28,
+        },
+        actionsContainer: {
+          flex: 1,
+          paddingHorizontal: 24,
+          justifyContent: 'flex-end',
+          paddingBottom: 40,
+          marginTop: -40,
+          zIndex: 20,
+        },
+        buttonsContainer: {
+          gap: 16,
+          width: '100%',
+          maxWidth: 480,
+          alignSelf: 'center',
+        },
+        socialButton: {
+          flexDirection: 'row',
+          alignItems: 'center',
+          backgroundColor: theme.colors.surface,
+          height: 56,
+          borderRadius: theme.roundness / 2,
+          borderWidth: 1,
+          borderColor: theme.colors.outlineVariant + '33',
+          paddingHorizontal: 16,
+          position: 'relative',
+        },
+        iconContainer: {
+          position: 'absolute',
+          left: 24,
+          width: 24,
+          alignItems: 'center',
+        },
+        socialButtonText: {
+          flex: 1,
+          color: theme.colors.onSurface,
+          fontSize: 16,
+          fontWeight: '600',
+          letterSpacing: 0.5,
+          textAlign: 'center',
+          marginLeft: 24,
+        },
+        loader: {
+          position: 'absolute',
+          right: 20,
+        },
+        errorContainer: {
+          flexDirection: 'row',
+          alignItems: 'center',
+          padding: 12,
+          borderRadius: theme.roundness / 2,
+          marginBottom: 16,
+          gap: 8,
+          backgroundColor: theme.colors.error + '1A',
+        },
+        errorText: {
+          flex: 1,
+          fontSize: 14,
+        },
+        footerContainer: {
+          marginTop: 32,
+          paddingHorizontal: 16,
+        },
+        footerText: {
+          color: theme.colors.onSurfaceVariant,
+          fontSize: 12,
+          textAlign: 'center',
+          lineHeight: 18,
+        },
+        linkText: {
+          color: theme.colors.primary,
+          textDecorationLine: 'none',
+        },
+      }),
+    [theme],
+  );
+
   return (
     <View style={styles.container}>
-      <StatusBar barStyle="light-content" backgroundColor="transparent" translucent />
+      <StatusBar
+        barStyle={isDark ? 'light-content' : 'dark-content'}
+        backgroundColor="transparent"
+        translucent
+      />
       
       <View style={styles.heroContainer}>
         <Image
@@ -118,11 +253,11 @@ export default function LoginScreen() {
         />
         
         <LinearGradient
-          colors={['rgba(0,0,0,0.4)', 'transparent', COLORS.backgroundDark]}
+          colors={[theme.colors.inverseOnSurface + '66', 'transparent', theme.colors.background]}
           style={StyleSheet.absoluteFill}
         />
         <LinearGradient
-          colors={[COLORS.backgroundDark, 'rgba(16,34,16,0.6)', 'transparent']}
+          colors={[theme.colors.background, theme.colors.background + '99', 'transparent']}
           start={{ x: 0.5, y: 1 }}
           end={{ x: 0.5, y: 0 }}
           style={[StyleSheet.absoluteFill, { opacity: 0.9 }]}
@@ -130,7 +265,7 @@ export default function LoginScreen() {
 
         <View style={styles.brandingContainer}>
           <View style={styles.logoCircle}>
-            <MaterialCommunityIcons name="paw" size={48} color={COLORS.primary} />
+            <MaterialCommunityIcons name="paw" size={48} color={theme.colors.primary} />
           </View>
           <Text style={styles.appName}>{t('auth.brandName')}</Text>
           <Text style={styles.appSubtitle}>
@@ -156,10 +291,12 @@ export default function LoginScreen() {
               activeOpacity={0.9}
             >
               <View style={styles.iconContainer}>
-                <MaterialCommunityIcons name="apple" size={24} color="white" />
+                <MaterialCommunityIcons name="apple" size={24} color={theme.colors.onSurface} />
               </View>
               <Text style={styles.socialButtonText}>{t('auth.continueWithApple')}</Text>
-              {isLoading && <ActivityIndicator size="small" color="white" style={styles.loader} />}
+               {isLoading && (
+                 <ActivityIndicator size="small" color={theme.colors.onSurface} style={styles.loader} />
+               )}
             </TouchableOpacity>
           )}
 
@@ -170,10 +307,12 @@ export default function LoginScreen() {
             activeOpacity={0.9}
           >
             <View style={styles.iconContainer}>
-               <MaterialCommunityIcons name="google" size={24} color="white" />
+               <MaterialCommunityIcons name="google" size={24} color={theme.colors.onSurface} />
             </View>
             <Text style={styles.socialButtonText}>{t('auth.continueWithGoogle')}</Text>
-            {isLoading && <ActivityIndicator size="small" color="white" style={styles.loader} />}
+            {isLoading && (
+              <ActivityIndicator size="small" color={theme.colors.onSurface} style={styles.loader} />
+            )}
           </TouchableOpacity>
 
           <TouchableOpacity
@@ -183,10 +322,12 @@ export default function LoginScreen() {
             activeOpacity={0.9}
           >
             <View style={styles.iconContainer}>
-              <MaterialCommunityIcons name="facebook" size={24} color={COLORS.facebookBlue} />
+              <MaterialCommunityIcons name="facebook" size={24} color={theme.colors.info} />
             </View>
             <Text style={styles.socialButtonText}>{t('auth.continueWithFacebook')}</Text>
-            {isLoading && <ActivityIndicator size="small" color="white" style={styles.loader} />}
+            {isLoading && (
+              <ActivityIndicator size="small" color={theme.colors.onSurface} style={styles.loader} />
+            )}
           </TouchableOpacity>
         </View>
 
@@ -214,135 +355,3 @@ export default function LoginScreen() {
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: COLORS.backgroundDark,
-    justifyContent: 'space-between',
-  },
-  heroContainer: {
-    height: height * 0.6,
-    width: '100%',
-    borderBottomLeftRadius: 32,
-    borderBottomRightRadius: 32,
-    overflow: 'hidden',
-    alignItems: 'center',
-    justifyContent: 'center',
-    position: 'relative',
-  },
-  heroImage: {
-    ...StyleSheet.absoluteFillObject,
-  },
-  brandingContainer: {
-    alignItems: 'center',
-    zIndex: 10,
-    marginTop: 48,
-    paddingHorizontal: 24,
-  },
-  logoCircle: {
-    width: 96,
-    height: 96,
-    borderRadius: 48,
-    backgroundColor: 'rgba(26, 46, 26, 0.8)',
-    borderWidth: 1,
-    borderColor: 'rgba(19, 236, 19, 0.2)',
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginBottom: 20,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 10 },
-    shadowOpacity: 0.5,
-    shadowRadius: 20,
-    elevation: 10,
-  },
-  appName: {
-    color: 'white',
-    fontSize: 36,
-    lineHeight: 44,
-    fontWeight: '700',
-    letterSpacing: -0.5,
-    marginBottom: 8,
-    textShadowColor: 'rgba(0,0,0,0.5)',
-    textShadowOffset: { width: 0, height: 2 },
-    textShadowRadius: 4,
-    paddingVertical: 2,
-  },
-  appSubtitle: {
-    color: '#D1D5DB',
-    fontSize: 18,
-    fontWeight: '500',
-    textAlign: 'center',
-    lineHeight: 28,
-  },
-  actionsContainer: {
-    flex: 1,
-    paddingHorizontal: 24,
-    justifyContent: 'flex-end',
-    paddingBottom: 40,
-    marginTop: -40,
-    zIndex: 20,
-  },
-  buttonsContainer: {
-    gap: 16,
-    width: '100%',
-    maxWidth: 480,
-    alignSelf: 'center',
-  },
-  socialButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: COLORS.surfaceDark,
-    height: 56,
-    borderRadius: 12,
-    borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.05)',
-    paddingHorizontal: 16,
-    position: 'relative',
-  },
-  iconContainer: {
-    position: 'absolute',
-    left: 24,
-    width: 24,
-    alignItems: 'center',
-  },
-  socialButtonText: {
-    flex: 1,
-    color: 'white',
-    fontSize: 16,
-    fontWeight: '600',
-    letterSpacing: 0.5,
-    textAlign: 'center',
-    marginLeft: 24,
-  },
-  loader: {
-    position: 'absolute',
-    right: 20,
-  },
-  errorContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    padding: 12,
-    borderRadius: 8,
-    marginBottom: 16,
-    gap: 8,
-    backgroundColor: 'rgba(255, 82, 82, 0.1)',
-  },
-  errorText: {
-    flex: 1,
-    fontSize: 14,
-  },
-  footerContainer: {
-    marginTop: 32,
-    paddingHorizontal: 16,
-  },
-  footerText: {
-    color: '#6B7280',
-    fontSize: 12,
-    textAlign: 'center',
-    lineHeight: 18,
-  },
-  linkText: {
-    color: COLORS.primary,
-    textDecorationLine: 'none',
-  },
-});
