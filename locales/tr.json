@@ -130,7 +130,12 @@
     "notFound": "Pet bulunamadı",
     "detailedInfo": "Detaylı Bilgiler",
     "upcomingEvents": "📅 Yaklaşan Etkinlikler",
-    "quickActions": "Hızlı İşlemler"
+    "quickActions": "Hızlı İşlemler",
+    "nextFeedingTime": "İleriki Beslenme Saati",
+    "recentActivities": "Son Aktiviteler",
+    "healthStatus": "Sağlık Durumu",
+    "feedingDefaultSubtitle": "Beslenme planı",
+    "shareMessage": "{{name}} {{breed}}"
   },
   "health": {
     "healthRecords": "Sağlık Kayıtları",
@@ -448,7 +453,13 @@
     "days": "gün",
     "notSpecified": "Belirtilmemiş",
     "optional": "Opsiyonel",
-    "daysAgo": "{{count}} gün önce"
+    "daysAgo": "{{count}} gün önce",
+    "details": "Detaylar",
+    "noData": "Henüz veri yok",
+    "noNotes": "Not yok",
+    "hoursMinutes": "{{hours}} saat {{minutes}} dk",
+    "minutesOnly": "{{minutes}} dk",
+    "timeLeft": "{{time}} kaldı"
   },
   "errors": {
     "loadingFailed": "Yükleme Başarısız",

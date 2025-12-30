@@ -138,7 +138,12 @@
     "statsError": "Failed to load statistics. Please try again.",
     "detailedInfo": "Detailed Information",
     "upcomingEvents": "📅 Upcoming Events",
-    "quickActions": "Quick Actions"
+    "quickActions": "Quick Actions",
+    "nextFeedingTime": "Next Feeding Time",
+    "recentActivities": "Recent Activities",
+    "healthStatus": "Health Status",
+    "feedingDefaultSubtitle": "Feeding plan",
+    "shareMessage": "{{name}} {{breed}}"
   },
   "health": {
     "healthRecords": "Health Records",
@@ -472,7 +477,13 @@
     "days": "days",
     "notSpecified": "Not specified",
     "optional": "Optional",
-    "daysAgo": "{{count}} days ago"
+    "daysAgo": "{{count}} days ago",
+    "details": "Details",
+    "noData": "No data yet",
+    "noNotes": "No notes",
+    "hoursMinutes": "{{hours}}h {{minutes}}m",
+    "minutesOnly": "{{minutes}}m",
+    "timeLeft": "{{time}} left"
   },
   "errors": {
     "loadingFailed": "Loading Failed",
