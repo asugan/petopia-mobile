@@ -435,6 +435,7 @@ const styles = StyleSheet.create({
   heroName: {
     fontSize: 40,
     fontWeight: '800',
+    lineHeight: 48,
     textShadowColor: 'rgba(0, 0, 0, 0.5)',
     textShadowOffset: { width: 0, height: 2 },
     textShadowRadius: 10,
