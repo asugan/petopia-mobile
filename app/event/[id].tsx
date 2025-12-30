@@ -1,6 +1,7 @@
+import { useTheme } from '@/lib/theme';
 import { format } from 'date-fns';
 import { enUS, tr } from 'date-fns/locale';
-import { useLocalSearchParams, useRouter } from 'expo-router';
+import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
 import React, { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
@@ -26,24 +27,10 @@ import { useReminderScheduler } from '@/hooks/useReminderScheduler';
 import { useEventReminderStore } from '@/stores/eventReminderStore';
 import { getEventTypeLabel } from '@/constants/eventIcons';
 
-const COLORS = {
-  primary: "#13ec13",
-  backgroundLight: "#f6f8f6",
-  backgroundDark: "#102210",
-  surfaceDark: "#193319",
-  surfaceDarker: "#112211",
-  white: "#FFFFFF",
-  gray400: "#9CA3AF",
-  gray300: "#D1D5DB",
-  blackOp20: "rgba(0,0,0,0.2)",
-  blackOp40: "rgba(0,0,0,0.4)",
-  red400: "#F87171",
-  red500Op10: "rgba(239, 68, 68, 0.1)",
-};
-
 const { width } = Dimensions.get('window');
 
 export default function EventDetailScreen() {
+  const { theme } = useTheme();
   const { t, i18n } = useTranslation();
   const router = useRouter();
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -60,6 +47,21 @@ export default function EventDetailScreen() {
   const { cancelRemindersForEvent } = useReminderScheduler();
 
   const [eventStatus, setEventStatus] = useState<'upcoming' | 'completed' | 'cancelled' | 'missed'>('upcoming');
+
+  const COLORS = {
+    primary: theme.colors.primary,
+    backgroundLight: theme.colors.background,
+    backgroundDark: theme.colors.background,
+    surfaceDark: theme.colors.surface,
+    surfaceDarker: theme.colors.surfaceVariant,
+    white: theme.colors.onSurface,
+    gray400: theme.colors.onSurfaceVariant,
+    gray300: theme.colors.onSurface,
+    blackOp20: "rgba(0,0,0,0.2)",
+    blackOp40: "rgba(0,0,0,0.4)",
+    red400: theme.colors.error,
+    red500Op10: "rgba(239, 68, 68, 0.1)",
+  };
 
   const handleEdit = () => {
     if (event) {
@@ -159,7 +161,7 @@ export default function EventDetailScreen() {
 
   if (isLoading) {
     return (
-      <View style={[styles.container, styles.centerContent]}>
+      <View style={[styles.container, styles.centerContent, { backgroundColor: COLORS.backgroundDark }]}>
         <ActivityIndicator size="large" color={COLORS.primary} />
       </View>
     );
@@ -167,9 +169,9 @@ export default function EventDetailScreen() {
 
   if (!event || error) {
     return (
-      <View style={[styles.container, styles.centerContent]}>
+      <View style={[styles.container, styles.centerContent, { backgroundColor: COLORS.backgroundDark }]}>
         <Text style={{ color: COLORS.white }}>{t('events.eventNotFound')}</Text>
-        <TouchableOpacity onPress={() => router.back()} style={styles.buttonSecondary}>
+        <TouchableOpacity onPress={() => router.back()} style={[styles.buttonSecondary, { backgroundColor: COLORS.surfaceDark }]}>
           <Text style={{ color: COLORS.white }}>{t('common.goBack')}</Text>
         </TouchableOpacity>
       </View>
@@ -182,22 +184,23 @@ export default function EventDetailScreen() {
   const heroImage = pet?.profilePhoto || "https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?ixlib=rb-4.0.3&auto=format&fit=crop&w=1327&q=80";
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { backgroundColor: COLORS.backgroundDark }]}>
+      <Stack.Screen options={{ headerShown: false }} />
       <StatusBar barStyle="light-content" translucent backgroundColor="transparent" />
       
       <View style={[styles.header, { paddingTop: insets.top + 10 }]}>
         <TouchableOpacity 
           onPress={() => router.back()}
-          style={styles.iconButton}
+          style={[styles.iconButton, { backgroundColor: COLORS.blackOp20 }]}
         >
           <MaterialIcons name="arrow-back" size={24} color={COLORS.white} />
         </TouchableOpacity>
         
         <View style={styles.headerActions}>
-          <TouchableOpacity onPress={handleShare} style={styles.iconButton}>
+          <TouchableOpacity onPress={handleShare} style={[styles.iconButton, { backgroundColor: COLORS.blackOp20 }]}>
             <MaterialIcons name="share" size={20} color={COLORS.white} />
           </TouchableOpacity>
-          <TouchableOpacity style={styles.iconButton}>
+          <TouchableOpacity style={[styles.iconButton, { backgroundColor: COLORS.blackOp20 }]}>
             <MaterialIcons name="more-vert" size={20} color={COLORS.white} />
           </TouchableOpacity>
         </View>
@@ -218,78 +221,78 @@ export default function EventDetailScreen() {
             style={styles.heroGradient}
           />
           <View style={styles.heroContent}>
-            <View style={styles.badge}>
-              <Text style={styles.badgeText}>{eventTypeLabel}</Text>
+            <View style={[styles.badge, { borderColor: COLORS.primary }]}>
+              <Text style={[styles.badgeText, { color: COLORS.primary }]}>{eventTypeLabel}</Text>
             </View>
-            <Text style={styles.heroTitle}>{event.title}</Text>
-            <Text style={styles.heroSubtitle}>{event.description || t('events.eventDetails')}</Text>
+            <Text style={[styles.heroTitle, { color: COLORS.white }]}>{event.title}</Text>
+            <Text style={[styles.heroSubtitle, { color: COLORS.gray300 }]}>{event.description || t('events.eventDetails')}</Text>
           </View>
         </View>
 
         <View style={styles.content}>
           <View style={styles.grid}>
-            <View style={styles.card}>
+            <View style={[styles.card, { backgroundColor: COLORS.surfaceDark }]}>
               <View style={styles.cardIconContainer}>
                 <MaterialIcons name="calendar-today" size={24} color={COLORS.primary} />
               </View>
               <View>
-                <Text style={styles.cardLabel}>{t('events.date')}</Text>
-                <Text style={styles.cardValue}>{dateStr}</Text>
+                <Text style={[styles.cardLabel, { color: COLORS.gray400 }]}>{t('events.date')}</Text>
+                <Text style={[styles.cardValue, { color: COLORS.white }]}>{dateStr}</Text>
               </View>
             </View>
 
-            <View style={styles.card}>
+            <View style={[styles.card, { backgroundColor: COLORS.surfaceDark }]}>
               <View style={styles.cardIconContainer}>
                 <MaterialIcons name="schedule" size={24} color={COLORS.primary} />
               </View>
               <View>
-                <Text style={styles.cardLabel}>{t('events.time')}</Text>
-                <Text style={styles.cardValue}>{timeStr}</Text>
+                <Text style={[styles.cardLabel, { color: COLORS.gray400 }]}>{t('events.time')}</Text>
+                <Text style={[styles.cardValue, { color: COLORS.white }]}>{timeStr}</Text>
               </View>
             </View>
 
             {pet && (
-              <View style={styles.card}>
-                <View style={[styles.cardIconContainer, styles.petAvatarContainer]}>
+              <View style={[styles.card, { backgroundColor: COLORS.surfaceDark }]}>
+                <View style={[styles.cardIconContainer, styles.petAvatarContainer, { borderColor: COLORS.primary }]}>
                   <Image source={{ uri: pet.profilePhoto }} style={styles.petAvatar} />
                 </View>
                 <View>
-                  <Text style={styles.cardLabel}>{t('events.pet')}</Text>
-                  <Text style={styles.cardValue} numberOfLines={1}>{pet.name}</Text>
+                  <Text style={[styles.cardLabel, { color: COLORS.gray400 }]}>{t('events.pet')}</Text>
+                  <Text style={[styles.cardValue, { color: COLORS.white }]} numberOfLines={1}>{pet.name}</Text>
                 </View>
               </View>
             )}
 
-            <View style={styles.card}>
+            <View style={[styles.card, { backgroundColor: COLORS.surfaceDark }]}>
               <View style={styles.cardIconContainer}>
                 <MaterialIcons name="location-on" size={24} color={COLORS.primary} />
               </View>
               <View>
-                <Text style={styles.cardLabel}>{t('events.location')}</Text>
-                <Text style={styles.cardValue} numberOfLines={1}>{event.location || t('events.noLocation')}</Text>
+                <Text style={[styles.cardLabel, { color: COLORS.gray400 }]}>{t('events.location')}</Text>
+                <Text style={[styles.cardValue, { color: COLORS.white }]} numberOfLines={1}>{event.location || t('events.noLocation')}</Text>
               </View>
             </View>
           </View>
 
           {event.notes && (
             <View style={styles.section}>
-              <Text style={styles.sectionTitle}>{t('events.notes')}</Text>
-              <View style={styles.notesBox}>
-                <Text style={styles.notesText}>{event.notes}</Text>
+              <Text style={[styles.sectionTitle, { color: COLORS.white }]}>{t('events.notes')}</Text>
+              <View style={[styles.notesBox, { backgroundColor: COLORS.surfaceDark }]}>
+                <Text style={[styles.notesText, { color: COLORS.gray300 }]}>{event.notes}</Text>
               </View>
             </View>
           )}
 
           {event.reminder && (
             <View style={styles.section}>
-              <View style={styles.reminderCard}>
+              <View style={[styles.reminderCard, { backgroundColor: COLORS.surfaceDark }]}>
                 <View style={styles.reminderLeft}>
                   <View style={styles.reminderIconBox}>
                     <MaterialIcons name="notifications-active" size={24} color={COLORS.primary} />
                   </View>
                   <View>
-                    <Text style={styles.reminderTitle}>{t('events.reminder')}</Text>
-                    <Text style={styles.reminderSubtitle}>{t('events.reminderEnabled')}</Text>
+                    <Text style={[styles.reminderTitle, { color: COLORS.white }]}>{t('events.reminder')}</Text>
+                    <Text style={[styles.reminderSubtitle, { color: COLORS.gray400 }]}>{t('events.reminderEnabled')}</Text>
                   </View>
                 </View>
                 <Switch
@@ -306,21 +309,21 @@ export default function EventDetailScreen() {
         </View>
       </ScrollView>
 
-      <View style={[styles.footer, { paddingBottom: insets.bottom + 10 }]}>
+      <View style={[styles.footer, { paddingBottom: insets.bottom + 10, backgroundColor: COLORS.surfaceDarker }]}>
         <View style={styles.footerGrid}>
           <TouchableOpacity onPress={handleEdit} style={styles.footerIconButton}>
             <MaterialIcons name="edit" size={24} color={COLORS.gray400} />
-            <Text style={styles.footerIconText}>{t('common.edit')}</Text>
+            <Text style={[styles.footerIconText, { color: COLORS.gray400 }]}>{t('common.edit')}</Text>
           </TouchableOpacity>
           
           <TouchableOpacity onPress={handleDelete} style={styles.footerIconButton}>
             <MaterialIcons name="delete" size={24} color={COLORS.gray400} />
-            <Text style={styles.footerIconText}>{t('common.delete')}</Text>
+            <Text style={[styles.footerIconText, { color: COLORS.gray400 }]}>{t('common.delete')}</Text>
           </TouchableOpacity>
 
           <TouchableOpacity 
             onPress={handleDuplicate}
-            style={styles.addToCalendarButton}
+            style={[styles.addToCalendarButton, { backgroundColor: COLORS.primary, shadowColor: COLORS.primary }]}
           >
             <MaterialIcons name="event" size={20} color="black" />
             <Text style={styles.addToCalendarText}>{t('events.copy')}</Text>
@@ -334,7 +337,6 @@ export default function EventDetailScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: COLORS.backgroundDark,
   },
   centerContent: {
     justifyContent: 'center',
@@ -363,7 +365,6 @@ const styles = StyleSheet.create({
     width: 40,
     height: 40,
     borderRadius: 20,
-    backgroundColor: COLORS.blackOp20,
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -399,10 +400,8 @@ const styles = StyleSheet.create({
     alignSelf: 'flex-start',
     marginBottom: 12,
     borderWidth: 1,
-    borderColor: 'rgba(19, 236, 19, 0.3)',
   },
   badgeText: {
-    color: COLORS.primary,
     fontSize: 12,
     fontWeight: '600',
     textTransform: 'uppercase',
@@ -410,7 +409,6 @@ const styles = StyleSheet.create({
   heroTitle: {
     fontSize: 30,
     fontWeight: '700',
-    color: COLORS.white,
     lineHeight: 36,
     marginBottom: 4,
     textShadowColor: 'rgba(0, 0, 0, 0.3)',
@@ -418,7 +416,6 @@ const styles = StyleSheet.create({
     textShadowRadius: 4,
   },
   heroSubtitle: {
-    color: COLORS.gray300,
     fontSize: 14,
   },
   content: {
@@ -435,7 +432,6 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
   },
   card: {
-    backgroundColor: COLORS.surfaceDark,
     borderRadius: 16,
     padding: 16,
     width: (width - 32 - 12) / 2,
@@ -452,14 +448,12 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   cardLabel: {
-    color: COLORS.gray400,
     fontSize: 12,
     fontWeight: '500',
     textTransform: 'uppercase',
     letterSpacing: 0.5,
   },
   cardValue: {
-    color: COLORS.white,
     fontSize: 16,
     fontWeight: '700',
     marginTop: 2,
@@ -467,7 +461,6 @@ const styles = StyleSheet.create({
   petAvatarContainer: {
     overflow: 'hidden',
     borderWidth: 2,
-    borderColor: 'rgba(19, 236, 19, 0.2)',
     padding: 0,
   },
   petAvatar: {
@@ -478,19 +471,16 @@ const styles = StyleSheet.create({
     gap: 12,
   },
   sectionTitle: {
-    color: COLORS.white,
     fontSize: 18,
     fontWeight: '700',
   },
   notesBox: {
-    backgroundColor: COLORS.surfaceDark,
     borderRadius: 16,
     padding: 20,
     borderWidth: 1,
     borderColor: 'rgba(255,255,255,0.05)',
   },
   notesText: {
-    color: COLORS.gray300,
     fontSize: 14,
     lineHeight: 22,
   },
@@ -498,7 +488,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    backgroundColor: COLORS.surfaceDark,
     borderRadius: 16,
     padding: 16,
     paddingRight: 20,
@@ -519,12 +508,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   reminderTitle: {
-    color: COLORS.white,
     fontSize: 16,
     fontWeight: '600',
   },
   reminderSubtitle: {
-    color: COLORS.gray400,
     fontSize: 12,
   },
   footer: {
@@ -532,7 +519,6 @@ const styles = StyleSheet.create({
     bottom: 0,
     left: 0,
     right: 0,
-    backgroundColor: 'rgba(17, 34, 17, 0.9)',
     borderTopWidth: 1,
     borderTopColor: 'rgba(255,255,255,0.05)',
     padding: 16,
@@ -553,7 +539,6 @@ const styles = StyleSheet.create({
   footerIconText: {
     fontSize: 10,
     fontWeight: '500',
-    color: COLORS.gray400,
   },
   addToCalendarButton: {
     flex: 2,
@@ -561,11 +546,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     gap: 8,
-    backgroundColor: COLORS.primary,
     borderRadius: 12,
     paddingVertical: 12,
     paddingHorizontal: 16,
-    shadowColor: COLORS.primary,
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.2,
     shadowRadius: 8,
@@ -579,7 +562,6 @@ const styles = StyleSheet.create({
   buttonSecondary: {
     marginTop: 16,
     padding: 12,
-    backgroundColor: COLORS.surfaceDark,
     borderRadius: 8,
   },
 });
