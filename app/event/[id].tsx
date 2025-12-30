@@ -1,35 +1,36 @@
-import { useTheme } from '@/lib/theme';
+import React, { useEffect, useMemo, useState } from 'react';
+
+import { MaterialIcons } from '@expo/vector-icons';
 import { format } from 'date-fns';
 import { enUS, tr } from 'date-fns/locale';
+import { Image } from 'expo-image';
+import { LinearGradient } from 'expo-linear-gradient';
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
-import React, { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
+    ActivityIndicator,
     Alert,
     ScrollView,
     Share,
+    StatusBar,
     StyleSheet,
-    View,
+    Switch,
     Text,
     TouchableOpacity,
-    Switch,
-    Dimensions,
-    StatusBar,
-    ActivityIndicator
+    useWindowDimensions,
+    View,
 } from 'react-native';
-import { Image } from 'expo-image';
-import { LinearGradient } from 'expo-linear-gradient';
-import { MaterialIcons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+
+import { getEventTypeLabel } from '@/constants/eventIcons';
+import { useReminderScheduler } from '@/hooks/useReminderScheduler';
 import { useCreateEvent, useDeleteEvent, useEvent } from '@/lib/hooks/useEvents';
 import { usePet } from '@/lib/hooks/usePets';
-import { useReminderScheduler } from '@/hooks/useReminderScheduler';
+import { useTheme } from '@/lib/theme';
 import { useEventReminderStore } from '@/stores/eventReminderStore';
-import { getEventTypeLabel } from '@/constants/eventIcons';
-
-const { width } = Dimensions.get('window');
 
 export default function EventDetailScreen() {
+  const { width } = useWindowDimensions();
   const { theme } = useTheme();
   const { t, i18n } = useTranslation();
   const router = useRouter();
@@ -44,7 +45,9 @@ export default function EventDetailScreen() {
   const reminderStatus = useEventReminderStore((state) => (event?._id ? state.statuses[event._id] : undefined));
   const presetSelections = useEventReminderStore((state) => state.presetSelections);
   const markMissed = useEventReminderStore((state) => state.markMissed);
-  const { cancelRemindersForEvent } = useReminderScheduler();
+  const markCancelled = useEventReminderStore((state) => state.markCancelled);
+  const resetStatus = useEventReminderStore((state) => state.resetStatus);
+  const { cancelRemindersForEvent, scheduleChainForEvent } = useReminderScheduler();
 
   const [eventStatus, setEventStatus] = useState<'upcoming' | 'completed' | 'cancelled' | 'missed'>('upcoming');
 
@@ -231,7 +234,7 @@ export default function EventDetailScreen() {
 
         <View style={styles.content}>
           <View style={styles.grid}>
-            <View style={[styles.card, { backgroundColor: COLORS.surfaceDark }]}>
+            <View style={[styles.card, { backgroundColor: COLORS.surfaceDark, width: (width - 32 - 12) / 2 }]}>
               <View style={styles.cardIconContainer}>
                 <MaterialIcons name="calendar-today" size={24} color={COLORS.primary} />
               </View>
@@ -241,7 +244,7 @@ export default function EventDetailScreen() {
               </View>
             </View>
 
-            <View style={[styles.card, { backgroundColor: COLORS.surfaceDark }]}>
+            <View style={[styles.card, { backgroundColor: COLORS.surfaceDark, width: (width - 32 - 12) / 2 }]}>
               <View style={styles.cardIconContainer}>
                 <MaterialIcons name="schedule" size={24} color={COLORS.primary} />
               </View>
@@ -252,7 +255,7 @@ export default function EventDetailScreen() {
             </View>
 
             {pet && (
-              <View style={[styles.card, { backgroundColor: COLORS.surfaceDark }]}>
+              <View style={[styles.card, { backgroundColor: COLORS.surfaceDark, width: (width - 32 - 12) / 2 }]}>
                 <View style={[styles.cardIconContainer, styles.petAvatarContainer, { borderColor: COLORS.primary }]}>
                   <Image source={{ uri: pet.profilePhoto }} style={styles.petAvatar} />
                 </View>
@@ -263,7 +266,7 @@ export default function EventDetailScreen() {
               </View>
             )}
 
-            <View style={[styles.card, { backgroundColor: COLORS.surfaceDark }]}>
+            <View style={[styles.card, { backgroundColor: COLORS.surfaceDark, width: (width - 32 - 12) / 2 }]}>
               <View style={styles.cardIconContainer}>
                 <MaterialIcons name="location-on" size={24} color={COLORS.primary} />
               </View>
@@ -297,8 +300,17 @@ export default function EventDetailScreen() {
                 </View>
                 <Switch
                   value={eventStatus !== 'cancelled'}
-                  onValueChange={(val) => {
-                     Alert.alert("Info", "Toggle reminder logic to be connected");
+                  onValueChange={async (enabled) => {
+                    if (!event) return;
+                    if (enabled) {
+                      await scheduleChainForEvent(event);
+                      resetStatus(event._id);
+                      setEventStatus('upcoming');
+                    } else {
+                      await cancelRemindersForEvent(event._id);
+                      markCancelled(event._id);
+                      setEventStatus('cancelled');
+                    }
                   }}
                   trackColor={{ false: '#767577', true: COLORS.primary }}
                   thumbColor={'#f4f3f4'}
@@ -325,8 +337,8 @@ export default function EventDetailScreen() {
             onPress={handleDuplicate}
             style={[styles.addToCalendarButton, { backgroundColor: COLORS.primary, shadowColor: COLORS.primary }]}
           >
-            <MaterialIcons name="event" size={20} color="black" />
-            <Text style={styles.addToCalendarText}>{t('events.copy')}</Text>
+            <MaterialIcons name="content-copy" size={20} color="black" />
+            <Text style={styles.addToCalendarText}>{t('events.duplicate')}</Text>
           </TouchableOpacity>
         </View>
       </View>
@@ -434,7 +446,6 @@ const styles = StyleSheet.create({
   card: {
     borderRadius: 16,
     padding: 16,
-    width: (width - 32 - 12) / 2,
     borderWidth: 1,
     borderColor: 'rgba(255,255,255,0.05)',
     gap: 12,
