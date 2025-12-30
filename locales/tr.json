@@ -130,7 +130,15 @@
     "notFound": "Pet bulunamadı",
     "detailedInfo": "Detaylı Bilgiler",
     "upcomingEvents": "📅 Yaklaşan Etkinlikler",
-    "quickActions": "Hızlı İşlemler"
+    "quickActions": "Hızlı İşlemler",
+    "nextFeedingTime": "İleriki Beslenme Saati",
+    "recentActivities": "Son Aktiviteler",
+    "healthStatus": "Sağlık Durumu",
+    "feedingDefaultSubtitle": "Beslenme planı",
+    "shareMessage": "{{name}} {{breed}}",
+    "viewActivityHistory": "Aktivite geçmişini görüntüle",
+    "viewHealthDetails": "Sağlık detaylarını görüntüle",
+    "sharePet": "Pet bilgilerini paylaş"
   },
   "health": {
     "healthRecords": "Sağlık Kayıtları",
@@ -432,6 +440,7 @@
     "unsavedChangesMessage": "Kaydedilmemiş değişiklikleriniz var. Bunları silmek istediğinizden emin misiniz?",
     "discard": "Değişiklikleri Sil",
     "close": "Kapat",
+    "moreOptions": "Daha fazla seçenek",
     "offline": "Çevrimdışı",
     "wifi": "Wi-Fi",
     "cellular": "Mobil",
@@ -448,7 +457,13 @@
     "days": "gün",
     "notSpecified": "Belirtilmemiş",
     "optional": "Opsiyonel",
-    "daysAgo": "{{count}} gün önce"
+    "daysAgo": "{{count}} gün önce",
+    "details": "Detaylar",
+    "noData": "Henüz veri yok",
+    "noNotes": "Not yok",
+    "hoursMinutes": "{{hours}} saat {{minutes}} dk",
+    "minutesOnly": "{{minutes}} dk",
+    "timeLeft": "{{time}} kaldı"
   },
   "errors": {
     "loadingFailed": "Yükleme Başarısız",

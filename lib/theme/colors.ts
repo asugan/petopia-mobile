@@ -1,147 +1,151 @@
 import { ThemeColors, GradientColors } from "./types";
 
-// Vibrant Candy Color Palette (Light Mode)
 export const lightColors: ThemeColors = {
-  // Ana Renkler (Candy Colors)
-  primary: "#FF6B9D",        // 🍭 Bright Pink (şeker pembe)
-  secondary: "#00E5A0",      // 🍃 Vibrant Mint (canlı nane)
-  tertiary: "#A855F7",       // 💜 Electric Lavender (elektrik mor)
-  accent: "#FFB347",         // 🍊 Orange Candy (portakal şeker)
+  primary: "#FF6B9D",
+  secondary: "#00E5A0",
+  tertiary: "#A855F7",
+  accent: "#FFB347",
 
-  // Durum Renkleri
-  success: "#10B981",        // ✅ Bright Green
-  warning: "#F59E0B",        // ⚠️ Golden Yellow
-  error: "#EF4444",          // ❌ Bright Red
-  info: "#3B82F6",           // ℹ️ Bright Blue
+  success: "#10B981",
+  warning: "#F59E0B",
+  error: "#EF4444",
+  info: "#3B82F6",
 
-  // Yüzeyler
-  background: "#FFFFFF",     // Beyaz
-  surface: "#FAFAFA",        // Çok hafif gri
-  surfaceVariant: "#F5F5F5", // Hafif gri
-  surfaceDisabled: "#E5E7EB", // Disabled state
+  background: "#FFFFFF",
+  surface: "#FAFAFA",
+  surfaceVariant: "#F5F5F5",
+  surfaceDisabled: "#E5E7EB",
 
-  // Container colors
-  primaryContainer: "#FFE5EC",      // Light pink container
-  secondaryContainer: "#CCFFF0",    // Light mint container
-  tertiaryContainer: "#F3E8FF",     // Light purple container
-  errorContainer: "#FEE2E2",        // Light red container
+  primaryContainer: "#FFE5EC",
+  secondaryContainer: "#CCFFF0",
+  tertiaryContainer: "#F3E8FF",
+  errorContainer: "#FEE2E2",
+  infoContainer: "#DBEAFE",
+  warningContainer: "#FFEDD5",
+  successContainer: "#D1FAE5",
 
-  // Outline colors
-  outline: "#9CA3AF",               // Gray outline
-  outlineVariant: "#D1D5DB",        // Lighter outline
+  genderMale: "#3B82F6",
+  genderMaleContainer: "#DBEAFE",
+  genderFemale: "#EC4899",
+  genderFemaleContainer: "#FCE7F3",
 
-  // Inverse colors
-  inversePrimary: "#FF4A8B",        // Inverse primary
-  inverseSurface: "#1F2937",        // Dark surface for inverse
-  inverseOnSurface: "#F9FAFB",      // Light text on inverse surface
+  overlay: "rgba(0,0,0,0.3)",
+  overlayLight: "rgba(255,255,255,0.1)",
+  scrim: "rgba(0,0,0,0.12)",
 
-  // Metin Renkleri
+  outline: "#9CA3AF",
+  outlineVariant: "#D1D5DB",
+
+  inversePrimary: "#FF4A8B",
+  inverseSurface: "#1F2937",
+  inverseOnSurface: "#F9FAFB",
+
   onPrimary: "#FFFFFF",
   onSecondary: "#FFFFFF",
   onTertiary: "#FFFFFF",
   onAccent: "#FFFFFF",
-  onBackground: "#1F2937",   // Koyu gri (siyah yerine)
-  onSurface: "#374151",      // Orta koyu gri
-  onSurfaceVariant: "#6B7280", // Orta gri
+  onBackground: "#1F2937",
+  onSurface: "#374151",
+  onSurfaceVariant: "#6B7280",
   onError: "#FFFFFF",
   onSuccess: "#FFFFFF",
   onWarning: "#FFFFFF",
-  onPrimaryContainer: "#831843",    // Dark text on light pink
-  onSecondaryContainer: "#004D40",  // Dark text on light mint
-  onTertiaryContainer: "#4C1D95",   // Dark text on light purple
-  onErrorContainer: "#991B1B",      // Dark text on light red
+  onPrimaryContainer: "#831843",
+  onSecondaryContainer: "#004D40",
+  onTertiaryContainer: "#4C1D95",
+  onErrorContainer: "#991B1B",
 
-  // Event type colors (Pastel shades for light mode)
-  eventFeeding: "#FFB3D1",          // Pastel pink
-  eventExercise: "#B3FFD9",         // Pastel mint
-  eventGrooming: "#C8B3FF",         // Pastel lavender
-  eventPlay: "#FFDAB3",             // Pastel peach
-  eventTraining: "#FFF3B3",         // Pastel yellow
-  eventVetVisit: "#FF9999",         // Pastel red
-  eventWalk: "#B3E5FF",             // Pastel sky blue
-  eventBath: "#E5B3FF",             // Pastel purple
-  eventVaccination: "#FFC2D1",      // Soft rose
-  eventMedication: "#B3D9FF",       // Soft blue
-  eventOther: "#CCCCCC",            // Neutral gray
+  eventFeeding: "#FFB3D1",
+  eventExercise: "#B3FFD9",
+  eventGrooming: "#C8B3FF",
+  eventPlay: "#FFDAB3",
+  eventTraining: "#FFF3B3",
+  eventVetVisit: "#FF9999",
+  eventWalk: "#B3E5FF",
+  eventBath: "#E5B3FF",
+  eventVaccination: "#FFC2D1",
+  eventMedication: "#B3D9FF",
+  eventOther: "#CCCCCC",
 };
 
-// Neon/Glow Color Palette (Dark Mode)
 export const darkColors: ThemeColors = {
-  // Ana Renkler (Neon/Glow Effect)
-  primary: "#00ADB5",        // 🌊 Cyan/Teal (tasarıma uygun)
-  secondary: "#00D696",      // 💚 Bright Mint (parlak nane)
-  tertiary: "#C084FC",       // 💜 Neon Lavender (parlak mor)
-  accent: "#FF7F50",         // 🟠 Coral Orange (tasarıma uygun)
+  primary: "#f66b4a",
+  secondary: "#00D696",
+  tertiary: "#C084FC",
+  accent: "#fe8e70",
 
-  // Durum Renkleri (Daha parlak)
-  success: "#34D399",        // ✅ Neon Green
-  warning: "#FBBF24",        // ⚠️ Bright Gold
-  error: "#F87171",          // ❌ Bright Red
-  info: "#60A5FA",           // ℹ️ Bright Blue
+  success: "#47d5a6",
+  warning: "#d7ac61",
+  error: "#d94a4a",
+  info: "#4077d1",
 
-  // Yüzeyler (Saf siyah değil!)
-  background: "#1A202C",     // Dark gray-blue (tasarıma uygun)
-  surface: "#2D3748",        // Darker gray (tasarıma uygun)
-  surfaceVariant: "#374151", // Medium gray
-  surfaceDisabled: "#4B5563", // Disabled state
+  background: "#121212",
+  surface: "#282828",
+  surfaceVariant: "#3f3f3f",
+  surfaceDisabled: "#575757",
 
-  // Container colors
-  primaryContainer: "#831843",      // Dark pink container
-  secondaryContainer: "#004D40",    // Dark mint container
-  tertiaryContainer: "#4C1D95",     // Dark purple container
-  errorContainer: "#991B1B",        // Dark red container
+  primaryContainer: "#3b302d",
+  secondaryContainer: "#004D40",
+  tertiaryContainer: "#4C1D95",
+  errorContainer: "#9c2121",
+  infoContainer: "#21498a",
+  warningContainer: "#a87a2a",
+  successContainer: "#22946e",
 
-  // Outline colors
-  outline: "#6B7280",               // Gray outline
-  outlineVariant: "#4B5563",        // Darker outline
+  genderMale: "#60A5FA",
+  genderMaleContainer: "#1E3A5F",
+  genderFemale: "#F472B6",
+  genderFemaleContainer: "#831843",
 
-  // Inverse colors
-  inversePrimary: "#FFB3D9",        // Light pink for inverse
-  inverseSurface: "#F9FAFB",        // Light surface for inverse
-  inverseOnSurface: "#1F2937",      // Dark text on inverse
+  overlay: "rgba(0,0,0,0.5)",
+  overlayLight: "rgba(255,255,255,0.1)",
+  scrim: "rgba(0,0,0,0.32)",
 
-  // Metin Renkleri (Daha parlak)
-  onPrimary: "#FFFFFF",
+  outline: "#717171",
+  outlineVariant: "#504644",
+
+  inversePrimary: "#ffbfab",
+  inverseSurface: "#ffffff",
+  inverseOnSurface: "#121212",
+
+  onPrimary: "#000000",
   onSecondary: "#000000",
   onTertiary: "#000000",
   onAccent: "#000000",
-  onBackground: "#E2E8F0",   // Text Light (tasarıma uygun)
-  onSurface: "#E2E8F0",      // Text Light (tasarıma uygun)
-  onSurfaceVariant: "#A0AEC0", // Text Muted (tasarıma uygun)
-  onError: "#FFFFFF",
+  onBackground: "#ffffff",
+  onSurface: "#ffffff",
+  onSurfaceVariant: "#8b8b8b",
+  onError: "#ffffff",
   onSuccess: "#000000",
   onWarning: "#000000",
-  onPrimaryContainer: "#FFE5EC",    // Light text on dark pink
-  onSecondaryContainer: "#CCFFF0",  // Light text on dark mint
-  onTertiaryContainer: "#F3E8FF",   // Light text on dark purple
-  onErrorContainer: "#FEE2E2",      // Light text on dark red
+  onPrimaryContainer: "#ffbfab",
+  onSecondaryContainer: "#CCFFF0",
+  onTertiaryContainer: "#F3E8FF",
+  onErrorContainer: "#eb9e9e",
 
-  // Event type colors (Using theme colors for dark mode)
-  eventFeeding: "#00ADB5",          // primary (Cyan/Teal)
-  eventExercise: "#00D696",         // secondary (Bright Mint)
-  eventGrooming: "#C084FC",         // tertiary (Neon Lavender)
-  eventPlay: "#FF7F50",             // accent (Coral Orange)
-  eventTraining: "#60A5FA",         // info (Bright Blue)
-  eventVetVisit: "#F87171",         // error (Bright Red)
-  eventWalk: "#3B82F6",             // info variant (Bright Blue)
-  eventBath: "#D8B4FE",             // tertiary variant (Light Purple)
-  eventVaccination: "#FB7185",      // bright rose
-  eventMedication: "#38BDF8",       // bright blue
-  eventOther: "#6B7280",            // outline (Gray)
+  eventFeeding: "#f66b4a",
+  eventExercise: "#00D696",
+  eventGrooming: "#C084FC",
+  eventPlay: "#fe8e70",
+  eventTraining: "#4077d1",
+  eventVetVisit: "#d94a4a",
+  eventWalk: "#92b2e5",
+  eventBath: "#D8B4FE",
+  eventVaccination: "#ffaf97",
+  eventMedication: "#9ae8ce",
+  eventOther: "#717171",
 };
 
-// Gradient tanımları (light mode için)
 export const lightGradients: GradientColors = {
-  primary: ["#FF6B9D", "#FF8FAB"],      // Pink gradient
-  secondary: ["#00E5A0", "#00F5AE"],    // Mint gradient
-  tertiary: ["#A855F7", "#C084FC"],     // Purple gradient
-  accent: ["#FFB347", "#FFC870"],       // Orange gradient
+  primary: ["#FF6B9D", "#FF8FAB"],
+  secondary: ["#00E5A0", "#00F5AE"],
+  tertiary: ["#A855F7", "#C084FC"],
+  accent: ["#FFB347", "#FFC870"],
 };
 
-// Dark mode gradients (daha parlak)
 export const darkGradients: GradientColors = {
-  primary: ["#00ADB5", "#00C9D1"],  // Cyan/Teal gradient
+  primary: ["#f66b4a", "#fe8e70"],
   secondary: ["#00D696", "#00E5A0"],
   tertiary: ["#C084FC", "#D8B4FE"],
-  accent: ["#FF7F50", "#FF9A70"],   // Coral Orange gradient
+  accent: ["#fe8e70", "#ffbfab"],
 };

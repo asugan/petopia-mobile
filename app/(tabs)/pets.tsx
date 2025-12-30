@@ -3,13 +3,13 @@ import { View, StyleSheet, ScrollView, RefreshControl, TextInput, Pressable } fr
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
+import { useRouter } from 'expo-router';
 import { Button, FAB, Portal, Snackbar, Text } from '@/components/ui';
 import { ProtectedRoute } from '@/components/subscription';
 import PetListCard from '@/components/PetListCard';
 import { useTheme } from '@/lib/theme';
 import { PetCardSkeleton } from '@/components/PetCardSkeleton';
 import { PetModal } from '@/components/PetModal';
-import PetDetailModal from '@/components/PetDetailModal';
 import { LAYOUT } from '@/constants';
 import { Pet } from '@/lib/types';
 import { useInfinitePets } from '@/lib/hooks/usePets';
@@ -17,6 +17,7 @@ import { useInfinitePets } from '@/lib/hooks/usePets';
 export default function PetsScreen() {
   const { theme } = useTheme();
   const { t } = useTranslation();
+  const router = useRouter();
 
   // React Query infinite query for pets
   const {
@@ -38,8 +39,6 @@ export default function PetsScreen() {
 
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedPet, setSelectedPetState] = useState<Pet | undefined>();
-  const [detailModalVisible, setDetailModalVisible] = useState(false);
-  const [selectedPetIdForDetail, setSelectedPetIdForDetail] = useState<string>('');
   const [snackbarVisible, setSnackbarVisible] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
@@ -73,8 +72,7 @@ export default function PetsScreen() {
   };
 
   const handleViewPet = (pet: Pet) => {
-    setSelectedPetIdForDetail(pet._id);
-    setDetailModalVisible(true);
+    router.push(`/pet/${pet._id}`);
   };
 
   const handleLoadMore = () => {
@@ -317,17 +315,6 @@ export default function PetsScreen() {
           onSuccess={handleModalSuccess}
           testID="pet-modal"
         />
-
-        {selectedPetIdForDetail && (
-          <PetDetailModal
-            visible={detailModalVisible}
-            petId={selectedPetIdForDetail}
-            onClose={() => {
-              setDetailModalVisible(false);
-              setSelectedPetIdForDetail('');
-            }}
-          />
-        )}
 
         <Portal>
           <Snackbar

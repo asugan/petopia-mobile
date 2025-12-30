@@ -262,6 +262,47 @@ export const getNextFeedingTime = (schedules: Array<{ time: string; days: string
   return null;
 };
 
+export const getPreviousFeedingTime = (schedules: Array<{ time: string; days: string; isActive: boolean }>): Date | null => {
+  const now = new Date();
+  const currentDay = now.getDay();
+  const currentTime = `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`;
+
+  const dayNames = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
+  const todayName = dayNames[currentDay];
+
+  const pastToday = schedules
+    .filter(s => s.isActive && s.days.toLowerCase().includes(todayName) && s.time <= currentTime)
+    .sort((a, b) => b.time.localeCompare(a.time));
+
+  if (pastToday.length > 0) {
+    const prevSchedule = pastToday[0];
+    const [hours, minutes] = prevSchedule.time.split(':').map(Number);
+    const prevTime = new Date(now);
+    prevTime.setHours(hours, minutes, 0, 0);
+    return prevTime;
+  }
+
+  for (let i = 1; i <= 7; i++) {
+    const pastDay = (currentDay - i + 7) % 7;
+    const pastDayName = dayNames[pastDay];
+
+    const pastDaySchedules = schedules
+      .filter(s => s.isActive && s.days.toLowerCase().includes(pastDayName))
+      .sort((a, b) => b.time.localeCompare(a.time));
+
+    if (pastDaySchedules.length > 0) {
+      const prevSchedule = pastDaySchedules[0];
+      const [hours, minutes] = prevSchedule.time.split(':').map(Number);
+      const prevTime = new Date(now);
+      prevTime.setDate(now.getDate() - i);
+      prevTime.setHours(hours, minutes, 0, 0);
+      return prevTime;
+    }
+  }
+
+  return null;
+};
+
 // Default form values
 export const defaultFeedingScheduleFormValues: Partial<FeedingScheduleFormData> = {
   time: '08:00',
