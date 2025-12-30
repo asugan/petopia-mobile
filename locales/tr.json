@@ -135,7 +135,10 @@
     "recentActivities": "Son Aktiviteler",
     "healthStatus": "Sağlık Durumu",
     "feedingDefaultSubtitle": "Beslenme planı",
-    "shareMessage": "{{name}} {{breed}}"
+    "shareMessage": "{{name}} {{breed}}",
+    "viewActivityHistory": "Aktivite geçmişini görüntüle",
+    "viewHealthDetails": "Sağlık detaylarını görüntüle",
+    "sharePet": "Pet bilgilerini paylaş"
   },
   "health": {
     "healthRecords": "Sağlık Kayıtları",
@@ -437,6 +440,7 @@
     "unsavedChangesMessage": "Kaydedilmemiş değişiklikleriniz var. Bunları silmek istediğinizden emin misiniz?",
     "discard": "Değişiklikleri Sil",
     "close": "Kapat",
+    "moreOptions": "Daha fazla seçenek",
     "offline": "Çevrimdışı",
     "wifi": "Wi-Fi",
     "cellular": "Mobil",

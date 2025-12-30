@@ -24,6 +24,18 @@ export interface ThemeColors {
   secondaryContainer: string;
   tertiaryContainer: string;
   errorContainer: string;
+  infoContainer: string;
+  warningContainer: string;
+  successContainer: string;
+
+  genderMale: string;
+  genderMaleContainer: string;
+  genderFemale: string;
+  genderFemaleContainer: string;
+
+  overlay: string;
+  overlayLight: string;
+  scrim: string;
 
   // Outline colors
   outline: string;

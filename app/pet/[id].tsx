@@ -19,6 +19,12 @@ import { PetModal } from '@/components/PetModal';
 
 const { width } = Dimensions.get('window');
 
+const BOTTOM_BAR_HEIGHT = 120;
+
+function sortByDateDesc<T>(items: T[], getDate: (item: T) => string | Date): T[] {
+  return [...items].sort((a, b) => new Date(getDate(b)).getTime() - new Date(getDate(a)).getTime());
+}
+
 export default function PetDetailScreen() {
   const router = useRouter();
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -115,18 +121,12 @@ export default function PetDetailScreen() {
 
   const recentActivities = useMemo(() => {
     if (!events?.length) return [];
-
-    return [...events]
-      .sort((a, b) => new Date(b.startTime).getTime() - new Date(a.startTime).getTime())
-      .slice(0, 3);
+    return sortByDateDesc(events, (e) => e.startTime).slice(0, 3);
   }, [events]);
 
   const recentHealth = useMemo(() => {
     if (!healthRecords?.length) return [];
-
-    return [...healthRecords]
-      .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
-      .slice(0, 2);
+    return sortByDateDesc(healthRecords, (r) => r.date).slice(0, 2);
   }, [healthRecords]);
 
   const handleShare = async () => {
@@ -147,6 +147,28 @@ export default function PetDetailScreen() {
   const handleDelete = () => {
     if (!pet) return;
 
+    const performDelete = async () => {
+      try {
+        await deletePetMutation.mutateAsync(pet._id);
+        router.back();
+      } catch {
+        Alert.alert(
+          t('common.error'),
+          t('pets.deleteError'),
+          [
+            {
+              text: t('common.cancel'),
+              style: 'cancel',
+            },
+            {
+              text: t('common.retry'),
+              onPress: performDelete,
+            },
+          ]
+        );
+      }
+    };
+
     Alert.alert(
       t('pets.deletePet'),
       t('pets.deleteConfirmation', { name: pet.name }),
@@ -158,14 +180,7 @@ export default function PetDetailScreen() {
         {
           text: t('common.delete'),
           style: 'destructive',
-          onPress: async () => {
-            try {
-              await deletePetMutation.mutateAsync(pet._id);
-              router.back();
-            } catch (error) {
-              console.error('Delete pet error:', error);
-            }
-          },
+          onPress: performDelete,
         },
       ]
     );
@@ -178,8 +193,8 @@ export default function PetDetailScreen() {
   };
 
   const getGenderColor = (gender: string) => {
-    if (gender === 'female') return '#EC4899';
-    if (gender === 'male') return '#3B82F6';
+    if (gender === 'female') return theme.colors.genderFemale;
+    if (gender === 'male') return theme.colors.genderMale;
     return theme.colors.outline;
   };
 
@@ -195,7 +210,12 @@ export default function PetDetailScreen() {
     return (
       <View style={[styles.container, styles.center, { backgroundColor: theme.colors.background, padding: 24 }]}>
         <Text style={{ color: theme.colors.onBackground, textAlign: 'center', fontWeight: '700' }}>{t('pets.notFound')}</Text>
-        <TouchableOpacity onPress={() => router.back()} style={[styles.fallbackButton, { borderColor: theme.colors.outlineVariant }]}>
+        <TouchableOpacity
+          onPress={() => router.back()}
+          style={[styles.fallbackButton, { borderColor: theme.colors.outlineVariant }]}
+          accessibilityLabel={t('common.back')}
+          accessibilityRole="button"
+        >
           <Text style={{ color: theme.colors.onBackground, fontWeight: '700' }}>{t('common.back')}</Text>
         </TouchableOpacity>
       </View>
@@ -210,13 +230,13 @@ export default function PetDetailScreen() {
     <View style={[styles.container, { backgroundColor: theme.colors.background }]}>
       <Stack.Screen options={{ headerShown: false }} />
       <ScrollView
-        contentContainerStyle={{ paddingBottom: 120 + insets.bottom }}
+        contentContainerStyle={{ paddingBottom: BOTTOM_BAR_HEIGHT + insets.bottom }}
         showsVerticalScrollIndicator={false}
       >
         <View style={styles.heroContainer}>
           <Image source={heroSource} style={styles.heroImage} resizeMode="cover" />
           <LinearGradient
-            colors={['transparent', 'rgba(0,0,0,0.12)', theme.colors.background]}
+            colors={['transparent', theme.colors.scrim, theme.colors.background]}
             style={styles.heroGradient}
           />
 
@@ -227,11 +247,20 @@ export default function PetDetailScreen() {
 
         <View style={[styles.headerBar, { top: insets.top + 10 }]}
         >
-          <TouchableOpacity onPress={() => router.back()} style={styles.iconButtonBlur}>
-            <Ionicons name="arrow-back" size={24} color="#FFF" />
+          <TouchableOpacity
+            onPress={() => router.back()}
+            style={[styles.iconButtonBlur, { backgroundColor: theme.colors.overlay, borderColor: theme.colors.overlayLight }]}
+            accessibilityLabel={t('common.back')}
+            accessibilityRole="button"
+          >
+            <Ionicons name="arrow-back" size={24} color={theme.colors.inverseOnSurface} />
           </TouchableOpacity>
-          <TouchableOpacity style={styles.iconButtonBlur}>
-            <Ionicons name="ellipsis-horizontal" size={24} color="#FFF" />
+          <TouchableOpacity
+            style={[styles.iconButtonBlur, { backgroundColor: theme.colors.overlay, borderColor: theme.colors.overlayLight }]}
+            accessibilityLabel={t('common.moreOptions')}
+            accessibilityRole="button"
+          >
+            <Ionicons name="ellipsis-horizontal" size={24} color={theme.colors.inverseOnSurface} />
           </TouchableOpacity>
         </View>
 
@@ -249,8 +278,8 @@ export default function PetDetailScreen() {
             </View>
 
             <View style={[styles.card, { backgroundColor: theme.colors.surfaceVariant, borderColor: theme.colors.outlineVariant }]}>
-              <View style={[styles.iconBox, { backgroundColor: '#DBEAFE' }]}>
-                <MaterialCommunityIcons name="cake-variant" size={20} color="#3B82F6" />
+              <View style={[styles.iconBox, { backgroundColor: theme.colors.infoContainer }]}>
+                <MaterialCommunityIcons name="cake-variant" size={20} color={theme.colors.info} />
               </View>
               <View>
                 <Text style={[styles.label, { color: theme.colors.onSurfaceVariant }]}>{t('pets.age')}</Text>
@@ -260,7 +289,7 @@ export default function PetDetailScreen() {
             </View>
 
             <View style={[styles.card, { backgroundColor: theme.colors.surfaceVariant, borderColor: theme.colors.outlineVariant }]}>
-              <View style={[styles.iconBox, { backgroundColor: pet.gender === 'female' ? '#FCE7F3' : '#DBEAFE' }]}>
+              <View style={[styles.iconBox, { backgroundColor: pet.gender === 'female' ? theme.colors.genderFemaleContainer : theme.colors.genderMaleContainer }]}>
                 <Ionicons name={getGenderIcon(pet.gender ?? '')} size={20} color={getGenderColor(pet.gender ?? '')} />
               </View>
               <View>
@@ -273,8 +302,8 @@ export default function PetDetailScreen() {
             </View>
 
             <View style={[styles.card, { backgroundColor: theme.colors.surfaceVariant, borderColor: theme.colors.outlineVariant }]}>
-              <View style={[styles.iconBox, { backgroundColor: '#FFEDD5' }]}>
-                <MaterialCommunityIcons name="scale-bathroom" size={20} color="#F97316" />
+              <View style={[styles.iconBox, { backgroundColor: theme.colors.warningContainer }]}>
+                <MaterialCommunityIcons name="scale-bathroom" size={20} color={theme.colors.warning} />
               </View>
               <View>
                 <Text style={[styles.label, { color: theme.colors.onSurfaceVariant }]}>{t('pets.weight')}</Text>
@@ -297,7 +326,7 @@ export default function PetDetailScreen() {
               <View style={[styles.wideCard, { backgroundColor: theme.colors.surfaceVariant, borderColor: theme.colors.outlineVariant }]}>
                 <View style={styles.feedingRow}>
                   <View style={styles.feedingInfo}>
-                    <View style={[styles.iconBoxLarge, { backgroundColor: theme.colors.primaryContainer }]}>
+                    <View style={[styles.iconBoxLarge, { backgroundColor: theme.colors.primaryContainer, borderColor: theme.colors.overlayLight }]}>
                       <MaterialIcons name="restaurant" size={24} color={theme.colors.primary} />
                     </View>
                     <View>
@@ -315,7 +344,7 @@ export default function PetDetailScreen() {
                     {nextFeedingSchedule ? formatTimeForDisplay(nextFeedingSchedule.time) : format(nextFeedingTime, 'HH:mm')}
                   </Text>
                 </View>
-                <View style={styles.progressBarBg}>
+                <View style={[styles.progressBarBg, { backgroundColor: theme.colors.overlayLight }]}>
                   <View style={[styles.progressBarFill, { backgroundColor: theme.colors.primary, width: `${Math.round(feedingProgress)}%` }]} />
                 </View>
               </View>
@@ -325,7 +354,11 @@ export default function PetDetailScreen() {
           <View style={styles.section}>
             <View style={styles.sectionHeader}>
               <Text style={[styles.sectionTitle, { color: theme.colors.onSurface }]}>{t('pets.recentActivities')}</Text>
-              <TouchableOpacity style={[styles.iconButtonSmall, { backgroundColor: theme.colors.surfaceVariant, borderColor: theme.colors.outlineVariant }]}>
+              <TouchableOpacity
+                style={[styles.iconButtonSmall, { backgroundColor: theme.colors.surfaceVariant, borderColor: theme.colors.outlineVariant }]}
+                accessibilityLabel={t('pets.viewActivityHistory')}
+                accessibilityRole="button"
+              >
                 <MaterialIcons name="history" size={20} color={theme.colors.onSurface} />
               </TouchableOpacity>
             </View>
@@ -369,7 +402,10 @@ export default function PetDetailScreen() {
           <View style={[styles.section, { marginBottom: 24 }]}>
             <View style={styles.sectionHeader}>
               <Text style={[styles.sectionTitle, { color: theme.colors.onSurface }]}>{t('pets.healthStatus')}</Text>
-              <TouchableOpacity>
+              <TouchableOpacity
+                accessibilityLabel={t('pets.viewHealthDetails')}
+                accessibilityRole="button"
+              >
                 <Text style={[styles.linkText, { color: theme.colors.primary }]}>{t('common.details')}</Text>
               </TouchableOpacity>
             </View>
@@ -381,8 +417,8 @@ export default function PetDetailScreen() {
                 recentHealth.map((record, index) => (
                   <View key={record._id} style={[styles.timelineItem, index === recentHealth.length - 1 && styles.lastItem]}>
                     <View style={styles.timelineIconContainer}>
-                      <View style={[styles.timelineIcon, { backgroundColor: '#FEE2E2', borderColor: '#EF4444' }]}>
-                        <MaterialCommunityIcons name="stethoscope" size={16} color="#EF4444" />
+                      <View style={[styles.timelineIcon, { backgroundColor: theme.colors.errorContainer, borderColor: theme.colors.error }]}>
+                        <MaterialCommunityIcons name="stethoscope" size={16} color={theme.colors.error} />
                       </View>
                     </View>
                     <View style={styles.timelineContent}>
@@ -419,14 +455,25 @@ export default function PetDetailScreen() {
         ]}
       >
         <View style={styles.sideButtonsContainer}>
-          <TouchableOpacity style={styles.actionButtonColumn} onPress={handleDelete}>
+          <TouchableOpacity
+            style={styles.actionButtonColumn}
+            onPress={handleDelete}
+            accessibilityLabel={t('pets.deletePet')}
+            accessibilityHint={t('pets.deleteConfirmation', { name: pet.name })}
+            accessibilityRole="button"
+          >
             <View style={styles.iconCircle}>
-              <MaterialIcons name="delete-outline" size={24} color="#EF4444" />
+              <MaterialIcons name="delete-outline" size={24} color={theme.colors.error} />
             </View>
-            <Text style={[styles.actionLabel, { color: '#EF4444' }]}>{t('common.delete')}</Text>
+            <Text style={[styles.actionLabel, { color: theme.colors.error }]}>{t('common.delete')}</Text>
           </TouchableOpacity>
 
-          <TouchableOpacity style={styles.actionButtonColumn} onPress={handleEdit}>
+          <TouchableOpacity
+            style={styles.actionButtonColumn}
+            onPress={handleEdit}
+            accessibilityLabel={t('pets.editPet')}
+            accessibilityRole="button"
+          >
             <View style={styles.iconCircle}>
               <MaterialIcons name="edit" size={24} color={theme.colors.onSurfaceVariant} />
             </View>
@@ -437,13 +484,20 @@ export default function PetDetailScreen() {
         <TouchableOpacity
           style={[styles.mainActionButton, { backgroundColor: theme.colors.primary, shadowColor: theme.colors.primary }]}
           onPress={() => router.push({ pathname: '/(tabs)/calendar', params: { petId: pet._id, action: 'create' } })}
+          accessibilityLabel={t('events.addEvent')}
+          accessibilityRole="button"
         >
           <MaterialIcons name="add" size={24} color={theme.colors.onPrimary} />
           <Text style={[styles.mainActionText, { color: theme.colors.onPrimary }]}>{t('events.addEvent')}</Text>
         </TouchableOpacity>
 
         <View style={styles.sideButtonsContainer}>
-          <TouchableOpacity style={styles.actionButtonColumn} onPress={handleShare}>
+          <TouchableOpacity
+            style={styles.actionButtonColumn}
+            onPress={handleShare}
+            accessibilityLabel={t('pets.sharePet')}
+            accessibilityRole="button"
+          >
             <View style={styles.iconCircle}>
               <MaterialIcons name="share" size={24} color={theme.colors.onSurfaceVariant} />
             </View>
@@ -499,7 +553,7 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     padding: 24,
-    paddingBottom: 120,
+    paddingBottom: BOTTOM_BAR_HEIGHT,
     zIndex: 1,
   },
   heroName: {
@@ -523,11 +577,9 @@ const styles = StyleSheet.create({
     width: 40,
     height: 40,
     borderRadius: 20,
-    backgroundColor: 'rgba(0,0,0,0.3)',
     justifyContent: 'center',
     alignItems: 'center',
     borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.1)',
   },
   contentContainer: {
     marginTop: -40,
@@ -620,7 +672,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.1)',
   },
   cardTitle: {
     fontSize: 16,
@@ -635,7 +686,6 @@ const styles = StyleSheet.create({
   },
   progressBarBg: {
     height: 6,
-    backgroundColor: 'rgba(255,255,255,0.1)',
     borderRadius: 3,
     overflow: 'hidden',
   },

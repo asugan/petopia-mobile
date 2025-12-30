@@ -21,10 +21,22 @@ export const lightColors: ThemeColors = {
   surfaceDisabled: "#E5E7EB", // Disabled state
 
   // Container colors
-  primaryContainer: "#FFE5EC",      // Light pink container
-  secondaryContainer: "#CCFFF0",    // Light mint container
-  tertiaryContainer: "#F3E8FF",     // Light purple container
-  errorContainer: "#FEE2E2",        // Light red container
+  primaryContainer: "#FFE5EC",
+  secondaryContainer: "#CCFFF0",
+  tertiaryContainer: "#F3E8FF",
+  errorContainer: "#FEE2E2",
+  infoContainer: "#DBEAFE",
+  warningContainer: "#FFEDD5",
+  successContainer: "#D1FAE5",
+
+  genderMale: "#3B82F6",
+  genderMaleContainer: "#DBEAFE",
+  genderFemale: "#EC4899",
+  genderFemaleContainer: "#FCE7F3",
+
+  overlay: "rgba(0,0,0,0.3)",
+  overlayLight: "rgba(255,255,255,0.1)",
+  scrim: "rgba(0,0,0,0.12)",
 
   // Outline colors
   outline: "#9CA3AF",               // Gray outline
@@ -86,10 +98,22 @@ export const darkColors: ThemeColors = {
   surfaceDisabled: "#4B5563", // Disabled state
 
   // Container colors
-  primaryContainer: "#831843",      // Dark pink container
-  secondaryContainer: "#004D40",    // Dark mint container
-  tertiaryContainer: "#4C1D95",     // Dark purple container
-  errorContainer: "#991B1B",        // Dark red container
+  primaryContainer: "#831843",
+  secondaryContainer: "#004D40",
+  tertiaryContainer: "#4C1D95",
+  errorContainer: "#991B1B",
+  infoContainer: "#1E3A5F",
+  warningContainer: "#78350F",
+  successContainer: "#064E3B",
+
+  genderMale: "#60A5FA",
+  genderMaleContainer: "#1E3A5F",
+  genderFemale: "#F472B6",
+  genderFemaleContainer: "#831843",
+
+  overlay: "rgba(0,0,0,0.5)",
+  overlayLight: "rgba(255,255,255,0.1)",
+  scrim: "rgba(0,0,0,0.32)",
 
   // Outline colors
   outline: "#6B7280",               // Gray outline

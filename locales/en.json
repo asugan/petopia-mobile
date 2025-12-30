@@ -143,7 +143,10 @@
     "recentActivities": "Recent Activities",
     "healthStatus": "Health Status",
     "feedingDefaultSubtitle": "Feeding plan",
-    "shareMessage": "{{name}} {{breed}}"
+    "shareMessage": "{{name}} {{breed}}",
+    "viewActivityHistory": "View activity history",
+    "viewHealthDetails": "View health details",
+    "sharePet": "Share pet information"
   },
   "health": {
     "healthRecords": "Health Records",
@@ -461,6 +464,7 @@
     "unsavedChangesMessage": "You have unsaved changes. Are you sure you want to discard them?",
     "discard": "Discard",
     "close": "Close",
+    "moreOptions": "More options",
     "offline": "Offline",
     "wifi": "Wi-Fi",
     "cellular": "Mobile",

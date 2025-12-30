@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, StyleSheet, ActivityIndicator, FlatList } from 'react-native';
-import { useRouter } from 'expo-router';
+import { useRouter, useLocalSearchParams } from 'expo-router';
 import { Text, FAB } from '@/components/ui';
 import { useTheme } from '@/lib/theme';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -21,10 +21,19 @@ export default function CalendarScreen() {
   const { theme } = useTheme();
   const { t } = useTranslation();
   const router = useRouter();
+  const { petId, action } = useLocalSearchParams<{ petId?: string; action?: string }>();
 
   const [viewType, setViewType] = useState<CalendarViewType>('week');
   const [currentDate, setCurrentDate] = useState(new Date());
   const [modalVisible, setModalVisible] = useState(false);
+  const [initialPetId, setInitialPetId] = useState<string | undefined>(undefined);
+
+  useEffect(() => {
+    if (action === 'create') {
+      setInitialPetId(petId);
+      setModalVisible(true);
+    }
+  }, [action, petId]);
 
   const { data: upcomingEvents = [] } = useUpcomingEvents();
   const formattedDate = currentDate ? currentDate.toISOString().substring(0, 10) : '';
@@ -69,11 +78,18 @@ export default function CalendarScreen() {
   };
 
   const handleAddEvent = () => {
+    setInitialPetId(undefined);
     setModalVisible(true);
+  };
+
+  const handleModalClose = () => {
+    setModalVisible(false);
+    setInitialPetId(undefined);
   };
 
   const handleModalSuccess = () => {
     setModalVisible(false);
+    setInitialPetId(undefined);
   };
 
   const renderCalendarView = () => {
@@ -190,7 +206,8 @@ export default function CalendarScreen() {
 
         <EventModal
           visible={modalVisible}
-          onClose={() => setModalVisible(false)}
+          initialPetId={initialPetId}
+          onClose={handleModalClose}
           onSuccess={handleModalSuccess}
           testID="calendar-event-modal"
         />
