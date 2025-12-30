@@ -9,7 +9,7 @@ import { addMonths, subMonths, addWeeks, subWeeks } from 'date-fns';
 import { MonthView } from '@/components/calendar/MonthView';
 import { WeekView } from '@/components/calendar/WeekView';
 import { EventModal } from '@/components/EventModal';
-import { useUpcomingEvents, useCalendarEvents } from '@/lib/hooks/useEvents';
+import { useUpcomingEvents, useCalendarEvents, useEvent } from '@/lib/hooks/useEvents';
 import { Event } from '@/lib/types';
 import { LAYOUT } from '@/constants';
 import { ProtectedRoute } from '@/components/subscription';
@@ -21,19 +21,26 @@ export default function CalendarScreen() {
   const { theme } = useTheme();
   const { t } = useTranslation();
   const router = useRouter();
-  const { petId, action } = useLocalSearchParams<{ petId?: string; action?: string }>();
+  const { petId, action, editEventId } = useLocalSearchParams<{ petId?: string; action?: string; editEventId?: string }>();
 
   const [viewType, setViewType] = useState<CalendarViewType>('week');
   const [currentDate, setCurrentDate] = useState(new Date());
   const [modalVisible, setModalVisible] = useState(false);
   const [initialPetId, setInitialPetId] = useState<string | undefined>(undefined);
+  const [selectedEvent, setSelectedEvent] = useState<Event | undefined>(undefined);
+
+  const { data: eventToEdit } = useEvent(editEventId || '');
 
   useEffect(() => {
     if (action === 'create') {
       setInitialPetId(petId);
+      setSelectedEvent(undefined);
+      setModalVisible(true);
+    } else if (editEventId && eventToEdit) {
+      setSelectedEvent(eventToEdit);
       setModalVisible(true);
     }
-  }, [action, petId]);
+  }, [action, petId, editEventId, eventToEdit]);
 
   const { data: upcomingEvents = [] } = useUpcomingEvents();
   const formattedDate = currentDate ? currentDate.toISOString().substring(0, 10) : '';
@@ -79,17 +86,26 @@ export default function CalendarScreen() {
 
   const handleAddEvent = () => {
     setInitialPetId(undefined);
+    setSelectedEvent(undefined);
     setModalVisible(true);
   };
 
   const handleModalClose = () => {
     setModalVisible(false);
     setInitialPetId(undefined);
+    setSelectedEvent(undefined);
+    if (editEventId) {
+      router.setParams({ editEventId: undefined });
+    }
   };
 
   const handleModalSuccess = () => {
     setModalVisible(false);
     setInitialPetId(undefined);
+    setSelectedEvent(undefined);
+    if (editEventId) {
+      router.setParams({ editEventId: undefined });
+    }
   };
 
   const renderCalendarView = () => {
@@ -206,6 +222,7 @@ export default function CalendarScreen() {
 
         <EventModal
           visible={modalVisible}
+          event={selectedEvent}
           initialPetId={initialPetId}
           onClose={handleModalClose}
           onSuccess={handleModalSuccess}
