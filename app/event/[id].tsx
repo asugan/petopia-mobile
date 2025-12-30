@@ -1,5 +1,3 @@
-import { Button, Card, Chip, Divider, IconButton, Portal, Snackbar, Text } from '@/components/ui';
-import { useTheme } from '@/lib/theme';
 import { format } from 'date-fns';
 import { enUS, tr } from 'date-fns/locale';
 import { useLocalSearchParams, useRouter } from 'expo-router';
@@ -10,57 +8,61 @@ import {
     ScrollView,
     Share,
     StyleSheet,
-    View
+    View,
+    Text,
+    TouchableOpacity,
+    Switch,
+    Dimensions,
+    StatusBar,
+    ActivityIndicator
 } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
-
-// Hooks and Services
+import { Image } from 'expo-image';
+import { LinearGradient } from 'expo-linear-gradient';
+import { MaterialIcons } from '@expo/vector-icons';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useCreateEvent, useDeleteEvent, useEvent } from '@/lib/hooks/useEvents';
 import { usePet } from '@/lib/hooks/usePets';
 import { useReminderScheduler } from '@/hooks/useReminderScheduler';
 import { useEventReminderStore } from '@/stores/eventReminderStore';
+import { getEventTypeLabel } from '@/constants/eventIcons';
 
-// Components
-import EventActions from '@/components/EventActions';
-import LoadingSpinner from '@/components/LoadingSpinner';
+const COLORS = {
+  primary: "#13ec13",
+  backgroundLight: "#f6f8f6",
+  backgroundDark: "#102210",
+  surfaceDark: "#193319",
+  surfaceDarker: "#112211",
+  white: "#FFFFFF",
+  gray400: "#9CA3AF",
+  gray300: "#D1D5DB",
+  blackOp20: "rgba(0,0,0,0.2)",
+  blackOp40: "rgba(0,0,0,0.4)",
+  red400: "#F87171",
+  red500Op10: "rgba(239, 68, 68, 0.1)",
+};
 
-// Utils
-import { getEventTypeIcon, getEventTypeLabel } from '@/constants/eventIcons';
-import { getEventColor } from '@/lib/utils/eventColors';
+const { width } = Dimensions.get('window');
 
 export default function EventDetailScreen() {
-  const { theme } = useTheme();
   const { t, i18n } = useTranslation();
   const router = useRouter();
   const { id } = useLocalSearchParams<{ id: string }>();
   const locale = i18n.language === 'tr' ? tr : enUS;
+  const insets = useSafeAreaInsets();
 
-  // Hooks
   const { data: event, isLoading, error } = useEvent(id || '');
   const { data: pet } = usePet(event?.petId || '');
   const deleteEventMutation = useDeleteEvent();
   const createEventMutation = useCreateEvent();
   const reminderStatus = useEventReminderStore((state) => (event?._id ? state.statuses[event._id] : undefined));
   const presetSelections = useEventReminderStore((state) => state.presetSelections);
-  const markCompleted = useEventReminderStore((state) => state.markCompleted);
-  const markCancelled = useEventReminderStore((state) => state.markCancelled);
   const markMissed = useEventReminderStore((state) => state.markMissed);
-  const resetStatus = useEventReminderStore((state) => state.resetStatus);
   const { cancelRemindersForEvent } = useReminderScheduler();
 
-  // Local state
-  const [snackbarVisible, setSnackbarVisible] = useState(false);
-  const [snackbarMessage, setSnackbarMessage] = useState('');
   const [eventStatus, setEventStatus] = useState<'upcoming' | 'completed' | 'cancelled' | 'missed'>('upcoming');
-
-  const showSnackbar = (message: string) => {
-    setSnackbarMessage(message);
-    setSnackbarVisible(true);
-  };
 
   const handleEdit = () => {
     if (event) {
-      // Navigate to calendar screen with event editing
       router.push({
         pathname: '/(tabs)/calendar',
         params: { editEventId: event._id }
@@ -75,23 +77,16 @@ export default function EventDetailScreen() {
       t('events.deleteEvent'),
       t('events.deleteEventConfirmation', { title: event.title }),
       [
-        {
-          text: t('common.cancel'),
-          style: 'cancel',
-        },
+        { text: t('common.cancel'), style: 'cancel' },
         {
           text: t('common.delete'),
           style: 'destructive',
           onPress: async () => {
             try {
               await deleteEventMutation.mutateAsync(event._id);
-              showSnackbar(t('events.eventDeleted'));
-              setTimeout(() => {
-                router.back();
-              }, 1500);
+              router.back();
             } catch (error) {
-              const errorMessage = error instanceof Error ? error.message : t('events.deleteEventError');
-              showSnackbar(errorMessage);
+              console.error(error);
             }
           },
         },
@@ -101,16 +96,11 @@ export default function EventDetailScreen() {
 
   const handleDuplicate = async () => {
     if (!event) return;
-
     try {
-      // Create a copy of the event with a new start time (next day)
       const newStartTime = new Date(event.startTime);
       newStartTime.setDate(newStartTime.getDate() + 1);
-
       const newEndTime = event.endTime ? new Date(event.endTime) : null;
-      if (newEndTime) {
-        newEndTime.setDate(newEndTime.getDate() + 1);
-      }
+      if (newEndTime) newEndTime.setDate(newEndTime.getDate() + 1);
 
       const duplicatedEvent = {
         petId: event.petId,
@@ -131,551 +121,465 @@ export default function EventDetailScreen() {
         reminderPresetKey: event._id ? presetSelections[event._id] : undefined,
       };
       await createEventMutation.mutateAsync(duplicatedEvent);
-      showSnackbar(t('events.eventDuplicated'));
+      Alert.alert(t('common.success'), t('events.eventDuplicated'));
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : t('events.duplicateEventError');
-      showSnackbar(errorMessage);
+      console.error(error);
     }
   };
 
   const handleShare = async () => {
     if (!event) return;
-
     try {
       const eventDate = format(new Date(event.startTime), 'dd MMMM yyyy', { locale });
       const eventTime = format(new Date(event.startTime), 'HH:mm', { locale });
-
-      const shareMessage = `
-📅 ${event.title}
-
-🐾 ${pet?.name || t('events.pet')}
-📍 ${event.location || t('events.noLocation')}
-🕐 ${eventDate} - ${eventTime}
-
-${event.description || ''}
-
-${t('events.sharedFrom')} PawPa
-      `.trim();
-
-      await Share.share({
-        message: shareMessage,
-        title: event.title,
-      });
+      const shareMessage = `📅 ${event.title}\n🐾 ${pet?.name || t('events.pet')}\n📍 ${event.location || t('events.noLocation')}\n🕐 ${eventDate} - ${eventTime}\n\n${event.description || ''}\n\n${t('events.sharedFrom')} PawPa`;
+      await Share.share({ message: shareMessage, title: event.title });
     } catch (error) {
       console.error('Error sharing event:', error);
     }
   };
 
   const derivedStatus = useMemo(() => {
-    if (!event) {
-      return 'upcoming';
-    }
+    if (!event) return 'upcoming';
     if (reminderStatus?.status === 'completed') return 'completed';
     if (reminderStatus?.status === 'cancelled') return 'cancelled';
     if (reminderStatus?.status === 'missed') return 'missed';
-
     const start = new Date(event.startTime);
     return start < new Date() ? 'missed' : 'upcoming';
   }, [event, reminderStatus]);
 
   useEffect(() => {
     if (!event) return;
-
-    // Sync derived status with local state
     setEventStatus(derivedStatus);
-
-    // Auto-mark missed events and cancel remaining reminders
     if (derivedStatus === 'missed' && reminderStatus?.status !== 'missed') {
       markMissed(event._id);
       void cancelRemindersForEvent(event._id);
     }
   }, [cancelRemindersForEvent, derivedStatus, event, markMissed, reminderStatus]);
 
-  const handleStatusChange = async (status: 'upcoming' | 'completed' | 'cancelled') => {
-    if (!event) return;
-
-    setEventStatus(status);
-    if (status === 'completed') {
-      markCompleted(event._id);
-      await cancelRemindersForEvent(event._id);
-    } else if (status === 'cancelled') {
-      markCancelled(event._id);
-      await cancelRemindersForEvent(event._id);
-    } else {
-      resetStatus(event._id);
-    }
-
-    showSnackbar(t(`events.status${status.charAt(0).toUpperCase()}${status.slice(1)}`));
-  };
-
   if (isLoading) {
     return (
-      <SafeAreaView style={[styles.container, { backgroundColor: theme.colors.background }]}>
-        <LoadingSpinner />
-      </SafeAreaView>
+      <View style={[styles.container, styles.centerContent]}>
+        <ActivityIndicator size="large" color={COLORS.primary} />
+      </View>
     );
   }
 
   if (!event || error) {
     return (
-      <SafeAreaView style={[styles.container, { backgroundColor: theme.colors.background }]}>
-        <View style={styles.errorContainer}>
-          <Text variant="headlineMedium" style={{ color: theme.colors.onBackground, textAlign: 'center' }}>
-            {t('events.eventNotFound')}
-          </Text>
-          <Button
-            mode="contained"
-            onPress={() => router.back()}
-            style={styles.backButton}
-          >
-            {t('common.goBack')}
-          </Button>
-        </View>
-      </SafeAreaView>
+      <View style={[styles.container, styles.centerContent]}>
+        <Text style={{ color: COLORS.white }}>{t('events.eventNotFound')}</Text>
+        <TouchableOpacity onPress={() => router.back()} style={styles.buttonSecondary}>
+          <Text style={{ color: COLORS.white }}>{t('common.goBack')}</Text>
+        </TouchableOpacity>
+      </View>
     );
   }
 
-  const eventTypeColor = getEventColor(event.type, theme);
-  const eventTypeIcon = getEventTypeIcon(event.type);
+  const dateStr = format(new Date(event.startTime), 'MMM dd, yyyy', { locale });
+  const timeStr = format(new Date(event.startTime), 'hh:mm a', { locale });
   const eventTypeLabel = getEventTypeLabel(event.type, t);
-
-  const formatEventDate = () => {
-    return format(new Date(event.startTime), 'dd MMMM yyyy, EEEE', { locale });
-  };
-
-  const formatEventTime = () => {
-    const startTime = format(new Date(event.startTime), 'HH:mm', { locale });
-    if (event.endTime) {
-      const endTime = format(new Date(event.endTime), 'HH:mm', { locale });
-      return `${startTime} - ${endTime}`;
-    }
-    return startTime;
-  };
+  const heroImage = pet?.profilePhoto || "https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?ixlib=rb-4.0.3&auto=format&fit=crop&w=1327&q=80";
 
   return (
-    <SafeAreaView style={[styles.container, { backgroundColor: theme.colors.background }]}>
-      {/* Header */}
-      <View style={styles.header}>
-        <IconButton
-          icon="arrow-left"
-          size={24}
+    <View style={styles.container}>
+      <StatusBar barStyle="light-content" translucent backgroundColor="transparent" />
+      
+      <View style={[styles.header, { paddingTop: insets.top + 10 }]}>
+        <TouchableOpacity 
           onPress={() => router.back()}
-          style={styles.headerButton}
-        />
-        <Text variant="headlineSmall" style={[styles.title, { color: theme.colors.onBackground }]}>
-          {t('events.eventDetails')}
-        </Text>
+          style={styles.iconButton}
+        >
+          <MaterialIcons name="arrow-back" size={24} color={COLORS.white} />
+        </TouchableOpacity>
+        
         <View style={styles.headerActions}>
-          <EventActions
-            onEdit={handleEdit}
-            onDelete={handleDelete}
-            onDuplicate={handleDuplicate}
-            onShare={handleShare}
-          />
+          <TouchableOpacity onPress={handleShare} style={styles.iconButton}>
+            <MaterialIcons name="share" size={20} color={COLORS.white} />
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.iconButton}>
+            <MaterialIcons name="more-vert" size={20} color={COLORS.white} />
+          </TouchableOpacity>
         </View>
       </View>
 
-      <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
-        {/* Event Type and Title Card */}
-        <Card style={[styles.card, { backgroundColor: theme.colors.surface, borderColor: eventTypeColor, borderWidth: 2 }]}>
-          <View style={styles.cardContent}>
-            <View style={styles.eventTypeContainer}>
-              <View style={[styles.eventTypeIconLarge, { backgroundColor: eventTypeColor }]}>
-                <Text style={styles.eventTypeIconText}>
-                  {eventTypeIcon === 'food' ? '🍽️' :
-                   eventTypeIcon === 'run' ? '🏃' :
-                   eventTypeIcon === 'content-cut' ? '✂️' :
-                   eventTypeIcon === 'tennis' ? '🎾' :
-                   eventTypeIcon === 'school' ? '🎓' :
-                   eventTypeIcon === 'hospital' ? '🏥' :
-                   eventTypeIcon === 'walk' ? '🚶' :
-                   eventTypeIcon === 'water' ? '🛁' :
-                   eventTypeIcon === 'needle' ? '💉' :
-                   eventTypeIcon === 'pill' ? '💊' : '📅'}
-                </Text>
+      <ScrollView style={styles.scrollView} contentContainerStyle={{ paddingBottom: 120 }}>
+        <View style={styles.heroContainer}>
+          <Image
+            source={{ uri: heroImage }}
+            style={styles.heroImage}
+            contentFit="cover"
+            transition={500}
+          />
+          <LinearGradient
+            colors={[COLORS.backgroundDark, 'rgba(16,34,16,0.6)', 'transparent']}
+            start={{ x: 0, y: 1 }}
+            end={{ x: 0, y: 0 }}
+            style={styles.heroGradient}
+          />
+          <View style={styles.heroContent}>
+            <View style={styles.badge}>
+              <Text style={styles.badgeText}>{eventTypeLabel}</Text>
+            </View>
+            <Text style={styles.heroTitle}>{event.title}</Text>
+            <Text style={styles.heroSubtitle}>{event.description || t('events.eventDetails')}</Text>
+          </View>
+        </View>
+
+        <View style={styles.content}>
+          <View style={styles.grid}>
+            <View style={styles.card}>
+              <View style={styles.cardIconContainer}>
+                <MaterialIcons name="calendar-today" size={24} color={COLORS.primary} />
               </View>
-              <View style={styles.eventTypeInfo}>
-                <Text variant="labelLarge" style={[styles.eventTypeLabel, { color: eventTypeColor }]}>
-                  {eventTypeLabel}
-                </Text>
-                <Chip
-                  mode="flat"
-                  textStyle={{ color: theme.colors.onSurfaceVariant, fontSize: 12 }}
-                  style={[styles.statusChip, { backgroundColor: theme.colors.surfaceVariant }]}
-                >
-                  {t(`events.status${eventStatus.charAt(0).toUpperCase()}${eventStatus.slice(1)}`)}
-                </Chip>
+              <View>
+                <Text style={styles.cardLabel}>{t('events.date')}</Text>
+                <Text style={styles.cardValue}>{dateStr}</Text>
               </View>
             </View>
 
-            <Text variant="headlineSmall" style={[styles.eventTitle, { color: theme.colors.onSurface }]}>
-              {event.title}
-            </Text>
+            <View style={styles.card}>
+              <View style={styles.cardIconContainer}>
+                <MaterialIcons name="schedule" size={24} color={COLORS.primary} />
+              </View>
+              <View>
+                <Text style={styles.cardLabel}>{t('events.time')}</Text>
+                <Text style={styles.cardValue}>{timeStr}</Text>
+              </View>
+            </View>
 
-            {event.description && (
-              <Text variant="bodyMedium" style={[styles.eventDescription, { color: theme.colors.onSurfaceVariant }]}>
-                {event.description}
-              </Text>
+            {pet && (
+              <View style={styles.card}>
+                <View style={[styles.cardIconContainer, styles.petAvatarContainer]}>
+                  <Image source={{ uri: pet.profilePhoto }} style={styles.petAvatar} />
+                </View>
+                <View>
+                  <Text style={styles.cardLabel}>{t('events.pet')}</Text>
+                  <Text style={styles.cardValue} numberOfLines={1}>{pet.name}</Text>
+                </View>
+              </View>
             )}
-          </View>
-        </Card>
 
-        {/* Date and Time Card */}
-        <Card style={[styles.card, { backgroundColor: theme.colors.surface }]}>
-          <View style={styles.cardContent}>
-            <Text variant="titleMedium" style={[styles.sectionTitle, { color: theme.colors.onSurface }]}>
-              📅 {t('events.dateAndTime')}
-            </Text>
-
-            <View style={styles.infoRow}>
-              <Text variant="bodyLarge" style={[styles.infoLabel, { color: theme.colors.onSurfaceVariant }]}>
-                {t('events.date')}:
-              </Text>
-              <Text variant="bodyLarge" style={[styles.infoValue, { color: theme.colors.onSurface }]}>
-                {formatEventDate()}
-              </Text>
-            </View>
-
-            <Divider style={styles.divider} />
-
-            <View style={styles.infoRow}>
-              <Text variant="bodyLarge" style={[styles.infoLabel, { color: theme.colors.onSurfaceVariant }]}>
-                {t('events.time')}:
-              </Text>
-              <Text variant="bodyLarge" style={[styles.infoValue, { color: theme.colors.onSurface }]}>
-                {formatEventTime()}
-              </Text>
-            </View>
-          </View>
-        </Card>
-
-        {/* Pet Information Card */}
-        {pet && (
-          <Card style={[styles.card, { backgroundColor: theme.colors.surface }]}>
-            <View style={styles.cardContent}>
-              <Text variant="titleMedium" style={[styles.sectionTitle, { color: theme.colors.onSurface }]}>
-                🐾 {t('events.pet')}
-              </Text>
-
-              <View style={styles.petInfoRow}>
-                <Text variant="bodyLarge" style={[styles.petName, { color: theme.colors.onSurface }]}>
-                  {pet.name}
-                </Text>
-                <Chip
-                  mode="flat"
-                  textStyle={{ color: theme.colors.onSurfaceVariant }}
-                  style={{ backgroundColor: theme.colors.surfaceVariant }}
-                >
-                  {t(pet.type)}
-                </Chip>
+            <View style={styles.card}>
+              <View style={styles.cardIconContainer}>
+                <MaterialIcons name="location-on" size={24} color={COLORS.primary} />
               </View>
-
-              <Button
-                mode="outlined"
-                icon="paw"
-                onPress={() => router.push(`/pet/${pet._id}`)}
-                style={styles.viewPetButton}
-              >
-                {t('events.viewPetProfile')}
-              </Button>
-            </View>
-          </Card>
-        )}
-
-        {/* Location Card */}
-        {event.location && (
-          <Card style={[styles.card, { backgroundColor: theme.colors.surface }]}>
-            <View style={styles.cardContent}>
-              <Text variant="titleMedium" style={[styles.sectionTitle, { color: theme.colors.onSurface }]}>
-                📍 {t('events.location')}
-              </Text>
-
-              <Text variant="bodyLarge" style={[styles.locationText, { color: theme.colors.onSurface }]}>
-                {event.location}
-              </Text>
-            </View>
-          </Card>
-        )}
-
-        {/* Reminder Card */}
-        {event.reminder && (
-          <Card style={[styles.card, { backgroundColor: theme.colors.surface }]}>
-            <View style={styles.cardContent}>
-              <Text variant="titleMedium" style={[styles.sectionTitle, { color: theme.colors.onSurface }]}>
-                🔔 {t('events.reminder')}
-              </Text>
-
-              <Text variant="bodyMedium" style={[styles.reminderText, { color: theme.colors.onSurfaceVariant }]}>
-                {t('events.reminderEnabled')}
-              </Text>
-            </View>
-          </Card>
-        )}
-
-        {event.type === 'vaccination' && (event.vaccineName || event.vaccineManufacturer || event.batchNumber) && (
-          <Card style={[styles.card, { backgroundColor: theme.colors.surface }]}>
-            <View style={styles.cardContent}>
-              <Text variant="titleMedium" style={[styles.sectionTitle, { color: theme.colors.onSurface }]}>
-                💉 {t('events.vaccinationInfo')}
-              </Text>
-
-              {event.vaccineName && (
-                <Text variant="bodyMedium" style={{ color: theme.colors.onSurface }}>
-                  {t('events.vaccineName')}: {event.vaccineName}
-                </Text>
-              )}
-              {event.vaccineManufacturer && (
-                <Text variant="bodyMedium" style={{ color: theme.colors.onSurface }}>
-                  {t('events.vaccineManufacturer')}: {event.vaccineManufacturer}
-                </Text>
-              )}
-              {event.batchNumber && (
-                <Text variant="bodyMedium" style={{ color: theme.colors.onSurface }}>
-                  {t('events.batchNumber')}: {event.batchNumber}
-                </Text>
-              )}
-            </View>
-          </Card>
-        )}
-
-        {event.type === 'medication' && (event.medicationName || event.dosage || event.frequency) && (
-          <Card style={[styles.card, { backgroundColor: theme.colors.surface }]}>
-            <View style={styles.cardContent}>
-              <Text variant="titleMedium" style={[styles.sectionTitle, { color: theme.colors.onSurface }]}>
-                💊 {t('events.medicationInfo')}
-              </Text>
-
-              {event.medicationName && (
-                <Text variant="bodyMedium" style={{ color: theme.colors.onSurface }}>
-                  {t('events.medicationName')}: {event.medicationName}
-                </Text>
-              )}
-              {event.dosage && (
-                <Text variant="bodyMedium" style={{ color: theme.colors.onSurface }}>
-                  {t('events.dosage')}: {event.dosage}
-                </Text>
-              )}
-              {event.frequency && (
-                <Text variant="bodyMedium" style={{ color: theme.colors.onSurface }}>
-                  {t('events.frequency')}: {event.frequency}
-                </Text>
-              )}
-            </View>
-          </Card>
-        )}
-
-        {/* Notes Card */}
-        {event.notes && (
-          <Card style={[styles.card, { backgroundColor: theme.colors.surface }]}>
-            <View style={styles.cardContent}>
-              <Text variant="titleMedium" style={[styles.sectionTitle, { color: theme.colors.onSurface }]}>
-                📝 {t('events.notes')}
-              </Text>
-
-              <Text variant="bodyMedium" style={[styles.notesText, { color: theme.colors.onSurface }]}>
-                {event.notes}
-              </Text>
-            </View>
-          </Card>
-        )}
-
-        {/* Status Management Card */}
-        <Card style={[styles.card, { backgroundColor: theme.colors.surface }]}>
-          <View style={styles.cardContent}>
-            <Text variant="titleMedium" style={[styles.sectionTitle, { color: theme.colors.onSurface }]}>
-              🔄 {t('events.status')}
-            </Text>
-
-            <View style={styles.statusButtons}>
-              <Button
-                mode={eventStatus === 'upcoming' ? 'contained' : 'outlined'}
-                onPress={() => handleStatusChange('upcoming')}
-                style={styles.statusButton}
-              >
-                {t('events.statusUpcoming')}
-              </Button>
-              <Button
-                mode={eventStatus === 'completed' ? 'contained' : 'outlined'}
-                onPress={() => handleStatusChange('completed')}
-                style={styles.statusButton}
-              >
-                {t('events.statusCompleted')}
-              </Button>
-              <Button
-                mode={eventStatus === 'cancelled' ? 'contained' : 'outlined'}
-                onPress={() => handleStatusChange('cancelled')}
-                style={styles.statusButton}
-              >
-                {t('events.statusCancelled')}
-              </Button>
+              <View>
+                <Text style={styles.cardLabel}>{t('events.location')}</Text>
+                <Text style={styles.cardValue} numberOfLines={1}>{event.location || t('events.noLocation')}</Text>
+              </View>
             </View>
           </View>
-        </Card>
 
-        {/* Timestamps */}
-        <View style={styles.timestampsContainer}>
-          <Text variant="bodySmall" style={[styles.timestamp, { color: theme.colors.onSurfaceVariant }]}>
-            {t('common.created')}: {format(new Date(event.createdAt), 'dd MMM yyyy HH:mm', { locale })}
-          </Text>
-          <Text variant="bodySmall" style={[styles.timestamp, { color: theme.colors.onSurfaceVariant }]}>
-            {t('common.updated')}: {format(new Date(event.updatedAt), 'dd MMM yyyy HH:mm', { locale })}
-          </Text>
+          {event.notes && (
+            <View style={styles.section}>
+              <Text style={styles.sectionTitle}>{t('events.notes')}</Text>
+              <View style={styles.notesBox}>
+                <Text style={styles.notesText}>{event.notes}</Text>
+              </View>
+            </View>
+          )}
+
+          {event.reminder && (
+            <View style={styles.section}>
+              <View style={styles.reminderCard}>
+                <View style={styles.reminderLeft}>
+                  <View style={styles.reminderIconBox}>
+                    <MaterialIcons name="notifications-active" size={24} color={COLORS.primary} />
+                  </View>
+                  <View>
+                    <Text style={styles.reminderTitle}>{t('events.reminder')}</Text>
+                    <Text style={styles.reminderSubtitle}>{t('events.reminderEnabled')}</Text>
+                  </View>
+                </View>
+                <Switch
+                  value={eventStatus !== 'cancelled'}
+                  onValueChange={(val) => {
+                     Alert.alert("Info", "Toggle reminder logic to be connected");
+                  }}
+                  trackColor={{ false: '#767577', true: COLORS.primary }}
+                  thumbColor={'#f4f3f4'}
+                />
+              </View>
+            </View>
+          )}
         </View>
       </ScrollView>
 
-      <Portal>
-        <Snackbar
-          visible={snackbarVisible}
-          onDismiss={() => setSnackbarVisible(false)}
-          duration={3000}
-          style={{
-            ...styles.snackbar,
-            backgroundColor: snackbarMessage.includes(t('common.error')) ? theme.colors.error : theme.colors.primary
-          }}
-          message={snackbarMessage}
-        />
-      </Portal>
-    </SafeAreaView>
+      <View style={[styles.footer, { paddingBottom: insets.bottom + 10 }]}>
+        <View style={styles.footerGrid}>
+          <TouchableOpacity onPress={handleEdit} style={styles.footerIconButton}>
+            <MaterialIcons name="edit" size={24} color={COLORS.gray400} />
+            <Text style={styles.footerIconText}>{t('common.edit')}</Text>
+          </TouchableOpacity>
+          
+          <TouchableOpacity onPress={handleDelete} style={styles.footerIconButton}>
+            <MaterialIcons name="delete" size={24} color={COLORS.gray400} />
+            <Text style={styles.footerIconText}>{t('common.delete')}</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity 
+            onPress={handleDuplicate}
+            style={styles.addToCalendarButton}
+          >
+            <MaterialIcons name="event" size={20} color="black" />
+            <Text style={styles.addToCalendarText}>{t('events.copy')}</Text>
+          </TouchableOpacity>
+        </View>
+      </View>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: COLORS.backgroundDark,
+  },
+  centerContent: {
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  scrollView: {
+    flex: 1,
   },
   header: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    zIndex: 20,
     flexDirection: 'row',
+    justifyContent: 'space-between',
     alignItems: 'center',
-    paddingHorizontal: 8,
-    paddingVertical: 12,
-    borderBottomWidth: 1,
-    borderBottomColor: 'rgba(0,0,0,0.1)',
-  },
-  headerButton: {
-    margin: 0,
-  },
-  title: {
-    flex: 1,
-    textAlign: 'center',
-    fontWeight: '600',
+    paddingHorizontal: 16,
+    paddingBottom: 16,
   },
   headerActions: {
     flexDirection: 'row',
+    gap: 8,
+  },
+  iconButton: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: COLORS.blackOp20,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  heroContainer: {
+    height: 320,
+    width: '100%',
+    position: 'relative',
+  },
+  heroImage: {
+    width: '100%',
+    height: '100%',
+  },
+  heroGradient: {
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    bottom: 0,
+    top: 0,
+  },
+  heroContent: {
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
+    padding: 24,
+    paddingBottom: 32,
+  },
+  badge: {
+    backgroundColor: 'rgba(19, 236, 19, 0.2)',
+    paddingHorizontal: 12,
+    paddingVertical: 4,
+    borderRadius: 999,
+    alignSelf: 'flex-start',
+    marginBottom: 12,
+    borderWidth: 1,
+    borderColor: 'rgba(19, 236, 19, 0.3)',
+  },
+  badgeText: {
+    color: COLORS.primary,
+    fontSize: 12,
+    fontWeight: '600',
+    textTransform: 'uppercase',
+  },
+  heroTitle: {
+    fontSize: 30,
+    fontWeight: '700',
+    color: COLORS.white,
+    lineHeight: 36,
+    marginBottom: 4,
+    textShadowColor: 'rgba(0, 0, 0, 0.3)',
+    textShadowOffset: { width: 0, height: 1 },
+    textShadowRadius: 4,
+  },
+  heroSubtitle: {
+    color: COLORS.gray300,
+    fontSize: 14,
   },
   content: {
     flex: 1,
-    padding: 16,
+    paddingHorizontal: 16,
+    marginTop: -16,
+    zIndex: 10,
+    gap: 24,
+  },
+  grid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 12,
+    justifyContent: 'space-between',
   },
   card: {
-    marginBottom: 16,
-    elevation: 2,
+    backgroundColor: COLORS.surfaceDark,
     borderRadius: 16,
-  },
-  cardContent: {
     padding: 16,
-  },
-  eventTypeContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 16,
-  },
-  eventTypeIconLarge: {
-    width: 56,
-    height: 56,
-    borderRadius: 28,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginRight: 16,
-  },
-  eventTypeIconText: {
-    fontSize: 32,
-  },
-  eventTypeInfo: {
-    flex: 1,
-    gap: 8,
-  },
-  eventTypeLabel: {
-    fontWeight: '700',
-    fontSize: 16,
-    textTransform: 'capitalize',
-  },
-  statusChip: {
-    alignSelf: 'flex-start',
-    height: 28,
-  },
-  eventTitle: {
-    fontWeight: '700',
-    marginBottom: 8,
-  },
-  eventDescription: {
-    lineHeight: 22,
-  },
-  sectionTitle: {
-    fontWeight: '600',
-    marginBottom: 16,
-  },
-  infoRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingVertical: 8,
-  },
-  infoLabel: {
-    flex: 1,
-    fontWeight: '500',
-  },
-  infoValue: {
-    flex: 2,
-    textAlign: 'right',
-  },
-  divider: {
-    marginVertical: 8,
-  },
-  petInfoRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: 16,
-  },
-  petName: {
-    fontWeight: '600',
-  },
-  viewPetButton: {
-    marginTop: 8,
-  },
-  locationText: {
-    lineHeight: 22,
-  },
-  reminderText: {
-    lineHeight: 20,
-  },
-  notesText: {
-    lineHeight: 22,
-  },
-  statusButtons: {
+    width: (width - 32 - 12) / 2,
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.05)',
     gap: 12,
   },
-  statusButton: {
-    width: '100%',
-  },
-  timestampsContainer: {
-    marginTop: 16,
-    marginBottom: 32,
-    gap: 4,
-  },
-  timestamp: {
-    fontSize: 11,
-  },
-  errorContainer: {
-    flex: 1,
+  cardIconContainer: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: 'rgba(255,255,255,0.05)',
     justifyContent: 'center',
     alignItems: 'center',
-    padding: 32,
   },
-  backButton: {
+  cardLabel: {
+    color: COLORS.gray400,
+    fontSize: 12,
+    fontWeight: '500',
+    textTransform: 'uppercase',
+    letterSpacing: 0.5,
+  },
+  cardValue: {
+    color: COLORS.white,
+    fontSize: 16,
+    fontWeight: '700',
+    marginTop: 2,
+  },
+  petAvatarContainer: {
+    overflow: 'hidden',
+    borderWidth: 2,
+    borderColor: 'rgba(19, 236, 19, 0.2)',
+    padding: 0,
+  },
+  petAvatar: {
+    width: '100%',
+    height: '100%',
+  },
+  section: {
+    gap: 12,
+  },
+  sectionTitle: {
+    color: COLORS.white,
+    fontSize: 18,
+    fontWeight: '700',
+  },
+  notesBox: {
+    backgroundColor: COLORS.surfaceDark,
+    borderRadius: 16,
+    padding: 20,
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.05)',
+  },
+  notesText: {
+    color: COLORS.gray300,
+    fontSize: 14,
+    lineHeight: 22,
+  },
+  reminderCard: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    backgroundColor: COLORS.surfaceDark,
+    borderRadius: 16,
+    padding: 16,
+    paddingRight: 20,
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.05)',
+  },
+  reminderLeft: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 16,
+  },
+  reminderIconBox: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: 'rgba(19, 236, 19, 0.1)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  reminderTitle: {
+    color: COLORS.white,
+    fontSize: 16,
+    fontWeight: '600',
+  },
+  reminderSubtitle: {
+    color: COLORS.gray400,
+    fontSize: 12,
+  },
+  footer: {
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
+    backgroundColor: 'rgba(17, 34, 17, 0.9)',
+    borderTopWidth: 1,
+    borderTopColor: 'rgba(255,255,255,0.05)',
+    padding: 16,
+    zIndex: 30,
+  },
+  footerGrid: {
+    flexDirection: 'row',
+    gap: 12,
+  },
+  footerIconButton: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 4,
+    paddingVertical: 8,
+    borderRadius: 12,
+  },
+  footerIconText: {
+    fontSize: 10,
+    fontWeight: '500',
+    color: COLORS.gray400,
+  },
+  addToCalendarButton: {
+    flex: 2,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 8,
+    backgroundColor: COLORS.primary,
+    borderRadius: 12,
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+    shadowColor: COLORS.primary,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.2,
+    shadowRadius: 8,
+    elevation: 4,
+  },
+  addToCalendarText: {
+    color: 'black',
+    fontWeight: '700',
+    fontSize: 14,
+  },
+  buttonSecondary: {
     marginTop: 16,
-  },
-  snackbar: {
-    marginBottom: 16,
+    padding: 12,
+    backgroundColor: COLORS.surfaceDark,
+    borderRadius: 8,
   },
 });
