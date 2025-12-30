@@ -14,7 +14,7 @@ import { usePet, useDeletePet } from '@/lib/hooks/usePets';
 import { useEvents } from '@/lib/hooks/useEvents';
 import { useHealthRecords } from '@/lib/hooks/useHealthRecords';
 import { useActiveFeedingSchedulesByPet } from '@/lib/hooks/useFeedingSchedules';
-import { formatTimeForDisplay, getNextFeedingTime } from '@/lib/schemas/feedingScheduleSchema';
+import { formatTimeForDisplay, getNextFeedingTime, getPreviousFeedingTime } from '@/lib/schemas/feedingScheduleSchema';
 import { PetModal } from '@/components/PetModal';
 
 const { width } = Dimensions.get('window');
@@ -95,6 +95,23 @@ export default function PetDetailScreen() {
     if (hours > 0) return t('common.hoursMinutes', { hours, minutes });
     return t('common.minutesOnly', { minutes });
   }, [nextFeedingTime, t]);
+
+  const previousFeedingTime = useMemo(() => {
+    return getPreviousFeedingTime(feedingSchedules);
+  }, [feedingSchedules]);
+
+  const feedingProgress = useMemo(() => {
+    if (!nextFeedingTime || !previousFeedingTime) return 0;
+
+    const now = new Date();
+    const intervalMs = nextFeedingTime.getTime() - previousFeedingTime.getTime();
+    const elapsedMs = now.getTime() - previousFeedingTime.getTime();
+
+    if (intervalMs <= 0) return 0;
+
+    const progress = (elapsedMs / intervalMs) * 100;
+    return Math.max(0, Math.min(100, progress));
+  }, [nextFeedingTime, previousFeedingTime]);
 
   const recentActivities = useMemo(() => {
     if (!events?.length) return [];
@@ -299,7 +316,7 @@ export default function PetDetailScreen() {
                   </Text>
                 </View>
                 <View style={styles.progressBarBg}>
-                  <View style={[styles.progressBarFill, { backgroundColor: theme.colors.primary, width: '75%' }]} />
+                  <View style={[styles.progressBarFill, { backgroundColor: theme.colors.primary, width: `${Math.round(feedingProgress)}%` }]} />
                 </View>
               </View>
             </View>
