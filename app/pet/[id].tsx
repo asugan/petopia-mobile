@@ -1,5 +1,5 @@
-import React, { useMemo } from 'react';
-import { View, StyleSheet, ScrollView, Image, TouchableOpacity, Dimensions, Share } from 'react-native';
+import React, { useMemo, useState } from 'react';
+import { View, StyleSheet, ScrollView, Image, TouchableOpacity, Dimensions, Share, Alert } from 'react-native';
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -10,11 +10,12 @@ import { Ionicons, MaterialIcons, MaterialCommunityIcons } from '@expo/vector-ic
 
 import { Text, ActivityIndicator } from '@/components/ui';
 import { useTheme } from '@/lib/theme';
-import { usePet } from '@/lib/hooks/usePets';
+import { usePet, useDeletePet } from '@/lib/hooks/usePets';
 import { useEvents } from '@/lib/hooks/useEvents';
 import { useHealthRecords } from '@/lib/hooks/useHealthRecords';
 import { useActiveFeedingSchedulesByPet } from '@/lib/hooks/useFeedingSchedules';
 import { formatTimeForDisplay, getNextFeedingTime } from '@/lib/schemas/feedingScheduleSchema';
+import { PetModal } from '@/components/PetModal';
 
 const { width } = Dimensions.get('window');
 
@@ -30,6 +31,9 @@ export default function PetDetailScreen() {
   const { data: events, isLoading: isEventsLoading } = useEvents(petId);
   const { data: healthRecords } = useHealthRecords(petId);
   const { data: feedingSchedules = [] } = useActiveFeedingSchedulesByPet(petId);
+  const deletePetMutation = useDeletePet();
+
+  const [editModalVisible, setEditModalVisible] = useState(false);
 
   const dateLocale = i18n.language === 'tr' ? tr : enUS;
 
@@ -117,6 +121,37 @@ export default function PetDetailScreen() {
         breed: pet.breed ?? '',
       }),
     });
+  };
+
+  const handleEdit = () => {
+    setEditModalVisible(true);
+  };
+
+  const handleDelete = () => {
+    if (!pet) return;
+
+    Alert.alert(
+      t('pets.deletePet'),
+      t('pets.deleteConfirmation', { name: pet.name }),
+      [
+        {
+          text: t('common.cancel'),
+          style: 'cancel',
+        },
+        {
+          text: t('common.delete'),
+          style: 'destructive',
+          onPress: async () => {
+            try {
+              await deletePetMutation.mutateAsync(pet._id);
+              router.back();
+            } catch (error) {
+              console.error('Delete pet error:', error);
+            }
+          },
+        },
+      ]
+    );
   };
 
   const getGenderIcon = (gender: string) => {
@@ -366,12 +401,21 @@ export default function PetDetailScreen() {
           },
         ]}
       >
-        <TouchableOpacity style={styles.actionButtonColumn} onPress={() => {}}>
-          <View style={styles.iconCircle}>
-            <MaterialIcons name="edit" size={24} color={theme.colors.onSurfaceVariant} />
-          </View>
-          <Text style={[styles.actionLabel, { color: theme.colors.onSurfaceVariant }]}>{t('common.edit')}</Text>
-        </TouchableOpacity>
+        <View style={styles.sideButtonsContainer}>
+          <TouchableOpacity style={styles.actionButtonColumn} onPress={handleDelete}>
+            <View style={styles.iconCircle}>
+              <MaterialIcons name="delete-outline" size={24} color="#EF4444" />
+            </View>
+            <Text style={[styles.actionLabel, { color: '#EF4444' }]}>{t('common.delete')}</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity style={styles.actionButtonColumn} onPress={handleEdit}>
+            <View style={styles.iconCircle}>
+              <MaterialIcons name="edit" size={24} color={theme.colors.onSurfaceVariant} />
+            </View>
+            <Text style={[styles.actionLabel, { color: theme.colors.onSurfaceVariant }]}>{t('common.edit')}</Text>
+          </TouchableOpacity>
+        </View>
 
         <TouchableOpacity
           style={[styles.mainActionButton, { backgroundColor: theme.colors.primary, shadowColor: theme.colors.primary }]}
@@ -381,13 +425,22 @@ export default function PetDetailScreen() {
           <Text style={[styles.mainActionText, { color: theme.colors.onPrimary }]}>{t('events.addEvent')}</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity style={styles.actionButtonColumn} onPress={handleShare}>
-          <View style={styles.iconCircle}>
-            <MaterialIcons name="share" size={24} color={theme.colors.onSurfaceVariant} />
-          </View>
-          <Text style={[styles.actionLabel, { color: theme.colors.onSurfaceVariant }]}>{t('common.share')}</Text>
-        </TouchableOpacity>
+        <View style={styles.sideButtonsContainer}>
+          <TouchableOpacity style={styles.actionButtonColumn} onPress={handleShare}>
+            <View style={styles.iconCircle}>
+              <MaterialIcons name="share" size={24} color={theme.colors.onSurfaceVariant} />
+            </View>
+            <Text style={[styles.actionLabel, { color: theme.colors.onSurfaceVariant }]}>{t('common.share')}</Text>
+          </TouchableOpacity>
+        </View>
       </View>
+
+      <PetModal
+        visible={editModalVisible}
+        pet={pet}
+        onClose={() => setEditModalVisible(false)}
+        onSuccess={() => setEditModalVisible(false)}
+      />
     </View>
   );
 }
@@ -656,6 +709,12 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.1,
     shadowRadius: 12,
     elevation: 20,
+  },
+  sideButtonsContainer: {
+    flex: 1,
+    flexDirection: 'row',
+    justifyContent: 'center',
+    gap: 8,
   },
   actionButtonColumn: {
     alignItems: 'center',
