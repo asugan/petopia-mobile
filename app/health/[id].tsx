@@ -521,6 +521,10 @@ ${healthRecord.notes ? `${t('common.notes')}: ${healthRecord.notes}` : ''}
   });
   const nextVisitTime = "14:30"; 
 
+  const heroSource = pet?.profilePhoto
+    ? { uri: pet.profilePhoto }
+    : require('@/assets/images/background.png');
+
   return (
     <View style={styles.container}>
       <Stack.Screen options={{ headerShown: false }} />
@@ -531,7 +535,7 @@ ${healthRecord.notes ? `${t('common.notes')}: ${healthRecord.notes}` : ''}
       >
         <View style={styles.heroContainer}>
           <ImageBackground
-            source={{ uri: 'https://images.unsplash.com/photo-1576201836106-db1758fd1c97?q=80&w=2070&auto=format&fit=crop' }}
+            source={heroSource}
             style={styles.heroImage}
             resizeMode="cover"
           >
