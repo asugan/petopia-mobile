@@ -35,14 +35,14 @@ export const useEvents = (petId: string) => {
   });
 };
 
-export const useEvent = (id?: string) => {
+export const useEvent = (id?: string, options?: { enabled?: boolean }) => {
   const safeId = id ?? '__missing__';
 
   return useResource<Event>({
     queryKey: eventKeys.detail(safeId),
     queryFn: () => eventService.getEventById(safeId),
     staleTime: CACHE_TIMES.LONG,
-    enabled: !!id,
+    enabled: options?.enabled !== undefined ? (options.enabled && !!id) : !!id,
   });
 };
 

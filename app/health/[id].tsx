@@ -47,7 +47,12 @@ export default function HealthRecordDetailScreen() {
   const { data: healthRecord, isLoading, refetch } = useHealthRecord(id as string);
   
   const { data: pet } = usePet(healthRecord?.petId || '');
-  const { data: nextVisitEvent } = useEvent(healthRecord?.nextVisitEventId);
+  const {
+    data: nextVisitEvent,
+    isError: isEventError,
+    error: nextVisitError,
+    refetch: refetchNextVisitEvent,
+  } = useEvent(healthRecord?.nextVisitEventId, { enabled: !!healthRecord?.nextVisitEventId });
 
   const styles = useMemo(() => StyleSheet.create({
     container: {
@@ -338,6 +343,24 @@ export default function HealthRecordDetailScreen() {
       color: theme.colors.outline,
       fontSize: 14,
     },
+    nextVisitErrorRow: {
+      marginTop: 8,
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: 8,
+      flexWrap: 'wrap',
+    },
+    nextVisitErrorText: {
+      flexShrink: 1,
+      color: theme.colors.error,
+      fontSize: 12,
+    },
+    nextVisitRetryText: {
+      color: theme.colors.primary,
+      fontSize: 12,
+      fontWeight: '700',
+      textDecorationLine: 'underline',
+    },
     alarmButton: {
       width: 40,
       height: 40,
@@ -617,9 +640,7 @@ ${healthRecord.notes ? `${t('common.notes')}: ${healthRecord.notes}` : ''}
                 </View>
                 <MaterialCommunityIcons name="map-marker" size={20} color={theme.colors.primary} />
               </View>
-              <Text style={styles.cardSubtext} numberOfLines={1}>
-                {healthRecord.clinic || ''}
-              </Text>
+
             </View>
 
             <View style={styles.gridCard}>
@@ -665,7 +686,17 @@ ${healthRecord.notes ? `${t('common.notes')}: ${healthRecord.notes}` : ''}
             <View style={styles.planContainer}>
               {healthRecord.treatmentPlan && healthRecord.treatmentPlan.length > 0 ? (
                 healthRecord.treatmentPlan.map((item, index) => (
-                  <View key={item.name + index} style={styles.medItem}>
+                  <View
+                    key={
+                      item &&
+                      typeof item === 'object' &&
+                      'id' in item &&
+                      (typeof item.id === 'string' || typeof item.id === 'number')
+                        ? item.id
+                        : index
+                    }
+                    style={styles.medItem}
+                  >
                     <View style={[styles.medIcon, { backgroundColor: theme.colors.secondaryContainer }]}>
                       <MaterialCommunityIcons 
                         name="pill" 
@@ -703,16 +734,35 @@ ${healthRecord.notes ? `${t('common.notes')}: ${healthRecord.notes}` : ''}
               end={{ x: 1, y: 0 }}
               style={styles.nextVisitGradient}
             >
-              <View style={styles.nextVisitContent}>
-                <View>
-                  <Text style={styles.nextVisitLabel}>{t('events.date')}</Text>
-                  <Text style={styles.nextVisitDate}>{nextVisitFormatted}</Text>
-                  {nextVisitDate && <Text style={styles.nextVisitTime}>{nextVisitTime}</Text>}
-                </View>
-                <View style={styles.alarmButton}>
-                  <MaterialCommunityIcons name="alarm" size={24} color={theme.colors.onPrimary} />
-                </View>
-              </View>
+               <View style={styles.nextVisitContent}>
+                 <View>
+                   <Text style={styles.nextVisitLabel}>{t('events.date')}</Text>
+                   <Text style={styles.nextVisitDate}>{nextVisitFormatted}</Text>
+                   {nextVisitDate && <Text style={styles.nextVisitTime}>{nextVisitTime}</Text>}
+
+                   {isEventError && (
+                     <View style={styles.nextVisitErrorRow}>
+                       <MaterialCommunityIcons
+                         name="alert-circle-outline"
+                         size={16}
+                         color={theme.colors.error}
+                       />
+                       <Text style={styles.nextVisitErrorText}>{t('events.fetchError')}</Text>
+                       <TouchableOpacity
+                         onPress={() => {
+                           console.warn('Failed to fetch next visit event:', nextVisitError);
+                           void refetchNextVisitEvent();
+                         }}
+                       >
+                         <Text style={styles.nextVisitRetryText}>{t('common.retry')}</Text>
+                       </TouchableOpacity>
+                     </View>
+                   )}
+                 </View>
+                 <View style={styles.alarmButton}>
+                   <MaterialCommunityIcons name="alarm" size={24} color={theme.colors.onPrimary} />
+                 </View>
+               </View>
             </LinearGradient>
           </View>
 
