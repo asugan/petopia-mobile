@@ -4,6 +4,7 @@ import { usePrefetchData } from './usePrefetchData';
 import { eventKeys } from './useEvents';
 import { feedingScheduleKeys } from './useFeedingSchedules';
 import { unwrapApiResponse } from './core/unwrapApiResponse';
+import { toISODateStringWithFallback } from '@/lib/utils/dateConversion';
 
 interface PrefetchStrategy {
   priority: 'high' | 'medium' | 'low';
@@ -211,12 +212,14 @@ export function useSmartPrefetching() {
       const tomorrow = new Date();
       tomorrow.setDate(tomorrow.getDate() + 1);
 
+      const tomorrowKey = toISODateStringWithFallback(tomorrow);
+
       queryClient.prefetchQuery({
-        queryKey: eventKeys.calendar(tomorrow.toISOString().split('T')[0]),
+        queryKey: eventKeys.calendar(tomorrowKey),
         queryFn: () =>
           unwrapApiResponse(
             import('@/lib/services/eventService').then(m =>
-              m.eventService.getEventsByDate(tomorrow.toISOString().split('T')[0])
+              m.eventService.getEventsByDate(tomorrowKey)
             ),
             { defaultValue: [] }
           ),

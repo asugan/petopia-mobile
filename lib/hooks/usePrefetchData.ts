@@ -4,6 +4,7 @@ import { healthRecordKeys } from './useHealthRecords';
 import { eventKeys } from './useEvents';
 import { feedingScheduleKeys } from './useFeedingSchedules';
 import { unwrapApiResponse } from './core/unwrapApiResponse';
+import { toISODateStringWithFallback } from '@/lib/utils/dateConversion';
 
 export function usePrefetchData() {
   const queryClient = useQueryClient();
@@ -121,7 +122,9 @@ export function usePrefetchData() {
 
   const prefetchForCalendarTab = (date?: string) => {
     prefetchTodayEvents();
-    if (date && date !== new Date().toISOString().split('T')[0]) {
+
+    const todayKey = toISODateStringWithFallback(new Date());
+    if (date && date !== todayKey) {
       queryClient.prefetchQuery({
         queryKey: eventKeys.calendar(date),
         queryFn: () =>

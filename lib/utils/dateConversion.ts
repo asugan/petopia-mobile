@@ -34,6 +34,15 @@ export function toISODateString(date: Date | null | undefined): string | undefin
 }
 
 /**
+ * Convert Date object to ISO date string (YYYY-MM-DD)
+ * @param date - Date object (non-nullable)
+ * @returns Date string in YYYY-MM-DD format
+ */
+export function toISODateStringWithFallback(date: Date): string {
+  return toISODateString(date)!;
+}
+
+/**
  * Convert Date object to time string (HH:MM)
  * @param date - Date object, null, or undefined
  * @returns Time string in HH:MM format or undefined if invalid

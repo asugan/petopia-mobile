@@ -10,6 +10,7 @@ import { useConditionalQuery } from './core/useConditionalQuery';
 import { useAuthQueryEnabled } from './useAuthQueryEnabled';
 import { useMemo } from 'react';
 import { filterUpcomingEvents, groupEventsByTime, EventGroups } from '@/lib/utils/events';
+import { toISODateString } from '@/lib/utils/dateConversion';
 import { useReminderScheduler } from '@/hooks/useReminderScheduler';
 import { ReminderPresetKey } from '@/constants/reminders';
 
@@ -144,8 +145,10 @@ export const useCreateEvent = () => {
       listQueryKey: eventKeys.lists(),
       onSuccess: async (newEvent, variables) => {
         // Also update calendar and today events if applicable
-        const eventDate = newEvent.startTime.split('T')[0];
-        const today = new Date().toISOString().split('T')[0];
+        const eventDate =
+          toISODateString(new Date(newEvent.startTime)) ??
+          newEvent.startTime.split('T')[0];
+        const today = toISODateString(new Date()) ?? new Date().toISOString().split('T')[0];
 
         if (eventDate === today) {
           queryClient.setQueryData(eventKeys.today(), (old: Event[] | undefined) =>
@@ -172,7 +175,9 @@ export const useCreateEvent = () => {
           queryClient.invalidateQueries({ queryKey: eventKeys.today() });
 
           // Invalidate calendar for the event date
-          const eventDate = newEvent.startTime.split('T')[0];
+          const eventDate =
+            toISODateString(new Date(newEvent.startTime)) ??
+            newEvent.startTime.split('T')[0];
           queryClient.invalidateQueries({ queryKey: eventKeys.calendar(eventDate) });
         }
       },
@@ -208,7 +213,9 @@ export const useUpdateEvent = () => {
 
         // Invalidate calendar queries if date changed
         if (variables.data.startTime) {
-          const eventDate = variables.data.startTime.split('T')[0];
+          const eventDate =
+            toISODateString(new Date(variables.data.startTime)) ??
+            variables.data.startTime.split('T')[0];
           queryClient.invalidateQueries({ queryKey: eventKeys.calendar(eventDate) });
         }
       },
