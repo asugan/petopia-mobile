@@ -38,7 +38,7 @@ export default function EventDetailScreen() {
   const locale = i18n.language === 'tr' ? tr : enUS;
   const insets = useSafeAreaInsets();
 
-  const { data: event, isLoading, error } = useEvent(id || '');
+  const { data: event, isLoading, error } = useEvent(id);
   const { data: pet } = usePet(event?.petId || '');
   const deleteEventMutation = useDeleteEvent();
   const createEventMutation = useCreateEvent();

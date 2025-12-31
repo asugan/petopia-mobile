@@ -8,10 +8,16 @@ import { TranslationFunction } from '../types';
  */
 const getT = () => {
   try {
-    return i18n.t;
+    const translate = i18n.t;
+
+    if (typeof translate !== 'function') {
+      return (key: string, _options?: string | Record<string, unknown>) => key;
+    }
+
+    return translate.bind(i18n);
   } catch {
     // Fallback for when i18n is not available
-    return (key: string, options?: string | Record<string, unknown>) => key;
+    return (key: string, _options?: string | Record<string, unknown>) => key;
   }
 };
 

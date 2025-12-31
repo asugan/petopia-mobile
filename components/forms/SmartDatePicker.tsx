@@ -1,12 +1,17 @@
 import { Text as PaperText, Text } from '@/components/ui';
 import { useTheme } from '@/lib/theme';
 import { fromUTCWithOffset, parseISODate, toTimeString, toUTCWithOffset } from '@/lib/utils/dateConversion';
+import DateTimePicker, { DateTimePickerAndroid, DateTimePickerEvent } from '@react-native-community/datetimepicker';
 import React, { useState } from 'react';
 import { Controller, useFormContext } from 'react-hook-form';
+import { useTranslation } from 'react-i18next';
 import { Platform, StyleSheet, TouchableOpacity, View } from 'react-native';
-import DateTimePicker from '@react-native-community/datetimepicker';
 
 type OutputFormat = 'iso' | 'iso-date' | 'iso-time' | 'date-object' | 'yyyy-mm-dd';
+
+type FieldOnChange = (value: unknown) => void;
+
+type DateTimeMode = 'date' | 'time';
 
 interface SmartDatePickerProps {
   name: string;
@@ -33,8 +38,11 @@ export const SmartDatePicker = ({
 }: SmartDatePickerProps) => {
   const { control } = useFormContext();
   const { theme } = useTheme();
+  const { i18n } = useTranslation();
   const [isPickerVisible, setPickerVisible] = useState(false);
-  const [currentMode, setCurrentMode] = useState<any>(mode === 'datetime' ? 'date' : mode);
+
+  const dateLocale = i18n.language === 'tr' ? 'tr-TR' : 'en-US';
+  const iosLocale = i18n.language === 'tr' ? 'tr_TR' : 'en_US';
 
   // Parse time string (HH:MM) to Date object
   const parseTimeStringToDate = (timeStr: string): Date | null => {
@@ -92,29 +100,18 @@ export const SmartDatePicker = ({
     }
   };
 
-  const showPicker = () => {
-    if (!disabled) {
-      if (Platform.OS === 'android' && mode === 'datetime') {
-        setCurrentMode('date');
-      } else {
-        setCurrentMode(mode);
-      }
-      setPickerVisible(true);
-    }
-  };
-
   const hidePicker = () => {
     setPickerVisible(false);
   };
 
   const formatDate = (date: Date) => {
     if (mode === 'time') {
-      return date.toLocaleTimeString('tr-TR', {
+      return date.toLocaleTimeString(dateLocale, {
         hour: '2-digit',
         minute: '2-digit',
       });
     } else if (mode === 'datetime') {
-      return date.toLocaleString('tr-TR', {
+      return date.toLocaleString(dateLocale, {
         day: '2-digit',
         month: '2-digit',
         year: 'numeric',
@@ -122,7 +119,7 @@ export const SmartDatePicker = ({
         minute: '2-digit',
       });
     } else {
-      return date.toLocaleDateString('tr-TR', {
+      return date.toLocaleDateString(dateLocale, {
         day: '2-digit',
         month: '2-digit',
         year: 'numeric',
@@ -130,119 +127,131 @@ export const SmartDatePicker = ({
     }
   };
 
-  const handlePickerChange = (onChange: (value: any) => void, currentValue: any) => (event: any, selectedDate?: Date) => {
+  const handlePickerChange = (onChange: FieldOnChange) => (event: DateTimePickerEvent, selectedDate?: Date) => {
     if (event.type === 'dismissed') {
       hidePicker();
       return;
     }
 
     if (event.type === 'set' && selectedDate) {
-      if (Platform.OS === 'android' && mode === 'datetime' && currentMode === 'date') {
-        hidePicker();
-        const outputValue = convertToOutputFormat(selectedDate);
-        onChange(outputValue);
-        
-        setTimeout(() => {
-          setCurrentMode('time');
-          setPickerVisible(true);
-        }, 100);
-        return;
-      }
-
-      if (Platform.OS === 'android' && mode === 'datetime' && currentMode === 'time') {
-        const previousDate = getDisplayDate(currentValue);
-        const finalDate = new Date(previousDate);
-        finalDate.setHours(selectedDate.getHours());
-        finalDate.setMinutes(selectedDate.getMinutes());
-        
-        const outputValue = convertToOutputFormat(finalDate);
-        onChange(outputValue);
-        hidePicker();
-        return;
-      }
-
       const outputValue = convertToOutputFormat(selectedDate);
       onChange(outputValue);
-      
+
       if (Platform.OS !== 'ios') {
         hidePicker();
       }
     }
+  };
 
-    if (event.type === 'error') {
-      console.error('DateTimePicker error:', event.nativeEvent?.error || 'Unknown error');
-      hidePicker();
-    }
+  const openAndroidDateTimePicker = (currentValue: unknown, onChange: FieldOnChange) => {
+    const baseValue = currentValue ? getDisplayDate(currentValue) : new Date();
+
+    const openPicker = (pickerMode: DateTimeMode, value: Date, onConfirm: (date: Date) => void) => {
+      DateTimePickerAndroid.open({
+        mode: pickerMode,
+        value,
+        minimumDate: pickerMode === 'date' ? minimumDate : undefined,
+        maximumDate: pickerMode === 'date' ? maximumDate : undefined,
+        onChange: (event, selectedDate) => {
+          if (event.type !== 'set' || !selectedDate) return;
+          onConfirm(selectedDate);
+        },
+      });
+    };
+
+    openPicker('date', baseValue, (dateOnly) => {
+      openPicker('time', dateOnly, (finalDate) => {
+        const outputValue = convertToOutputFormat(finalDate);
+        onChange(outputValue);
+      });
+    });
   };
 
   return (
     <Controller
       control={control}
       name={name}
-      render={({ field: { value, onChange }, fieldState: { error } }) => (
-        <View style={styles.container}>
-          {label && (
-            <Text style={[
-              styles.label,
-              { color: error ? theme.colors.error : theme.colors.onSurface }
-            ]}>
-              {label}
-              {required && ' *'}
-            </Text>
-          )}
+      render={({ field: { value, onChange }, fieldState: { error } }) => {
+        const displayDate = value ? getDisplayDate(value) : undefined;
 
-          <TouchableOpacity
-            onPress={showPicker}
-            disabled={disabled}
-            style={[
-              styles.datePicker,
-              {
-                borderColor: error
-                  ? theme.colors.error
-                  : theme.colors.outline,
-                backgroundColor: disabled
-                  ? theme.colors.surfaceDisabled
-                  : theme.colors.surface,
-              }
-            ]}
-            testID={testID}
-          >
-            <PaperText style={[
-              styles.dateText,
-              {
-                color: value
-                  ? theme.colors.onSurface
-                  : theme.colors.onSurfaceVariant,
-              }
-            ]}>
-              {value ? formatDate(getDisplayDate(value)) : ''}
-            </PaperText>
-          </TouchableOpacity>
+        const showPicker = () => {
+          if (disabled) return;
 
-          {error && (
-            <Text style={[styles.errorText, { color: theme.colors.error }]}>
-              {error.message}
-            </Text>
-          )}
+          if (Platform.OS === 'android' && mode === 'datetime') {
+            openAndroidDateTimePicker(value, onChange);
+            return;
+          }
 
-          {isPickerVisible && (
-            <DateTimePicker
-              mode={currentMode}
-              value={value ? getDisplayDate(value) : new Date()}
-              onChange={handlePickerChange(onChange, value)}
-              minimumDate={minimumDate}
-              maximumDate={maximumDate}
-              locale={Platform.OS === 'ios' ? 'tr_TR' : undefined}
-              timeZoneName={Platform.OS === 'ios' ? 'Europe/Istanbul' : undefined}
-              onError={(error) => {
-                if (Platform.OS === 'android' && error) {
-                  console.error('DateTimePicker error:', error);
-                }
-              }}
-            />
-          )}
-        </View>
-      )}
+          setPickerVisible(true);
+        };
+
+        return (
+          <View style={styles.container}>
+            {label && (
+              <Text
+                style={[
+                  styles.label,
+                  { color: error ? theme.colors.error : theme.colors.onSurface },
+                ]}
+              >
+                {label}
+                {required && ' *'}
+              </Text>
+            )}
+
+            <TouchableOpacity
+              onPress={showPicker}
+              disabled={disabled}
+              style={[
+                styles.datePicker,
+                {
+                  borderColor: error ? theme.colors.error : theme.colors.outline,
+                  backgroundColor: disabled
+                    ? theme.colors.surfaceDisabled
+                    : theme.colors.surface,
+                },
+              ]}
+              testID={testID}
+            >
+              <PaperText
+                style={[
+                  styles.dateText,
+                  {
+                    color: value
+                      ? theme.colors.onSurface
+                      : theme.colors.onSurfaceVariant,
+                  },
+                ]}
+              >
+                {displayDate ? formatDate(displayDate) : ''}
+              </PaperText>
+            </TouchableOpacity>
+
+            {error && (
+              <Text style={[styles.errorText, { color: theme.colors.error }]}
+              >
+                {error.message}
+              </Text>
+            )}
+
+            {isPickerVisible && !(Platform.OS === 'android' && mode === 'datetime') && (
+              <DateTimePicker
+                mode={mode}
+                value={displayDate ?? new Date()}
+                onChange={handlePickerChange(onChange)}
+                minimumDate={minimumDate}
+                maximumDate={maximumDate}
+                locale={Platform.OS === 'ios' ? iosLocale : undefined}
+                onError={(pickerError) => {
+                  if (Platform.OS === 'android' && pickerError) {
+                    console.error('DateTimePicker error:', pickerError);
+                  }
+                }}
+              />
+            )}
+          </View>
+        );
+      }}
     />
   );
 };

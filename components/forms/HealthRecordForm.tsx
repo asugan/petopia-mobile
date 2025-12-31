@@ -6,12 +6,14 @@ import { useTranslation } from 'react-i18next';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { Button, Text } from '@/components/ui';
 import { useHealthRecordForm } from '@/hooks/useHealthRecordForm';
+import { useEvent } from '@/lib/hooks/useEvents';
 import { useTheme } from '@/lib/theme';
 import { useCreateHealthRecord, useUpdateHealthRecord } from '../../lib/hooks/useHealthRecords';
 import { useUserSettingsStore } from '@/stores/userSettingsStore';
 import {
   formatValidationErrors,
-  getHealthRecordSchema,
+  HealthRecordCreateSchema,
+  HealthRecordUpdateSchema,
   type HealthRecordCreateFormInput,
 } from '../../lib/schemas/healthRecordSchema';
 import type { HealthRecord } from '../../lib/types';
@@ -47,6 +49,7 @@ export function HealthRecordForm({
   const createMutation = useCreateHealthRecord();
   const updateMutation = useUpdateHealthRecord();
   const isEditing = !!initialData;
+  const { data: nextVisitEvent } = useEvent(initialData?.nextVisitEventId);
   const { settings } = useUserSettingsStore();
   const baseCurrency = settings?.baseCurrency || 'TRY';
 
@@ -88,13 +91,29 @@ export function HealthRecordForm({
           clinic: initialData.clinic || '',
           cost: initialData.cost || undefined,
           notes: initialData.notes || '',
+                    
           treatmentPlan: initialData.treatmentPlan || [],
+          nextVisitDate: initialData.nextVisitDate || undefined,
         } as HealthRecordCreateFormInput);
       } else {
         reset(getEmptyFormValues());
       }
     }
   }, [visible, initialData, reset, getEmptyFormValues]);
+
+  React.useEffect(() => {
+    if (!visible || !isEditing) return;
+    const startTime = nextVisitEvent?.startTime;
+    if (!startTime) return;
+
+    const currentValue = form.getValues('nextVisitDate');
+    if (currentValue) return;
+
+    form.setValue('nextVisitDate', startTime, {
+      shouldDirty: false,
+      shouldTouch: false,
+    });
+  }, [visible, isEditing, nextVisitEvent?.startTime, form]);
 
   const onSubmit = React.useCallback(
     async (data: HealthRecordCreateFormInput) => {
@@ -106,23 +125,30 @@ export function HealthRecordForm({
           cost: data.cost ?? undefined,
         };
 
-        // Manual validation based on current type
-        const schema = getHealthRecordSchema(normalizedData.type);
-        const validationResult = schema.safeParse(normalizedData);
-
-        if (!validationResult.success) {
-          const formattedErrors = formatValidationErrors(validationResult.error);
-          const errorMessage = formattedErrors.map((err) => err.message).join('\n');
-          Alert.alert(t('forms.validation.error'), errorMessage);
-          return;
-        }
-
         if (isEditing && initialData?._id) {
+          const validationResult = HealthRecordUpdateSchema().safeParse(normalizedData);
+
+          if (!validationResult.success) {
+            const formattedErrors = formatValidationErrors(validationResult.error);
+            const errorMessage = formattedErrors.map((err) => err.message).join('\n');
+            Alert.alert(t('forms.validation.error'), errorMessage);
+            return;
+          }
+
           await updateMutation.mutateAsync({
             _id: initialData._id,
             data: validationResult.data,
           });
         } else {
+          const validationResult = HealthRecordCreateSchema().safeParse(normalizedData);
+
+          if (!validationResult.success) {
+            const formattedErrors = formatValidationErrors(validationResult.error);
+            const errorMessage = formattedErrors.map((err) => err.message).join('\n');
+            Alert.alert(t('forms.validation.error'), errorMessage);
+            return;
+          }
+
           await createMutation.mutateAsync(validationResult.data);
           reset(getEmptyFormValues());
         }
@@ -170,7 +196,7 @@ export function HealthRecordForm({
       },
       {
         key: 'treatment',
-        title: t('healthRecords.treatmentPlan') || 'Tedavi & Kontrol',
+        title: t('healthRecords.treatmentPlan'),
         fields: ['treatmentPlan', 'nextVisitDate'] as (keyof HealthRecordCreateFormInput)[],
       },
       {
@@ -307,7 +333,7 @@ export function HealthRecordForm({
 
             {steps[currentStep].key === 'treatment' && (
               <>
-                <FormSection title={t('healthRecords.treatmentPlan') || 'Tedavi Planı'}>
+                 <FormSection title={t('healthRecords.treatmentPlan')}>
                   {treatmentFields.map((field, index) => (
                     <View key={field.id} style={[styles.treatmentItem, { backgroundColor: theme.colors.surfaceVariant }]}>
                       <View style={styles.treatmentHeader}>
@@ -321,30 +347,30 @@ export function HealthRecordForm({
                       
                       <SmartInput 
                         name={`treatmentPlan.${index}.name` as const} 
-                        label="İlaç/Tedavi Adı" 
-                        placeholder="Örn: Antibiyotik" 
+                        label={t('healthRecords.treatmentName')}
+                        placeholder={t('healthRecords.treatmentNamePlaceholder')}
                         required 
                       />
                       
                       <FormRow>
                         <SmartInput 
                           name={`treatmentPlan.${index}.dosage` as const} 
-                          label="Doz" 
-                          placeholder="Örn: 1 tablet" 
+                          label={t('healthRecords.treatmentDosage')}
+                          placeholder={t('healthRecords.treatmentDosagePlaceholder')}
                           required 
                         />
                         <SmartInput 
                           name={`treatmentPlan.${index}.frequency` as const} 
-                          label="Sıklık" 
-                          placeholder="Örn: Günde 2" 
+                          label={t('healthRecords.treatmentFrequency')}
+                          placeholder={t('healthRecords.treatmentFrequencyPlaceholder')}
                           required 
                         />
                       </FormRow>
                       
                       <SmartInput 
                         name={`treatmentPlan.${index}.notes` as const} 
-                        label="Talimatlar" 
-                        placeholder="Örn: Tok karna" 
+                        label={t('healthRecords.treatmentInstructions')}
+                        placeholder={t('healthRecords.treatmentInstructionsPlaceholder')} 
                       />
                     </View>
                   ))}
@@ -355,17 +381,17 @@ export function HealthRecordForm({
                     icon="plus"
                     style={{ marginTop: 8 }}
                   >
-                    {t('common.add') || 'İlaç/Tedavi Ekle'}
+                    {t('healthRecords.addTreatment')}
                   </Button>
                 </FormSection>
 
-                <FormSection title={t('healthRecords.nextVisit') || 'Sıradaki Kontrol'}>
+                 <FormSection title={t('healthRecords.nextVisit')}>
                   <Text style={{ marginBottom: 12, color: theme.colors.onSurfaceVariant, fontSize: 14 }}>
-                    {t('healthRecords.nextVisitDescription') || 'Bir sonraki kontrol için otomatik hatırlatıcı oluşturun.'}
+                     {t('healthRecords.nextVisitDescription')}
                   </Text>
                   <SmartDatePicker 
                     name="nextVisitDate" 
-                    label={t('healthRecords.nextVisitDate') || 'Kontrol Tarihi'} 
+                     label={t('healthRecords.nextVisitDate')} 
                     mode="datetime" 
                   />
                 </FormSection>

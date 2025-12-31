@@ -285,7 +285,39 @@ export const HealthRecordCreateSchema = () => BaseHealthRecordSchema();
 
 // Schema for updating an existing health record (all fields optional)
 // Note: ID is handled separately in the mutation function, not in the schema
-export const HealthRecordUpdateSchema = () => BaseHealthRecordSchema().partial();
+const NextVisitDateUpdateSchema = z
+  .union([z.string(), z.date(), z.null()])
+  .optional()
+  .transform((val): string | null | undefined => {
+    if (val === null) return null;
+    if (!val) return undefined;
+    if (val instanceof Date) {
+      return toUTCWithOffset(val);
+    }
+    if (typeof val === 'string') {
+      if (!val.endsWith('Z') && !val.includes('+')) {
+        return toUTCWithOffset(new Date(val));
+      }
+      return val;
+    }
+    throw new Error('Invalid date type');
+  })
+  .refine((val) => val == null || isValidUTCISOString(val), {
+    params: { i18nKey: 'forms.validation.healthRecord.dateUtcInvalid' },
+  })
+  .refine((val) => {
+    if (val == null) return true;
+    const date = new Date(val);
+    if (isNaN(date.getTime())) return false;
+    return date > new Date();
+  }, {
+    params: { i18nKey: 'forms.validation.event.startInFuture' },
+  });
+
+export const HealthRecordUpdateSchema = () =>
+  BaseHealthRecordSchema().partial().extend({
+    nextVisitDate: NextVisitDateUpdateSchema,
+  });
 
 // Type exports for TypeScript
 export type HealthRecord = z.infer<ReturnType<typeof HealthRecordSchema>>;

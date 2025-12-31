@@ -47,7 +47,7 @@ export default function HealthRecordDetailScreen() {
   const { data: healthRecord, isLoading, refetch } = useHealthRecord(id as string);
   
   const { data: pet } = usePet(healthRecord?.petId || '');
-  const { data: nextVisitEvent } = useEvent(healthRecord?.nextVisitEventId || '');
+  const { data: nextVisitEvent } = useEvent(healthRecord?.nextVisitEventId);
 
   const styles = useMemo(() => StyleSheet.create({
     container: {
@@ -655,7 +655,7 @@ ${healthRecord.notes ? `${t('common.notes')}: ${healthRecord.notes}` : ''}
             <View style={styles.sectionHeader}>
               <MaterialCommunityIcons name="hospital-box" size={20} color={theme.colors.primary} />
               <Text style={styles.sectionTitle}>
-                {t('healthRecords.treatmentPlan') || 'Tedavi Planı'}
+                {t('healthRecords.treatmentPlan')}
               </Text>
             </View>
             <View style={styles.planContainer}>
@@ -680,7 +680,7 @@ ${healthRecord.notes ? `${t('common.notes')}: ${healthRecord.notes}` : ''}
                 ))
               ) : (
                 <Text style={{ color: theme.colors.onSurfaceVariant, padding: 8 }}>
-                  {t('healthRecords.noTreatmentPlan') || 'Tedavi planı bulunmuyor.'}
+                  {t('healthRecords.noTreatmentPlan')}
                 </Text>
               )}
             </View>
@@ -690,7 +690,7 @@ ${healthRecord.notes ? `${t('common.notes')}: ${healthRecord.notes}` : ''}
             <View style={styles.sectionHeader}>
               <MaterialCommunityIcons name="calendar" size={20} color={theme.colors.primary} />
               <Text style={styles.sectionTitle}>
-                {t('healthRecords.nextVisit') || 'Sıradaki Kontrol'}
+                {t('healthRecords.nextVisit')}
               </Text>
             </View>
             <LinearGradient

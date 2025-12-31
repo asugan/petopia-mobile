@@ -51,6 +51,8 @@ export const useHealthRecordForm = (
       clinic: initialData?.clinic || '',
       cost: initialData?.cost || undefined,
       notes: initialData?.notes || '',
+      treatmentPlan: initialData?.treatmentPlan || [],
+      nextVisitDate: initialData?.nextVisitDate || undefined,
     };
   }, [petId, initialData]);
 

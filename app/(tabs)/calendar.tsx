@@ -29,7 +29,7 @@ export default function CalendarScreen() {
   const [initialPetId, setInitialPetId] = useState<string | undefined>(undefined);
   const [selectedEvent, setSelectedEvent] = useState<Event | undefined>(undefined);
 
-  const { data: eventToEdit } = useEvent(editEventId || '');
+  const { data: eventToEdit } = useEvent(editEventId);
 
   useEffect(() => {
     if (action === 'create') {

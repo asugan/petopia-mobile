@@ -35,10 +35,12 @@ export const useEvents = (petId: string) => {
   });
 };
 
-export const useEvent = (id: string) => {
+export const useEvent = (id?: string) => {
+  const safeId = id ?? '__missing__';
+
   return useResource<Event>({
-    queryKey: eventKeys.detail(id),
-    queryFn: () => eventService.getEventById(id),
+    queryKey: eventKeys.detail(safeId),
+    queryFn: () => eventService.getEventById(safeId),
     staleTime: CACHE_TIMES.LONG,
     enabled: !!id,
   });
