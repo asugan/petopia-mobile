@@ -13,6 +13,7 @@ import {
 import { tr, enUS } from 'date-fns/locale';
 import { Event } from '../../lib/types';
 import { getEventColor } from '@/lib/utils/eventColors';
+import { toISODateString } from '@/lib/utils/dateConversion';
 
 interface WeekViewProps {
   currentDate: Date;
@@ -46,9 +47,11 @@ export function WeekView({
   }, [currentDate]);
 
   const getEventsForDay = (day: Date) => {
-    const dayStr = day.toISOString().substring(0, 10);
+    const dayStr = toISODateString(day);
+    if (!dayStr) return [];
+
     return events.filter((event) => {
-      const eventDateStr = event.startTime.substring(0, 10);
+      const eventDateStr = toISODateString(new Date(event.startTime));
       return eventDateStr === dayStr;
     });
   };

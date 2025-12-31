@@ -7,6 +7,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useTranslation } from 'react-i18next';
 import { addMonths, subMonths, addWeeks, subWeeks } from 'date-fns';
 import { MonthView } from '@/components/calendar/MonthView';
+import { toISODateString } from '@/lib/utils/dateConversion';
 import { WeekView } from '@/components/calendar/WeekView';
 import { EventModal } from '@/components/EventModal';
 import { useUpcomingEvents, useCalendarEvents, useEvent } from '@/lib/hooks/useEvents';
@@ -43,7 +44,7 @@ export default function CalendarScreen() {
   }, [action, petId, editEventId, eventToEdit]);
 
   const { data: upcomingEvents = [] } = useUpcomingEvents();
-  const formattedDate = currentDate ? currentDate.toISOString().substring(0, 10) : '';
+  const formattedDate = toISODateString(currentDate) ?? '';
   const {
     data: selectedDateEvents = [],
     isLoading: isLoadingSelected,
