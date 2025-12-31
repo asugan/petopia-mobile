@@ -34,19 +34,12 @@ export function toISODateString(date: Date | null | undefined): string | undefin
 }
 
 /**
- * Convert Date object to ISO date string (YYYY-MM-DD) with local fallback
- * @param date - Date object
- * @returns Date string in YYYY-MM-DD format (never undefined for valid Date)
+ * Convert Date object to ISO date string (YYYY-MM-DD)
+ * @param date - Date object (non-nullable)
+ * @returns Date string in YYYY-MM-DD format
  */
 export function toISODateStringWithFallback(date: Date): string {
-  const result = toISODateString(date);
-  if (result) return result;
-
-  // Fallback using same local date extraction as toISODateString
-  const year = date.getFullYear();
-  const month = String(date.getMonth() + 1).padStart(2, '0');
-  const day = String(date.getDate()).padStart(2, '0');
-  return `${year}-${month}-${day}`;
+  return toISODateString(date)!;
 }
 
 /**
