@@ -160,9 +160,28 @@ export const SmartDatePicker = ({
     };
 
     openPicker('date', baseValue, (dateOnly) => {
-      openPicker('time', dateOnly, (finalDate) => {
-        const outputValue = convertToOutputFormat(finalDate);
-        onChange(outputValue);
+      DateTimePickerAndroid.open({
+        mode: 'time',
+        value: dateOnly,
+        onChange: (event, selectedDate) => {
+          if (event.type === 'set' && selectedDate) {
+            const outputValue = convertToOutputFormat(selectedDate);
+            onChange(outputValue);
+            return;
+          }
+
+          if (event.type === 'dismissed') {
+            const preservedDateTime = new Date(dateOnly);
+            preservedDateTime.setHours(
+              baseValue.getHours(),
+              baseValue.getMinutes(),
+              baseValue.getSeconds(),
+              baseValue.getMilliseconds()
+            );
+            const outputValue = convertToOutputFormat(preservedDateTime);
+            onChange(outputValue);
+          }
+        },
       });
     });
   };
