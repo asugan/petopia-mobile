@@ -393,6 +393,7 @@ export function HealthRecordForm({
                     name="nextVisitDate" 
                      label={t('healthRecords.nextVisitDate')} 
                     mode="datetime" 
+                    minimumDate={new Date()}
                   />
                 </FormSection>
               </>

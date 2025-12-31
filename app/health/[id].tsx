@@ -556,7 +556,7 @@ ${healthRecord.notes ? `${t('common.notes')}: ${healthRecord.notes}` : ''}
             <View style={styles.heroContent}>
               <View style={styles.statusRow}>
                 <View style={styles.statusBadge}>
-                  <Text style={styles.statusText}>{t('common.completed') || 'Tamamlandı'}</Text>
+                  <Text style={styles.statusText}>{t('common.completed')}</Text>
                 </View>
                 <Text style={styles.dateText}>{formattedDate}</Text>
               </View>
@@ -631,7 +631,7 @@ ${healthRecord.notes ? `${t('common.notes')}: ${healthRecord.notes}` : ''}
               {healthRecord.cost ? (
                 <View style={styles.paidBadge}>
                   <MaterialCommunityIcons name="check-circle" size={14} color={theme.colors.primary} />
-                  <Text style={styles.paidText}>{t('common.paid') || 'Ödendi'}</Text>
+                  <Text style={styles.paidText}>{t('common.paid')}</Text>
                 </View>
               ) : null}
             </View>
@@ -661,7 +661,7 @@ ${healthRecord.notes ? `${t('common.notes')}: ${healthRecord.notes}` : ''}
             <View style={styles.planContainer}>
               {healthRecord.treatmentPlan && healthRecord.treatmentPlan.length > 0 ? (
                 healthRecord.treatmentPlan.map((item, index) => (
-                  <View key={index} style={styles.medItem}>
+                  <View key={item.name + index} style={styles.medItem}>
                     <View style={[styles.medIcon, { backgroundColor: theme.colors.secondaryContainer }]}>
                       <MaterialCommunityIcons 
                         name="pill" 
@@ -722,7 +722,7 @@ ${healthRecord.notes ? `${t('common.notes')}: ${healthRecord.notes}` : ''}
             onPress={handleEdit}
           >
             <MaterialCommunityIcons name="file-document-edit" size={20} color={theme.colors.onPrimary} />
-            <Text style={styles.editButtonText}>{t('common.edit') || 'Kaydı Düzenle'}</Text>
+             <Text style={styles.editButtonText}>{t('common.edit')}</Text>
           </TouchableOpacity>
           
           <TouchableOpacity 
