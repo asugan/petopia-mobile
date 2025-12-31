@@ -164,23 +164,10 @@ export const SmartDatePicker = ({
         mode: 'time',
         value: dateOnly,
         onChange: (event, selectedDate) => {
-          if (event.type === 'set' && selectedDate) {
-            const outputValue = convertToOutputFormat(selectedDate);
-            onChange(outputValue);
-            return;
-          }
+          if (event.type !== 'set' || !selectedDate) return;
 
-          if (event.type === 'dismissed') {
-            const preservedDateTime = new Date(dateOnly);
-            preservedDateTime.setHours(
-              baseValue.getHours(),
-              baseValue.getMinutes(),
-              baseValue.getSeconds(),
-              baseValue.getMilliseconds()
-            );
-            const outputValue = convertToOutputFormat(preservedDateTime);
-            onChange(outputValue);
-          }
+          const outputValue = convertToOutputFormat(selectedDate);
+          onChange(outputValue);
         },
       });
     });

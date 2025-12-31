@@ -91,7 +91,6 @@ export function HealthRecordForm({
           clinic: initialData.clinic || '',
           cost: initialData.cost || undefined,
           notes: initialData.notes || '',
-                    
           treatmentPlan: initialData.treatmentPlan || [],
           nextVisitDate: initialData.nextVisitDate || undefined,
         } as HealthRecordCreateFormInput);
@@ -385,14 +384,14 @@ export function HealthRecordForm({
                   </Button>
                 </FormSection>
 
-                 <FormSection title={t('healthRecords.nextVisit')}>
+                <FormSection title={t('healthRecords.nextVisit')}>
                   <Text style={{ marginBottom: 12, color: theme.colors.onSurfaceVariant, fontSize: 14 }}>
-                     {t('healthRecords.nextVisitDescription')}
+                    {t('healthRecords.nextVisitDescription')}
                   </Text>
-                  <SmartDatePicker 
-                    name="nextVisitDate" 
-                     label={t('healthRecords.nextVisitDate')} 
-                    mode="datetime" 
+                  <SmartDatePicker
+                    name="nextVisitDate"
+                    label={t('healthRecords.nextVisitDate')}
+                    mode="datetime"
                     minimumDate={new Date()}
                   />
                 </FormSection>

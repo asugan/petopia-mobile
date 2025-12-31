@@ -398,6 +398,10 @@ export default function HealthRecordDetailScreen() {
       alignItems: 'center',
       borderWidth: 1,
     },
+    emptyTreatmentText: {
+      color: theme.colors.onSurfaceVariant,
+      padding: 8,
+    },
   }), [theme, insets]);
 
   const handleEdit = () => {
@@ -679,7 +683,7 @@ ${healthRecord.notes ? `${t('common.notes')}: ${healthRecord.notes}` : ''}
                   </View>
                 ))
               ) : (
-                <Text style={{ color: theme.colors.onSurfaceVariant, padding: 8 }}>
+                <Text style={styles.emptyTreatmentText}>
                   {t('healthRecords.noTreatmentPlan')}
                 </Text>
               )}
