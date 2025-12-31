@@ -1,20 +1,35 @@
 import React from 'react';
 import { Control, Controller, FieldValues, Path, useWatch } from 'react-hook-form';
-import { View, Text, TextInput, StyleSheet } from 'react-native';
+import { InputAccessoryView, Keyboard, Platform, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
+import { useTranslation } from 'react-i18next';
 import { useTheme } from '@/lib/theme';
 
 // Custom hook for managing weight input state
-const useWeightInputState = (value: number | undefined) => {
+const useWeightInputState = (value: number | undefined, precision: number, isFocused: boolean) => {
   const [displayText, setDisplayText] = React.useState(() => {
     if (value === undefined || value === null) return '';
-    return value.toFixed(1);
+    return value.toFixed(precision);
   });
 
   React.useEffect(() => {
-    setDisplayText(value === undefined || value === null ? '' : value.toFixed(1));
-  }, [value]);
+    if (isFocused) return;
+    setDisplayText(value === undefined || value === null ? '' : value.toFixed(precision));
+  }, [isFocused, precision, value]);
 
   return { displayText, setDisplayText };
+};
+
+const getStepPrecision = (step: number) => {
+  if (!Number.isFinite(step)) return 0;
+
+  const stepText = String(step);
+  if (stepText.includes('e-')) {
+    const exp = Number(stepText.split('e-')[1]);
+    return Number.isFinite(exp) ? exp : 0;
+  }
+
+  const decimalPart = stepText.split('.')[1];
+  return decimalPart ? decimalPart.length : 0;
 };
 
 interface FormWeightInputProps<T extends FieldValues> {
@@ -45,6 +60,20 @@ export function FormWeightInput<T extends FieldValues>({
   testID,
 }: FormWeightInputProps<T>) {
   const { theme } = useTheme();
+  const { t } = useTranslation();
+
+  const precision = React.useMemo(() => getStepPrecision(step), [step]);
+
+  const inputRef = React.useRef<TextInput>(null);
+  const inputAccessoryViewID = React.useMemo(() => {
+    const base = String(name).replace(/[^a-zA-Z0-9_-]/g, '_');
+    return `weight-input-${base}`;
+  }, [name]);
+
+  const dismissKeyboard = React.useCallback(() => {
+    inputRef.current?.blur();
+    Keyboard.dismiss();
+  }, []);
 
   const parseWeightValue = (text: string): number | undefined => {
     if (!text.trim()) return undefined;
@@ -57,18 +86,20 @@ export function FormWeightInput<T extends FieldValues>({
     if (numValue > max) return max;
 
     // Round to step precision
-    const roundedValue = Math.round(numValue / step) * step;
-    return parseFloat(roundedValue.toFixed(1));
+    const roundedValue = step > 0 ? Math.round(numValue / step) * step : numValue;
+    return parseFloat(roundedValue.toFixed(precision));
   };
 
   const formatWeightValue = (value: number | undefined): string => {
     if (value === undefined || value === null) return '';
-    return value.toFixed(1);
+    return value.toFixed(precision);
   };
+
+  const [isFocused, setIsFocused] = React.useState(false);
 
   // Watch the field value for changes
   const fieldValue = useWatch({ control, name });
-  const { displayText, setDisplayText } = useWeightInputState(fieldValue);
+  const { displayText, setDisplayText } = useWeightInputState(fieldValue, precision, isFocused);
 
   return (
     <Controller
@@ -88,6 +119,7 @@ export function FormWeightInput<T extends FieldValues>({
         };
 
         const handleBlur = () => {
+          setIsFocused(false);
           field.onBlur();
 
           // Format the display text on blur
@@ -97,13 +129,26 @@ export function FormWeightInput<T extends FieldValues>({
 
         return (
           <View style={styles.container}>
+            {label ? (
+              <Text style={[styles.label, { color: theme.colors.onSurface }]}>
+                {label}{required ? ' *' : ''}
+              </Text>
+            ) : null}
+
             <View style={styles.inputContainer}>
               <TextInput
+                ref={inputRef}
                 value={displayText}
-                onChangeText={handleTextChange}
-                onBlur={handleBlur}
+                 onChangeText={handleTextChange}
+                 onFocus={() => setIsFocused(true)}
+                 onBlur={handleBlur}
+
+                onSubmitEditing={dismissKeyboard}
+                blurOnSubmit
                 placeholder={placeholder || '0.0'}
                 keyboardType="decimal-pad"
+                returnKeyType="done"
+                inputAccessoryViewID={Platform.OS === 'ios' ? inputAccessoryViewID : undefined}
                 editable={!disabled}
                 maxLength={6} // Max like 999.9 kg
                 style={[
@@ -131,6 +176,29 @@ export function FormWeightInput<T extends FieldValues>({
               </View>
             </View>
 
+            {Platform.OS === 'ios' && (
+              <InputAccessoryView nativeID={inputAccessoryViewID}>
+                <View
+                  style={[
+                    styles.inputAccessory,
+                    {
+                      backgroundColor: theme.colors.surfaceVariant,
+                      borderTopColor: theme.colors.outline,
+                    },
+                  ]}
+                >
+                  <View style={styles.inputAccessorySpacer} />
+                  <Pressable
+                    onPress={dismissKeyboard}
+                    accessibilityRole="button"
+                    style={styles.doneButton}
+                  >
+                    <Text style={[styles.doneButtonText, { color: theme.colors.primary }]}>{t('common.done', 'Done')}</Text>
+                  </Pressable>
+                </View>
+              </InputAccessoryView>
+            )}
+
             {fieldState.error && (
               <Text style={[styles.errorText, { color: theme.colors.error }]}>
                 {fieldState.error.message}
@@ -139,7 +207,11 @@ export function FormWeightInput<T extends FieldValues>({
 
             <View style={styles.helperContainer}>
               <Text style={[styles.helperText, { color: theme.colors.onSurfaceVariant }]}>
-                Min: {min}{unit} - Max: {max}{unit}
+                {t(
+                  'forms.weightInput.helperText',
+                  'Min: {{min}}{{unit}} - Max: {{max}}{{unit}}',
+                  { min, max, unit }
+                )}
               </Text>
             </View>
           </View>
@@ -152,6 +224,13 @@ export function FormWeightInput<T extends FieldValues>({
 const styles = StyleSheet.create({
   container: {
     marginBottom: 16,
+  },
+  label: {
+    fontSize: 14,
+    marginBottom: 6,
+    marginLeft: 4,
+    fontFamily: 'System',
+    fontWeight: '600',
   },
   inputContainer: {
     flexDirection: 'row',
@@ -198,6 +277,25 @@ const styles = StyleSheet.create({
     fontSize: 12,
     marginLeft: 4,
     fontFamily: 'System',
+  },
+  inputAccessory: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 12,
+    paddingVertical: 10,
+    borderTopWidth: StyleSheet.hairlineWidth,
+  },
+  inputAccessorySpacer: {
+    flex: 1,
+  },
+  doneButton: {
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+  },
+  doneButtonText: {
+    fontSize: 16,
+    fontFamily: 'System',
+    fontWeight: '600',
   },
 });
 

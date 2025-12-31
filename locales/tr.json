@@ -442,6 +442,7 @@
     "yes": "Evet",
     "no": "Hayır",
     "ok": "Tamam",
+    "done": "Bitti",
     "edit": "Düzenle",
     "share": "Paylaş",
     "goBack": "Geri Dön",
@@ -653,6 +654,9 @@
         "physicalDetails": "Fiziksel Bilgiler",
         "photo": "Fotoğraf"
       }
+    },
+    "weightInput": {
+      "helperText": "Min: {{min}}{{unit}} - Maks: {{max}}{{unit}}"
     },
     "validation": {
       "nameMinLength": "İsim en az 2 karakter olmalıdır",

@@ -466,6 +466,7 @@
     "yes": "Yes",
     "no": "No",
     "ok": "OK",
+    "done": "Done",
     "edit": "Edit",
     "share": "Share",
     "goBack": "Go Back",
@@ -677,6 +678,9 @@
         "physicalDetails": "Physical Details",
         "photo": "Photo"
       }
+    },
+    "weightInput": {
+      "helperText": "Min: {{min}}{{unit}} - Max: {{max}}{{unit}}"
     },
     "validation": {
       "nameMinLength": "Name must be at least 2 characters",

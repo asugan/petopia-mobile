@@ -7,7 +7,7 @@ export const ENV = {
   API_BASE_URL:
     process.env.EXPO_PUBLIC_API_URL ??
     Constants.expoConfig?.extra?.apiBaseUrl ??
-    (__DEV__ ? 'https://93e987ff4d68.ngrok-free.app' : 'https://your-production-api.com'),
+    (__DEV__ ? 'https://petopiaapi.dekadans.net' : 'https://your-production-api.com'),
 
   // Auth configuration
   AUTH: {
