@@ -499,7 +499,7 @@ ${healthRecord.notes ? `${t('common.notes')}: ${healthRecord.notes}` : ''}
     day: 'numeric',
     month: 'long',
     year: 'numeric'
-  }) : '';
+  }) : t('healthRecords.noNextVisit');
   const nextVisitTime = nextVisitDate ? nextVisitDate.toLocaleTimeString(dateLocale, {
     hour: '2-digit',
     minute: '2-digit'
@@ -703,7 +703,7 @@ ${healthRecord.notes ? `${t('common.notes')}: ${healthRecord.notes}` : ''}
                 <View>
                   <Text style={styles.nextVisitLabel}>{t('events.date')}</Text>
                   <Text style={styles.nextVisitDate}>{nextVisitFormatted}</Text>
-                  <Text style={styles.nextVisitTime}>{nextVisitTime}</Text>
+                  {nextVisitDate && <Text style={styles.nextVisitTime}>{nextVisitTime}</Text>}
                 </View>
                 <View style={styles.alarmButton}>
                   <MaterialCommunityIcons name="alarm" size={24} color={theme.colors.onPrimary} />

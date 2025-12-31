@@ -212,6 +212,7 @@
     "treatmentInstructionsPlaceholder": "Örn: Tok karna",
     "addTreatment": "İlaç/Tedavi Ekle",
     "nextVisit": "Sıradaki Kontrol",
+    "noNextVisit": "Planlanmış kontrol yok",
     "noTreatmentPlan": "Tedavi planı bulunmuyor",
     "nextVisitDate": "Kontrol Tarihi",
     "nextVisitDescription": "Bir sonraki kontrol için otomatik hatırlatıcı oluşturun"

@@ -227,6 +227,7 @@
     "treatmentInstructionsPlaceholder": "e.g. With food",
     "addTreatment": "Add treatment/medication",
     "nextVisit": "Next Visit",
+    "noNextVisit": "No next visit scheduled",
     "noTreatmentPlan": "No treatment plan",
     "nextVisitDate": "Next Visit Date",
     "nextVisitDescription": "Create an automatic reminder for the next visit"
