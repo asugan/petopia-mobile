@@ -377,7 +377,7 @@ export function HealthRecordForm({
                   
                   <Button 
                     mode="outlined" 
-                    onPress={() => appendTreatment({ name: '', dosage: '', frequency: '' })} 
+                    onPress={() => appendTreatment({ name: '', dosage: '', frequency: '', notes: '' })} 
                     icon="plus"
                     style={{ marginTop: 8 }}
                   >
