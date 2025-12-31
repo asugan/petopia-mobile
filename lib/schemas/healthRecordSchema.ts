@@ -86,6 +86,34 @@ const BaseHealthRecordSchema = () => {
         params: { i18nKey: 'forms.validation.healthRecord.dateFuture' },
       }),
 
+    nextVisitDate: z
+      .union([z.string(), z.date()])
+      .optional()
+      .transform((val): string | undefined => {
+        if (!val) return undefined;
+        if (val instanceof Date) {
+          return toUTCWithOffset(val);
+        }
+        if (typeof val === 'string') {
+          if (!val.endsWith('Z') && !val.includes('+')) {
+            return toUTCWithOffset(new Date(val));
+          }
+          return val;
+        }
+        throw new Error('Invalid date type');
+      })
+      .refine((val) => !val || isValidUTCISOString(val), {
+        params: { i18nKey: 'forms.validation.healthRecord.dateUtcInvalid' },
+      })
+      .refine((val) => {
+        if (!val) return true;
+        const date = new Date(val);
+        if (isNaN(date.getTime())) return false;
+        return date > new Date();
+      }, {
+        params: { i18nKey: 'forms.validation.event.startInFuture' },
+      }),
+
     veterinarian: z
       .string()
       .max(100, { message: t('forms.validation.healthRecord.veterinarianMax') })
@@ -116,6 +144,16 @@ const BaseHealthRecordSchema = () => {
       .max(2000, { message: t('forms.validation.healthRecord.notesMax') })
       .optional()
       .transform(val => val?.trim() || undefined),
+
+    treatmentPlan: z.array(z.object({
+      name: z.string().min(1),
+      dosage: z.string().min(1),
+      frequency: z.string().min(1),
+      duration: z.string().optional(),
+      notes: z.string().optional(),
+    })).optional(),
+
+    nextVisitEventId: objectIdSchema.optional(),
   });
 };
 
@@ -191,6 +229,37 @@ const BaseHealthRecordFormSchema = () => {
       .max(2000, { message: t('forms.validation.healthRecord.notesMax') })
       .optional()
       .transform(val => val?.trim() || undefined),
+
+    treatmentPlan: z.array(z.object({
+      name: z.string().min(1, { message: t('forms.validation.required') }),
+      dosage: z.string().min(1, { message: t('forms.validation.required') }),
+      frequency: z.string().min(1, { message: t('forms.validation.required') }),
+      duration: z.string().optional(),
+      notes: z.string().optional(),
+    })).optional(),
+
+    nextVisitDate: z
+      .union([z.string(), z.date()])
+      .optional()
+      .refine((val) => {
+        if (!val) return true;
+        if (val instanceof Date) return !isNaN(val.getTime());
+        if (typeof val === 'string') {
+          const date = new Date(val);
+          return !isNaN(date.getTime());
+        }
+        return false;
+      }, {
+        params: { i18nKey: 'forms.validation.healthRecord.dateInvalid' },
+      })
+      .refine((val) => {
+        if (!val) return true;
+        const date = val instanceof Date ? val : new Date(val);
+        const now = new Date();
+        return date > now;
+      }, {
+        params: { i18nKey: 'forms.validation.event.startInFuture' },
+      }),
   });
 };
 
@@ -216,7 +285,39 @@ export const HealthRecordCreateSchema = () => BaseHealthRecordSchema();
 
 // Schema for updating an existing health record (all fields optional)
 // Note: ID is handled separately in the mutation function, not in the schema
-export const HealthRecordUpdateSchema = () => BaseHealthRecordSchema().partial();
+const NextVisitDateUpdateSchema = z
+  .union([z.string(), z.date(), z.null()])
+  .optional()
+  .transform((val): string | null | undefined => {
+    if (val === null) return null;
+    if (!val) return undefined;
+    if (val instanceof Date) {
+      return toUTCWithOffset(val);
+    }
+    if (typeof val === 'string') {
+      if (!val.endsWith('Z') && !val.includes('+')) {
+        return toUTCWithOffset(new Date(val));
+      }
+      return val;
+    }
+    throw new Error('Invalid date type');
+  })
+  .refine((val) => val == null || isValidUTCISOString(val), {
+    params: { i18nKey: 'forms.validation.healthRecord.dateUtcInvalid' },
+  })
+  .refine((val) => {
+    if (val == null) return true;
+    const date = new Date(val);
+    if (isNaN(date.getTime())) return false;
+    return date > new Date();
+  }, {
+    params: { i18nKey: 'forms.validation.event.startInFuture' },
+  });
+
+export const HealthRecordUpdateSchema = () =>
+  BaseHealthRecordSchema().partial().extend({
+    nextVisitDate: NextVisitDateUpdateSchema,
+  });
 
 // Type exports for TypeScript
 export type HealthRecord = z.infer<ReturnType<typeof HealthRecordSchema>>;

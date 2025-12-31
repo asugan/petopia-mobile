@@ -35,12 +35,16 @@ export const useEvents = (petId: string) => {
   });
 };
 
-export const useEvent = (id: string) => {
+const MISSING_ID_PLACEHOLDER = '__missing__';
+
+export const useEvent = (id?: string, options?: { enabled?: boolean }) => {
+  const safeId = id ?? MISSING_ID_PLACEHOLDER;
+
   return useResource<Event>({
-    queryKey: eventKeys.detail(id),
-    queryFn: () => eventService.getEventById(id),
+    queryKey: eventKeys.detail(safeId),
+    queryFn: () => eventService.getEventById(safeId),
     staleTime: CACHE_TIMES.LONG,
-    enabled: !!id,
+    enabled: options?.enabled !== undefined ? (options.enabled && !!id) : !!id,
   });
 };
 

@@ -21,6 +21,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { useTheme } from '@/lib/theme';
 import { useDeleteHealthRecord, useHealthRecord } from '@/lib/hooks/useHealthRecords';
 import { usePet } from '@/lib/hooks/usePets';
+import { useEvent } from '@/lib/hooks/useEvents';
 import { formatCurrency } from '@/lib/utils/currency';
 import { useUserSettingsStore } from '@/stores/userSettingsStore';
 import { HealthRecordForm } from '@/components/forms/HealthRecordForm';
@@ -46,6 +47,12 @@ export default function HealthRecordDetailScreen() {
   const { data: healthRecord, isLoading, refetch } = useHealthRecord(id as string);
   
   const { data: pet } = usePet(healthRecord?.petId || '');
+  const {
+    data: nextVisitEvent,
+    isError: isEventError,
+    error: nextVisitError,
+    refetch: refetchNextVisitEvent,
+  } = useEvent(healthRecord?.nextVisitEventId, { enabled: !!healthRecord?.nextVisitEventId });
 
   const styles = useMemo(() => StyleSheet.create({
     container: {
@@ -336,6 +343,24 @@ export default function HealthRecordDetailScreen() {
       color: theme.colors.outline,
       fontSize: 14,
     },
+    nextVisitErrorRow: {
+      marginTop: 8,
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: 8,
+      flexWrap: 'wrap',
+    },
+    nextVisitErrorText: {
+      flexShrink: 1,
+      color: theme.colors.error,
+      fontSize: 12,
+    },
+    nextVisitRetryText: {
+      color: theme.colors.primary,
+      fontSize: 12,
+      fontWeight: '700',
+      textDecorationLine: 'underline',
+    },
     alarmButton: {
       width: 40,
       height: 40,
@@ -396,28 +421,11 @@ export default function HealthRecordDetailScreen() {
       alignItems: 'center',
       borderWidth: 1,
     },
+    emptyTreatmentText: {
+      color: theme.colors.onSurfaceVariant,
+      padding: 8,
+    },
   }), [theme, insets]);
-
-  const treatmentPlan = useMemo(() => [
-    {
-      id: '1',
-      name: 'Ağrı Kesici',
-      instruction: 'Sabah - Akşam, Tok Karna',
-      dosage: '2x1',
-      icon: 'pill',
-      color: theme.colors.info,
-      bgColor: theme.colors.infoContainer,
-    },
-    {
-      id: '2',
-      name: 'Vitamin Desteği',
-      instruction: 'Günde bir kez',
-      dosage: '1x1',
-      icon: 'needle',
-      color: theme.colors.tertiary,
-      bgColor: theme.colors.tertiaryContainer,
-    },
-  ], [theme]);
 
   const handleEdit = () => {
     setEditFormKey((current) => current + 1);
@@ -513,13 +521,16 @@ ${healthRecord.notes ? `${t('common.notes')}: ${healthRecord.notes}` : ''}
     year: 'numeric'
   });
 
-  const nextVisitDate = new Date(Date.now() + 14 * 24 * 60 * 60 * 1000);
-  const nextVisitFormatted = nextVisitDate.toLocaleDateString(dateLocale, {
+  const nextVisitDate = nextVisitEvent?.startTime ? new Date(nextVisitEvent.startTime) : null;
+  const nextVisitFormatted = nextVisitDate ? nextVisitDate.toLocaleDateString(dateLocale, {
     day: 'numeric',
     month: 'long',
     year: 'numeric'
-  });
-  const nextVisitTime = "14:30"; 
+  }) : t('healthRecords.noNextVisit');
+  const nextVisitTime = nextVisitDate ? nextVisitDate.toLocaleTimeString(dateLocale, {
+    hour: '2-digit',
+    minute: '2-digit'
+  }) : '';
 
   const heroSource = pet?.profilePhoto
     ? { uri: pet.profilePhoto }
@@ -572,7 +583,7 @@ ${healthRecord.notes ? `${t('common.notes')}: ${healthRecord.notes}` : ''}
             <View style={styles.heroContent}>
               <View style={styles.statusRow}>
                 <View style={styles.statusBadge}>
-                  <Text style={styles.statusText}>{t('common.completed') || 'Tamamlandı'}</Text>
+                  <Text style={styles.statusText}>{t('common.completed')}</Text>
                 </View>
                 <Text style={styles.dateText}>{formattedDate}</Text>
               </View>
@@ -614,7 +625,7 @@ ${healthRecord.notes ? `${t('common.notes')}: ${healthRecord.notes}` : ''}
               <View>
                 <Text style={styles.cardLabel}>{t('healthRecords.veterinarian')}</Text>
                 <Text style={styles.cardValue} numberOfLines={1}>
-                  {healthRecord.veterinarian ? `Dr. ${healthRecord.veterinarian.split(' ')[0]}` : '-'}
+                  {healthRecord.veterinarian ? `Dr. ${healthRecord.veterinarian}` : '-'}
                 </Text>
               </View>
             </View>
@@ -629,9 +640,7 @@ ${healthRecord.notes ? `${t('common.notes')}: ${healthRecord.notes}` : ''}
                 </View>
                 <MaterialCommunityIcons name="map-marker" size={20} color={theme.colors.primary} />
               </View>
-              <Text style={styles.cardSubtext} numberOfLines={1}>
-                {healthRecord.clinic ? 'Klinik Adresi' : ''}
-              </Text>
+
             </View>
 
             <View style={styles.gridCard}>
@@ -647,7 +656,7 @@ ${healthRecord.notes ? `${t('common.notes')}: ${healthRecord.notes}` : ''}
               {healthRecord.cost ? (
                 <View style={styles.paidBadge}>
                   <MaterialCommunityIcons name="check-circle" size={14} color={theme.colors.primary} />
-                  <Text style={styles.paidText}>{t('common.paid') || 'Ödendi'}</Text>
+                  <Text style={styles.paidText}>{t('common.paid')}</Text>
                 </View>
               ) : null}
             </View>
@@ -671,26 +680,44 @@ ${healthRecord.notes ? `${t('common.notes')}: ${healthRecord.notes}` : ''}
             <View style={styles.sectionHeader}>
               <MaterialCommunityIcons name="hospital-box" size={20} color={theme.colors.primary} />
               <Text style={styles.sectionTitle}>
-                {t('healthRecords.treatmentPlan') || 'Tedavi Planı'}
+                {t('healthRecords.treatmentPlan')}
               </Text>
             </View>
             <View style={styles.planContainer}>
-              {treatmentPlan.map((item) => (
-                <View key={item.id} style={styles.medItem}>
-                  <View style={[styles.medIcon, { backgroundColor: item.bgColor }]}>
-                    <MaterialCommunityIcons 
-                      name={item.icon === 'pill' ? 'pill' : 'needle'} 
-                      size={24} 
-                      color={item.color} 
-                    />
+              {healthRecord.treatmentPlan && healthRecord.treatmentPlan.length > 0 ? (
+                healthRecord.treatmentPlan.map((item, index) => (
+                  <View
+                    key={
+                      item &&
+                      typeof item === 'object' &&
+                      'id' in item &&
+                      (typeof item.id === 'string' || typeof item.id === 'number')
+                        ? item.id
+                        : index
+                    }
+                    style={styles.medItem}
+                  >
+                    <View style={[styles.medIcon, { backgroundColor: theme.colors.secondaryContainer }]}>
+                      <MaterialCommunityIcons 
+                        name="pill" 
+                        size={24} 
+                        color={theme.colors.secondary} 
+                      />
+                    </View>
+                    <View style={styles.medContent}>
+                      <Text style={styles.medName}>{item.name}</Text>
+                      <Text style={styles.medInstruction}>
+                        {item.frequency} {item.notes ? `• ${item.notes}` : ''}
+                      </Text>
+                    </View>
+                    <Text style={styles.medDosage}>{item.dosage}</Text>
                   </View>
-                  <View style={styles.medContent}>
-                    <Text style={styles.medName}>{item.name}</Text>
-                    <Text style={styles.medInstruction}>{item.instruction}</Text>
-                  </View>
-                  <Text style={styles.medDosage}>{item.dosage}</Text>
-                </View>
-              ))}
+                ))
+              ) : (
+                <Text style={styles.emptyTreatmentText}>
+                  {t('healthRecords.noTreatmentPlan')}
+                </Text>
+              )}
             </View>
           </View>
 
@@ -698,7 +725,7 @@ ${healthRecord.notes ? `${t('common.notes')}: ${healthRecord.notes}` : ''}
             <View style={styles.sectionHeader}>
               <MaterialCommunityIcons name="calendar" size={20} color={theme.colors.primary} />
               <Text style={styles.sectionTitle}>
-                {t('healthRecords.nextVisit') || 'Sıradaki Kontrol'}
+                {t('healthRecords.nextVisit')}
               </Text>
             </View>
             <LinearGradient
@@ -707,16 +734,35 @@ ${healthRecord.notes ? `${t('common.notes')}: ${healthRecord.notes}` : ''}
               end={{ x: 1, y: 0 }}
               style={styles.nextVisitGradient}
             >
-              <View style={styles.nextVisitContent}>
-                <View>
-                  <Text style={styles.nextVisitLabel}>{t('events.date')}</Text>
-                  <Text style={styles.nextVisitDate}>{nextVisitFormatted}</Text>
-                  <Text style={styles.nextVisitTime}>{nextVisitTime}</Text>
-                </View>
-                <View style={styles.alarmButton}>
-                  <MaterialCommunityIcons name="alarm" size={24} color={theme.colors.onPrimary} />
-                </View>
-              </View>
+               <View style={styles.nextVisitContent}>
+                 <View>
+                   <Text style={styles.nextVisitLabel}>{t('events.date')}</Text>
+                   <Text style={styles.nextVisitDate}>{nextVisitFormatted}</Text>
+                   {nextVisitDate && <Text style={styles.nextVisitTime}>{nextVisitTime}</Text>}
+
+                   {isEventError && (
+                     <View style={styles.nextVisitErrorRow}>
+                       <MaterialCommunityIcons
+                         name="alert-circle-outline"
+                         size={16}
+                         color={theme.colors.error}
+                       />
+                       <Text style={styles.nextVisitErrorText}>{t('events.fetchError')}</Text>
+                       <TouchableOpacity
+                         onPress={() => {
+                           console.warn('Failed to fetch next visit event:', nextVisitError);
+                           void refetchNextVisitEvent();
+                         }}
+                       >
+                         <Text style={styles.nextVisitRetryText}>{t('common.retry')}</Text>
+                       </TouchableOpacity>
+                     </View>
+                   )}
+                 </View>
+                 <View style={styles.alarmButton}>
+                   <MaterialCommunityIcons name="alarm" size={24} color={theme.colors.onPrimary} />
+                 </View>
+               </View>
             </LinearGradient>
           </View>
 
@@ -730,7 +776,7 @@ ${healthRecord.notes ? `${t('common.notes')}: ${healthRecord.notes}` : ''}
             onPress={handleEdit}
           >
             <MaterialCommunityIcons name="file-document-edit" size={20} color={theme.colors.onPrimary} />
-            <Text style={styles.editButtonText}>{t('common.edit') || 'Kaydı Düzenle'}</Text>
+             <Text style={styles.editButtonText}>{t('common.edit')}</Text>
           </TouchableOpacity>
           
           <TouchableOpacity 

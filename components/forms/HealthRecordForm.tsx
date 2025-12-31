@@ -1,16 +1,19 @@
 import React, { useState } from 'react';
-import { Alert, Modal as RNModal, ScrollView, StyleSheet, View } from 'react-native';
-import { FormProvider } from 'react-hook-form';
+import { Alert, Modal as RNModal, ScrollView, StyleSheet, View, TouchableOpacity } from 'react-native';
+import { FormProvider, useFieldArray } from 'react-hook-form';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useTranslation } from 'react-i18next';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { Button, Text } from '@/components/ui';
 import { useHealthRecordForm } from '@/hooks/useHealthRecordForm';
+import { useEvent } from '@/lib/hooks/useEvents';
 import { useTheme } from '@/lib/theme';
 import { useCreateHealthRecord, useUpdateHealthRecord } from '../../lib/hooks/useHealthRecords';
 import { useUserSettingsStore } from '@/stores/userSettingsStore';
 import {
   formatValidationErrors,
-  getHealthRecordSchema,
+  HealthRecordCreateSchema,
+  HealthRecordUpdateSchema,
   type HealthRecordCreateFormInput,
 } from '../../lib/schemas/healthRecordSchema';
 import type { HealthRecord } from '../../lib/types';
@@ -46,11 +49,20 @@ export function HealthRecordForm({
   const createMutation = useCreateHealthRecord();
   const updateMutation = useUpdateHealthRecord();
   const isEditing = !!initialData;
+  const { data: nextVisitEvent } = useEvent(initialData?.nextVisitEventId, {
+    enabled: !!initialData?.nextVisitEventId,
+  });
   const { settings } = useUserSettingsStore();
   const baseCurrency = settings?.baseCurrency || 'TRY';
 
   // Use the custom hook for form management
   const { form, handleSubmit, reset } = useHealthRecordForm(petId || '', initialData);
+  const { setValue, getValues } = form;
+
+  const { fields: treatmentFields, append: appendTreatment, remove: removeTreatment } = useFieldArray({
+    control: form.control,
+    name: "treatmentPlan"
+  });
 
   const getEmptyFormValues = React.useCallback((): HealthRecordCreateFormInput => ({
     petId: petId || '',
@@ -62,6 +74,8 @@ export function HealthRecordForm({
     clinic: '',
     cost: undefined,
     notes: '',
+    treatmentPlan: [],
+    nextVisitDate: undefined,
   }), [petId]);
 
   // Reset form when modal visibility changes
@@ -80,12 +94,28 @@ export function HealthRecordForm({
           clinic: initialData.clinic || '',
           cost: initialData.cost || undefined,
           notes: initialData.notes || '',
+          treatmentPlan: initialData.treatmentPlan || [],
+          nextVisitDate: initialData.nextVisitDate || undefined,
         } as HealthRecordCreateFormInput);
       } else {
         reset(getEmptyFormValues());
       }
     }
   }, [visible, initialData, reset, getEmptyFormValues]);
+
+  React.useEffect(() => {
+    if (!visible || !isEditing) return;
+    const startTime = nextVisitEvent?.startTime;
+    if (!startTime) return;
+
+    const currentValue = getValues('nextVisitDate');
+    if (currentValue) return;
+
+    setValue('nextVisitDate', startTime, {
+      shouldDirty: false,
+      shouldTouch: false,
+    });
+  }, [visible, isEditing, nextVisitEvent?.startTime, setValue, getValues]);
 
   const onSubmit = React.useCallback(
     async (data: HealthRecordCreateFormInput) => {
@@ -97,23 +127,30 @@ export function HealthRecordForm({
           cost: data.cost ?? undefined,
         };
 
-        // Manual validation based on current type
-        const schema = getHealthRecordSchema(normalizedData.type);
-        const validationResult = schema.safeParse(normalizedData);
-
-        if (!validationResult.success) {
-          const formattedErrors = formatValidationErrors(validationResult.error);
-          const errorMessage = formattedErrors.map((err) => err.message).join('\n');
-          Alert.alert(t('forms.validation.error'), errorMessage);
-          return;
-        }
-
         if (isEditing && initialData?._id) {
+          const validationResult = HealthRecordUpdateSchema().safeParse(normalizedData);
+
+          if (!validationResult.success) {
+            const formattedErrors = formatValidationErrors(validationResult.error);
+            const errorMessage = formattedErrors.map((err) => err.message).join('\n');
+            Alert.alert(t('forms.validation.error'), errorMessage);
+            return;
+          }
+
           await updateMutation.mutateAsync({
             _id: initialData._id,
             data: validationResult.data,
           });
         } else {
+          const validationResult = HealthRecordCreateSchema().safeParse(normalizedData);
+
+          if (!validationResult.success) {
+            const formattedErrors = formatValidationErrors(validationResult.error);
+            const errorMessage = formattedErrors.map((err) => err.message).join('\n');
+            Alert.alert(t('forms.validation.error'), errorMessage);
+            return;
+          }
+
           await createMutation.mutateAsync(validationResult.data);
           reset(getEmptyFormValues());
         }
@@ -158,6 +195,11 @@ export function HealthRecordForm({
         key: 'provider',
         title: t('healthRecords.steps.provider'),
         fields: ['veterinarian', 'clinic'] as (keyof HealthRecordCreateFormInput)[],
+      },
+      {
+        key: 'treatment',
+        title: t('healthRecords.treatmentPlan'),
+        fields: ['treatmentPlan', 'nextVisitDate'] as (keyof HealthRecordCreateFormInput)[],
       },
       {
         key: 'costNotes',
@@ -291,6 +333,74 @@ export function HealthRecordForm({
               </FormSection>
             )}
 
+            {steps[currentStep].key === 'treatment' && (
+              <>
+                 <FormSection title={t('healthRecords.treatmentPlan')}>
+                  {treatmentFields.map((field, index) => (
+                    <View key={field.id} style={[styles.treatmentItem, { backgroundColor: theme.colors.surfaceVariant }]}>
+                      <View style={styles.treatmentHeader}>
+                        <Text style={[styles.treatmentTitle, { color: theme.colors.onSurfaceVariant }]}>
+                          #{index + 1}
+                        </Text>
+                        <TouchableOpacity onPress={() => removeTreatment(index)} hitSlop={8}>
+                          <MaterialCommunityIcons name="close-circle-outline" size={24} color={theme.colors.error} />
+                        </TouchableOpacity>
+                      </View>
+                      
+                      <SmartInput 
+                        name={`treatmentPlan.${index}.name` as const} 
+                        label={t('healthRecords.treatmentName')}
+                        placeholder={t('healthRecords.treatmentNamePlaceholder')}
+                        required 
+                      />
+                      
+                      <FormRow>
+                        <SmartInput 
+                          name={`treatmentPlan.${index}.dosage` as const} 
+                          label={t('healthRecords.treatmentDosage')}
+                          placeholder={t('healthRecords.treatmentDosagePlaceholder')}
+                          required 
+                        />
+                        <SmartInput 
+                          name={`treatmentPlan.${index}.frequency` as const} 
+                          label={t('healthRecords.treatmentFrequency')}
+                          placeholder={t('healthRecords.treatmentFrequencyPlaceholder')}
+                          required 
+                        />
+                      </FormRow>
+                      
+                      <SmartInput 
+                        name={`treatmentPlan.${index}.notes` as const} 
+                        label={t('healthRecords.treatmentInstructions')}
+                        placeholder={t('healthRecords.treatmentInstructionsPlaceholder')} 
+                      />
+                    </View>
+                  ))}
+                  
+                  <Button 
+                    mode="outlined" 
+                    onPress={() => appendTreatment({ name: '', dosage: '', frequency: '', notes: '' })} 
+                    icon="plus"
+                    style={{ marginTop: 8 }}
+                  >
+                    {t('healthRecords.addTreatment')}
+                  </Button>
+                </FormSection>
+
+                <FormSection title={t('healthRecords.nextVisit')}>
+                  <Text style={[styles.nextVisitDescription, { color: theme.colors.onSurfaceVariant }]}>
+                    {t('healthRecords.nextVisitDescription')}
+                  </Text>
+                  <SmartDatePicker
+                    name="nextVisitDate"
+                    label={t('healthRecords.nextVisitDate')}
+                    mode="datetime"
+                    minimumDate={new Date()}
+                  />
+                </FormSection>
+              </>
+            )}
+
             {steps[currentStep].key === 'costNotes' && (
               <>
                 <FormSection title={t('healthRecords.cost')}>
@@ -410,5 +520,27 @@ const styles = StyleSheet.create({
     fontSize: 14,
     textAlign: 'center',
     fontFamily: 'System',
+  },
+  treatmentItem: {
+    padding: 16,
+    borderRadius: 16,
+    marginBottom: 16,
+    borderWidth: 1,
+    borderColor: 'rgba(0,0,0,0.05)',
+  },
+  treatmentHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 12,
+  },
+  treatmentTitle: {
+    fontSize: 14,
+    fontWeight: 'bold',
+    opacity: 0.7,
+  },
+  nextVisitDescription: {
+    marginBottom: 12,
+    fontSize: 14,
   },
 });
