@@ -69,7 +69,10 @@
     "greeting": "Hello",
     "nextActivity": "Next Activity",
     "noActivity": "No Activity",
-    "allSet": "All Set"
+    "allSet": "All Set",
+    "emptyPetsTitle": "You don't have any pets yet!",
+    "emptyPetsDescription": "Start by adding your first pet. Add your friend for health tracking, vaccine reminders, and more.",
+    "emptyPetsCta": "Add Pet"
   },
   "finance": {
     "title": "Finance",

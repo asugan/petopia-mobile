@@ -69,7 +69,10 @@
     "greeting": "Merhaba",
     "nextActivity": "Sonraki Aktivite",
     "noActivity": "Aktivite Yok",
-    "allSet": "Her Şey Tamam"
+    "allSet": "Her Şey Tamam",
+    "emptyPetsTitle": "Henüz hiç evcil hayvanınız yok!",
+    "emptyPetsDescription": "İlk evcil hayvanınızı ekleyerek bakıma başlayın. Sağlık takibi, aşı hatırlatmaları ve daha fazlası için hemen dostunuzu ekleyin.",
+    "emptyPetsCta": "Evcil Hayvan Ekle"
   },
   "finance": {
     "title": "Finans",
