@@ -1,13 +1,13 @@
 import { Text as PaperText, Text } from '@/components/ui';
 import { useTheme } from '@/lib/theme';
-import { fromUTCWithOffset, parseISODate, toTimeString, toUTCWithOffset } from '@/lib/utils/dateConversion';
+import { fromUTCWithOffset, parseISODate, toISODateString, toTimeString, toUTCWithOffset } from '@/lib/utils/dateConversion';
 import DateTimePicker, { DateTimePickerAndroid, DateTimePickerEvent } from '@react-native-community/datetimepicker';
 import React, { useState } from 'react';
 import { Controller, useFormContext } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import { Platform, StyleSheet, TouchableOpacity, View } from 'react-native';
 
-type OutputFormat = 'iso' | 'iso-time' | 'date-object' | 'yyyy-mm-dd';
+type OutputFormat = 'iso' | 'iso-date' | 'iso-time' | 'date-object' | 'yyyy-mm-dd';
 
 type FieldOnChange = (value: unknown) => void;
 
@@ -80,12 +80,10 @@ export const SmartDatePicker = ({
     switch (outputFormat) {
       case 'iso':
         return toUTCWithOffset(date);
+      case 'iso-date':
+        return toISODateString(date)!;
       case 'yyyy-mm-dd':
-        // Return simple date string in YYYY-MM-DD format (local date)
-        const year = date.getFullYear();
-        const month = String(date.getMonth() + 1).padStart(2, '0');
-        const day = String(date.getDate()).padStart(2, '0');
-        return `${year}-${month}-${day}`;
+        return toISODateString(date)!;
       case 'iso-time':
         return toTimeString(date) ?? date.toISOString().split('T')[1].slice(0, 5);
       case 'date-object':
