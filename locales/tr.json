@@ -200,7 +200,12 @@
     "clinicLabel": "Klinik",
     "clinicPlaceholder": "Klinik adı",
     "costPlaceholder": "0.00",
-    "notesPlaceholder": "Ek notlar"
+    "notesPlaceholder": "Ek notlar",
+    "treatmentPlan": "Tedavi Planı",
+    "nextVisit": "Sıradaki Kontrol",
+    "noTreatmentPlan": "Tedavi planı bulunmuyor",
+    "nextVisitDate": "Kontrol Tarihi",
+    "nextVisitDescription": "Bir sonraki kontrol için otomatik hatırlatıcı oluşturun"
   },
   "calendar": {
     "calendar": "Takvim",
@@ -418,6 +423,7 @@
     "error": "Hata",
     "retry": "Tekrar Dene",
     "save": "Kaydet",
+    "add": "Ekle",
     "loadingError": "Veriler yüklenemedi",
     "viewAll": "Hepsini Gör",
     "delete": "Sil",
@@ -459,6 +465,8 @@
     "optional": "Opsiyonel",
     "daysAgo": "{{count}} gün önce",
     "details": "Detaylar",
+    "completed": "Tamamlandı",
+    "paid": "Ödendi",
     "noData": "Henüz veri yok",
     "noNotes": "Not yok",
     "hoursMinutes": "{{hours}} saat {{minutes}} dk",

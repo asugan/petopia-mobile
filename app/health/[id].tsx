@@ -21,6 +21,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { useTheme } from '@/lib/theme';
 import { useDeleteHealthRecord, useHealthRecord } from '@/lib/hooks/useHealthRecords';
 import { usePet } from '@/lib/hooks/usePets';
+import { useEvent } from '@/lib/hooks/useEvents';
 import { formatCurrency } from '@/lib/utils/currency';
 import { useUserSettingsStore } from '@/stores/userSettingsStore';
 import { HealthRecordForm } from '@/components/forms/HealthRecordForm';
@@ -46,6 +47,7 @@ export default function HealthRecordDetailScreen() {
   const { data: healthRecord, isLoading, refetch } = useHealthRecord(id as string);
   
   const { data: pet } = usePet(healthRecord?.petId || '');
+  const { data: nextVisitEvent } = useEvent(healthRecord?.nextVisitEventId || '');
 
   const styles = useMemo(() => StyleSheet.create({
     container: {
@@ -398,27 +400,6 @@ export default function HealthRecordDetailScreen() {
     },
   }), [theme, insets]);
 
-  const treatmentPlan = useMemo(() => [
-    {
-      id: '1',
-      name: 'Ağrı Kesici',
-      instruction: 'Sabah - Akşam, Tok Karna',
-      dosage: '2x1',
-      icon: 'pill',
-      color: theme.colors.info,
-      bgColor: theme.colors.infoContainer,
-    },
-    {
-      id: '2',
-      name: 'Vitamin Desteği',
-      instruction: 'Günde bir kez',
-      dosage: '1x1',
-      icon: 'needle',
-      color: theme.colors.tertiary,
-      bgColor: theme.colors.tertiaryContainer,
-    },
-  ], [theme]);
-
   const handleEdit = () => {
     setEditFormKey((current) => current + 1);
     setIsEditModalVisible(true);
@@ -513,13 +494,16 @@ ${healthRecord.notes ? `${t('common.notes')}: ${healthRecord.notes}` : ''}
     year: 'numeric'
   });
 
-  const nextVisitDate = new Date(Date.now() + 14 * 24 * 60 * 60 * 1000);
-  const nextVisitFormatted = nextVisitDate.toLocaleDateString(dateLocale, {
+  const nextVisitDate = nextVisitEvent?.startTime ? new Date(nextVisitEvent.startTime) : null;
+  const nextVisitFormatted = nextVisitDate ? nextVisitDate.toLocaleDateString(dateLocale, {
     day: 'numeric',
     month: 'long',
     year: 'numeric'
-  });
-  const nextVisitTime = "14:30"; 
+  }) : '';
+  const nextVisitTime = nextVisitDate ? nextVisitDate.toLocaleTimeString(dateLocale, {
+    hour: '2-digit',
+    minute: '2-digit'
+  }) : '';
 
   const heroSource = pet?.profilePhoto
     ? { uri: pet.profilePhoto }
@@ -614,7 +598,7 @@ ${healthRecord.notes ? `${t('common.notes')}: ${healthRecord.notes}` : ''}
               <View>
                 <Text style={styles.cardLabel}>{t('healthRecords.veterinarian')}</Text>
                 <Text style={styles.cardValue} numberOfLines={1}>
-                  {healthRecord.veterinarian ? `Dr. ${healthRecord.veterinarian.split(' ')[0]}` : '-'}
+                  {healthRecord.veterinarian ? `Dr. ${healthRecord.veterinarian}` : '-'}
                 </Text>
               </View>
             </View>
@@ -630,7 +614,7 @@ ${healthRecord.notes ? `${t('common.notes')}: ${healthRecord.notes}` : ''}
                 <MaterialCommunityIcons name="map-marker" size={20} color={theme.colors.primary} />
               </View>
               <Text style={styles.cardSubtext} numberOfLines={1}>
-                {healthRecord.clinic ? 'Klinik Adresi' : ''}
+                {healthRecord.clinic || ''}
               </Text>
             </View>
 
@@ -675,22 +659,30 @@ ${healthRecord.notes ? `${t('common.notes')}: ${healthRecord.notes}` : ''}
               </Text>
             </View>
             <View style={styles.planContainer}>
-              {treatmentPlan.map((item) => (
-                <View key={item.id} style={styles.medItem}>
-                  <View style={[styles.medIcon, { backgroundColor: item.bgColor }]}>
-                    <MaterialCommunityIcons 
-                      name={item.icon === 'pill' ? 'pill' : 'needle'} 
-                      size={24} 
-                      color={item.color} 
-                    />
+              {healthRecord.treatmentPlan && healthRecord.treatmentPlan.length > 0 ? (
+                healthRecord.treatmentPlan.map((item, index) => (
+                  <View key={index} style={styles.medItem}>
+                    <View style={[styles.medIcon, { backgroundColor: theme.colors.secondaryContainer }]}>
+                      <MaterialCommunityIcons 
+                        name="pill" 
+                        size={24} 
+                        color={theme.colors.secondary} 
+                      />
+                    </View>
+                    <View style={styles.medContent}>
+                      <Text style={styles.medName}>{item.name}</Text>
+                      <Text style={styles.medInstruction}>
+                        {item.frequency} {item.notes ? `• ${item.notes}` : ''}
+                      </Text>
+                    </View>
+                    <Text style={styles.medDosage}>{item.dosage}</Text>
                   </View>
-                  <View style={styles.medContent}>
-                    <Text style={styles.medName}>{item.name}</Text>
-                    <Text style={styles.medInstruction}>{item.instruction}</Text>
-                  </View>
-                  <Text style={styles.medDosage}>{item.dosage}</Text>
-                </View>
-              ))}
+                ))
+              ) : (
+                <Text style={{ color: theme.colors.onSurfaceVariant, padding: 8 }}>
+                  {t('healthRecords.noTreatmentPlan') || 'Tedavi planı bulunmuyor.'}
+                </Text>
+              )}
             </View>
           </View>
 

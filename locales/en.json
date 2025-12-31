@@ -215,7 +215,12 @@
     "clinicLabel": "Clinic",
     "clinicPlaceholder": "Clinic name",
     "costPlaceholder": "0.00",
-    "notesPlaceholder": "Additional notes"
+    "notesPlaceholder": "Additional notes",
+    "treatmentPlan": "Treatment Plan",
+    "nextVisit": "Next Visit",
+    "noTreatmentPlan": "No treatment plan",
+    "nextVisitDate": "Next Visit Date",
+    "nextVisitDescription": "Create an automatic reminder for the next visit"
   },
   "calendar": {
     "calendar": "Calendar",
@@ -442,6 +447,7 @@
     "error": "Error",
     "retry": "Retry",
     "save": "Save",
+    "add": "Add",
     "loadingError": "Failed to load data",
     "viewAll": "View All",
     "delete": "Delete",
@@ -483,6 +489,8 @@
     "optional": "Optional",
     "daysAgo": "{{count}} days ago",
     "details": "Details",
+    "completed": "Completed",
+    "paid": "Paid",
     "noData": "No data yet",
     "noNotes": "No notes",
     "hoursMinutes": "{{hours}}h {{minutes}}m",

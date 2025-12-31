@@ -34,6 +34,7 @@ export const SmartDatePicker = ({
   const { control } = useFormContext();
   const { theme } = useTheme();
   const [isPickerVisible, setPickerVisible] = useState(false);
+  const [currentMode, setCurrentMode] = useState<any>(mode === 'datetime' ? 'date' : mode);
 
   // Parse time string (HH:MM) to Date object
   const parseTimeStringToDate = (timeStr: string): Date | null => {
@@ -93,6 +94,11 @@ export const SmartDatePicker = ({
 
   const showPicker = () => {
     if (!disabled) {
+      if (Platform.OS === 'android' && mode === 'datetime') {
+        setCurrentMode('date');
+      } else {
+        setCurrentMode(mode);
+      }
       setPickerVisible(true);
     }
   };
@@ -124,22 +130,48 @@ export const SmartDatePicker = ({
     }
   };
 
-  const handlePickerChange = (onChange: (value: any) => void) => (event: any, selectedDate?: Date) => {
-    setPickerVisible(Platform.OS === 'ios'); // Keep picker open on iOS
+  const handlePickerChange = (onChange: (value: any) => void, currentValue: any) => (event: any, selectedDate?: Date) => {
+    if (event.type === 'dismissed') {
+      hidePicker();
+      return;
+    }
 
-    if (event.type === 'dismissed' || (event.type === 'set' && selectedDate)) {
-      if (selectedDate) {
+    if (event.type === 'set' && selectedDate) {
+      if (Platform.OS === 'android' && mode === 'datetime' && currentMode === 'date') {
+        hidePicker();
         const outputValue = convertToOutputFormat(selectedDate);
         onChange(outputValue);
+        
+        setTimeout(() => {
+          setCurrentMode('time');
+          setPickerVisible(true);
+        }, 100);
+        return;
       }
+
+      if (Platform.OS === 'android' && mode === 'datetime' && currentMode === 'time') {
+        const previousDate = getDisplayDate(currentValue);
+        const finalDate = new Date(previousDate);
+        finalDate.setHours(selectedDate.getHours());
+        finalDate.setMinutes(selectedDate.getMinutes());
+        
+        const outputValue = convertToOutputFormat(finalDate);
+        onChange(outputValue);
+        hidePicker();
+        return;
+      }
+
+      const outputValue = convertToOutputFormat(selectedDate);
+      onChange(outputValue);
+      
       if (Platform.OS !== 'ios') {
         hidePicker();
       }
     }
 
-    // Handle Android picker errors
     if (event.type === 'error') {
       console.error('DateTimePicker error:', event.nativeEvent?.error || 'Unknown error');
+      hidePicker();
     }
   };
 
@@ -195,9 +227,9 @@ export const SmartDatePicker = ({
 
           {isPickerVisible && (
             <DateTimePicker
-              mode={mode}
+              mode={currentMode}
               value={value ? getDisplayDate(value) : new Date()}
-              onChange={handlePickerChange(onChange)}
+              onChange={handlePickerChange(onChange, value)}
               minimumDate={minimumDate}
               maximumDate={maximumDate}
               locale={Platform.OS === 'ios' ? 'tr_TR' : undefined}

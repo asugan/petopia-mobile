@@ -16,8 +16,8 @@ export interface UseHealthRecordFormReturn {
   isSubmitting: boolean;
   isValid: boolean;
   isDirty: boolean;
-  touchedFields: Record<string, boolean>;
-  dirtyFields: Record<string, boolean>;
+  touchedFields: UseFormReturn<HealthRecordCreateFormInput>['formState']['touchedFields'];
+  dirtyFields: UseFormReturn<HealthRecordCreateFormInput>['formState']['dirtyFields'];
   handleSubmit: (
     onSubmit: (data: HealthRecordCreateFormInput) => void | Promise<void>
   ) => (e?: React.BaseSyntheticEvent) => Promise<void>;

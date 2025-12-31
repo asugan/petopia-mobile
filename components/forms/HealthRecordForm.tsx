@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
-import { Alert, Modal as RNModal, ScrollView, StyleSheet, View } from 'react-native';
-import { FormProvider } from 'react-hook-form';
+import { Alert, Modal as RNModal, ScrollView, StyleSheet, View, TouchableOpacity } from 'react-native';
+import { FormProvider, useFieldArray } from 'react-hook-form';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useTranslation } from 'react-i18next';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { Button, Text } from '@/components/ui';
 import { useHealthRecordForm } from '@/hooks/useHealthRecordForm';
 import { useTheme } from '@/lib/theme';
@@ -51,6 +52,11 @@ export function HealthRecordForm({
 
   // Use the custom hook for form management
   const { form, handleSubmit, reset } = useHealthRecordForm(petId || '', initialData);
+  
+  const { fields: treatmentFields, append: appendTreatment, remove: removeTreatment } = useFieldArray({
+    control: form.control,
+    name: "treatmentPlan"
+  });
 
   const getEmptyFormValues = React.useCallback((): HealthRecordCreateFormInput => ({
     petId: petId || '',
@@ -62,6 +68,8 @@ export function HealthRecordForm({
     clinic: '',
     cost: undefined,
     notes: '',
+    treatmentPlan: [],
+    nextVisitDate: undefined,
   }), [petId]);
 
   // Reset form when modal visibility changes
@@ -80,6 +88,7 @@ export function HealthRecordForm({
           clinic: initialData.clinic || '',
           cost: initialData.cost || undefined,
           notes: initialData.notes || '',
+          treatmentPlan: initialData.treatmentPlan || [],
         } as HealthRecordCreateFormInput);
       } else {
         reset(getEmptyFormValues());
@@ -158,6 +167,11 @@ export function HealthRecordForm({
         key: 'provider',
         title: t('healthRecords.steps.provider'),
         fields: ['veterinarian', 'clinic'] as (keyof HealthRecordCreateFormInput)[],
+      },
+      {
+        key: 'treatment',
+        title: t('healthRecords.treatmentPlan') || 'Tedavi & Kontrol',
+        fields: ['treatmentPlan', 'nextVisitDate'] as (keyof HealthRecordCreateFormInput)[],
       },
       {
         key: 'costNotes',
@@ -291,6 +305,73 @@ export function HealthRecordForm({
               </FormSection>
             )}
 
+            {steps[currentStep].key === 'treatment' && (
+              <>
+                <FormSection title={t('healthRecords.treatmentPlan') || 'Tedavi Planı'}>
+                  {treatmentFields.map((field, index) => (
+                    <View key={field.id} style={[styles.treatmentItem, { backgroundColor: theme.colors.surfaceVariant }]}>
+                      <View style={styles.treatmentHeader}>
+                        <Text style={[styles.treatmentTitle, { color: theme.colors.onSurfaceVariant }]}>
+                          #{index + 1}
+                        </Text>
+                        <TouchableOpacity onPress={() => removeTreatment(index)} hitSlop={8}>
+                          <MaterialCommunityIcons name="close-circle-outline" size={24} color={theme.colors.error} />
+                        </TouchableOpacity>
+                      </View>
+                      
+                      <SmartInput 
+                        name={`treatmentPlan.${index}.name` as const} 
+                        label="İlaç/Tedavi Adı" 
+                        placeholder="Örn: Antibiyotik" 
+                        required 
+                      />
+                      
+                      <FormRow>
+                        <SmartInput 
+                          name={`treatmentPlan.${index}.dosage` as const} 
+                          label="Doz" 
+                          placeholder="Örn: 1 tablet" 
+                          required 
+                        />
+                        <SmartInput 
+                          name={`treatmentPlan.${index}.frequency` as const} 
+                          label="Sıklık" 
+                          placeholder="Örn: Günde 2" 
+                          required 
+                        />
+                      </FormRow>
+                      
+                      <SmartInput 
+                        name={`treatmentPlan.${index}.notes` as const} 
+                        label="Talimatlar" 
+                        placeholder="Örn: Tok karna" 
+                      />
+                    </View>
+                  ))}
+                  
+                  <Button 
+                    mode="outlined" 
+                    onPress={() => appendTreatment({ name: '', dosage: '', frequency: '' })} 
+                    icon="plus"
+                    style={{ marginTop: 8 }}
+                  >
+                    {t('common.add') || 'İlaç/Tedavi Ekle'}
+                  </Button>
+                </FormSection>
+
+                <FormSection title={t('healthRecords.nextVisit') || 'Sıradaki Kontrol'}>
+                  <Text style={{ marginBottom: 12, color: theme.colors.onSurfaceVariant, fontSize: 14 }}>
+                    {t('healthRecords.nextVisitDescription') || 'Bir sonraki kontrol için otomatik hatırlatıcı oluşturun.'}
+                  </Text>
+                  <SmartDatePicker 
+                    name="nextVisitDate" 
+                    label={t('healthRecords.nextVisitDate') || 'Kontrol Tarihi'} 
+                    mode="datetime" 
+                  />
+                </FormSection>
+              </>
+            )}
+
             {steps[currentStep].key === 'costNotes' && (
               <>
                 <FormSection title={t('healthRecords.cost')}>
@@ -410,5 +491,23 @@ const styles = StyleSheet.create({
     fontSize: 14,
     textAlign: 'center',
     fontFamily: 'System',
+  },
+  treatmentItem: {
+    padding: 16,
+    borderRadius: 16,
+    marginBottom: 16,
+    borderWidth: 1,
+    borderColor: 'rgba(0,0,0,0.05)',
+  },
+  treatmentHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 12,
+  },
+  treatmentTitle: {
+    fontSize: 14,
+    fontWeight: 'bold',
+    opacity: 0.7,
   },
 });
