@@ -1,23 +1,39 @@
-import { Card, Chip, IconButton, ListItem, Text } from '@/components/ui';
-import { useTheme } from '@/lib/theme';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { useLocalSearchParams, useRouter } from 'expo-router';
-import React, { useState } from 'react';
-import { Alert, ScrollView, Share, StyleSheet, View } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { useLocalSearchParams, useRouter, Stack } from 'expo-router';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import React, { useState, useMemo } from 'react';
+import {
+  Alert,
+  Image,
+  ImageBackground,
+  ScrollView,
+  Share,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+  Platform,
+  Dimensions,
+  StatusBar,
+} from 'react-native';
 import { useTranslation } from 'react-i18next';
-import EmptyState from '@/components/EmptyState';
+import { LinearGradient } from 'expo-linear-gradient';
+import { useTheme } from '@/lib/theme';
+import { useDeleteHealthRecord, useHealthRecord } from '@/lib/hooks/useHealthRecords';
+import { usePet } from '@/lib/hooks/usePets';
+import { formatCurrency } from '@/lib/utils/currency';
+import { useUserSettingsStore } from '@/stores/userSettingsStore';
 import { HealthRecordForm } from '@/components/forms/HealthRecordForm';
 import LoadingSpinner from '@/components/LoadingSpinner';
-import { HEALTH_RECORD_COLORS, HEALTH_RECORD_ICONS, TURKCE_LABELS } from '@/constants';
-import { useDeleteHealthRecord, useHealthRecord } from '@/lib/hooks/useHealthRecords';
-import { formatCurrency, getCurrencyIcon } from '@/lib/utils/currency';
-import { useUserSettingsStore } from '@/stores/userSettingsStore';
-import type { IconName } from '@/lib/types';
+import EmptyState from '@/components/EmptyState';
+import { TURKCE_LABELS } from '@/constants';
+
+const { width } = Dimensions.get('window');
 
 export default function HealthRecordDetailScreen() {
   const { t } = useTranslation();
   const { theme } = useTheme();
+  const insets = useSafeAreaInsets();
   const { id } = useLocalSearchParams();
   const router = useRouter();
   const [isEditModalVisible, setIsEditModalVisible] = useState(false);
@@ -26,13 +42,382 @@ export default function HealthRecordDetailScreen() {
   const baseCurrency = settings?.baseCurrency || 'TRY';
   const dateLocale = settings?.language === 'tr' ? 'tr-TR' : 'en-US';
 
-  const isMaterialIconName = (name: string): name is IconName => {
-    return name in MaterialCommunityIcons.glyphMap;
-  };
-
   const deleteMutation = useDeleteHealthRecord();
   const { data: healthRecord, isLoading, refetch } = useHealthRecord(id as string);
+  
+  const { data: pet } = usePet(healthRecord?.petId || '');
 
+  const styles = useMemo(() => StyleSheet.create({
+    container: {
+      flex: 1,
+      backgroundColor: theme.colors.background,
+    },
+    heroContainer: {
+      height: 380,
+      width: '100%',
+      overflow: 'hidden',
+      borderBottomLeftRadius: 32,
+      borderBottomRightRadius: 32,
+      elevation: 10,
+      shadowColor: '#000',
+      shadowOffset: { width: 0, height: 10 },
+      shadowOpacity: 0.3,
+      shadowRadius: 20,
+      zIndex: 1,
+      backgroundColor: theme.colors.surfaceVariant,
+    },
+    heroImage: {
+      width: '100%',
+      height: '100%',
+    },
+    topNav: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+      paddingHorizontal: 20,
+      paddingTop: Platform.OS === 'ios' ? 50 : (StatusBar.currentHeight || 0) + 10,
+      zIndex: 10,
+    },
+    navButton: {
+      width: 40,
+      height: 40,
+      borderRadius: 20,
+      backgroundColor: 'rgba(0,0,0,0.2)',
+      justifyContent: 'center',
+      alignItems: 'center',
+      borderWidth: 1,
+      borderColor: 'rgba(255,255,255,0.1)',
+    },
+    navActions: {
+      flexDirection: 'row',
+      gap: 12,
+    },
+    heroContent: {
+      position: 'absolute',
+      bottom: 0,
+      left: 0,
+      width: '100%',
+      padding: 24,
+      paddingBottom: 48,
+    },
+    statusRow: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      marginBottom: 8,
+      gap: 10,
+    },
+    statusBadge: {
+      paddingHorizontal: 10,
+      paddingVertical: 4,
+      borderRadius: 999,
+      backgroundColor: theme.colors.primaryContainer,
+      borderWidth: 1,
+      borderColor: theme.colors.primaryContainer,
+    },
+    statusText: {
+      color: theme.colors.onPrimaryContainer,
+      fontSize: 12,
+      fontWeight: '700',
+      textTransform: 'uppercase',
+    },
+    dateText: {
+      color: theme.colors.onSurfaceVariant,
+      fontSize: 14,
+      fontWeight: '500',
+    },
+    titleText: {
+      color: theme.colors.onBackground,
+      fontSize: 28,
+      fontWeight: '700',
+      lineHeight: 34,
+      marginBottom: 4,
+      textShadowColor: theme.colors.background,
+      textShadowOffset: { width: 0, height: 1 },
+      textShadowRadius: 2,
+    },
+    subtitleText: {
+      color: theme.colors.onSurfaceVariant,
+      fontSize: 14,
+    },
+    mainContent: {
+      paddingHorizontal: 20,
+      marginTop: -32,
+      zIndex: 2,
+      gap: 24,
+    },
+    gridContainer: {
+      flexDirection: 'row',
+      flexWrap: 'wrap',
+      gap: 12,
+    },
+    gridCard: {
+      width: (width - 52) / 2,
+      padding: 16,
+      borderRadius: 16,
+      borderWidth: 1,
+      backgroundColor: theme.colors.surface,
+      borderColor: theme.colors.outlineVariant,
+      shadowColor: '#000',
+      shadowOffset: { width: 0, height: 2 },
+      shadowOpacity: 0.05,
+      shadowRadius: 8,
+      elevation: 2,
+      overflow: 'hidden',
+      minHeight: 110,
+      justifyContent: 'space-between',
+    },
+    cardIconBg: {
+      position: 'absolute',
+      top: 0,
+      right: 0,
+      padding: 12,
+      opacity: 0.05,
+    },
+    petImageContainer: {
+      width: 40,
+      height: 40,
+      borderRadius: 20,
+      backgroundColor: theme.colors.surfaceVariant,
+      overflow: 'hidden',
+      borderWidth: 2,
+      borderColor: theme.colors.primary,
+      marginBottom: 12,
+      justifyContent: 'center',
+      alignItems: 'center',
+    },
+    petImage: {
+      width: '100%',
+      height: '100%',
+    },
+    iconCircle: {
+      width: 40,
+      height: 40,
+      borderRadius: 20,
+      backgroundColor: theme.colors.primaryContainer,
+      justifyContent: 'center',
+      alignItems: 'center',
+      marginBottom: 12,
+    },
+    cardLabel: {
+      fontSize: 12,
+      fontWeight: '500',
+      textTransform: 'uppercase',
+      letterSpacing: 0.5,
+      color: theme.colors.onSurfaceVariant,
+    },
+    cardValue: {
+      fontSize: 18,
+      fontWeight: '700',
+      marginTop: 2,
+      color: theme.colors.onSurface,
+    },
+    cardHeader: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'flex-start',
+    },
+    cardValueSmall: {
+      fontSize: 15,
+      fontWeight: '700',
+      marginTop: 4,
+      color: theme.colors.onSurface,
+    },
+    cardSubtext: {
+      fontSize: 12,
+      marginTop: 8,
+      color: theme.colors.onSurfaceVariant,
+    },
+    paidBadge: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: 4,
+      marginTop: 8,
+    },
+    paidText: {
+      fontSize: 12,
+      fontWeight: '500',
+      color: theme.colors.primary,
+    },
+    section: {
+      gap: 12,
+    },
+    sectionHeader: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: 8,
+    },
+    sectionTitle: {
+      fontSize: 18,
+      fontWeight: '700',
+      color: theme.colors.onBackground,
+    },
+    contentBox: {
+      padding: 20,
+      borderRadius: 16,
+      borderWidth: 1,
+      backgroundColor: theme.colors.surface,
+      borderColor: theme.colors.outlineVariant,
+      shadowColor: '#000',
+      shadowOffset: { width: 0, height: 1 },
+      shadowOpacity: 0.05,
+      shadowRadius: 2,
+    },
+    noteText: {
+      fontSize: 16,
+      lineHeight: 24,
+      color: theme.colors.onSurfaceVariant,
+    },
+    planContainer: {
+      gap: 12,
+    },
+    medItem: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      padding: 16,
+      borderRadius: 16,
+      borderWidth: 1,
+      gap: 16,
+      backgroundColor: theme.colors.surface,
+      borderColor: theme.colors.outlineVariant,
+    },
+    medIcon: {
+      width: 48,
+      height: 48,
+      borderRadius: 24,
+      justifyContent: 'center',
+      alignItems: 'center',
+    },
+    medContent: {
+      flex: 1,
+    },
+    medName: {
+      fontSize: 16,
+      fontWeight: '700',
+      color: theme.colors.onSurface,
+    },
+    medInstruction: {
+      fontSize: 12,
+      marginTop: 2,
+      color: theme.colors.onSurfaceVariant,
+    },
+    medDosage: {
+      fontSize: 16,
+      fontWeight: '700',
+      color: theme.colors.primary,
+    },
+    nextVisitGradient: {
+      borderRadius: 16,
+      padding: 4,
+      borderWidth: 1,
+      borderColor: theme.colors.outlineVariant,
+    },
+    nextVisitContent: {
+      backgroundColor: theme.colors.surface,
+      borderRadius: 12,
+      padding: 16,
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+    },
+    nextVisitLabel: {
+      color: theme.colors.primary,
+      fontSize: 12,
+      fontWeight: '700',
+      textTransform: 'uppercase',
+      letterSpacing: 1,
+      marginBottom: 4,
+    },
+    nextVisitDate: {
+      color: theme.colors.onSurface,
+      fontSize: 18,
+      fontWeight: '700',
+    },
+    nextVisitTime: {
+      color: theme.colors.outline,
+      fontSize: 14,
+    },
+    alarmButton: {
+      width: 40,
+      height: 40,
+      borderRadius: 20,
+      backgroundColor: theme.colors.primary,
+      justifyContent: 'center',
+      alignItems: 'center',
+      shadowColor: theme.colors.primary,
+      shadowOffset: { width: 0, height: 0 },
+      shadowOpacity: 0.4,
+      shadowRadius: 8,
+      elevation: 5,
+    },
+    bottomBar: {
+      position: 'absolute',
+      bottom: 0,
+      left: 0,
+      width: '100%',
+      padding: 16,
+      paddingBottom: insets.bottom + 16,
+      backgroundColor: theme.colors.surface,
+      borderTopWidth: 1,
+      borderTopColor: theme.colors.outlineVariant,
+    },
+    bottomBarInner: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: 12,
+      maxWidth: 500,
+      alignSelf: 'center',
+      width: '100%',
+    },
+    editButton: {
+      flex: 1,
+      height: 48,
+      borderRadius: 12,
+      flexDirection: 'row',
+      justifyContent: 'center',
+      alignItems: 'center',
+      gap: 8,
+      backgroundColor: theme.colors.primary,
+      shadowColor: theme.colors.primary,
+      shadowOffset: { width: 0, height: 4 },
+      shadowOpacity: 0.2,
+      shadowRadius: 8,
+      elevation: 4,
+    },
+    editButtonText: {
+      color: theme.colors.onPrimary,
+      fontSize: 16,
+      fontWeight: '700',
+    },
+    iconButton: {
+      width: 48,
+      height: 48,
+      borderRadius: 12,
+      justifyContent: 'center',
+      alignItems: 'center',
+      borderWidth: 1,
+    },
+  }), [theme, insets]);
+
+  const treatmentPlan = useMemo(() => [
+    {
+      id: '1',
+      name: 'Ağrı Kesici',
+      instruction: 'Sabah - Akşam, Tok Karna',
+      dosage: '2x1',
+      icon: 'pill',
+      color: theme.colors.info,
+      bgColor: theme.colors.infoContainer,
+    },
+    {
+      id: '2',
+      name: 'Vitamin Desteği',
+      instruction: 'Günde bir kez',
+      dosage: '1x1',
+      icon: 'needle',
+      color: theme.colors.tertiary,
+      bgColor: theme.colors.tertiaryContainer,
+    },
+  ], [theme]);
 
   const handleEdit = () => {
     setEditFormKey((current) => current + 1);
@@ -81,7 +466,7 @@ export default function HealthRecordDetailScreen() {
     const shareContent = `
 ${healthRecord.title}
 ${t('pets.type')}: ${TURKCE_LABELS.HEALTH_RECORD_TYPES[healthRecord.type as keyof typeof TURKCE_LABELS.HEALTH_RECORD_TYPES]}
- ${t('events.date')}: ${new Date(healthRecord.date).toLocaleDateString(dateLocale)}
+${t('events.date')}: ${new Date(healthRecord.date).toLocaleDateString(dateLocale)}
 
 ${healthRecord.veterinarian ? `${t('healthRecords.veterinarian')}: Dr. ${healthRecord.veterinarian}` : ''}
 ${healthRecord.clinic ? `${t('healthRecords.clinic')}: ${healthRecord.clinic}` : ''}
@@ -102,15 +487,15 @@ ${healthRecord.notes ? `${t('common.notes')}: ${healthRecord.notes}` : ''}
 
   if (isLoading) {
     return (
-      <SafeAreaView style={[styles.container, { backgroundColor: theme.colors.background }]}>
+      <View style={styles.container}>
         <LoadingSpinner />
-      </SafeAreaView>
+      </View>
     );
   }
 
   if (!healthRecord) {
     return (
-      <SafeAreaView style={[styles.container, { backgroundColor: theme.colors.background }]}>
+      <View style={styles.container}>
         <EmptyState
           title={t('healthRecords.notFound')}
           description={t('healthRecords.notFoundDescription')}
@@ -118,142 +503,252 @@ ${healthRecord.notes ? `${t('common.notes')}: ${healthRecord.notes}` : ''}
           buttonText={t('common.goBack')}
           onButtonPress={() => router.back()}
         />
-      </SafeAreaView>
+      </View>
     );
   }
 
-  const typeColor = HEALTH_RECORD_COLORS[healthRecord.type as keyof typeof HEALTH_RECORD_COLORS] || '#A8A8A8';
-  const typeIcon = HEALTH_RECORD_ICONS[healthRecord.type as keyof typeof HEALTH_RECORD_ICONS] || 'medical-bag';
+  const formattedDate = new Date(healthRecord.date).toLocaleDateString(dateLocale, {
+    day: 'numeric',
+    month: 'long',
+    year: 'numeric'
+  });
+
+  const nextVisitDate = new Date(Date.now() + 14 * 24 * 60 * 60 * 1000);
+  const nextVisitFormatted = nextVisitDate.toLocaleDateString(dateLocale, {
+    day: 'numeric',
+    month: 'long',
+    year: 'numeric'
+  });
+  const nextVisitTime = "14:30"; 
+
+  const heroSource = pet?.profilePhoto
+    ? { uri: pet.profilePhoto }
+    : require('@/assets/images/background.png');
 
   return (
-    <SafeAreaView style={[styles.container, { backgroundColor: theme.colors.background }]}>
-      {/* Header Actions */}
-      <View style={[styles.header, { backgroundColor: theme.colors.surface, borderBottomColor: theme.colors.outline }]}>
-        <IconButton
-          icon="arrow-left"
-          onPress={() => router.back()}
-        />
-        <View style={styles.headerActions}>
-          <IconButton
-            icon="share-variant"
-            onPress={handleShare}
-          />
-          <IconButton
-            icon="pencil"
+    <View style={styles.container}>
+      <Stack.Screen options={{ headerShown: false }} />
+      <ScrollView 
+        contentContainerStyle={{ paddingBottom: 120 }} 
+        showsVerticalScrollIndicator={false}
+        bounces={false}
+      >
+        <View style={styles.heroContainer}>
+          <ImageBackground
+            source={heroSource}
+            style={styles.heroImage}
+            resizeMode="cover"
+          >
+            <LinearGradient
+              colors={[theme.colors.background, 'transparent']}
+              start={{ x: 0, y: 1 }}
+              end={{ x: 0, y: 0.5 }}
+              style={StyleSheet.absoluteFill}
+            />
+             <LinearGradient
+              colors={['rgba(0,0,0,0.4)', 'transparent']}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 0, y: 0.4 }}
+              style={StyleSheet.absoluteFill}
+            />
+            
+            <View style={styles.topNav}>
+              <TouchableOpacity 
+                style={styles.navButton} 
+                onPress={() => router.back()}
+              >
+                <MaterialCommunityIcons name="arrow-left" size={24} color="#FFF" />
+              </TouchableOpacity>
+              <View style={styles.navActions}>
+                <TouchableOpacity style={styles.navButton} onPress={handleShare}>
+                  <MaterialCommunityIcons name="share-variant" size={20} color="#FFF" />
+                </TouchableOpacity>
+                <TouchableOpacity style={styles.navButton} onPress={handleEdit}>
+                  <MaterialCommunityIcons name="dots-vertical" size={20} color="#FFF" />
+                </TouchableOpacity>
+              </View>
+            </View>
+
+            <View style={styles.heroContent}>
+              <View style={styles.statusRow}>
+                <View style={styles.statusBadge}>
+                  <Text style={styles.statusText}>{t('common.completed') || 'Tamamlandı'}</Text>
+                </View>
+                <Text style={styles.dateText}>{formattedDate}</Text>
+              </View>
+              <Text style={styles.titleText}>{healthRecord.title}</Text>
+              <Text style={styles.subtitleText}>
+                {healthRecord.clinic ? `${healthRecord.clinic} • ` : ''}
+                {healthRecord.veterinarian ? `Dr. ${healthRecord.veterinarian}` : ''}
+              </Text>
+            </View>
+          </ImageBackground>
+        </View>
+
+        <View style={styles.mainContent}>
+          <View style={styles.gridContainer}>
+            <View style={styles.gridCard}>
+              <View style={styles.cardIconBg}>
+                <MaterialCommunityIcons name="paw" size={40} color={theme.colors.primary} />
+              </View>
+              <View style={styles.petImageContainer}>
+                {pet?.profilePhoto ? (
+                   <Image source={{ uri: pet.profilePhoto }} style={styles.petImage} />
+                ) : (
+                  <MaterialCommunityIcons name="paw" size={20} color={theme.colors.onSurface} />
+                )}
+              </View>
+              <View>
+                <Text style={styles.cardLabel}>{t('pets.pet')}</Text>
+                <Text style={styles.cardValue}>{pet?.name || '...'}</Text>
+              </View>
+            </View>
+
+            <View style={styles.gridCard}>
+              <View style={styles.cardIconBg}>
+                <MaterialCommunityIcons name="stethoscope" size={40} color={theme.colors.primary} />
+              </View>
+              <View style={styles.iconCircle}>
+                <MaterialCommunityIcons name="medical-bag" size={20} color={theme.colors.primary} />
+              </View>
+              <View>
+                <Text style={styles.cardLabel}>{t('healthRecords.veterinarian')}</Text>
+                <Text style={styles.cardValue} numberOfLines={1}>
+                  {healthRecord.veterinarian ? `Dr. ${healthRecord.veterinarian.split(' ')[0]}` : '-'}
+                </Text>
+              </View>
+            </View>
+
+            <View style={styles.gridCard}>
+              <View style={styles.cardHeader}>
+                <View>
+                  <Text style={styles.cardLabel}>{t('healthRecords.clinic')}</Text>
+                  <Text style={styles.cardValueSmall}>
+                    {healthRecord.clinic || '-'}
+                  </Text>
+                </View>
+                <MaterialCommunityIcons name="map-marker" size={20} color={theme.colors.primary} />
+              </View>
+              <Text style={styles.cardSubtext} numberOfLines={1}>
+                {healthRecord.clinic ? 'Klinik Adresi' : ''}
+              </Text>
+            </View>
+
+            <View style={styles.gridCard}>
+              <View style={styles.cardHeader}>
+                <View>
+                  <Text style={styles.cardLabel}>{t('healthRecords.cost')}</Text>
+                  <Text style={styles.cardValueSmall}>
+                    {healthRecord.cost ? formatCurrency(healthRecord.cost, baseCurrency) : '-'}
+                  </Text>
+                </View>
+                <MaterialCommunityIcons name="cash" size={20} color={theme.colors.primary} />
+              </View>
+              {healthRecord.cost ? (
+                <View style={styles.paidBadge}>
+                  <MaterialCommunityIcons name="check-circle" size={14} color={theme.colors.primary} />
+                  <Text style={styles.paidText}>{t('common.paid') || 'Ödendi'}</Text>
+                </View>
+              ) : null}
+            </View>
+          </View>
+
+          {healthRecord.notes && (
+            <View style={styles.section}>
+              <View style={styles.sectionHeader}>
+                <MaterialCommunityIcons name="text-box" size={20} color={theme.colors.primary} />
+                <Text style={styles.sectionTitle}>{t('common.notes')}</Text>
+              </View>
+              <View style={styles.contentBox}>
+                <Text style={styles.noteText}>
+                  {healthRecord.notes}
+                </Text>
+              </View>
+            </View>
+          )}
+
+          <View style={styles.section}>
+            <View style={styles.sectionHeader}>
+              <MaterialCommunityIcons name="hospital-box" size={20} color={theme.colors.primary} />
+              <Text style={styles.sectionTitle}>
+                {t('healthRecords.treatmentPlan') || 'Tedavi Planı'}
+              </Text>
+            </View>
+            <View style={styles.planContainer}>
+              {treatmentPlan.map((item) => (
+                <View key={item.id} style={styles.medItem}>
+                  <View style={[styles.medIcon, { backgroundColor: item.bgColor }]}>
+                    <MaterialCommunityIcons 
+                      name={item.icon === 'pill' ? 'pill' : 'needle'} 
+                      size={24} 
+                      color={item.color} 
+                    />
+                  </View>
+                  <View style={styles.medContent}>
+                    <Text style={styles.medName}>{item.name}</Text>
+                    <Text style={styles.medInstruction}>{item.instruction}</Text>
+                  </View>
+                  <Text style={styles.medDosage}>{item.dosage}</Text>
+                </View>
+              ))}
+            </View>
+          </View>
+
+          <View style={styles.section}>
+            <View style={styles.sectionHeader}>
+              <MaterialCommunityIcons name="calendar" size={20} color={theme.colors.primary} />
+              <Text style={styles.sectionTitle}>
+                {t('healthRecords.nextVisit') || 'Sıradaki Kontrol'}
+              </Text>
+            </View>
+            <LinearGradient
+              colors={[theme.colors.surface, theme.colors.background]}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 1, y: 0 }}
+              style={styles.nextVisitGradient}
+            >
+              <View style={styles.nextVisitContent}>
+                <View>
+                  <Text style={styles.nextVisitLabel}>{t('events.date')}</Text>
+                  <Text style={styles.nextVisitDate}>{nextVisitFormatted}</Text>
+                  <Text style={styles.nextVisitTime}>{nextVisitTime}</Text>
+                </View>
+                <View style={styles.alarmButton}>
+                  <MaterialCommunityIcons name="alarm" size={24} color={theme.colors.onPrimary} />
+                </View>
+              </View>
+            </LinearGradient>
+          </View>
+
+        </View>
+      </ScrollView>
+
+      <View style={styles.bottomBar}>
+        <View style={styles.bottomBarInner}>
+          <TouchableOpacity 
+            style={styles.editButton}
             onPress={handleEdit}
-          />
-          <IconButton
-            icon="delete"
+          >
+            <MaterialCommunityIcons name="file-document-edit" size={20} color={theme.colors.onPrimary} />
+            <Text style={styles.editButtonText}>{t('common.edit') || 'Kaydı Düzenle'}</Text>
+          </TouchableOpacity>
+          
+          <TouchableOpacity 
+            style={[styles.iconButton, { borderColor: theme.colors.outlineVariant, backgroundColor: theme.colors.surfaceVariant }]}
+            onPress={handleShare}
+          >
+            <MaterialCommunityIcons name="share-variant" size={22} color={theme.colors.onSurfaceVariant} />
+          </TouchableOpacity>
+          
+          <TouchableOpacity 
+            style={[styles.iconButton, { borderColor: theme.colors.errorContainer, backgroundColor: 'transparent' }]}
             onPress={handleDelete}
-          />
+          >
+            <MaterialCommunityIcons name="delete" size={22} color={theme.colors.error} />
+          </TouchableOpacity>
         </View>
       </View>
 
-      <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
-        {/* Title Card */}
-        <Card style={styles.card}>
-          <View style={styles.cardContent}>
-            <View style={styles.titleRow}>
-              <View style={[styles.typeIndicator, { backgroundColor: typeColor }]} />
-              <Text variant="headlineSmall" style={{ color: theme.colors.onSurface, flex: 1 }}>
-                {healthRecord.title}
-              </Text>
-            </View>
-
-            <View style={styles.metaRow}>
-              <Chip
-                icon={typeIcon}
-                textStyle={{ fontSize: 12 }}
-                compact
-              >
-                {TURKCE_LABELS.HEALTH_RECORD_TYPES[healthRecord.type as keyof typeof TURKCE_LABELS.HEALTH_RECORD_TYPES]}
-              </Chip>
-              <Text variant="bodyMedium" style={{ color: theme.colors.onSurfaceVariant }}>
-                {new Date(healthRecord.date).toLocaleDateString(dateLocale, {
-                  day: '2-digit',
-                  month: 'long',
-                  year: 'numeric',
-                })}
-              </Text>
-            </View>
-
-            {healthRecord.description && (
-              <Text variant="bodyLarge" style={{ color: theme.colors.onSurface, marginTop: 16, lineHeight: 24 }}>
-                {healthRecord.description}
-              </Text>
-            )}
-          </View>
-        </Card>
-
-        {/* Veteriner & Clinic */}
-        {(healthRecord.veterinarian || healthRecord.clinic) && (
-          <Card style={styles.card}>
-            <View style={styles.cardContent}>
-              <Text variant="titleMedium" style={{ color: theme.colors.onSurface, marginBottom: 16 }}>
-                {t('healthRecords.veterinarianInfo')}
-              </Text>
-
-              {healthRecord.veterinarian && (
-                <ListItem
-                  title={healthRecord.veterinarian}
-                  description={t('healthRecords.veterinarian')}
-                  left={<MaterialCommunityIcons name="doctor" size={24} color={theme.colors.onSurfaceVariant} />}
-                />
-              )}
-
-              {healthRecord.clinic && (
-                <ListItem
-                  title={healthRecord.clinic}
-                  description={t('healthRecords.clinic')}
-                  left={<MaterialCommunityIcons name="hospital-building" size={24} color={theme.colors.onSurfaceVariant} />}
-                />
-              )}
-            </View>
-          </Card>
-        )}
-
-        {/* Cost */}
-        {healthRecord.cost && (
-          <Card style={styles.card}>
-            <View style={styles.cardContent}>
-              <ListItem
-                title={formatCurrency(healthRecord.cost, baseCurrency)}
-                description={t('healthRecords.cost')}
-                left={(() => {
-                  const iconName = getCurrencyIcon(baseCurrency);
-                  const safeIconName: IconName = isMaterialIconName(iconName) ? iconName : 'cash';
-                  return <MaterialCommunityIcons name={safeIconName} size={24} color={theme.colors.onSurfaceVariant} />;
-                })()}
-              />
-            </View>
-          </Card>
-        )}
-
-        {/* Notes */}
-        {healthRecord.notes && (
-          <Card style={styles.card}>
-            <View style={styles.cardContent}>
-              <Text variant="titleMedium" style={{ color: theme.colors.onSurface, marginBottom: 16 }}>
-                {t('common.notes')}
-              </Text>
-              <Text variant="bodyMedium" style={{ color: theme.colors.onSurface, lineHeight: 20 }}>
-                {healthRecord.notes}
-              </Text>
-            </View>
-          </Card>
-        )}
-
-        {/* Metadata */}
-        <Card style={styles.card}>
-          <View style={styles.cardContent}>
-            <Text variant="bodySmall" style={{ color: theme.colors.onSurfaceVariant, textAlign: 'center' }}>
-              {t('common.created')}: {new Date(healthRecord.createdAt).toLocaleString(dateLocale)}
-            </Text>
-          </View>
-        </Card>
-      </ScrollView>
-
-      {/* Edit Modal */}
       {healthRecord && (
         <HealthRecordForm
           key={editFormKey}
@@ -264,48 +759,6 @@ ${healthRecord.notes ? `${t('common.notes')}: ${healthRecord.notes}` : ''}
           initialData={healthRecord}
         />
       )}
-    </SafeAreaView>
+    </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    padding: 16,
-    borderBottomWidth: 1,
-  },
-  headerActions: {
-    flexDirection: 'row',
-  },
-  content: {
-    flex: 1,
-    padding: 16,
-  },
-  card: {
-    marginBottom: 16,
-  },
-  cardContent: {
-    padding: 16,
-  },
-  titleRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 16,
-  },
-  typeIndicator: {
-    width: 4,
-    height: 24,
-    borderRadius: 2,
-    marginRight: 12,
-  },
-  metaRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-  },
-});

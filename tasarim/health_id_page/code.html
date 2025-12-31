@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="tr"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Sağlık Kaydı Detayları</title>
+<!-- Material Symbols -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Theme Configuration -->
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "primary": "#13ec13",
+              "background-light": "#f6f8f6",
+              "background-dark": "#102210",
+              "surface-dark": "#162b16", // Slightly lighter than background-dark for cards
+              "surface-light": "#ffffff",
+            },
+            fontFamily: {
+              "display": ["Inter", "sans-serif"]
+            },
+            borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "2xl": "1rem", "full": "9999px"},
+          },
+        },
+      }
+    </script>
+<!-- Google Fonts -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+        /* Custom scrollbar hiding for clean UI */
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-white font-display antialiased min-h-screen relative pb-28">
+<!-- Hero Section -->
+<div class="relative h-[380px] w-full overflow-hidden rounded-b-[2rem] shadow-2xl z-0">
+<!-- Background Image -->
+<div class="absolute inset-0 bg-cover bg-center transform scale-105" data-alt="Close up of a dog getting an x-ray or vet checkup" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuCf12Am97lStP6Df1KeUUyQFQiRBaAYc3I-NytDvvBNut606XG80ergSzEIJgtZQ34J6SgdqsTC9kUFaQTvHktuFgOWTOwl0sxWFpnruApsadlAbCs9B1og5fiG2EKr2d9VaBhKLT0uTN-A67qv2MosRnqPG50dHAlT3MGxPKwRrPsnl2w7a5WBQuy8QKjgHXn-IkSDActPyKcG4e2KfHoaQygqLG6z-kNJrSbST3hp9iVSfzDaNYvvRl4GzcFwL-qMJr6erUz68Men');">
+</div>
+<!-- Gradient Overlay -->
+<div class="absolute inset-0 bg-gradient-to-t from-background-dark via-background-dark/60 to-transparent"></div>
+<div class="absolute inset-0 bg-gradient-to-b from-black/40 to-transparent h-32"></div>
+<!-- Top Navigation -->
+<div class="absolute top-0 left-0 w-full p-6 flex justify-between items-center z-20 pt-12">
+<button class="flex items-center justify-center size-10 rounded-full bg-black/20 backdrop-blur-md border border-white/10 text-white hover:bg-black/40 transition">
+<span class="material-symbols-outlined">arrow_back</span>
+</button>
+<div class="flex gap-3">
+<button class="flex items-center justify-center size-10 rounded-full bg-black/20 backdrop-blur-md border border-white/10 text-white hover:bg-black/40 transition">
+<span class="material-symbols-outlined">ios_share</span>
+</button>
+<button class="flex items-center justify-center size-10 rounded-full bg-black/20 backdrop-blur-md border border-white/10 text-white hover:bg-black/40 transition">
+<span class="material-symbols-outlined">more_vert</span>
+</button>
+</div>
+</div>
+<!-- Hero Content -->
+<div class="absolute bottom-0 left-0 w-full p-6 pb-12 z-10">
+<div class="flex items-center gap-2 mb-2">
+<span class="px-2.5 py-1 rounded-full bg-primary/20 text-primary text-xs font-bold uppercase tracking-wider backdrop-blur-sm border border-primary/20">
+                    Tamamlandı
+                </span>
+<span class="text-gray-300 text-sm font-medium">24 Ekim 2023</span>
+</div>
+<h1 class="text-3xl font-bold text-white leading-tight shadow-sm">
+                Kırık Bacak Röntgeni
+            </h1>
+<p class="text-gray-300 mt-1 text-sm line-clamp-1">Radyoloji Bölümü • Dr. A. Yılmaz</p>
+</div>
+</div>
+<!-- Main Content Container -->
+<div class="relative px-5 -mt-8 z-10 flex flex-col gap-6">
+<!-- Grid Cards (Visual Cards) -->
+<div class="grid grid-cols-2 gap-3">
+<!-- Patient Card -->
+<div class="group bg-white dark:bg-surface-dark p-4 rounded-2xl border border-gray-100 dark:border-white/5 shadow-lg flex flex-col gap-3 relative overflow-hidden">
+<div class="absolute top-0 right-0 p-3 opacity-10 group-hover:opacity-20 transition">
+<span class="material-symbols-outlined text-4xl text-primary">pets</span>
+</div>
+<div class="size-10 rounded-full bg-gray-200 dark:bg-gray-700 overflow-hidden border-2 border-primary">
+<img alt="Golden retriever dog portrait" class="w-full h-full object-cover" data-alt="Golden retriever dog portrait" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCP0ss_3Ru8ZOKA1od2UPFy1qB5YVBKpNc2D0QtHT2cycjsy7e0qjrw1ZmgAy-acl6Wr6kigHShh8_Ku-4DJEsdomzpCZEEHsbqDH0s8L7R7yEOWq9GEFN6aiOvS1MbAAqY7Cn0QcIKcUnq0sOZBXC4_wx1YuHzjCNy3_xb2pOxcLZhf3Zopx8ZICX4EUGc-ER-12dh1Gj9Bjh7wlEYXPacPHzEAur1S3Hg-nSEpCzwFT6lVkuZFymb8Q3ncOv-4bVOqtwf3y2R6hIV"/>
+</div>
+<div>
+<p class="text-xs text-gray-500 dark:text-gray-400 font-medium uppercase tracking-wide">Hasta</p>
+<p class="text-lg font-bold text-gray-900 dark:text-white">Luna</p>
+</div>
+</div>
+<!-- Vet Card -->
+<div class="group bg-white dark:bg-surface-dark p-4 rounded-2xl border border-gray-100 dark:border-white/5 shadow-lg flex flex-col gap-3 relative overflow-hidden">
+<div class="absolute top-0 right-0 p-3 opacity-10 group-hover:opacity-20 transition">
+<span class="material-symbols-outlined text-4xl text-primary">stethoscope</span>
+</div>
+<div class="size-10 rounded-full bg-primary/20 flex items-center justify-center text-primary">
+<span class="material-symbols-outlined">medical_services</span>
+</div>
+<div>
+<p class="text-xs text-gray-500 dark:text-gray-400 font-medium uppercase tracking-wide">Veteriner</p>
+<p class="text-lg font-bold text-gray-900 dark:text-white truncate">Dr. A. Yılmaz</p>
+</div>
+</div>
+<!-- Location Card -->
+<div class="bg-white dark:bg-surface-dark p-4 rounded-2xl border border-gray-100 dark:border-white/5 shadow-lg flex flex-col justify-between relative overflow-hidden">
+<div class="flex items-start justify-between">
+<div>
+<p class="text-xs text-gray-500 dark:text-gray-400 font-medium uppercase tracking-wide">Konum</p>
+<p class="text-base font-bold text-gray-900 dark:text-white mt-1">City Vet Kliniği</p>
+</div>
+<span class="material-symbols-outlined text-primary">location_on</span>
+</div>
+<p class="text-xs text-gray-500 dark:text-gray-400 mt-2 truncate">Atatürk Cad. No: 42, İstanbul</p>
+</div>
+<!-- Cost Card -->
+<div class="bg-white dark:bg-surface-dark p-4 rounded-2xl border border-gray-100 dark:border-white/5 shadow-lg flex flex-col justify-between relative overflow-hidden">
+<div class="flex items-start justify-between">
+<div>
+<p class="text-xs text-gray-500 dark:text-gray-400 font-medium uppercase tracking-wide">Tutar</p>
+<p class="text-base font-bold text-gray-900 dark:text-white mt-1">1.500 ₺</p>
+</div>
+<span class="material-symbols-outlined text-primary">payments</span>
+</div>
+<div class="mt-2 flex items-center gap-1">
+<span class="material-symbols-outlined text-xs text-primary">check_circle</span>
+<p class="text-xs text-primary font-medium">Ödendi</p>
+</div>
+</div>
+</div>
+<!-- Notes Section -->
+<div class="flex flex-col gap-3">
+<h2 class="text-xl font-bold text-gray-900 dark:text-white flex items-center gap-2">
+<span class="material-symbols-outlined text-primary">notes</span>
+                Hekim Notları
+            </h2>
+<div class="bg-white dark:bg-surface-dark p-5 rounded-2xl border border-gray-100 dark:border-white/5 shadow-sm">
+<p class="text-gray-600 dark:text-gray-300 leading-relaxed text-base">
+                    Luna'nın sol arka bacağında hafif bir çatlak tespit edildi. Atel uygulaması yapıldı. 2 hafta boyunca koşması ve zıplaması yasak. Düzenli olarak ilaçlarını alması gerekiyor. Kontrol randevusu 14 gün sonrasına planlandı.
+                </p>
+</div>
+</div>
+<!-- Treatment Plan Section -->
+<div class="flex flex-col gap-3">
+<h2 class="text-xl font-bold text-gray-900 dark:text-white flex items-center gap-2">
+<span class="material-symbols-outlined text-primary">healing</span>
+                Tedavi Planı
+            </h2>
+<div class="space-y-3">
+<!-- Med Item 1 -->
+<div class="flex items-center gap-4 bg-white dark:bg-surface-dark p-4 rounded-xl border border-gray-100 dark:border-white/5 shadow-sm">
+<div class="size-12 rounded-full bg-blue-500/10 dark:bg-blue-500/20 flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-blue-600 dark:text-blue-400">pill</span>
+</div>
+<div class="flex-1">
+<h3 class="font-bold text-gray-900 dark:text-white">Ağrı Kesici</h3>
+<p class="text-xs text-gray-500 dark:text-gray-400">Sabah - Akşam, Tok Karna</p>
+</div>
+<div class="text-right">
+<span class="block font-bold text-primary">2x1</span>
+</div>
+</div>
+<!-- Med Item 2 -->
+<div class="flex items-center gap-4 bg-white dark:bg-surface-dark p-4 rounded-xl border border-gray-100 dark:border-white/5 shadow-sm">
+<div class="size-12 rounded-full bg-purple-500/10 dark:bg-purple-500/20 flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-purple-600 dark:text-purple-400">vaccines</span>
+</div>
+<div class="flex-1">
+<h3 class="font-bold text-gray-900 dark:text-white">Vitamin Desteği</h3>
+<p class="text-xs text-gray-500 dark:text-gray-400">Günde bir kez</p>
+</div>
+<div class="text-right">
+<span class="block font-bold text-primary">1x1</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Next Appointment -->
+<div class="flex flex-col gap-3">
+<h2 class="text-xl font-bold text-gray-900 dark:text-white flex items-center gap-2">
+<span class="material-symbols-outlined text-primary">event</span>
+                Sıradaki Kontrol
+            </h2>
+<div class="bg-gradient-to-r from-surface-dark to-[#102210] p-1 rounded-2xl border border-white/10 shadow-lg">
+<div class="bg-background-dark/50 backdrop-blur-sm p-4 rounded-xl flex items-center justify-between">
+<div class="flex flex-col">
+<span class="text-xs text-primary font-bold uppercase tracking-widest mb-1">Tarih</span>
+<span class="text-lg font-bold text-white">7 Kasım 2023</span>
+<span class="text-sm text-gray-400">Saat 14:30</span>
+</div>
+<button class="size-10 rounded-full bg-primary flex items-center justify-center text-black shadow-[0_0_15px_rgba(19,236,19,0.4)] hover:scale-105 transition">
+<span class="material-symbols-outlined">alarm_on</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+<!-- Bottom Actions Bar (Sticky) -->
+<div class="fixed bottom-0 left-0 w-full bg-white/90 dark:bg-background-dark/90 backdrop-blur-lg border-t border-gray-200 dark:border-white/5 p-4 z-50 safe-area-bottom">
+<div class="flex items-center gap-3 w-full max-w-lg mx-auto">
+<button class="flex-1 flex items-center justify-center gap-2 bg-primary hover:bg-green-400 text-black font-bold h-12 rounded-xl transition shadow-lg shadow-primary/20">
+<span class="material-symbols-outlined text-xl">edit_document</span>
+                Kaydı Düzenle
+            </button>
+<button class="size-12 flex items-center justify-center rounded-xl border border-gray-200 dark:border-white/10 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-white/5 transition">
+<span class="material-symbols-outlined">share</span>
+</button>
+<button class="size-12 flex items-center justify-center rounded-xl border border-red-200 dark:border-red-900/30 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 transition">
+<span class="material-symbols-outlined">delete</span>
+</button>
+</div>
+</div>
+<!-- Spacer for Bottom Bar -->
+<div class="h-8"></div>
+</body></html>
