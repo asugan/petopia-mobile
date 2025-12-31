@@ -655,6 +655,9 @@
         "photo": "Fotoğraf"
       }
     },
+    "weightInput": {
+      "helperText": "Min: {{min}}{{unit}} - Maks: {{max}}{{unit}}"
+    },
     "validation": {
       "nameMinLength": "İsim en az 2 karakter olmalıdır",
       "nameMaxLength": "İsim en fazla 50 karakter olabilir",

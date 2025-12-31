@@ -207,7 +207,11 @@ export function FormWeightInput<T extends FieldValues>({
 
             <View style={styles.helperContainer}>
               <Text style={[styles.helperText, { color: theme.colors.onSurfaceVariant }]}>
-                Min: {min}{unit} - Max: {max}{unit}
+                {t(
+                  'forms.weightInput.helperText',
+                  'Min: {{min}}{{unit}} - Max: {{max}}{{unit}}',
+                  { min, max, unit }
+                )}
               </Text>
             </View>
           </View>

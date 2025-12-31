@@ -679,6 +679,9 @@
         "photo": "Photo"
       }
     },
+    "weightInput": {
+      "helperText": "Min: {{min}}{{unit}} - Max: {{max}}{{unit}}"
+    },
     "validation": {
       "nameMinLength": "Name must be at least 2 characters",
       "nameMaxLength": "Name cannot exceed 50 characters",
