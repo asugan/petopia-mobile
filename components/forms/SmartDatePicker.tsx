@@ -7,7 +7,7 @@ import { Controller, useFormContext } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import { Platform, StyleSheet, TouchableOpacity, View } from 'react-native';
 
-type OutputFormat = 'iso' | 'iso-date' | 'iso-time' | 'date-object' | 'yyyy-mm-dd';
+type OutputFormat = 'iso' | 'iso-time' | 'date-object' | 'yyyy-mm-dd';
 
 type FieldOnChange = (value: unknown) => void;
 
@@ -75,16 +75,11 @@ export const SmartDatePicker = ({
     return new Date();
   };
 
-  // Convert selected date to the desired output format (always store as UTC)
+  // Convert selected date to the desired output format
   const convertToOutputFormat = (date: Date): Date | string => {
     switch (outputFormat) {
       case 'iso':
         return toUTCWithOffset(date);
-      case 'iso-date':
-        // For date-only, still store as UTC with time set to 00:00:00
-        const utcDate = new Date(date);
-        utcDate.setHours(0, 0, 0, 0);
-        return toUTCWithOffset(utcDate);
       case 'yyyy-mm-dd':
         // Return simple date string in YYYY-MM-DD format (local date)
         const year = date.getFullYear();
@@ -160,15 +155,26 @@ export const SmartDatePicker = ({
     };
 
     openPicker('date', baseValue, (dateOnly) => {
-      DateTimePickerAndroid.open({
-        mode: 'time',
-        value: dateOnly,
-        onChange: (event, selectedDate) => {
-          if (event.type !== 'set' || !selectedDate) return;
+      const dateWithDefaultTime = new Date(dateOnly);
+      dateWithDefaultTime.setHours(
+        currentValue ? baseValue.getHours() : 0,
+        currentValue ? baseValue.getMinutes() : 0,
+        0,
+        0
+      );
 
-          const outputValue = convertToOutputFormat(selectedDate);
-          onChange(outputValue);
-        },
+      onChange(convertToOutputFormat(dateWithDefaultTime));
+
+      openPicker('time', dateWithDefaultTime, (selectedTime) => {
+        const finalDateTime = new Date(dateWithDefaultTime);
+        finalDateTime.setHours(
+          selectedTime.getHours(),
+          selectedTime.getMinutes(),
+          selectedTime.getSeconds(),
+          selectedTime.getMilliseconds()
+        );
+
+        onChange(convertToOutputFormat(finalDateTime));
       });
     });
   };

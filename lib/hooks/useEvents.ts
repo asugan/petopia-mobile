@@ -35,8 +35,10 @@ export const useEvents = (petId: string) => {
   });
 };
 
+const MISSING_ID_PLACEHOLDER = '__missing__';
+
 export const useEvent = (id?: string, options?: { enabled?: boolean }) => {
-  const safeId = id ?? '__missing__';
+  const safeId = id ?? MISSING_ID_PLACEHOLDER;
 
   return useResource<Event>({
     queryKey: eventKeys.detail(safeId),

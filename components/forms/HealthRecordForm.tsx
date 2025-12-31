@@ -49,13 +49,16 @@ export function HealthRecordForm({
   const createMutation = useCreateHealthRecord();
   const updateMutation = useUpdateHealthRecord();
   const isEditing = !!initialData;
-  const { data: nextVisitEvent } = useEvent(initialData?.nextVisitEventId);
+  const { data: nextVisitEvent } = useEvent(initialData?.nextVisitEventId, {
+    enabled: !!initialData?.nextVisitEventId,
+  });
   const { settings } = useUserSettingsStore();
   const baseCurrency = settings?.baseCurrency || 'TRY';
 
   // Use the custom hook for form management
   const { form, handleSubmit, reset } = useHealthRecordForm(petId || '', initialData);
-  
+  const { setValue, getValues } = form;
+
   const { fields: treatmentFields, append: appendTreatment, remove: removeTreatment } = useFieldArray({
     control: form.control,
     name: "treatmentPlan"
@@ -105,14 +108,14 @@ export function HealthRecordForm({
     const startTime = nextVisitEvent?.startTime;
     if (!startTime) return;
 
-    const currentValue = form.getValues('nextVisitDate');
+    const currentValue = getValues('nextVisitDate');
     if (currentValue) return;
 
-    form.setValue('nextVisitDate', startTime, {
+    setValue('nextVisitDate', startTime, {
       shouldDirty: false,
       shouldTouch: false,
     });
-  }, [visible, isEditing, nextVisitEvent?.startTime, form]);
+  }, [visible, isEditing, nextVisitEvent?.startTime, setValue, getValues]);
 
   const onSubmit = React.useCallback(
     async (data: HealthRecordCreateFormInput) => {
@@ -385,7 +388,7 @@ export function HealthRecordForm({
                 </FormSection>
 
                 <FormSection title={t('healthRecords.nextVisit')}>
-                  <Text style={{ marginBottom: 12, color: theme.colors.onSurfaceVariant, fontSize: 14 }}>
+                  <Text style={[styles.nextVisitDescription, { color: theme.colors.onSurfaceVariant }]}>
                     {t('healthRecords.nextVisitDescription')}
                   </Text>
                   <SmartDatePicker
@@ -535,5 +538,9 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: 'bold',
     opacity: 0.7,
+  },
+  nextVisitDescription: {
+    marginBottom: 12,
+    fontSize: 14,
   },
 });
