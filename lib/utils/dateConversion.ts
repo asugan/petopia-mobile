@@ -34,6 +34,22 @@ export function toISODateString(date: Date | null | undefined): string | undefin
 }
 
 /**
+ * Convert Date object to ISO date string (YYYY-MM-DD) with local fallback
+ * @param date - Date object
+ * @returns Date string in YYYY-MM-DD format (never undefined for valid Date)
+ */
+export function toISODateStringWithFallback(date: Date): string {
+  const result = toISODateString(date);
+  if (result) return result;
+
+  // Fallback using same local date extraction as toISODateString
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+}
+
+/**
  * Convert Date object to time string (HH:MM)
  * @param date - Date object, null, or undefined
  * @returns Time string in HH:MM format or undefined if invalid
