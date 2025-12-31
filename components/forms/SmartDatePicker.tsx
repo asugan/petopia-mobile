@@ -80,10 +80,20 @@ export const SmartDatePicker = ({
     switch (outputFormat) {
       case 'iso':
         return toUTCWithOffset(date);
-      case 'iso-date':
-        return toISODateString(date)!;
-      case 'yyyy-mm-dd':
-        return toISODateString(date)!;
+      case 'iso-date': {
+        const isoDateString = toISODateString(date);
+        if (isoDateString === undefined) {
+          return date.toISOString().slice(0, 10);
+        }
+        return isoDateString;
+      }
+      case 'yyyy-mm-dd': {
+        const isoDateString = toISODateString(date);
+        if (isoDateString === undefined) {
+          return date.toISOString().slice(0, 10);
+        }
+        return isoDateString;
+      }
       case 'iso-time':
         return toTimeString(date) ?? date.toISOString().split('T')[1].slice(0, 5);
       case 'date-object':
@@ -160,8 +170,6 @@ export const SmartDatePicker = ({
         0,
         0
       );
-
-      onChange(convertToOutputFormat(dateWithDefaultTime));
 
       openPicker('time', dateWithDefaultTime, (selectedTime) => {
         const finalDateTime = new Date(dateWithDefaultTime);
