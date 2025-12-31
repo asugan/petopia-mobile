@@ -1,18 +1,20 @@
 import React from 'react';
 import { Control, Controller, FieldValues, Path, useWatch } from 'react-hook-form';
 import { InputAccessoryView, Keyboard, Platform, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
+import { useTranslation } from 'react-i18next';
 import { useTheme } from '@/lib/theme';
 
 // Custom hook for managing weight input state
-const useWeightInputState = (value: number | undefined, precision: number) => {
+const useWeightInputState = (value: number | undefined, precision: number, isFocused: boolean) => {
   const [displayText, setDisplayText] = React.useState(() => {
     if (value === undefined || value === null) return '';
     return value.toFixed(precision);
   });
 
   React.useEffect(() => {
+    if (isFocused) return;
     setDisplayText(value === undefined || value === null ? '' : value.toFixed(precision));
-  }, [precision, value]);
+  }, [isFocused, precision, value]);
 
   return { displayText, setDisplayText };
 };
@@ -58,6 +60,7 @@ export function FormWeightInput<T extends FieldValues>({
   testID,
 }: FormWeightInputProps<T>) {
   const { theme } = useTheme();
+  const { t } = useTranslation();
 
   const precision = React.useMemo(() => getStepPrecision(step), [step]);
 
@@ -92,9 +95,11 @@ export function FormWeightInput<T extends FieldValues>({
     return value.toFixed(precision);
   };
 
+  const [isFocused, setIsFocused] = React.useState(false);
+
   // Watch the field value for changes
   const fieldValue = useWatch({ control, name });
-  const { displayText, setDisplayText } = useWeightInputState(fieldValue, precision);
+  const { displayText, setDisplayText } = useWeightInputState(fieldValue, precision, isFocused);
 
   return (
     <Controller
@@ -114,6 +119,7 @@ export function FormWeightInput<T extends FieldValues>({
         };
 
         const handleBlur = () => {
+          setIsFocused(false);
           field.onBlur();
 
           // Format the display text on blur
@@ -133,8 +139,10 @@ export function FormWeightInput<T extends FieldValues>({
               <TextInput
                 ref={inputRef}
                 value={displayText}
-                onChangeText={handleTextChange}
-                onBlur={handleBlur}
+                 onChangeText={handleTextChange}
+                 onFocus={() => setIsFocused(true)}
+                 onBlur={handleBlur}
+
                 onSubmitEditing={dismissKeyboard}
                 blurOnSubmit
                 placeholder={placeholder || '0.0'}
@@ -185,7 +193,7 @@ export function FormWeightInput<T extends FieldValues>({
                     accessibilityRole="button"
                     style={styles.doneButton}
                   >
-                    <Text style={[styles.doneButtonText, { color: theme.colors.primary }]}>Done</Text>
+                    <Text style={[styles.doneButtonText, { color: theme.colors.primary }]}>{t('common.done', 'Done')}</Text>
                   </Pressable>
                 </View>
               </InputAccessoryView>
