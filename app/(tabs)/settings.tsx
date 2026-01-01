@@ -11,13 +11,15 @@ import { Ionicons } from "@expo/vector-icons";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import { useTranslation } from "react-i18next";
-import { Alert, Image, Pressable, ScrollView, StyleSheet, TextInput, View } from "react-native";
+import { Alert, Image, Keyboard, KeyboardAvoidingView, Platform, Pressable, ScrollView, StyleSheet, TextInput, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { LAYOUT } from "@/constants";
 import { useOnboardingStore } from "@/stores/onboardingStore";
 import CurrencyPicker from "@/components/CurrencyPicker";
 import LoadingSpinner from "@/components/LoadingSpinner";
 import { LanguageSettings } from "@/components/LanguageSettings";
+
+type ModalState = "none" | "contact" | "deleteWarning" | "deleteConfirm";
 
 export default function SettingsScreen() {
   const { t } = useTranslation();
@@ -30,9 +32,7 @@ export default function SettingsScreen() {
   const isDarkMode = settings?.theme === "dark";
   const [notificationsEnabled, setNotificationsEnabled] = useState(false);
   const [notificationLoading, setNotificationLoading] = useState(true);
-  const [showContactModal, setShowContactModal] = useState(false);
-  const [showDeleteAccountModal, setShowDeleteAccountModal] = useState(false);
-  const [showDeleteConfirmModal, setShowDeleteConfirmModal] = useState(false);
+  const [activeModal, setActiveModal] = useState<ModalState>("none");
   const [deleteConfirmText, setDeleteConfirmText] = useState("");
   const [deletingAccount, setDeletingAccount] = useState(false);
 
@@ -167,7 +167,7 @@ export default function SettingsScreen() {
       );
     } finally {
       setDeletingAccount(false);
-      setShowDeleteConfirmModal(false);
+      setActiveModal("none");
       setDeleteConfirmText("");
     }
   };
@@ -376,7 +376,7 @@ export default function SettingsScreen() {
                   color={theme.colors.error}
                 />
               }
-              onPress={() => setShowDeleteAccountModal(true)}
+              onPress={() => setActiveModal("deleteWarning")}
               right={
                 <MaterialCommunityIcons
                   name="chevron-right"
@@ -423,7 +423,7 @@ export default function SettingsScreen() {
                   color={theme.colors.onSurfaceVariant}
                 />
               }
-              onPress={() => setShowContactModal(true)}
+              onPress={() => setActiveModal("contact")}
               right={
                 <MaterialCommunityIcons
                   name="chevron-right"
@@ -506,14 +506,17 @@ export default function SettingsScreen() {
       </ScrollView>
 
       {/* Contact Modal */}
-      {showContactModal && (
-        <View style={styles.modalOverlay}>
+      {activeModal === "contact" && (
+        <KeyboardAvoidingView
+          behavior={Platform.OS === "ios" ? "padding" : "height"}
+          style={styles.modalOverlay}
+        >
           <View style={[styles.modalContent, { backgroundColor: theme.colors.surface }]}>
             <View style={styles.modalHeader}>
               <Text variant="titleLarge" style={{ color: theme.colors.onSurface }}>
                 {t("settings.helpSupport")}
               </Text>
-              <Pressable onPress={() => setShowContactModal(false)}>
+              <Pressable onPress={() => { Keyboard.dismiss(); setActiveModal("none"); }}>
                 <Ionicons name="close" size={24} color={theme.colors.onSurfaceVariant} />
               </Pressable>
             </View>
@@ -532,18 +535,21 @@ export default function SettingsScreen() {
               </Text>
             </View>
           </View>
-        </View>
+        </KeyboardAvoidingView>
       )}
 
       {/* Delete Account Modal */}
-      {showDeleteAccountModal && (
-        <View style={styles.modalOverlay}>
+      {activeModal === "deleteWarning" && (
+        <KeyboardAvoidingView
+          behavior={Platform.OS === "ios" ? "padding" : "height"}
+          style={styles.modalOverlay}
+        >
           <View style={[styles.modalContent, { backgroundColor: theme.colors.surface }]}>
             <View style={styles.modalHeader}>
               <Text variant="titleLarge" style={{ color: theme.colors.error }}>
                 {t("settings.deleteAccount")}
               </Text>
-              <Pressable onPress={() => setShowDeleteAccountModal(false)}>
+              <Pressable onPress={() => { Keyboard.dismiss(); setActiveModal("none"); }}>
                 <Ionicons name="close" size={24} color={theme.colors.onSurfaceVariant} />
               </Pressable>
             </View>
@@ -560,17 +566,14 @@ export default function SettingsScreen() {
               <View style={styles.modalButtons}>
                 <Button
                   mode="outlined"
-                  onPress={() => setShowDeleteAccountModal(false)}
+                  onPress={() => setActiveModal("none")}
                   style={styles.modalButton}
                 >
                   {t("common.cancel")}
                 </Button>
                 <Button
                   mode="contained"
-                  onPress={() => {
-                    setShowDeleteAccountModal(false);
-                    setShowDeleteConfirmModal(true);
-                  }}
+                  onPress={() => setActiveModal("deleteConfirm")}
                   buttonColor={theme.colors.error}
                   style={styles.modalButton}
                 >
@@ -579,21 +582,21 @@ export default function SettingsScreen() {
               </View>
             </View>
           </View>
-        </View>
+        </KeyboardAvoidingView>
       )}
 
       {/* Delete Account Confirmation Modal */}
-      {showDeleteConfirmModal && (
-        <View style={styles.modalOverlay}>
+      {activeModal === "deleteConfirm" && (
+        <KeyboardAvoidingView
+          behavior={Platform.OS === "ios" ? "padding" : "height"}
+          style={styles.modalOverlay}
+        >
           <View style={[styles.modalContent, { backgroundColor: theme.colors.surface }]}>
             <View style={styles.modalHeader}>
               <Text variant="titleLarge" style={{ color: theme.colors.error }}>
                 {t("settings.deleteAccountConfirmTitle", "Confirm Account Deletion")}
               </Text>
-              <Pressable onPress={() => {
-                setShowDeleteConfirmModal(false);
-                setDeleteConfirmText("");
-              }}>
+              <Pressable onPress={() => { Keyboard.dismiss(); setActiveModal("none"); setDeleteConfirmText(""); }}>
                 <Ionicons name="close" size={24} color={theme.colors.onSurfaceVariant} />
               </Pressable>
             </View>
@@ -627,10 +630,7 @@ export default function SettingsScreen() {
               <View style={styles.modalButtons}>
                 <Button
                   mode="outlined"
-                  onPress={() => {
-                    setShowDeleteConfirmModal(false);
-                    setDeleteConfirmText("");
-                  }}
+                  onPress={() => { setActiveModal("none"); setDeleteConfirmText(""); }}
                   style={styles.modalButton}
                 >
                   {t("common.cancel")}
@@ -648,7 +648,7 @@ export default function SettingsScreen() {
               </View>
             </View>
           </View>
-        </View>
+        </KeyboardAvoidingView>
       )}
     </SafeAreaView>
   );
