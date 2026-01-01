@@ -2,7 +2,7 @@ import React from 'react';
 import { View, StyleSheet } from 'react-native';
 import { Text } from '@/components/ui';
 import { useTheme } from '@/lib/theme';
-import { NetworkStatusBadge } from './NetworkStatusBadge';
+import { AppLogo } from './AppLogo';
 
 interface CustomTabHeaderProps {
   pageTitle?: string;
@@ -13,9 +13,9 @@ export default function CustomTabHeader({ pageTitle }: CustomTabHeaderProps) {
 
   return (
     <View style={styles.container}>
-      {/* Network Badge - Left */}
+      {/* App Logo - Left */}
       <View style={styles.left}>
-        <NetworkStatusBadge />
+        <AppLogo />
       </View>
 
       {/* Page Title - Right */}

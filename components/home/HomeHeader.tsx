@@ -1,148 +1,105 @@
-import React, { useCallback, useState } from "react";
+import React, { useCallback } from "react";
 import { Ionicons } from "@expo/vector-icons";
 import { useTranslation } from "react-i18next";
-import { Alert, Image, StyleSheet, TouchableOpacity, View } from "react-native";
+import { useRouter } from "expo-router";
+import { Image, StyleSheet, TouchableOpacity, View } from "react-native";
 
 import { Text } from "@/components/ui";
 import { User } from "@/lib/auth";
-import {
-  notificationService,
-  requestNotificationPermissions,
-} from "@/lib/services/notificationService";
 import { useTheme } from "@/lib/theme";
 
 interface HomeHeaderProps {
   user: User | null;
-  petsCount: number;
-  eventsCount: number;
 }
 
 export const HomeHeader = ({
   user,
-  petsCount,
-  eventsCount,
 }: HomeHeaderProps) => {
   const { theme } = useTheme();
   const { t } = useTranslation();
-  const [isSendingNotification, setIsSendingNotification] = useState(false);
+  const router = useRouter();
 
-  const handleNotificationPress = useCallback(async () => {
-    if (isSendingNotification) return;
-
-    setIsSendingNotification(true);
-    try {
-      const alreadyEnabled = await notificationService.areNotificationsEnabled();
-      const granted = alreadyEnabled
-        ? true
-        : await requestNotificationPermissions();
-
-      if (!granted) {
-        Alert.alert(
-          t("settings.notifications"),
-          t(
-            "settings.notificationPermissionDenied",
-            "Notifications are blocked at the system level. Please enable them from settings."
-          )
-        );
-        return;
-      }
-
-      await notificationService.sendImmediateNotification(
-        t("notifications.testTitle"),
-        t("notifications.testBody")
-      );
-    } catch (error) {
-      console.error("Notification test failed:", error);
-    } finally {
-      setIsSendingNotification(false);
-    }
-  }, [isSendingNotification, t]);
-
-  const getDynamicSubtitle = () => {
-    if (petsCount === 0) return "Start by adding your first pet 🐕";
-    if (eventsCount === 0) return "No scheduled activities 📅";
-    if (eventsCount === 1) return "You have 1 activity scheduled ✨";
-    return `You have ${eventsCount} activities scheduled 🎉`;
-  };
+  const handleSettingsPress = useCallback(() => {
+    router.push("/(tabs)/settings");
+  }, [router]);
 
   return (
-    <>
-      <View style={styles.topHeader}>
-        <TouchableOpacity
-          style={[
-            styles.avatarContainer,
-            { borderColor: theme.colors.primary },
-          ]}
-        >
-          {user?.image ? (
-            <Image source={{ uri: user.image }} style={styles.avatar} />
-          ) : (
-            <View style={styles.avatarPlaceholder}>
-              <Ionicons name="person" size={24} color={theme.colors.primary} />
-            </View>
-          )}
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={styles.notificationButton}
-          onPress={handleNotificationPress}
-          disabled={isSendingNotification}
-          accessibilityLabel={t("settings.notifications")}
-        >
-          <Ionicons
-            name="notifications-outline"
-            size={28}
-            color={theme.colors.onBackground}
-          />
-        </TouchableOpacity>
-      </View>
-
-      <View style={styles.header}>
-        <Text
-          variant="headlineMedium"
-          style={[styles.greeting, { color: theme.colors.onBackground }]}
-        >
-          {t("home.greeting")}, {user?.name || t("settings.userPlaceholder")}!
-        </Text>
+    <View style={styles.welcomeContent}>
+      <TouchableOpacity
+        style={styles.avatarContainer}
+      >
+        {user?.image ? (
+          <Image source={{ uri: user.image }} style={styles.avatar} />
+        ) : (
+          <View style={styles.avatarPlaceholder}>
+            <Ionicons name="person" size={24} color={theme.colors.primary} />
+          </View>
+        )}
+      </TouchableOpacity>
+      <View style={styles.textContainer}>
         <Text
           variant="bodyMedium"
-          style={{ color: theme.colors.onSurfaceVariant }}
+          style={[styles.greeting, { color: theme.colors.onSurfaceVariant }]}
         >
-          {getDynamicSubtitle()}
+          {t("home.greeting")},
+        </Text>
+        <Text
+          variant="headlineSmall"
+          style={[styles.username, { color: theme.colors.onBackground }]}
+          numberOfLines={1}
+          ellipsizeMode="tail"
+        >
+          {user?.name || t("settings.userPlaceholder")}
         </Text>
       </View>
-    </>
+      <TouchableOpacity
+        style={styles.settingsButton}
+        onPress={handleSettingsPress}
+        accessibilityLabel={t("settings.title")}
+      >
+        <Ionicons
+          name="settings-outline"
+          size={24}
+          color={theme.colors.onBackground}
+        />
+      </TouchableOpacity>
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
-  topHeader: {
+  welcomeContent: {
     flexDirection: "row",
-    justifyContent: "space-between",
     alignItems: "center",
-    marginBottom: 16,
+    marginBottom: 8,
   },
   avatarContainer: {
     width: 48,
     height: 48,
     borderRadius: 24,
-    borderWidth: 2,
-    justifyContent: "center",
-    alignItems: "center",
+    overflow: "hidden",
   },
-  avatar: { width: 44, height: 44, borderRadius: 22 },
+  avatar: { width: 48, height: 48 },
   avatarPlaceholder: {
-    width: 44,
-    height: 44,
-    borderRadius: 22,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  notificationButton: {
     width: 48,
     height: 48,
+    borderRadius: 24,
     justifyContent: "center",
     alignItems: "center",
+    backgroundColor: "rgba(255,255,255,0.1)",
   },
-  header: { marginBottom: 16 },
-  greeting: { fontWeight: "bold", marginBottom: 4 },
+  textContainer: {
+    flex: 1,
+    marginLeft: 12,
+  },
+  greeting: {
+    fontWeight: "500",
+    marginBottom: 2,
+  },
+  username: {
+    fontWeight: "bold",
+  },
+  settingsButton: {
+    padding: 4,
+  },
 });

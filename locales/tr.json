@@ -69,7 +69,10 @@
     "greeting": "Merhaba",
     "nextActivity": "Sonraki Aktivite",
     "noActivity": "Aktivite Yok",
-    "allSet": "Her Şey Tamam"
+    "allSet": "Her Şey Tamam",
+    "emptyPetsTitle": "Henüz hiç evcil hayvanınız yok!",
+    "emptyPetsDescription": "İlk evcil hayvanınızı ekleyerek bakıma başlayın. Sağlık takibi, aşı hatırlatmaları ve daha fazlası için hemen dostunuzu ekleyin.",
+    "emptyPetsCta": "Evcil Hayvan Ekle"
   },
   "finance": {
     "title": "Finans",
@@ -138,7 +141,9 @@
     "shareMessage": "{{name}} {{breed}}",
     "viewActivityHistory": "Aktivite geçmişini görüntüle",
     "viewHealthDetails": "Sağlık detaylarını görüntüle",
-    "sharePet": "Pet bilgilerini paylaş"
+    "sharePet": "Evcil hayvan bilgilerini paylaş",
+    "editPetHint": "Evcil hayvan detaylarını düzenler",
+    "sharePetHint": "Bu evcil hayvanın bilgilerini başkalarıyla paylaşır"
   },
   "health": {
     "healthRecords": "Sağlık Kayıtları",
@@ -215,7 +220,10 @@
     "noNextVisit": "Planlanmış kontrol yok",
     "noTreatmentPlan": "Tedavi planı bulunmuyor",
     "nextVisitDate": "Kontrol Tarihi",
-    "nextVisitDescription": "Bir sonraki kontrol için otomatik hatırlatıcı oluşturun"
+    "nextVisitDescription": "Bir sonraki kontrol için otomatik hatırlatıcı oluşturun",
+    "editRecordHint": "Sağlık kaydı detaylarını düzenler",
+    "shareRecord": "Sağlık Kaydını Paylaş",
+    "shareRecordHint": "Bu sağlık kaydını başkalarıyla paylaşır"
   },
   "calendar": {
     "calendar": "Takvim",
@@ -244,9 +252,6 @@
     "eventDeleted": "Etkinlik başarıyla silindi",
     "deleteEventError": "Etkinlik silinirken bir hata oluştu",
     "copy": "Kopya",
-    "eventDuplicated": "Etkinlik kopyalandı",
-    "duplicateEventError": "Etkinlik kopyalanırken bir hata oluştu",
-    "duplicate": "Kopyala",
     "sharedFrom": "Petopia Petcare ile paylaşıldı",
     "dateAndTime": "Tarih ve Saat",
     "date": "Tarih",
@@ -311,7 +316,10 @@
       "standard": "4 adım (3g, 1g, 1s, etkinlik zamanı)",
       "compact": "3 adım (1g, 1s, etkinlik zamanı)",
       "minimal": "Hızlı (1s, etkinlik zamanı)"
-    }
+    },
+    "shareEvent": "Etkinliği Paylaş",
+    "shareEventHint": "Bu etkinliği başkalarıyla paylaşır",
+    "editEventHint": "Etkinlik detaylarını düzenler"
   },
   "eventForm": {
     "suggestions": {
@@ -409,13 +417,24 @@
     "dataPrivacy": "Veri ve Gizlilik",
     "dataBackup": "Veri Yedekleme",
     "dataBackupDescription": "Verilerinizi bulutta yedekleyin",
-    "dataCleanup": "Veri Temizleme",
-    "dataCleanupDescription": "Tüm verileri sil",
+    "deleteAccount": "Hesabı Sil",
+    "deleteAccountDescription": "Hesabınızı ve verilerinizi kalıcı olarak silin",
+    "deleteAccountWarning": "Hesabınızı silmek istediğinizden emin misiniz?",
+    "deleteAccountWarningDescription": "Bu işlem geri alınamaz. Tüm evcil hayvanlarınız, sağlık kayıtlarınız ve verileriniz kalıcı olarak silinecektir.",
+    "deleteAccountConfirmTitle": "Hesabı Silmeyi Onayla",
+    "deleteAccountFinalWarning": "Bu işlem geri alınamaz; tüm verileriniz kalıcı olarak silinecektir.",
+    "deleteAccountTypeConfirm": "Silme işlemini onaylamak için DELETE yazın",
+    "accountDeletedTitle": "Hesap Silindi",
+    "accountDeletedMessage": "Hesabınız kalıcı olarak silindi.",
+    "accountDeleteError": "Hesap silinemedi. Lütfen tekrar deneyin.",
     "about": "Hakkında",
     "version": "Versiyon",
     "versionNumber": "1.0.0",
     "helpSupport": "Yardım ve Destek",
     "helpSupportDescription": "SSS ve iletişim",
+    "contactEmail": "petopia@dekadans.net",
+    "contactTitle": "Sorular, öneriler veya sorunlar?",
+    "contactSubtitle": "Bize ulaşın:",
     "settings": "Ayarlar",
     "logout": "Çıkış Yap",
     "userPlaceholder": "Kullanıcı",
@@ -457,7 +476,6 @@
     "unsavedChangesMessage": "Kaydedilmemiş değişiklikleriniz var. Bunları silmek istediğinizden emin misiniz?",
     "discard": "Değişiklikleri Sil",
     "close": "Kapat",
-    "moreOptions": "Daha fazla seçenek",
     "offline": "Çevrimdışı",
     "wifi": "Wi-Fi",
     "cellular": "Mobil",

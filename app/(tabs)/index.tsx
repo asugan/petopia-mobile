@@ -13,6 +13,7 @@ import PetCard from "@/components/PetCard";
 import { UpcomingEventsSection } from "@/components/UpcomingEventsSection";
 import { NextFeedingWidget } from "@/components/feeding/NextFeedingWidget";
 import { FinancialOverview } from "@/components/home/FinancialOverview";
+import { HomeEmptyPets } from "@/components/home/HomeEmptyPets";
 import { HomeHeader } from "@/components/home/HomeHeader";
 import { Text } from "@/components/ui";
 import { useHomeData } from "@/lib/hooks/useHomeData";
@@ -63,11 +64,7 @@ export default function HomeScreen() {
           contentContainerStyle={styles.scrollContent}
           showsVerticalScrollIndicator={false}
         >
-          <HomeHeader
-            user={user}
-            petsCount={data.pets?.length || 0}
-            eventsCount={data.upcomingEvents?.length || 0}
-          />
+          <HomeHeader user={user} />
 
           {/* My Pets Section */}
           <View style={styles.section}>
@@ -116,28 +113,27 @@ export default function HomeScreen() {
                 </TouchableOpacity>
               </View>
             ) : (
-              <EmptyState
-                icon="paw"
-                title={t("home.noPetsYet")}
-                description={t("pets.addFirstPetDescription")}
-                actionLabel={t("pets.addFirstPet")}
-                onAction={() => router.push("/(tabs)/pets")}
-              />
+              <HomeEmptyPets />
             )}
           </View>
 
-          <View style={styles.section}>
-            <NextFeedingWidget />
-          </View>
+          {/* Only show these sections when there are pets */}
+          {data.pets && data.pets.length > 0 && (
+            <>
+              <View style={styles.section}>
+                <NextFeedingWidget />
+              </View>
 
-          <UpcomingEventsSection />
+              <UpcomingEventsSection />
 
-          <FinancialOverview
-            budgetStatus={financial.budgetStatus || undefined}
-            recentExpenses={data.recentExpenses}
-          />
+              <FinancialOverview
+                budgetStatus={financial.budgetStatus || undefined}
+                recentExpenses={data.recentExpenses}
+              />
 
-          <HealthOverview healthRecords={data.allHealthRecords || []} />
+              <HealthOverview healthRecords={data.allHealthRecords || []} />
+            </>
+          )}
         </ScrollView>
 
       </SafeAreaView>

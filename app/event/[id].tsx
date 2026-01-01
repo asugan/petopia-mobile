@@ -24,13 +24,14 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { getEventTypeLabel } from '@/constants/eventIcons';
 import { useReminderScheduler } from '@/hooks/useReminderScheduler';
-import { useCreateEvent, useDeleteEvent, useEvent } from '@/lib/hooks/useEvents';
+import { useDeleteEvent, useEvent } from '@/lib/hooks/useEvents';
 import { usePet } from '@/lib/hooks/usePets';
 import { useTheme } from '@/lib/theme';
 import { useEventReminderStore } from '@/stores/eventReminderStore';
 
 export default function EventDetailScreen() {
   const { width } = useWindowDimensions();
+  const FOOTER_HEIGHT = 80; // padding(16) + button height(48) + bottom padding(16)
   const { theme } = useTheme();
   const { t, i18n } = useTranslation();
   const router = useRouter();
@@ -41,7 +42,6 @@ export default function EventDetailScreen() {
   const { data: event, isLoading, error } = useEvent(id);
   const { data: pet } = usePet(event?.petId || '');
   const deleteEventMutation = useDeleteEvent();
-  const createEventMutation = useCreateEvent();
   const reminderStatus = useEventReminderStore((state) => (event?._id ? state.statuses[event._id] : undefined));
   const presetSelections = useEventReminderStore((state) => state.presetSelections);
   const markMissed = useEventReminderStore((state) => state.markMissed);
@@ -99,39 +99,6 @@ export default function EventDetailScreen() {
     );
   };
 
-  const handleDuplicate = async () => {
-    if (!event) return;
-    try {
-      const newStartTime = new Date(event.startTime);
-      newStartTime.setDate(newStartTime.getDate() + 1);
-      const newEndTime = event.endTime ? new Date(event.endTime) : null;
-      if (newEndTime) newEndTime.setDate(newEndTime.getDate() + 1);
-
-      const duplicatedEvent = {
-        petId: event.petId,
-        type: event.type,
-        title: `${event.title} (${t('events.copy')})`,
-        description: event.description,
-        startTime: newStartTime.toISOString(),
-        endTime: newEndTime?.toISOString() || undefined,
-        location: event.location,
-        reminder: event.reminder,
-        notes: event.notes,
-        vaccineName: event.vaccineName,
-        vaccineManufacturer: event.vaccineManufacturer,
-        batchNumber: event.batchNumber,
-        medicationName: event.medicationName,
-        dosage: event.dosage,
-        frequency: event.frequency,
-        reminderPresetKey: event._id ? presetSelections[event._id] : undefined,
-      };
-      await createEventMutation.mutateAsync(duplicatedEvent);
-      Alert.alert(t('common.success'), t('events.eventDuplicated'));
-    } catch (error) {
-      console.error(error);
-    }
-  };
-
   const handleShare = async () => {
     if (!event) return;
     try {
@@ -161,6 +128,57 @@ export default function EventDetailScreen() {
       void cancelRemindersForEvent(event._id);
     }
   }, [cancelRemindersForEvent, derivedStatus, event, markMissed, reminderStatus]);
+
+  const footerStyles = useMemo(() => StyleSheet.create({
+    footer: {
+      position: 'absolute',
+      bottom: 0,
+      left: 0,
+      right: 0,
+      padding: 16,
+      paddingBottom: insets.bottom + 16,
+      backgroundColor: theme.colors.surface,
+      borderTopWidth: 1,
+      borderTopColor: theme.colors.outlineVariant,
+      zIndex: 30,
+    },
+    footerInner: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: 12,
+      maxWidth: 500,
+      alignSelf: 'center',
+      width: '100%',
+    },
+    editButton: {
+      flex: 1,
+      height: 48,
+      borderRadius: 12,
+      flexDirection: 'row',
+      justifyContent: 'center',
+      alignItems: 'center',
+      gap: 8,
+      backgroundColor: theme.colors.primary,
+      shadowColor: theme.colors.primary,
+      shadowOffset: { width: 0, height: 4 },
+      shadowOpacity: 0.2,
+      shadowRadius: 8,
+      elevation: 4,
+    },
+    editButtonText: {
+      color: theme.colors.onPrimary,
+      fontSize: 16,
+      fontWeight: '700',
+    },
+    iconButton: {
+      width: 48,
+      height: 48,
+      borderRadius: 12,
+      justifyContent: 'center',
+      alignItems: 'center',
+      borderWidth: 1,
+    },
+  }), [theme, insets]);
 
   if (isLoading) {
     return (
@@ -192,24 +210,29 @@ export default function EventDetailScreen() {
       <StatusBar barStyle="light-content" translucent backgroundColor="transparent" />
       
       <View style={[styles.header, { paddingTop: insets.top + 10 }]}>
-        <TouchableOpacity 
+        <TouchableOpacity
           onPress={() => router.back()}
           style={[styles.iconButton, { backgroundColor: COLORS.blackOp20 }]}
+          accessibilityLabel={t('common.back')}
+          accessibilityRole="button"
         >
-          <MaterialIcons name="arrow-back" size={24} color={COLORS.white} />
+          <MaterialIcons name="arrow-back" size={24} color="#FFF" />
         </TouchableOpacity>
-        
+
         <View style={styles.headerActions}>
-          <TouchableOpacity onPress={handleShare} style={[styles.iconButton, { backgroundColor: COLORS.blackOp20 }]}>
-            <MaterialIcons name="share" size={20} color={COLORS.white} />
-          </TouchableOpacity>
-          <TouchableOpacity style={[styles.iconButton, { backgroundColor: COLORS.blackOp20 }]}>
-            <MaterialIcons name="more-vert" size={20} color={COLORS.white} />
+          <TouchableOpacity
+            onPress={handleShare}
+            style={[styles.iconButton, { backgroundColor: COLORS.blackOp20 }]}
+            accessibilityLabel={t('events.shareEvent')}
+            accessibilityHint={t('events.shareEventHint')}
+            accessibilityRole="button"
+          >
+            <MaterialIcons name="share" size={20} color="#FFF" />
           </TouchableOpacity>
         </View>
       </View>
 
-      <ScrollView style={styles.scrollView} contentContainerStyle={{ paddingBottom: 120 }}>
+      <ScrollView style={styles.scrollView} contentContainerStyle={{ paddingBottom: FOOTER_HEIGHT + insets.bottom }}>
         <View style={styles.heroContainer}>
           <Image
             source={{ uri: heroImage }}
@@ -321,24 +344,37 @@ export default function EventDetailScreen() {
         </View>
       </ScrollView>
 
-      <View style={[styles.footer, { paddingBottom: insets.bottom + 10, backgroundColor: COLORS.surfaceDarker }]}>
-        <View style={styles.footerGrid}>
-          <TouchableOpacity onPress={handleEdit} style={styles.footerIconButton}>
-            <MaterialIcons name="edit" size={24} color={COLORS.gray400} />
-            <Text style={[styles.footerIconText, { color: COLORS.gray400 }]}>{t('common.edit')}</Text>
-          </TouchableOpacity>
-          
-          <TouchableOpacity onPress={handleDelete} style={styles.footerIconButton}>
-            <MaterialIcons name="delete" size={24} color={COLORS.gray400} />
-            <Text style={[styles.footerIconText, { color: COLORS.gray400 }]}>{t('common.delete')}</Text>
+      <View style={footerStyles.footer}>
+        <View style={footerStyles.footerInner}>
+          <TouchableOpacity
+            onPress={handleEdit}
+            style={footerStyles.editButton}
+            accessibilityLabel={t('common.edit')}
+            accessibilityHint={t('events.editEventHint')}
+            accessibilityRole="button"
+          >
+            <MaterialIcons name="edit" size={20} color={theme.colors.onPrimary} />
+            <Text style={footerStyles.editButtonText}>{t('common.edit')}</Text>
           </TouchableOpacity>
 
-          <TouchableOpacity 
-            onPress={handleDuplicate}
-            style={[styles.addToCalendarButton, { backgroundColor: COLORS.primary, shadowColor: COLORS.primary }]}
+          <TouchableOpacity
+            onPress={handleShare}
+            style={[footerStyles.iconButton, { borderColor: theme.colors.outlineVariant, backgroundColor: theme.colors.surfaceVariant }]}
+            accessibilityLabel={t('events.shareEvent')}
+            accessibilityHint={t('events.shareEventHint')}
+            accessibilityRole="button"
           >
-            <MaterialIcons name="content-copy" size={20} color="black" />
-            <Text style={styles.addToCalendarText}>{t('events.duplicate')}</Text>
+            <MaterialIcons name="share" size={22} color={theme.colors.onSurfaceVariant} />
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            onPress={handleDelete}
+            style={[footerStyles.iconButton, { borderColor: theme.colors.errorContainer, backgroundColor: 'transparent' }]}
+            accessibilityLabel={t('events.deleteEvent')}
+            accessibilityHint={t('events.deleteEventConfirmation', { title: event.title })}
+            accessibilityRole="button"
+          >
+            <MaterialIcons name="delete" size={22} color={theme.colors.error} />
           </TouchableOpacity>
         </View>
       </View>
@@ -524,51 +560,6 @@ const styles = StyleSheet.create({
   },
   reminderSubtitle: {
     fontSize: 12,
-  },
-  footer: {
-    position: 'absolute',
-    bottom: 0,
-    left: 0,
-    right: 0,
-    borderTopWidth: 1,
-    borderTopColor: 'rgba(255,255,255,0.05)',
-    padding: 16,
-    zIndex: 30,
-  },
-  footerGrid: {
-    flexDirection: 'row',
-    gap: 12,
-  },
-  footerIconButton: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: 4,
-    paddingVertical: 8,
-    borderRadius: 12,
-  },
-  footerIconText: {
-    fontSize: 10,
-    fontWeight: '500',
-  },
-  addToCalendarButton: {
-    flex: 2,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: 8,
-    borderRadius: 12,
-    paddingVertical: 12,
-    paddingHorizontal: 16,
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.2,
-    shadowRadius: 8,
-    elevation: 4,
-  },
-  addToCalendarText: {
-    color: 'black',
-    fontWeight: '700',
-    fontSize: 14,
   },
   buttonSecondary: {
     marginTop: 16,

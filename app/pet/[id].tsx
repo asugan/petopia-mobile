@@ -6,7 +6,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTranslation } from 'react-i18next';
 import { format, differenceInYears, differenceInMonths } from 'date-fns';
 import { tr, enUS } from 'date-fns/locale';
-import { Ionicons, MaterialIcons, MaterialCommunityIcons } from '@expo/vector-icons';
+import { Ionicons, MaterialCommunityIcons, MaterialIcons } from '@expo/vector-icons';
 
 import { Text, ActivityIndicator } from '@/components/ui';
 import { useTheme } from '@/lib/theme';
@@ -19,7 +19,7 @@ import { PetModal } from '@/components/PetModal';
 
 const { width } = Dimensions.get('window');
 
-const BOTTOM_BAR_HEIGHT = 120;
+const BOTTOM_BAR_HEIGHT = 80;
 
 function sortByDateDesc<T>(items: T[], getDate: (item: T) => string | Date): T[] {
   return [...items].sort((a, b) => new Date(getDate(b)).getTime() - new Date(getDate(a)).getTime());
@@ -31,6 +31,56 @@ export default function PetDetailScreen() {
   const { theme } = useTheme();
   const { t, i18n } = useTranslation();
   const insets = useSafeAreaInsets();
+
+  const footerStyles = useMemo(() => StyleSheet.create({
+    bottomBar: {
+      position: 'absolute',
+      bottom: 0,
+      left: 0,
+      width: '100%',
+      padding: 16,
+      paddingBottom: insets.bottom + 16,
+      backgroundColor: theme.colors.surface,
+      borderTopWidth: 1,
+      borderTopColor: theme.colors.outlineVariant,
+    },
+    bottomBarInner: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: 12,
+      maxWidth: 500,
+      alignSelf: 'center',
+      width: '100%',
+    },
+    editButton: {
+      flex: 1,
+      height: 48,
+      borderRadius: 12,
+      flexDirection: 'row',
+      justifyContent: 'center',
+      alignItems: 'center',
+      gap: 8,
+      backgroundColor: theme.colors.primary,
+      shadowColor: theme.colors.primary,
+      shadowOffset: { width: 0, height: 4 },
+      shadowOpacity: 0.2,
+      shadowRadius: 8,
+      elevation: 4,
+    },
+    editButtonText: {
+      color: theme.colors.onPrimary,
+      fontSize: 16,
+      fontWeight: '700',
+    },
+    iconButton: {
+      width: 48,
+      height: 48,
+      borderRadius: 12,
+      justifyContent: 'center',
+      alignItems: 'center',
+      borderWidth: 1,
+    },
+  }), [theme, insets]);
 
   const petId = id ?? '';
   const { data: pet, isLoading: isPetLoading } = usePet(petId);
@@ -242,6 +292,17 @@ export default function PetDetailScreen() {
 
           <View style={styles.heroContent}>
             <Text style={[styles.heroName, { color: theme.colors.onBackground }]}>{pet.name}</Text>
+            <View style={styles.heroActions}>
+              <TouchableOpacity
+                style={[styles.heroActionButton, { backgroundColor: theme.colors.primary, shadowColor: theme.colors.primary }]}
+                onPress={() => router.push({ pathname: '/(tabs)/calendar', params: { petId: pet._id, action: 'create' } })}
+                accessibilityLabel={t('events.addEvent')}
+                accessibilityRole="button"
+              >
+                <MaterialIcons name="add" size={20} color={theme.colors.onPrimary} />
+                <Text style={[styles.heroActionText, { color: theme.colors.onPrimary }]}>{t('events.addEvent')}</Text>
+              </TouchableOpacity>
+            </View>
           </View>
         </View>
 
@@ -256,11 +317,13 @@ export default function PetDetailScreen() {
             <Ionicons name="arrow-back" size={24} color={theme.colors.inverseOnSurface} />
           </TouchableOpacity>
           <TouchableOpacity
+            onPress={handleShare}
             style={[styles.iconButtonBlur, { backgroundColor: theme.colors.overlay, borderColor: theme.colors.overlayLight }]}
-            accessibilityLabel={t('common.moreOptions')}
+            accessibilityLabel={t('pets.sharePet')}
+            accessibilityHint={t('pets.sharePetHint')}
             accessibilityRole="button"
           >
-            <Ionicons name="ellipsis-horizontal" size={24} color={theme.colors.inverseOnSurface} />
+            <MaterialCommunityIcons name="share-variant" size={24} color={theme.colors.inverseOnSurface} />
           </TouchableOpacity>
         </View>
 
@@ -444,64 +507,37 @@ export default function PetDetailScreen() {
         </View>
       </ScrollView>
 
-      <View
-        style={[
-          styles.bottomBar,
-          {
-            backgroundColor: theme.colors.surface,
-            borderTopColor: theme.colors.outlineVariant,
-            paddingBottom: insets.bottom + 16,
-          },
-        ]}
-      >
-        <View style={styles.sideButtonsContainer}>
+      <View style={footerStyles.bottomBar}>
+        <View style={footerStyles.bottomBarInner}>
           <TouchableOpacity
-            style={styles.actionButtonColumn}
+            style={footerStyles.editButton}
+            onPress={handleEdit}
+            accessibilityLabel={t('common.edit')}
+            accessibilityHint={t('pets.editPetHint')}
+            accessibilityRole="button"
+          >
+            <MaterialIcons name="edit" size={20} color={theme.colors.onPrimary} />
+            <Text style={footerStyles.editButtonText}>{t('common.edit')}</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={[footerStyles.iconButton, { borderColor: theme.colors.outlineVariant, backgroundColor: theme.colors.surfaceVariant }]}
+            onPress={handleShare}
+            accessibilityLabel={t('pets.sharePet')}
+            accessibilityHint={t('pets.sharePetHint')}
+            accessibilityRole="button"
+          >
+            <MaterialIcons name="share" size={22} color={theme.colors.onSurfaceVariant} />
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={[footerStyles.iconButton, { borderColor: theme.colors.errorContainer, backgroundColor: 'transparent' }]}
             onPress={handleDelete}
             accessibilityLabel={t('pets.deletePet')}
             accessibilityHint={t('pets.deleteConfirmation', { name: pet.name })}
             accessibilityRole="button"
           >
-            <View style={styles.iconCircle}>
-              <MaterialIcons name="delete-outline" size={24} color={theme.colors.error} />
-            </View>
-            <Text style={[styles.actionLabel, { color: theme.colors.error }]}>{t('common.delete')}</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            style={styles.actionButtonColumn}
-            onPress={handleEdit}
-            accessibilityLabel={t('pets.editPet')}
-            accessibilityRole="button"
-          >
-            <View style={styles.iconCircle}>
-              <MaterialIcons name="edit" size={24} color={theme.colors.onSurfaceVariant} />
-            </View>
-            <Text style={[styles.actionLabel, { color: theme.colors.onSurfaceVariant }]}>{t('common.edit')}</Text>
-          </TouchableOpacity>
-        </View>
-
-        <TouchableOpacity
-          style={[styles.mainActionButton, { backgroundColor: theme.colors.primary, shadowColor: theme.colors.primary }]}
-          onPress={() => router.push({ pathname: '/(tabs)/calendar', params: { petId: pet._id, action: 'create' } })}
-          accessibilityLabel={t('events.addEvent')}
-          accessibilityRole="button"
-        >
-          <MaterialIcons name="add" size={24} color={theme.colors.onPrimary} />
-          <Text style={[styles.mainActionText, { color: theme.colors.onPrimary }]}>{t('events.addEvent')}</Text>
-        </TouchableOpacity>
-
-        <View style={styles.sideButtonsContainer}>
-          <TouchableOpacity
-            style={styles.actionButtonColumn}
-            onPress={handleShare}
-            accessibilityLabel={t('pets.sharePet')}
-            accessibilityRole="button"
-          >
-            <View style={styles.iconCircle}>
-              <MaterialIcons name="share" size={24} color={theme.colors.onSurfaceVariant} />
-            </View>
-            <Text style={[styles.actionLabel, { color: theme.colors.onSurfaceVariant }]}>{t('common.share')}</Text>
+            <MaterialIcons name="delete" size={22} color={theme.colors.error} />
           </TouchableOpacity>
         </View>
       </View>
@@ -563,6 +599,29 @@ const styles = StyleSheet.create({
     textShadowColor: 'rgba(0, 0, 0, 0.5)',
     textShadowOffset: { width: 0, height: 2 },
     textShadowRadius: 10,
+    marginBottom: 12,
+  },
+  heroActions: {
+    flexDirection: 'row',
+    gap: 12,
+  },
+  heroActionButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    height: 36,
+    paddingHorizontal: 16,
+    borderRadius: 18,
+    gap: 6,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
+    elevation: 3,
+  },
+  heroActionText: {
+    fontWeight: '700',
+    fontSize: 13,
   },
   headerBar: {
     position: 'absolute',
@@ -759,60 +818,5 @@ const styles = StyleSheet.create({
   linkText: {
     fontSize: 12,
     fontWeight: '700',
-  },
-  bottomBar: {
-    position: 'absolute',
-    bottom: 0,
-    left: 0,
-    right: 0,
-    flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center',
-    gap: 24,
-    paddingTop: 16,
-    borderTopWidth: 1,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: -4 },
-    shadowOpacity: 0.1,
-    shadowRadius: 12,
-    elevation: 20,
-  },
-  sideButtonsContainer: {
-    flex: 1,
-    flexDirection: 'row',
-    justifyContent: 'center',
-    gap: 8,
-  },
-  actionButtonColumn: {
-    alignItems: 'center',
-    gap: 4,
-    width: 60,
-  },
-  iconCircle: {
-    padding: 8,
-    borderRadius: 20,
-  },
-  actionLabel: {
-    fontSize: 10,
-    fontWeight: '500',
-  },
-  mainActionButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    height: 48,
-    paddingHorizontal: 32,
-    borderRadius: 24,
-    gap: 8,
-    shadowOffset: { width: 0, height: 0 },
-    shadowOpacity: 0.3,
-    shadowRadius: 10,
-    elevation: 5,
-  },
-  mainActionText: {
-    fontWeight: 'bold',
-    fontSize: 14,
-    textTransform: 'uppercase',
-    letterSpacing: 0.5,
   },
 });

@@ -54,6 +54,9 @@ export const ENV = {
     USER_SETTINGS: "/api/settings",
     USER_SETTINGS_CURRENCY: "/api/settings/currency",
 
+    // Account endpoints
+    ACCOUNT_DELETE: "/api/account",
+
     // Expense export endpoints
     EXPENSES_EXPORT_CSV: "/api/expenses/export/csv",
     EXPENSES_EXPORT_PDF: "/api/expenses/export/pdf",

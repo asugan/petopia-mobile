@@ -30,6 +30,7 @@ import EmptyState from '@/components/EmptyState';
 import { TURKCE_LABELS } from '@/constants';
 
 const { width } = Dimensions.get('window');
+const FOOTER_HEIGHT = 80; // padding(16) + button height(48) + bottom padding(16)
 
 export default function HealthRecordDetailScreen() {
   const { t } = useTranslation();
@@ -539,8 +540,8 @@ ${healthRecord.notes ? `${t('common.notes')}: ${healthRecord.notes}` : ''}
   return (
     <View style={styles.container}>
       <Stack.Screen options={{ headerShown: false }} />
-      <ScrollView 
-        contentContainerStyle={{ paddingBottom: 120 }} 
+      <ScrollView
+        contentContainerStyle={{ paddingBottom: FOOTER_HEIGHT + insets.bottom }}
         showsVerticalScrollIndicator={false}
         bounces={false}
       >
@@ -573,9 +574,6 @@ ${healthRecord.notes ? `${t('common.notes')}: ${healthRecord.notes}` : ''}
               <View style={styles.navActions}>
                 <TouchableOpacity style={styles.navButton} onPress={handleShare}>
                   <MaterialCommunityIcons name="share-variant" size={20} color="#FFF" />
-                </TouchableOpacity>
-                <TouchableOpacity style={styles.navButton} onPress={handleEdit}>
-                  <MaterialCommunityIcons name="dots-vertical" size={20} color="#FFF" />
                 </TouchableOpacity>
               </View>
             </View>
@@ -771,24 +769,33 @@ ${healthRecord.notes ? `${t('common.notes')}: ${healthRecord.notes}` : ''}
 
       <View style={styles.bottomBar}>
         <View style={styles.bottomBarInner}>
-          <TouchableOpacity 
+          <TouchableOpacity
             style={styles.editButton}
             onPress={handleEdit}
+            accessibilityLabel={t('common.edit')}
+            accessibilityHint={t('healthRecords.editRecordHint')}
+            accessibilityRole="button"
           >
             <MaterialCommunityIcons name="file-document-edit" size={20} color={theme.colors.onPrimary} />
              <Text style={styles.editButtonText}>{t('common.edit')}</Text>
           </TouchableOpacity>
-          
-          <TouchableOpacity 
+
+          <TouchableOpacity
             style={[styles.iconButton, { borderColor: theme.colors.outlineVariant, backgroundColor: theme.colors.surfaceVariant }]}
             onPress={handleShare}
+            accessibilityLabel={t('healthRecords.shareRecord')}
+            accessibilityHint={t('healthRecords.shareRecordHint')}
+            accessibilityRole="button"
           >
             <MaterialCommunityIcons name="share-variant" size={22} color={theme.colors.onSurfaceVariant} />
           </TouchableOpacity>
-          
-          <TouchableOpacity 
+
+          <TouchableOpacity
             style={[styles.iconButton, { borderColor: theme.colors.errorContainer, backgroundColor: 'transparent' }]}
             onPress={handleDelete}
+            accessibilityLabel={t('healthRecords.deleteRecord')}
+            accessibilityHint={t('healthRecords.deleteConfirmation')}
+            accessibilityRole="button"
           >
             <MaterialCommunityIcons name="delete" size={22} color={theme.colors.error} />
           </TouchableOpacity>

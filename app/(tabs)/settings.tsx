@@ -3,19 +3,23 @@ import { useQueryClient } from "@tanstack/react-query";
 import { SubscriptionCard } from "@/components/subscription";
 import { Button, Card, ListItem, Switch, Text } from "@/components/ui";
 import { useAuth } from "@/lib/auth";
+import { accountService } from "@/lib/services/accountService";
 import { notificationService, requestNotificationPermissions } from "@/lib/services/notificationService";
 import { useAuthStore } from "@/stores/authStore";
 import { SupportedCurrency, useUserSettingsStore } from "@/stores/userSettingsStore";
+import { Ionicons } from "@expo/vector-icons";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import { useTranslation } from "react-i18next";
-import { Alert, ScrollView, StyleSheet, View } from "react-native";
+import { Alert, Image, Keyboard, KeyboardAvoidingView, Platform, Pressable, ScrollView, StyleSheet, TextInput, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { LAYOUT } from "@/constants";
 import { useOnboardingStore } from "@/stores/onboardingStore";
 import CurrencyPicker from "@/components/CurrencyPicker";
 import LoadingSpinner from "@/components/LoadingSpinner";
 import { LanguageSettings } from "@/components/LanguageSettings";
+
+type ModalState = "none" | "contact" | "deleteWarning" | "deleteConfirm";
 
 export default function SettingsScreen() {
   const { t } = useTranslation();
@@ -28,6 +32,9 @@ export default function SettingsScreen() {
   const isDarkMode = settings?.theme === "dark";
   const [notificationsEnabled, setNotificationsEnabled] = useState(false);
   const [notificationLoading, setNotificationLoading] = useState(true);
+  const [activeModal, setActiveModal] = useState<ModalState>("none");
+  const [deleteConfirmText, setDeleteConfirmText] = useState("");
+  const [deletingAccount, setDeletingAccount] = useState(false);
 
   useEffect(() => {
     const fetchPermissionStatus = async () => {
@@ -121,6 +128,50 @@ export default function SettingsScreen() {
     );
   };
 
+  const handleDeleteAccount = async () => {
+    setDeletingAccount(true);
+    try {
+      const result = await accountService.deleteAccount(deleteConfirmText);
+      if (result.success) {
+        Alert.alert(
+          t("settings.accountDeletedTitle"),
+          t("settings.accountDeletedMessage"),
+          [
+            {
+              text: t("common.ok"),
+              onPress: async () => {
+                setLoading(true);
+                try {
+                  await signOut();
+                  router.replace("/(auth)/login");
+                } catch (error) {
+                  console.error("Sign out error:", error);
+                } finally {
+                  setLoading(false);
+                }
+              },
+            },
+          ]
+        );
+      } else {
+        Alert.alert(
+          t("common.error"),
+          t("settings.accountDeleteError", "Failed to delete account")
+        );
+      }
+    } catch (error) {
+      console.error("Delete account error:", error);
+      Alert.alert(
+        t("common.error"),
+        t("settings.accountDeleteError", "Failed to delete account")
+      );
+    } finally {
+      setDeletingAccount(false);
+      setActiveModal("none");
+      setDeleteConfirmText("");
+    }
+  };
+
   return (
     <SafeAreaView
       style={[styles.container, { backgroundColor: theme.colors.background }]}
@@ -159,11 +210,15 @@ export default function SettingsScreen() {
                     { backgroundColor: theme.colors.primaryContainer },
                   ]}
                 >
-                  <MaterialCommunityIcons
-                    name="account"
-                    size={32}
-                    color={theme.colors.primary}
-                  />
+                  {user.image ? (
+                    <Image source={{ uri: user.image }} style={styles.avatar} />
+                  ) : (
+                    <Ionicons
+                      name="person"
+                      size={32}
+                      color={theme.colors.primary}
+                    />
+                  )}
                 </View>
                 <View style={styles.profileInfo}>
                   <Text
@@ -312,15 +367,16 @@ export default function SettingsScreen() {
               }
             />
             <ListItem
-              title={t("settings.dataCleanup")}
-              description={t("settings.dataCleanupDescription")}
+              title={t("settings.deleteAccount")}
+              description={t("settings.deleteAccountDescription")}
               left={
                 <MaterialCommunityIcons
-                  name="delete"
+                  name="account-remove"
                   size={24}
-                  color={theme.colors.onSurfaceVariant}
+                  color={theme.colors.error}
                 />
               }
+              onPress={() => setActiveModal("deleteWarning")}
               right={
                 <MaterialCommunityIcons
                   name="chevron-right"
@@ -367,6 +423,7 @@ export default function SettingsScreen() {
                   color={theme.colors.onSurfaceVariant}
                 />
               }
+              onPress={() => setActiveModal("contact")}
               right={
                 <MaterialCommunityIcons
                   name="chevron-right"
@@ -379,6 +436,7 @@ export default function SettingsScreen() {
         </Card>
 
         {/* Debug / Development */}
+        {__DEV__ && (
         <Card
           style={[
             styles.sectionCard,
@@ -408,9 +466,9 @@ export default function SettingsScreen() {
                   "Are you sure? Typically this is only for testing.",
                   [
                     { text: "Cancel", style: "cancel" },
-                    { 
-                      text: "Reset", 
-                      style: "destructive", 
+                    {
+                      text: "Reset",
+                      style: "destructive",
                       onPress: () => {
                         resetOnboarding();
                         // Navigate directly to onboarding to avoid race conditions with root redirector
@@ -430,6 +488,7 @@ export default function SettingsScreen() {
             />
           </View>
         </Card>
+        )}
 
         {/* Logout Button */}
         <View style={styles.logoutContainer}>
@@ -445,6 +504,152 @@ export default function SettingsScreen() {
           </Button>
         </View>
       </ScrollView>
+
+      {/* Contact Modal */}
+      {activeModal === "contact" && (
+        <KeyboardAvoidingView
+          behavior={Platform.OS === "ios" ? "padding" : "height"}
+          style={styles.modalOverlay}
+        >
+          <View style={[styles.modalContent, { backgroundColor: theme.colors.surface }]}>
+            <View style={styles.modalHeader}>
+              <Text variant="titleLarge" style={{ color: theme.colors.onSurface }}>
+                {t("settings.helpSupport")}
+              </Text>
+              <Pressable onPress={() => { Keyboard.dismiss(); setActiveModal("none"); }}>
+                <Ionicons name="close" size={24} color={theme.colors.onSurfaceVariant} />
+              </Pressable>
+            </View>
+            <View style={styles.modalBody}>
+              <View style={[styles.contactIconContainer, { backgroundColor: theme.colors.primaryContainer }]}>
+                <Ionicons name="mail" size={32} color={theme.colors.primary} />
+              </View>
+              <Text variant="bodyLarge" style={[styles.contactText, { color: theme.colors.onSurface }]}>
+                {t("settings.contactTitle")}
+              </Text>
+              <Text variant="bodyMedium" style={[styles.contactSubtext, { color: theme.colors.onSurfaceVariant }]}>
+                {t("settings.contactSubtitle")}
+              </Text>
+              <Text variant="titleMedium" style={[styles.contactEmail, { color: theme.colors.primary }]}>
+                {t("settings.contactEmail")}
+              </Text>
+            </View>
+          </View>
+        </KeyboardAvoidingView>
+      )}
+
+      {/* Delete Account Modal */}
+      {activeModal === "deleteWarning" && (
+        <KeyboardAvoidingView
+          behavior={Platform.OS === "ios" ? "padding" : "height"}
+          style={styles.modalOverlay}
+        >
+          <View style={[styles.modalContent, { backgroundColor: theme.colors.surface }]}>
+            <View style={styles.modalHeader}>
+              <Text variant="titleLarge" style={{ color: theme.colors.error }}>
+                {t("settings.deleteAccount")}
+              </Text>
+              <Pressable onPress={() => { Keyboard.dismiss(); setActiveModal("none"); }}>
+                <Ionicons name="close" size={24} color={theme.colors.onSurfaceVariant} />
+              </Pressable>
+            </View>
+            <View style={styles.modalBody}>
+              <View style={[styles.deleteIconContainer, { backgroundColor: theme.colors.errorContainer }]}>
+                <MaterialCommunityIcons name="alert" size={48} color={theme.colors.error} />
+              </View>
+              <Text variant="bodyLarge" style={[styles.deleteWarningText, { color: theme.colors.onSurface }]}>
+                {t("settings.deleteAccountWarning")}
+              </Text>
+              <Text variant="bodyMedium" style={[styles.deleteSubtext, { color: theme.colors.onSurfaceVariant }]}>
+                {t("settings.deleteAccountWarningDescription")}
+              </Text>
+              <View style={styles.modalButtons}>
+                <Button
+                  mode="outlined"
+                  onPress={() => setActiveModal("none")}
+                  style={styles.modalButton}
+                >
+                  {t("common.cancel")}
+                </Button>
+                <Button
+                  mode="contained"
+                  onPress={() => setActiveModal("deleteConfirm")}
+                  buttonColor={theme.colors.error}
+                  style={styles.modalButton}
+                >
+                  {t("settings.deleteAccount")}
+                </Button>
+              </View>
+            </View>
+          </View>
+        </KeyboardAvoidingView>
+      )}
+
+      {/* Delete Account Confirmation Modal */}
+      {activeModal === "deleteConfirm" && (
+        <KeyboardAvoidingView
+          behavior={Platform.OS === "ios" ? "padding" : "height"}
+          style={styles.modalOverlay}
+        >
+          <View style={[styles.modalContent, { backgroundColor: theme.colors.surface }]}>
+            <View style={styles.modalHeader}>
+              <Text variant="titleLarge" style={{ color: theme.colors.error }}>
+                {t("settings.deleteAccountConfirmTitle", "Confirm Account Deletion")}
+              </Text>
+              <Pressable onPress={() => { Keyboard.dismiss(); setActiveModal("none"); setDeleteConfirmText(""); }}>
+                <Ionicons name="close" size={24} color={theme.colors.onSurfaceVariant} />
+              </Pressable>
+            </View>
+            <View style={styles.modalBody}>
+              <View style={[styles.deleteIconContainer, { backgroundColor: theme.colors.errorContainer }]}>
+                <MaterialCommunityIcons name="alert-octagon" size={48} color={theme.colors.error} />
+              </View>
+              <Text variant="bodyLarge" style={[styles.deleteWarningText, { color: theme.colors.onSurface }]}>
+                {t("settings.deleteAccountFinalWarning", "This action is irreversible")}
+              </Text>
+              <Text variant="bodyMedium" style={[styles.deleteSubtext, { color: theme.colors.onSurfaceVariant }]}>
+                {t("settings.deleteAccountTypeConfirm", "Type DELETE to confirm")}
+              </Text>
+              <View style={styles.confirmInputContainer}>
+                <TextInput
+                  value={deleteConfirmText}
+                  onChangeText={setDeleteConfirmText}
+                  placeholder="DELETE"
+                  placeholderTextColor="#9E9E9E"
+                  style={[
+                    styles.confirmInput,
+                    {
+                      color: theme.colors.onSurface,
+                      borderColor: deleteConfirmText === "DELETE" ? theme.colors.primary : theme.colors.outline,
+                    },
+                  ]}
+                  autoFocus
+                  autoCapitalize="characters"
+                />
+              </View>
+              <View style={styles.modalButtons}>
+                <Button
+                  mode="outlined"
+                  onPress={() => { setActiveModal("none"); setDeleteConfirmText(""); }}
+                  style={styles.modalButton}
+                >
+                  {t("common.cancel")}
+                </Button>
+                <Button
+                  mode="contained"
+                  onPress={handleDeleteAccount}
+                  loading={deletingAccount}
+                  buttonColor={theme.colors.error}
+                  disabled={deleteConfirmText !== "DELETE"}
+                  style={styles.modalButton}
+                >
+                  {t("settings.deleteAccount")}
+                </Button>
+              </View>
+            </View>
+          </View>
+        </KeyboardAvoidingView>
+      )}
     </SafeAreaView>
   );
 }
@@ -475,6 +680,11 @@ const styles = StyleSheet.create({
     borderRadius: 28,
     justifyContent: "center",
     alignItems: "center",
+    overflow: "hidden",
+  },
+  avatar: {
+    width: 56,
+    height: 56,
   },
   profileInfo: {
     flex: 1,
@@ -506,5 +716,95 @@ const styles = StyleSheet.create({
     padding: 16,
     marginTop: 16,
     borderRadius: 8,
+  },
+  modalOverlay: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 24,
+  },
+  modalContent: {
+    width: '100%',
+    borderRadius: 16,
+    overflow: 'hidden',
+  },
+  modalHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    padding: 20,
+    borderBottomWidth: 1,
+    borderBottomColor: 'rgba(0, 0, 0, 0.1)',
+  },
+  modalBody: {
+    padding: 24,
+    alignItems: 'center',
+  },
+  contactIconContainer: {
+    width: 64,
+    height: 64,
+    borderRadius: 32,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 16,
+  },
+  contactText: {
+    textAlign: 'center',
+    marginBottom: 8,
+  },
+  contactSubtext: {
+    textAlign: 'center',
+    marginBottom: 8,
+  },
+  contactEmail: {
+    textAlign: 'center',
+  },
+  deleteIconContainer: {
+    width: 96,
+    height: 96,
+    borderRadius: 48,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 16,
+  },
+  deleteWarningText: {
+    textAlign: 'center',
+    marginBottom: 8,
+    fontWeight: '600',
+  },
+  deleteSubtext: {
+    textAlign: 'center',
+    marginBottom: 24,
+    lineHeight: 20,
+  },
+  modalButtons: {
+    flexDirection: 'row',
+    gap: 12,
+    width: '100%',
+  },
+  modalButton: {
+    flex: 1,
+  },
+  confirmInputContainer: {
+    alignSelf: 'center',
+    marginBottom: 16,
+  },
+  confirmInput: {
+    width: 'auto',
+    minWidth: 160,
+    paddingHorizontal: 20,
+    paddingVertical: 14,
+    borderRadius: 12,
+    borderWidth: 2,
+    fontSize: 22,
+    textAlign: 'center',
+    fontWeight: 'bold',
+    letterSpacing: 6,
+    backgroundColor: 'transparent',
   },
 });

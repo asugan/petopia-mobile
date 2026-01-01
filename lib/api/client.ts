@@ -166,8 +166,8 @@ export const api = {
   },
 
   // DELETE request
-  delete: async <T = unknown>(url: string): Promise<ApiResponse<T>> => {
-    const response = await apiClient.delete<ApiResponse<T>>(url);
+  delete: async <T = unknown>(url: string, data?: unknown): Promise<ApiResponse<T>> => {
+    const response = await apiClient.delete<ApiResponse<T>>(url, { data });
     return response.data;
   },
 
