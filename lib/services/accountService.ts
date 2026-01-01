@@ -8,10 +8,11 @@ export class AccountService {
   /**
    * Delete the current user's account
    */
-  async deleteAccount(): Promise<ApiResponse<{ success: boolean }>> {
+  async deleteAccount(confirmText: string = "DELETE"): Promise<ApiResponse<{ success: boolean }>> {
     try {
       const response = await api.delete<{ success: boolean }>(
-        ENV.ENDPOINTS.ACCOUNT_DELETE
+        ENV.ENDPOINTS.ACCOUNT_DELETE,
+        { confirmText }
       );
 
       if (response.success) {

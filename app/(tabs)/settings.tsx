@@ -131,7 +131,7 @@ export default function SettingsScreen() {
   const handleDeleteAccount = async () => {
     setDeletingAccount(true);
     try {
-      const result = await accountService.deleteAccount();
+      const result = await accountService.deleteAccount(deleteConfirmText);
       if (result.success) {
         Alert.alert(
           t("settings.accountDeletedTitle"),
