@@ -64,11 +64,7 @@ export default function HomeScreen() {
           contentContainerStyle={styles.scrollContent}
           showsVerticalScrollIndicator={false}
         >
-          <HomeHeader
-            user={user}
-            petsCount={data.pets?.length || 0}
-            eventsCount={data.upcomingEvents?.length || 0}
-          />
+          <HomeHeader user={user} />
 
           {/* My Pets Section */}
           <View style={styles.section}>
