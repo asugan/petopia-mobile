@@ -122,6 +122,7 @@ export default function SettingsScreen() {
             await updateBaseCurrency(currency);
             await queryClient.invalidateQueries({ predicate: (query) => query.queryKey[0] === "expenses" });
             await queryClient.invalidateQueries({ predicate: (query) => query.queryKey[0] === "budget" });
+            await queryClient.invalidateQueries({ predicate: (query) => query.queryKey[0] === "health-records" });
           },
         },
       ]
