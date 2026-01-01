@@ -9,7 +9,6 @@ import { PetPickerBase } from '@/components/PetPicker';
 import { ProtectedRoute } from '@/components/subscription';
 import { FeedingScheduleCard } from '@/components/feeding/FeedingScheduleCard';
 import { useTheme } from '@/lib/theme';
-import { formatCurrency } from '@/lib/utils/currency';
 import { usePets } from '@/lib/hooks/usePets';
 import { useHealthRecords } from '@/lib/hooks/useHealthRecords';
 import {
@@ -24,6 +23,7 @@ import { FeedingScheduleModal } from '@/components/FeedingScheduleModal';
 import { TURKCE_LABELS, HEALTH_RECORD_COLORS, HEALTH_RECORD_ICONS, LAYOUT } from '@/constants';
 import { useUserSettingsStore } from '@/stores/userSettingsStore';
 import type { HealthRecord, FeedingSchedule } from '@/lib/types';
+import MoneyDisplay from '@/components/ui/MoneyDisplay';
 
 
 type CareTabValue = 'health' | 'feeding';
@@ -254,9 +254,13 @@ export default function CareScreen() {
                   </Text>
                 )}
                 {record.cost !== undefined && record.cost !== null && (
-                  <Text variant="bodySmall" style={{ color: theme.colors.onSurfaceVariant }}>
-                    {formatCurrency(record.cost, baseCurrency)}
-                  </Text>
+                  <MoneyDisplay
+                    amount={record.cost}
+                    currency={(record as { currency?: string }).currency}
+                    baseCurrency={baseCurrency}
+                    amountBase={(record as { amountBase?: number }).amountBase}
+                    size="small"
+                  />
                 )}
               </View>
               <MaterialCommunityIcons

@@ -6,8 +6,8 @@ import { useTranslation } from 'react-i18next';
 import { Ionicons } from '@expo/vector-icons';
 import { usePets } from '@/lib/hooks/usePets';
 import type { HealthRecord } from '@/lib/types';
-import { formatCurrency } from '@/lib/utils/currency';
 import { useUserSettingsStore } from '@/stores/userSettingsStore';
+import MoneyDisplay from '@/components/ui/MoneyDisplay';
 
 interface HealthOverviewProps {
   healthRecords?: HealthRecord[];
@@ -59,14 +59,19 @@ const HealthOverview: React.FC<HealthOverviewProps> = ({
   };
 
   // Map health records for display (already sorted and limited by hook)
-  const healthItems = healthRecords.map((record) => ({
-    _id: record._id,
-    title: record.title || t(`health.types.${record.type}`, record.type),
-    petId: record.petId,
-    date: record.date,
-    type: record.type,
-    cost: record.cost,
-  }));
+  const healthItems = healthRecords.map((record) => {
+    const recordAny = record as Record<string, unknown>;
+    return {
+      _id: record._id,
+      title: record.title || t(`health.types.${record.type}`, record.type),
+      petId: record.petId,
+      date: record.date,
+      type: record.type,
+      cost: record.cost,
+      currency: recordAny.currency as string | undefined,
+      amountBase: recordAny.amountBase as number | undefined,
+    };
+  });
 
   if (loading) {
     return (
@@ -120,9 +125,13 @@ const HealthOverview: React.FC<HealthOverviewProps> = ({
                     {item.title}{petName ? ` - ${petName}` : ''}
                   </Text>
                   {item.cost !== undefined && item.cost !== null && (
-                    <Text variant="bodySmall" style={{ color: theme.colors.onSurfaceVariant }}>
-                      {formatCurrency(item.cost, baseCurrency)}
-                    </Text>
+                    <MoneyDisplay
+                      amount={item.cost}
+                      currency={item.currency}
+                      baseCurrency={baseCurrency}
+                      amountBase={item.amountBase}
+                      size="small"
+                    />
                   )}
                 </View>
                 <Text variant="bodySmall" style={{ color: theme.colors.onSurfaceVariant }}>

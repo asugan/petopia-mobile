@@ -1,6 +1,7 @@
 import { z } from 'zod';
 import { toUTCWithOffset, isValidUTCISOString } from '@/lib/utils/dateConversion';
 import { createObjectIdSchema, t } from './createZodI18n';
+import { isValidCurrency } from './expenseSchema';
 
 // Custom validation regex for Turkish characters
 const TURKISH_TEXT_REGEX = /^[a-zA-ZçÇğĞıİöÖşŞüÜ\s]+$/;
@@ -139,19 +140,35 @@ const BaseHealthRecordSchema = () => {
       .optional()
       .transform(val => val === undefined ? undefined : parseFloat(val.toFixed(2))),
 
+    currency: z
+      .string()
+      .optional()
+      .transform((val) => (val && val.trim() !== '' ? val.trim() : undefined))
+      .refine((val) => val === undefined || isValidCurrency(val), {
+        message: t('forms.validation.expense.currencyInvalid'),
+      }),
+
+    amountBase: z
+      .number()
+      .optional(),
+
     notes: z
       .string()
       .max(2000, { message: t('forms.validation.healthRecord.notesMax') })
       .optional()
       .transform(val => val?.trim() || undefined),
 
-    treatmentPlan: z.array(z.object({
-      name: z.string().min(1),
-      dosage: z.string().min(1),
-      frequency: z.string().min(1),
-      duration: z.string().optional(),
-      notes: z.string().optional(),
-    })).optional(),
+    treatmentPlan: z
+      .array(
+        z.object({
+          name: z.string().min(1, { message: t('forms.validation.required') }),
+          dosage: z.string().min(1, { message: t('forms.validation.required') }),
+          frequency: z.string().min(1, { message: t('forms.validation.required') }),
+          duration: z.string().optional(),
+          notes: z.string().optional(),
+        })
+      )
+      .optional(),
 
     nextVisitEventId: objectIdSchema.optional(),
   });
@@ -223,6 +240,18 @@ const BaseHealthRecordFormSchema = () => {
       .max(100000, { message: t('forms.validation.healthRecord.costMaxForm') })
       .optional()
       .nullable(),
+
+    currency: z
+      .string()
+      .optional()
+      .transform((val) => (val && val.trim() !== '' ? val.trim() : undefined))
+      .refine((val) => val === undefined || isValidCurrency(val), {
+        message: t('forms.validation.expense.currencyInvalid'),
+      }),
+
+    amountBase: z
+      .number()
+      .optional(),
 
     notes: z
       .string()
