@@ -59,19 +59,16 @@ const HealthOverview: React.FC<HealthOverviewProps> = ({
   };
 
   // Map health records for display (already sorted and limited by hook)
-  const healthItems = healthRecords.map((record) => {
-    const recordAny = record as Record<string, unknown>;
-    return {
-      _id: record._id,
-      title: record.title || t(`health.types.${record.type}`, record.type),
-      petId: record.petId,
-      date: record.date,
-      type: record.type,
-      cost: record.cost,
-      currency: recordAny.currency as string | undefined,
-      amountBase: recordAny.amountBase as number | undefined,
-    };
-  });
+  const healthItems = healthRecords.map((record) => ({
+    _id: record._id,
+    title: record.title || t(`health.types.${record.type}`, record.type),
+    petId: record.petId,
+    date: record.date,
+    type: record.type,
+    cost: record.cost,
+    currency: record.currency,
+    amountBase: record.amountBase,
+  }));
 
   if (loading) {
     return (

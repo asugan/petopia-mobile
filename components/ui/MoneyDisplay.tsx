@@ -77,7 +77,8 @@ export default function MoneyDisplay({
         </Text>
         {currency && resolvedCurrency !== resolvedBaseCurrency && (
           <Text variant={variants.secondary} style={[styles.secondary, { color: theme.colors.onSurfaceVariant }]}>
-            ({formatCurrency(0, resolvedCurrency)})
+            {/* Currency hint when a converted amount isn't available. */}
+            ({resolvedCurrency})
           </Text>
         )}
       </View>
