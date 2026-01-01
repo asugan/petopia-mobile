@@ -213,6 +213,8 @@ export default function EventDetailScreen() {
         <TouchableOpacity
           onPress={() => router.back()}
           style={[styles.iconButton, { backgroundColor: COLORS.blackOp20 }]}
+          accessibilityLabel={t('common.back')}
+          accessibilityRole="button"
         >
           <MaterialIcons name="arrow-back" size={24} color="#FFF" />
         </TouchableOpacity>

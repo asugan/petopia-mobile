@@ -141,9 +141,9 @@
     "shareMessage": "{{name}} {{breed}}",
     "viewActivityHistory": "Aktivite geçmişini görüntüle",
     "viewHealthDetails": "Sağlık detaylarını görüntüle",
-    "sharePet": "Pet bilgilerini paylaş",
-    "editPetHint": "Pet detaylarını düzenler",
-    "sharePetHint": "Bu petin bilgilerini başkalarıyla paylaşır"
+    "sharePet": "Evcil hayvan bilgilerini paylaş",
+    "editPetHint": "Evcil hayvan detaylarını düzenler",
+    "sharePetHint": "Bu evcil hayvanın bilgilerini başkalarıyla paylaşır"
   },
   "health": {
     "healthRecords": "Sağlık Kayıtları",

@@ -320,6 +320,7 @@ export default function PetDetailScreen() {
             onPress={handleShare}
             style={[styles.iconButtonBlur, { backgroundColor: theme.colors.overlay, borderColor: theme.colors.overlayLight }]}
             accessibilityLabel={t('pets.sharePet')}
+            accessibilityHint={t('pets.sharePetHint')}
             accessibilityRole="button"
           >
             <MaterialCommunityIcons name="share-variant" size={24} color={theme.colors.inverseOnSurface} />
