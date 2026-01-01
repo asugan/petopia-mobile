@@ -31,6 +31,7 @@ import { useEventReminderStore } from '@/stores/eventReminderStore';
 
 export default function EventDetailScreen() {
   const { width } = useWindowDimensions();
+  const FOOTER_HEIGHT = 80; // padding(16) + button height(48) + bottom padding(16)
   const { theme } = useTheme();
   const { t, i18n } = useTranslation();
   const router = useRouter();
@@ -251,10 +252,22 @@ export default function EventDetailScreen() {
         </TouchableOpacity>
         
         <View style={styles.headerActions}>
-          <TouchableOpacity onPress={handleDuplicate} style={[styles.iconButton, { backgroundColor: COLORS.blackOp20 }]}>
+          <TouchableOpacity
+            onPress={handleDuplicate}
+            style={[styles.iconButton, { backgroundColor: COLORS.blackOp20 }]}
+            accessibilityLabel={t('events.duplicateEvent')}
+            accessibilityHint={t('events.duplicateEventHint')}
+            accessibilityRole="button"
+          >
             <MaterialIcons name="content-copy" size={20} color={COLORS.white} />
           </TouchableOpacity>
-          <TouchableOpacity onPress={handleShare} style={[styles.iconButton, { backgroundColor: COLORS.blackOp20 }]}>
+          <TouchableOpacity
+            onPress={handleShare}
+            style={[styles.iconButton, { backgroundColor: COLORS.blackOp20 }]}
+            accessibilityLabel={t('events.shareEvent')}
+            accessibilityHint={t('events.shareEventHint')}
+            accessibilityRole="button"
+          >
             <MaterialIcons name="share" size={20} color={COLORS.white} />
           </TouchableOpacity>
           <TouchableOpacity style={[styles.iconButton, { backgroundColor: COLORS.blackOp20 }]}>
@@ -263,7 +276,7 @@ export default function EventDetailScreen() {
         </View>
       </View>
 
-      <ScrollView style={styles.scrollView} contentContainerStyle={{ paddingBottom: 120 }}>
+      <ScrollView style={styles.scrollView} contentContainerStyle={{ paddingBottom: FOOTER_HEIGHT + insets.bottom }}>
         <View style={styles.heroContainer}>
           <Image
             source={{ uri: heroImage }}
@@ -380,6 +393,9 @@ export default function EventDetailScreen() {
           <TouchableOpacity
             onPress={handleEdit}
             style={footerStyles.editButton}
+            accessibilityLabel={t('common.edit')}
+            accessibilityHint={t('events.editEventHint')}
+            accessibilityRole="button"
           >
             <MaterialIcons name="edit" size={20} color={theme.colors.onPrimary} />
             <Text style={footerStyles.editButtonText}>{t('common.edit')}</Text>
@@ -388,6 +404,9 @@ export default function EventDetailScreen() {
           <TouchableOpacity
             onPress={handleShare}
             style={[footerStyles.iconButton, { borderColor: theme.colors.outlineVariant, backgroundColor: theme.colors.surfaceVariant }]}
+            accessibilityLabel={t('events.shareEvent')}
+            accessibilityHint={t('events.shareEventHint')}
+            accessibilityRole="button"
           >
             <MaterialIcons name="share" size={22} color={theme.colors.onSurfaceVariant} />
           </TouchableOpacity>

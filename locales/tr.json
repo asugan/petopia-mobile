@@ -141,7 +141,9 @@
     "shareMessage": "{{name}} {{breed}}",
     "viewActivityHistory": "Aktivite geçmişini görüntüle",
     "viewHealthDetails": "Sağlık detaylarını görüntüle",
-    "sharePet": "Pet bilgilerini paylaş"
+    "sharePet": "Pet bilgilerini paylaş",
+    "editPetHint": "Pet detaylarını düzenler",
+    "sharePetHint": "Bu petin bilgilerini başkalarıyla paylaşır"
   },
   "health": {
     "healthRecords": "Sağlık Kayıtları",
@@ -218,7 +220,10 @@
     "noNextVisit": "Planlanmış kontrol yok",
     "noTreatmentPlan": "Tedavi planı bulunmuyor",
     "nextVisitDate": "Kontrol Tarihi",
-    "nextVisitDescription": "Bir sonraki kontrol için otomatik hatırlatıcı oluşturun"
+    "nextVisitDescription": "Bir sonraki kontrol için otomatik hatırlatıcı oluşturun",
+    "editRecordHint": "Sağlık kaydı detaylarını düzenler",
+    "shareRecord": "Sağlık Kaydını Paylaş",
+    "shareRecordHint": "Bu sağlık kaydını başkalarıyla paylaşır"
   },
   "calendar": {
     "calendar": "Takvim",
@@ -314,7 +319,12 @@
       "standard": "4 adım (3g, 1g, 1s, etkinlik zamanı)",
       "compact": "3 adım (1g, 1s, etkinlik zamanı)",
       "minimal": "Hızlı (1s, etkinlik zamanı)"
-    }
+    },
+    "duplicateEvent": "Etkinliği Kopyala",
+    "duplicateEventHint": "Bu etkinliğin bir kopyasını ertesi gün için oluşturur",
+    "shareEvent": "Etkinliği Paylaş",
+    "shareEventHint": "Bu etkinliği başkalarıyla paylaşır",
+    "editEventHint": "Etkinlik detaylarını düzenler"
   },
   "eventForm": {
     "suggestions": {

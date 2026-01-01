@@ -149,7 +149,9 @@
     "shareMessage": "{{name}} {{breed}}",
     "viewActivityHistory": "View activity history",
     "viewHealthDetails": "View health details",
-    "sharePet": "Share pet information"
+    "sharePet": "Share pet information",
+    "editPetHint": "Edits the pet details",
+    "sharePetHint": "Shares this pet's information with others"
   },
   "health": {
     "healthRecords": "Health Records",
@@ -233,7 +235,10 @@
     "noNextVisit": "No next visit scheduled",
     "noTreatmentPlan": "No treatment plan",
     "nextVisitDate": "Next Visit Date",
-    "nextVisitDescription": "Create an automatic reminder for the next visit"
+    "nextVisitDescription": "Create an automatic reminder for the next visit",
+    "editRecordHint": "Edits the health record details",
+    "shareRecord": "Share Health Record",
+    "shareRecordHint": "Shares this health record with others"
   },
   "calendar": {
     "calendar": "Calendar",
@@ -338,7 +343,12 @@
       "standard": "4-step (3d, 1d, 1h, at time)",
       "compact": "3-step (1d, 1h, at time)",
       "minimal": "Quick (1h, at time)"
-    }
+    },
+    "duplicateEvent": "Duplicate Event",
+    "duplicateEventHint": "Creates a copy of this event for the next day",
+    "shareEvent": "Share Event",
+    "shareEventHint": "Shares this event with others",
+    "editEventHint": "Edits the event details"
   },
   "eventForm": {
     "suggestions": {

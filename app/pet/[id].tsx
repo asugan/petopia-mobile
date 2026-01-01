@@ -510,7 +510,8 @@ export default function PetDetailScreen() {
           <TouchableOpacity
             style={footerStyles.editButton}
             onPress={handleEdit}
-            accessibilityLabel={t('pets.editPet')}
+            accessibilityLabel={t('common.edit')}
+            accessibilityHint={t('pets.editPetHint')}
             accessibilityRole="button"
           >
             <MaterialIcons name="edit" size={20} color={theme.colors.onPrimary} />
@@ -521,6 +522,7 @@ export default function PetDetailScreen() {
             style={[footerStyles.iconButton, { borderColor: theme.colors.outlineVariant, backgroundColor: theme.colors.surfaceVariant }]}
             onPress={handleShare}
             accessibilityLabel={t('pets.sharePet')}
+            accessibilityHint={t('pets.sharePetHint')}
             accessibilityRole="button"
           >
             <MaterialIcons name="share" size={22} color={theme.colors.onSurfaceVariant} />
