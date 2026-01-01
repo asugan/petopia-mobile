@@ -395,6 +395,9 @@ export default function EventDetailScreen() {
           <TouchableOpacity
             onPress={handleDelete}
             style={[footerStyles.iconButton, { borderColor: theme.colors.errorContainer, backgroundColor: 'transparent' }]}
+            accessibilityLabel={t('events.deleteEvent')}
+            accessibilityHint={t('events.deleteEventConfirmation', { title: event.title })}
+            accessibilityRole="button"
           >
             <MaterialIcons name="delete" size={22} color={theme.colors.error} />
           </TouchableOpacity>

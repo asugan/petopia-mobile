@@ -418,7 +418,7 @@
     "deleteAccountWarningDescription": "Bu işlem geri alınamaz. Tüm evcil hayvanlarınız, sağlık kayıtlarınız ve verileriniz kalıcı olarak silinecektir.",
     "deleteAccountConfirmTitle": "Hesabı Silmeyi Onayla",
     "deleteAccountFinalWarning": "Bu işlem geri alınamaz; tüm verileriniz kalıcı olarak silinecektir.",
-    "deleteAccountTypeConfirm": "Silmek istediğinize emin misiniz? Lütfen işlemi onaylamak için devam edin.",
+    "deleteAccountTypeConfirm": "Silme islemini onaylamak için DELETE yazın",
     "accountDeletedTitle": "Hesap Silindi",
     "accountDeletedMessage": "Hesabınız kalıcı olarak silindi.",
     "accountDeleteError": "Hesap silinemedi. Lütfen tekrar deneyin.",
