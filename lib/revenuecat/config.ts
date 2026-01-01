@@ -55,7 +55,7 @@ export const REVENUECAT_CONFIG = {
    * Free trial duration in days (custom trial without credit card)
    * Note: This is now managed by the backend, this value is kept for reference
    */
-  TRIAL_DURATION_DAYS: 3,
+  TRIAL_DURATION_DAYS: 14,
 } as const;
 
 export type RevenueCatPlatform = 'ios' | 'android';
