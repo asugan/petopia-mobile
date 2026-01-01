@@ -55,12 +55,13 @@ export default function MoneyDisplay({
   const hasAmount = amount !== null && amount !== undefined && !Number.isNaN(amount);
   const hasAmountBase = amountBase !== null && amountBase !== undefined && !Number.isNaN(amountBase);
 
-  const showConverted = resolvedCurrency !== resolvedBaseCurrency && hasAmountBase;
+  const showConverted = hasAmount && resolvedCurrency !== resolvedBaseCurrency && hasAmountBase;
+  const showAmountBaseAsPrimary = !hasAmount && hasAmountBase;
 
   const variants = getVariants(size);
   const primaryColor = color ?? theme.colors.onSurface;
 
-  if (!hasAmount) {
+  if (!hasAmount && !hasAmountBase) {
     return (
       <Text variant={variants.primary} style={[styles.primary, { color: theme.colors.onSurfaceVariant }]}>
         -
@@ -68,10 +69,25 @@ export default function MoneyDisplay({
     );
   }
 
+  if (showAmountBaseAsPrimary) {
+    return (
+      <View style={styles.row}>
+        <Text variant={variants.primary} style={[styles.primary, { color: primaryColor }]}>
+          {formatCurrency(amountBase!, resolvedBaseCurrency)}
+        </Text>
+        {currency && resolvedCurrency !== resolvedBaseCurrency && (
+          <Text variant={variants.secondary} style={[styles.secondary, { color: theme.colors.onSurfaceVariant }]}>
+            ({formatCurrency(0, resolvedCurrency)})
+          </Text>
+        )}
+      </View>
+    );
+  }
+
   return (
     <View style={styles.row}>
       <Text variant={variants.primary} style={[styles.primary, { color: primaryColor }]}>
-        {formatCurrency(amount, resolvedCurrency)}
+        {formatCurrency(amount!, resolvedCurrency)}
       </Text>
       {!showConverted ? null : (
         <Text variant={variants.secondary} style={[styles.secondary, { color: theme.colors.onSurfaceVariant }]}>

@@ -473,6 +473,13 @@ export default function HealthRecordDetailScreen() {
   const handleShare = async () => {
     if (!healthRecord) return;
 
+    const recordAny = healthRecord as Record<string, unknown>;
+    const recordCurrency = (recordAny.currency as string) || baseCurrency;
+    const recordBaseCurrency = (recordAny.baseCurrency as string) || baseCurrency;
+    const hasCost = recordAny.cost != null;
+    const hasAmountBase = recordAny.amountBase != null;
+    const showConverted = hasCost && recordCurrency !== recordBaseCurrency && hasAmountBase;
+
     const shareContent = `
 ${healthRecord.title}
 ${t('pets.type')}: ${TURKCE_LABELS.HEALTH_RECORD_TYPES[healthRecord.type as keyof typeof TURKCE_LABELS.HEALTH_RECORD_TYPES]}
@@ -480,7 +487,7 @@ ${t('events.date')}: ${new Date(healthRecord.date).toLocaleDateString(dateLocale
 
 ${healthRecord.veterinarian ? `${t('healthRecords.veterinarian')}: Dr. ${healthRecord.veterinarian}` : ''}
 ${healthRecord.clinic ? `${t('healthRecords.clinic')}: ${healthRecord.clinic}` : ''}
-${healthRecord.cost != null ? `${t('healthRecords.cost')}: ${formatCurrency(healthRecord.cost, ((healthRecord as { currency?: string }).currency ?? baseCurrency) as "TRY" | "USD" | "EUR" | "GBP")}${(healthRecord as { currency?: string }).currency !== baseCurrency && (healthRecord as { amountBase?: number }).amountBase != null ? ` (≈ ${formatCurrency((healthRecord as { amountBase?: number }).amountBase!, baseCurrency)})` : ''}` : ''}
+${hasCost ? `${t('healthRecords.cost')}: ${formatCurrency(recordAny.cost as number, recordCurrency as "TRY" | "USD" | "EUR" | "GBP")}${showConverted ? ` (≈ ${formatCurrency(recordAny.amountBase as number, recordBaseCurrency as "TRY" | "USD" | "EUR" | "GBP")})` : ''}` : ''}
 ${healthRecord.description ? `${t('healthRecords.descriptionField')}: ${healthRecord.description}` : ''}
 ${healthRecord.notes ? `${t('common.notes')}: ${healthRecord.notes}` : ''}
     `.trim();
@@ -649,18 +656,16 @@ ${healthRecord.notes ? `${t('common.notes')}: ${healthRecord.notes}` : ''}
                   <MoneyDisplay
                     amount={healthRecord.cost}
                     currency={(healthRecord as { currency?: string }).currency}
-                    baseCurrency={baseCurrency}
+                    baseCurrency={(healthRecord as { baseCurrency?: string }).baseCurrency || baseCurrency}
                     amountBase={(healthRecord as { amountBase?: number }).amountBase}
                   />
                 </View>
                 <MaterialCommunityIcons name="cash" size={20} color={theme.colors.primary} />
               </View>
-              {healthRecord.cost != null ? (
-                <View style={styles.paidBadge}>
-                  <MaterialCommunityIcons name="check-circle" size={14} color={theme.colors.primary} />
-                  <Text style={styles.paidText}>{t('common.paid')}</Text>
-                </View>
-              ) : null}
+              <View style={styles.paidBadge}>
+                <MaterialCommunityIcons name="check-circle" size={14} color={theme.colors.primary} />
+                <Text style={styles.paidText}>{healthRecord.cost != null ? t('common.paid') : '-'}</Text>
+              </View>
             </View>
           </View>
 

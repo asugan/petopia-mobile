@@ -124,15 +124,13 @@ const HealthOverview: React.FC<HealthOverviewProps> = ({
                   <Text variant="bodyMedium" style={{ color: theme.colors.onSurface }}>
                     {item.title}{petName ? ` - ${petName}` : ''}
                   </Text>
-                  {item.cost !== undefined && item.cost !== null && (
-                    <MoneyDisplay
-                      amount={item.cost}
-                      currency={item.currency}
-                      baseCurrency={baseCurrency}
-                      amountBase={item.amountBase}
-                      size="small"
-                    />
-                  )}
+                  <MoneyDisplay
+                    amount={item.cost}
+                    currency={item.currency}
+                    baseCurrency={baseCurrency}
+                    amountBase={item.amountBase}
+                    size="small"
+                  />
                 </View>
                 <Text variant="bodySmall" style={{ color: theme.colors.onSurfaceVariant }}>
                   {formatDate(item.date)}

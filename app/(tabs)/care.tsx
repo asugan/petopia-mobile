@@ -253,15 +253,13 @@ export default function CareScreen() {
                     Dr. {record.veterinarian}
                   </Text>
                 )}
-                {record.cost !== undefined && record.cost !== null && (
-                  <MoneyDisplay
-                    amount={record.cost}
-                    currency={(record as { currency?: string }).currency}
-                    baseCurrency={baseCurrency}
-                    amountBase={(record as { amountBase?: number }).amountBase}
-                    size="small"
-                  />
-                )}
+                <MoneyDisplay
+                  amount={record.cost}
+                  currency={(record as { currency?: string }).currency}
+                  baseCurrency={baseCurrency}
+                  amountBase={(record as { amountBase?: number }).amountBase}
+                  size="small"
+                />
               </View>
               <MaterialCommunityIcons
                 name="chevron-right"

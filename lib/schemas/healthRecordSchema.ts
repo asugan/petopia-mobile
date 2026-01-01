@@ -152,6 +152,13 @@ const BaseHealthRecordSchema = () => {
       .number()
       .optional(),
 
+    baseCurrency: z
+      .string()
+      .optional()
+      .refine((val) => val === undefined || isValidCurrency(val), {
+        message: t('forms.validation.expense.currencyInvalid'),
+      }),
+
     notes: z
       .string()
       .max(2000, { message: t('forms.validation.healthRecord.notesMax') })
@@ -252,6 +259,13 @@ const BaseHealthRecordFormSchema = () => {
     amountBase: z
       .number()
       .optional(),
+
+    baseCurrency: z
+      .string()
+      .optional()
+      .refine((val) => val === undefined || isValidCurrency(val), {
+        message: t('forms.validation.expense.currencyInvalid'),
+      }),
 
     notes: z
       .string()
