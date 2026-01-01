@@ -186,6 +186,57 @@ export default function EventDetailScreen() {
   const eventTypeLabel = getEventTypeLabel(event.type, t);
   const heroImage = pet?.profilePhoto || "https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?ixlib=rb-4.0.3&auto=format&fit=crop&w=1327&q=80";
 
+  const footerStyles = useMemo(() => StyleSheet.create({
+    footer: {
+      position: 'absolute',
+      bottom: 0,
+      left: 0,
+      right: 0,
+      padding: 16,
+      paddingBottom: insets.bottom + 16,
+      backgroundColor: theme.colors.surface,
+      borderTopWidth: 1,
+      borderTopColor: theme.colors.outlineVariant,
+      zIndex: 30,
+    },
+    footerInner: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: 12,
+      maxWidth: 500,
+      alignSelf: 'center',
+      width: '100%',
+    },
+    editButton: {
+      flex: 1,
+      height: 48,
+      borderRadius: 12,
+      flexDirection: 'row',
+      justifyContent: 'center',
+      alignItems: 'center',
+      gap: 8,
+      backgroundColor: theme.colors.primary,
+      shadowColor: theme.colors.primary,
+      shadowOffset: { width: 0, height: 4 },
+      shadowOpacity: 0.2,
+      shadowRadius: 8,
+      elevation: 4,
+    },
+    editButtonText: {
+      color: theme.colors.onPrimary,
+      fontSize: 16,
+      fontWeight: '700',
+    },
+    iconButton: {
+      width: 48,
+      height: 48,
+      borderRadius: 12,
+      justifyContent: 'center',
+      alignItems: 'center',
+      borderWidth: 1,
+    },
+  }), [theme, insets]);
+
   return (
     <View style={[styles.container, { backgroundColor: COLORS.backgroundDark }]}>
       <Stack.Screen options={{ headerShown: false }} />
@@ -200,6 +251,9 @@ export default function EventDetailScreen() {
         </TouchableOpacity>
         
         <View style={styles.headerActions}>
+          <TouchableOpacity onPress={handleDuplicate} style={[styles.iconButton, { backgroundColor: COLORS.blackOp20 }]}>
+            <MaterialIcons name="content-copy" size={20} color={COLORS.white} />
+          </TouchableOpacity>
           <TouchableOpacity onPress={handleShare} style={[styles.iconButton, { backgroundColor: COLORS.blackOp20 }]}>
             <MaterialIcons name="share" size={20} color={COLORS.white} />
           </TouchableOpacity>
@@ -321,24 +375,28 @@ export default function EventDetailScreen() {
         </View>
       </ScrollView>
 
-      <View style={[styles.footer, { paddingBottom: insets.bottom + 10, backgroundColor: COLORS.surfaceDarker }]}>
-        <View style={styles.footerGrid}>
-          <TouchableOpacity onPress={handleEdit} style={styles.footerIconButton}>
-            <MaterialIcons name="edit" size={24} color={COLORS.gray400} />
-            <Text style={[styles.footerIconText, { color: COLORS.gray400 }]}>{t('common.edit')}</Text>
-          </TouchableOpacity>
-          
-          <TouchableOpacity onPress={handleDelete} style={styles.footerIconButton}>
-            <MaterialIcons name="delete" size={24} color={COLORS.gray400} />
-            <Text style={[styles.footerIconText, { color: COLORS.gray400 }]}>{t('common.delete')}</Text>
+      <View style={footerStyles.footer}>
+        <View style={footerStyles.footerInner}>
+          <TouchableOpacity
+            onPress={handleEdit}
+            style={footerStyles.editButton}
+          >
+            <MaterialIcons name="edit" size={20} color={theme.colors.onPrimary} />
+            <Text style={footerStyles.editButtonText}>{t('common.edit')}</Text>
           </TouchableOpacity>
 
-          <TouchableOpacity 
-            onPress={handleDuplicate}
-            style={[styles.addToCalendarButton, { backgroundColor: COLORS.primary, shadowColor: COLORS.primary }]}
+          <TouchableOpacity
+            onPress={handleShare}
+            style={[footerStyles.iconButton, { borderColor: theme.colors.outlineVariant, backgroundColor: theme.colors.surfaceVariant }]}
           >
-            <MaterialIcons name="content-copy" size={20} color="black" />
-            <Text style={styles.addToCalendarText}>{t('events.duplicate')}</Text>
+            <MaterialIcons name="share" size={22} color={theme.colors.onSurfaceVariant} />
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            onPress={handleDelete}
+            style={[footerStyles.iconButton, { borderColor: theme.colors.errorContainer, backgroundColor: 'transparent' }]}
+          >
+            <MaterialIcons name="delete" size={22} color={theme.colors.error} />
           </TouchableOpacity>
         </View>
       </View>
@@ -524,51 +582,6 @@ const styles = StyleSheet.create({
   },
   reminderSubtitle: {
     fontSize: 12,
-  },
-  footer: {
-    position: 'absolute',
-    bottom: 0,
-    left: 0,
-    right: 0,
-    borderTopWidth: 1,
-    borderTopColor: 'rgba(255,255,255,0.05)',
-    padding: 16,
-    zIndex: 30,
-  },
-  footerGrid: {
-    flexDirection: 'row',
-    gap: 12,
-  },
-  footerIconButton: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: 4,
-    paddingVertical: 8,
-    borderRadius: 12,
-  },
-  footerIconText: {
-    fontSize: 10,
-    fontWeight: '500',
-  },
-  addToCalendarButton: {
-    flex: 2,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: 8,
-    borderRadius: 12,
-    paddingVertical: 12,
-    paddingHorizontal: 16,
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.2,
-    shadowRadius: 8,
-    elevation: 4,
-  },
-  addToCalendarText: {
-    color: 'black',
-    fontWeight: '700',
-    fontSize: 14,
   },
   buttonSecondary: {
     marginTop: 16,
