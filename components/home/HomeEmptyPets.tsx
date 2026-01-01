@@ -3,6 +3,7 @@ import React from "react";
 import { useTranslation } from "react-i18next";
 import {
   Image,
+  ImageSourcePropType,
   StyleProp,
   StyleSheet,
   TouchableOpacity,
@@ -16,12 +17,20 @@ import { useTheme } from "@/lib/theme";
 
 interface HomeEmptyPetsProps {
   style?: StyleProp<ViewStyle>;
+  /** Optional custom image source for the placeholder. Supports both remote ({ uri }) and local (require) sources. */
+  placeholderImageSource?: ImageSourcePropType;
 }
 
-export const HomeEmptyPets: React.FC<HomeEmptyPetsProps> = ({ style }) => {
+export const HomeEmptyPets: React.FC<HomeEmptyPetsProps> = ({
+  style,
+  placeholderImageSource,
+}) => {
   const { theme } = useTheme();
   const { t } = useTranslation();
   const router = useRouter();
+
+  // Use provided source or fall back to local asset
+  const imageSource = placeholderImageSource ?? require("@/assets/emptypet.png");
 
   // Ripple effect colors - subtle concentric circles behind pet
   const renderRipple = (index: number, size: number) => (
@@ -56,7 +65,7 @@ export const HomeEmptyPets: React.FC<HomeEmptyPetsProps> = ({ style }) => {
         {/* Pet Avatar Circle with Image */}
         <View style={styles.petAvatarContainer}>
           <Image
-            source={{ uri: "https://lh3.googleusercontent.com/aida-public/AB6AXuBkymINNRUAbt0uzW3Nn7gXD-xxGhyFdcMGJe-OR-W9wSbjjaVdB6qNjfqVWj0LjrevcuxViQR4Wl2S3VLbF79IZaFP6YjePgdhpJUOwAnt0nQeku0rtzYsnhb93_l7ntN7KyPEzMuUziP4qYW-HQc6i4GI-GtYIbCkM7k6fnbbcdoP0VeC-m4O6y43Is9To6dl1N7r234wwWdF7QKpWo06MIRrb3I9d69rWtM5ewOI5uQ6Bxdp3EiyXEysBah-uFoHqHvGFgiEtdhu" }}
+            source={imageSource}
             style={styles.petImage}
           />
 
