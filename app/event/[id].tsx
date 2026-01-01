@@ -162,30 +162,6 @@ export default function EventDetailScreen() {
     }
   }, [cancelRemindersForEvent, derivedStatus, event, markMissed, reminderStatus]);
 
-  if (isLoading) {
-    return (
-      <View style={[styles.container, styles.centerContent, { backgroundColor: COLORS.backgroundDark }]}>
-        <ActivityIndicator size="large" color={COLORS.primary} />
-      </View>
-    );
-  }
-
-  if (!event || error) {
-    return (
-      <View style={[styles.container, styles.centerContent, { backgroundColor: COLORS.backgroundDark }]}>
-        <Text style={{ color: COLORS.white }}>{t('events.eventNotFound')}</Text>
-        <TouchableOpacity onPress={() => router.back()} style={[styles.buttonSecondary, { backgroundColor: COLORS.surfaceDark }]}>
-          <Text style={{ color: COLORS.white }}>{t('common.goBack')}</Text>
-        </TouchableOpacity>
-      </View>
-    );
-  }
-
-  const dateStr = format(new Date(event.startTime), 'MMM dd, yyyy', { locale });
-  const timeStr = format(new Date(event.startTime), 'hh:mm a', { locale });
-  const eventTypeLabel = getEventTypeLabel(event.type, t);
-  const heroImage = pet?.profilePhoto || "https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?ixlib=rb-4.0.3&auto=format&fit=crop&w=1327&q=80";
-
   const footerStyles = useMemo(() => StyleSheet.create({
     footer: {
       position: 'absolute',
@@ -236,6 +212,30 @@ export default function EventDetailScreen() {
       borderWidth: 1,
     },
   }), [theme, insets]);
+
+  if (isLoading) {
+    return (
+      <View style={[styles.container, styles.centerContent, { backgroundColor: COLORS.backgroundDark }]}>
+        <ActivityIndicator size="large" color={COLORS.primary} />
+      </View>
+    );
+  }
+
+  if (!event || error) {
+    return (
+      <View style={[styles.container, styles.centerContent, { backgroundColor: COLORS.backgroundDark }]}>
+        <Text style={{ color: COLORS.white }}>{t('events.eventNotFound')}</Text>
+        <TouchableOpacity onPress={() => router.back()} style={[styles.buttonSecondary, { backgroundColor: COLORS.surfaceDark }]}>
+          <Text style={{ color: COLORS.white }}>{t('common.goBack')}</Text>
+        </TouchableOpacity>
+      </View>
+    );
+  }
+
+  const dateStr = format(new Date(event.startTime), 'MMM dd, yyyy', { locale });
+  const timeStr = format(new Date(event.startTime), 'hh:mm a', { locale });
+  const eventTypeLabel = getEventTypeLabel(event.type, t);
+  const heroImage = pet?.profilePhoto || "https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?ixlib=rb-4.0.3&auto=format&fit=crop&w=1327&q=80";
 
   return (
     <View style={[styles.container, { backgroundColor: COLORS.backgroundDark }]}>
