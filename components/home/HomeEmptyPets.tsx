@@ -2,6 +2,7 @@ import { useRouter } from "expo-router";
 import React from "react";
 import { useTranslation } from "react-i18next";
 import {
+  Image,
   StyleProp,
   StyleSheet,
   TouchableOpacity,
@@ -9,7 +10,6 @@ import {
   ViewStyle,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import Svg, { Circle, Path, Ellipse } from "react-native-svg";
 
 import { Text } from "@/components/ui";
 import { useTheme } from "@/lib/theme";
@@ -53,48 +53,12 @@ export const HomeEmptyPets: React.FC<HomeEmptyPetsProps> = ({ style }) => {
         {renderRipple(2, 140)}
         {renderRipple(3, 100)}
 
-        {/* Pet Avatar Circle with Dog Illustration */}
+        {/* Pet Avatar Circle with Image */}
         <View style={styles.petAvatarContainer}>
-          {/* Dog SVG Illustration */}
-          <Svg width={120} height={120} viewBox="0 0 120 120">
-            {/* Background circle */}
-            <Circle cx={60} cy={60} r={55} fill="#FFE4C4" />
-            {/* Left ear */}
-            <Ellipse cx={35} cy={35} rx={18} ry={22} fill="#8B4513" />
-            {/* Right ear */}
-            <Ellipse cx={85} cy={35} rx={18} ry={22} fill="#8B4513" />
-            {/* Head */}
-            <Circle cx={60} cy={55} r={35} fill="#D2691E" />
-            {/* Left eye */}
-            <Circle cx={45} cy={48} r={5} fill="#000000" />
-            <Circle cx={46} cy={46} r={2} fill="#FFFFFF" />
-            {/* Right eye */}
-            <Circle cx={75} cy={48} r={5} fill="#000000" />
-            <Circle cx={76} cy={46} r={2} fill="#FFFFFF" />
-            {/* Nose */}
-            <Ellipse cx={60} cy={62} rx={8} ry={6} fill="#000000" />
-            {/* Mouth */}
-            <Path
-              d="M 52 70 Q 60 78 68 70"
-              stroke="#000000"
-              strokeWidth={2}
-              fill="transparent"
-            />
-            {/* Tongue */}
-            <Path
-              d="M 56 75 Q 60 82 64 75"
-              fill="#FF6B6B"
-            />
-            {/* Left cheek */}
-            <Circle cx={32} cy={58} r={6} fill="#FFB6C1" opacity={0.6} />
-            {/* Right cheek */}
-            <Circle cx={88} cy={58} r={6} fill="#FFB6C1" opacity={0.6} />
-            {/* White markings on face */}
-            <Path
-              d="M 45 75 Q 60 85 75 75 Q 75 65 60 65 Q 45 65 45 75"
-              fill="#FFF8DC"
-            />
-          </Svg>
+          <Image
+            source={{ uri: "https://lh3.googleusercontent.com/aida-public/AB6AXuBkymINNRUAbt0uzW3Nn7gXD-xxGhyFdcMGJe-OR-W9wSbjjaVdB6qNjfqVWj0LjrevcuxViQR4Wl2S3VLbF79IZaFP6YjePgdhpJUOwAnt0nQeku0rtzYsnhb93_l7ntN7KyPEzMuUziP4qYW-HQc6i4GI-GtYIbCkM7k6fnbbcdoP0VeC-m4O6y43Is9To6dl1N7r234wwWdF7QKpWo06MIRrb3I9d69rWtM5ewOI5uQ6Bxdp3EiyXEysBah-uFoHqHvGFgiEtdhu" }}
+            style={styles.petImage}
+          />
 
           {/* Add Photo Badge */}
           <TouchableOpacity
@@ -168,6 +132,11 @@ const styles = StyleSheet.create({
   petAvatarContainer: {
     position: "relative",
     zIndex: 1,
+  },
+  petImage: {
+    width: 160,
+    height: 160,
+    borderRadius: 80,
   },
   addBadge: {
     position: "absolute",
