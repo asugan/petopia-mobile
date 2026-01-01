@@ -473,11 +473,10 @@ export default function HealthRecordDetailScreen() {
   const handleShare = async () => {
     if (!healthRecord) return;
 
-    const recordAny = healthRecord as Record<string, unknown>;
-    const recordCurrency = (recordAny.currency as string) || baseCurrency;
-    const recordBaseCurrency = (recordAny.baseCurrency as string) || baseCurrency;
-    const hasCost = recordAny.cost != null;
-    const hasAmountBase = recordAny.amountBase != null;
+    const recordCurrency = healthRecord.currency || baseCurrency;
+    const recordBaseCurrency = healthRecord.baseCurrency || baseCurrency;
+    const hasCost = healthRecord.cost != null;
+    const hasAmountBase = healthRecord.amountBase != null;
     const showConverted = hasCost && recordCurrency !== recordBaseCurrency && hasAmountBase;
 
     const shareContent = `
@@ -487,7 +486,7 @@ ${t('events.date')}: ${new Date(healthRecord.date).toLocaleDateString(dateLocale
 
 ${healthRecord.veterinarian ? `${t('healthRecords.veterinarian')}: Dr. ${healthRecord.veterinarian}` : ''}
 ${healthRecord.clinic ? `${t('healthRecords.clinic')}: ${healthRecord.clinic}` : ''}
-${hasCost ? `${t('healthRecords.cost')}: ${formatCurrency(recordAny.cost as number, recordCurrency as "TRY" | "USD" | "EUR" | "GBP")}${showConverted ? ` (≈ ${formatCurrency(recordAny.amountBase as number, recordBaseCurrency as "TRY" | "USD" | "EUR" | "GBP")})` : ''}` : ''}
+${hasCost ? `${t('healthRecords.cost')}: ${formatCurrency(healthRecord.cost, recordCurrency)}${showConverted ? ` (≈ ${formatCurrency(healthRecord.amountBase, recordBaseCurrency)})` : ''}` : ''}
 ${healthRecord.description ? `${t('healthRecords.descriptionField')}: ${healthRecord.description}` : ''}
 ${healthRecord.notes ? `${t('common.notes')}: ${healthRecord.notes}` : ''}
     `.trim();

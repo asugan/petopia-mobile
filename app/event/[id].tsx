@@ -43,7 +43,6 @@ export default function EventDetailScreen() {
   const { data: pet } = usePet(event?.petId || '');
   const deleteEventMutation = useDeleteEvent();
   const reminderStatus = useEventReminderStore((state) => (event?._id ? state.statuses[event._id] : undefined));
-  const presetSelections = useEventReminderStore((state) => state.presetSelections);
   const markMissed = useEventReminderStore((state) => state.markMissed);
   const markCancelled = useEventReminderStore((state) => state.markCancelled);
   const resetStatus = useEventReminderStore((state) => state.resetStatus);

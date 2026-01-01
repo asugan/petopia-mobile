@@ -1,7 +1,7 @@
 import { z } from 'zod';
 import { toUTCWithOffset, isValidUTCISOString } from '@/lib/utils/dateConversion';
 import { createObjectIdSchema, t } from './createZodI18n';
-import { CURRENCIES, isValidCurrency } from './expenseSchema';
+import { CURRENCIES } from './expenseSchema';
 
 // Custom validation regex for Turkish characters
 const TURKISH_TEXT_REGEX = /^[a-zA-ZçÇğĞıİöÖşŞüÜ\s]+$/;
@@ -141,23 +141,20 @@ const BaseHealthRecordSchema = () => {
       .transform(val => val === undefined ? undefined : parseFloat(val.toFixed(2))),
 
     currency: z
-      .string()
-      .optional()
-      .transform((val) => (val && val.trim() !== '' ? val.trim() : undefined))
-      .refine((val) => val === undefined || isValidCurrency(val), {
+      .enum(CURRENCIES, {
         message: t('forms.validation.expense.currencyInvalid'),
-      }),
+      })
+      .optional(),
 
     amountBase: z
       .number()
       .optional(),
 
     baseCurrency: z
-      .string()
-      .optional()
-      .refine((val) => val === undefined || isValidCurrency(val), {
+      .enum(CURRENCIES, {
         message: t('forms.validation.expense.currencyInvalid'),
-      }),
+      })
+      .optional(),
 
     notes: z
       .string()

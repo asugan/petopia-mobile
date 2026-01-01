@@ -255,9 +255,9 @@ export default function CareScreen() {
                 )}
                 <MoneyDisplay
                   amount={record.cost}
-                  currency={(record as { currency?: string }).currency}
+                  currency={record.currency}
                   baseCurrency={baseCurrency}
-                  amountBase={(record as { amountBase?: number }).amountBase}
+                  amountBase={record.amountBase}
                   size="small"
                 />
               </View>
