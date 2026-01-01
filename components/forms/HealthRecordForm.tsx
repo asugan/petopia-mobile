@@ -16,6 +16,7 @@ import {
   HealthRecordUpdateSchema,
   type HealthRecordCreateFormInput,
 } from '../../lib/schemas/healthRecordSchema';
+import type { Currency } from '../../lib/schemas/expenseSchema';
 import type { HealthRecord } from '../../lib/types';
 import { FormRow } from './FormRow';
 import { FormSection } from './FormSection';
@@ -408,7 +409,7 @@ export function HealthRecordForm({
                     name="cost"
                     label={t('healthRecords.cost')}
                     placeholder={t('healthRecords.costPlaceholder')}
-                    currency={baseCurrency}
+                    currency={(getValues('currency') as Currency | undefined) || baseCurrency}
                   />
                 </FormSection>
 
