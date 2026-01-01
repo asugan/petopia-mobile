@@ -6,10 +6,11 @@ import { useAuth } from "@/lib/auth";
 import { notificationService, requestNotificationPermissions } from "@/lib/services/notificationService";
 import { useAuthStore } from "@/stores/authStore";
 import { SupportedCurrency, useUserSettingsStore } from "@/stores/userSettingsStore";
+import { Ionicons } from "@expo/vector-icons";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import { useTranslation } from "react-i18next";
-import { Alert, ScrollView, StyleSheet, View } from "react-native";
+import { Alert, Image, ScrollView, StyleSheet, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { LAYOUT } from "@/constants";
 import { useOnboardingStore } from "@/stores/onboardingStore";
@@ -159,11 +160,15 @@ export default function SettingsScreen() {
                     { backgroundColor: theme.colors.primaryContainer },
                   ]}
                 >
-                  <MaterialCommunityIcons
-                    name="account"
-                    size={32}
-                    color={theme.colors.primary}
-                  />
+                  {user.image ? (
+                    <Image source={{ uri: user.image }} style={styles.avatar} />
+                  ) : (
+                    <Ionicons
+                      name="person"
+                      size={32}
+                      color={theme.colors.primary}
+                    />
+                  )}
                 </View>
                 <View style={styles.profileInfo}>
                   <Text
@@ -379,6 +384,7 @@ export default function SettingsScreen() {
         </Card>
 
         {/* Debug / Development */}
+        {__DEV__ && (
         <Card
           style={[
             styles.sectionCard,
@@ -408,9 +414,9 @@ export default function SettingsScreen() {
                   "Are you sure? Typically this is only for testing.",
                   [
                     { text: "Cancel", style: "cancel" },
-                    { 
-                      text: "Reset", 
-                      style: "destructive", 
+                    {
+                      text: "Reset",
+                      style: "destructive",
                       onPress: () => {
                         resetOnboarding();
                         // Navigate directly to onboarding to avoid race conditions with root redirector
@@ -430,6 +436,7 @@ export default function SettingsScreen() {
             />
           </View>
         </Card>
+        )}
 
         {/* Logout Button */}
         <View style={styles.logoutContainer}>
@@ -475,6 +482,11 @@ const styles = StyleSheet.create({
     borderRadius: 28,
     justifyContent: "center",
     alignItems: "center",
+    overflow: "hidden",
+  },
+  avatar: {
+    width: 56,
+    height: 56,
   },
   profileInfo: {
     flex: 1,
