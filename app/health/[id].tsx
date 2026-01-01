@@ -575,9 +575,6 @@ ${healthRecord.notes ? `${t('common.notes')}: ${healthRecord.notes}` : ''}
                 <TouchableOpacity style={styles.navButton} onPress={handleShare}>
                   <MaterialCommunityIcons name="share-variant" size={20} color="#FFF" />
                 </TouchableOpacity>
-                <TouchableOpacity style={styles.navButton} onPress={handleEdit}>
-                  <MaterialCommunityIcons name="dots-vertical" size={20} color="#FFF" />
-                </TouchableOpacity>
               </View>
             </View>
 

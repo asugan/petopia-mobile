@@ -276,9 +276,6 @@
     "fetchUpcomingError": "Failed to fetch upcoming events. Please try again.",
     "fetchTodayError": "Failed to fetch today's events. Please try again.",
     "copy": "Copy",
-    "eventDuplicated": "Event duplicated",
-    "duplicateEventError": "Error duplicating event",
-    "duplicate": "Duplicate",
     "sharedFrom": "Shared from Petopia Petcare",
     "dateAndTime": "Date & Time",
     "date": "Date",
@@ -344,8 +341,6 @@
       "compact": "3-step (1d, 1h, at time)",
       "minimal": "Quick (1h, at time)"
     },
-    "duplicateEvent": "Duplicate Event",
-    "duplicateEventHint": "Creates a copy of this event for the next day",
     "shareEvent": "Share Event",
     "shareEventHint": "Shares this event with others",
     "editEventHint": "Edits the event details"
@@ -505,7 +500,6 @@
     "unsavedChangesMessage": "You have unsaved changes. Are you sure you want to discard them?",
     "discard": "Discard",
     "close": "Close",
-    "moreOptions": "More options",
     "offline": "Offline",
     "wifi": "Wi-Fi",
     "cellular": "Mobile",

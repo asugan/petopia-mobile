@@ -24,7 +24,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { getEventTypeLabel } from '@/constants/eventIcons';
 import { useReminderScheduler } from '@/hooks/useReminderScheduler';
-import { useCreateEvent, useDeleteEvent, useEvent } from '@/lib/hooks/useEvents';
+import { useDeleteEvent, useEvent } from '@/lib/hooks/useEvents';
 import { usePet } from '@/lib/hooks/usePets';
 import { useTheme } from '@/lib/theme';
 import { useEventReminderStore } from '@/stores/eventReminderStore';
@@ -42,7 +42,6 @@ export default function EventDetailScreen() {
   const { data: event, isLoading, error } = useEvent(id);
   const { data: pet } = usePet(event?.petId || '');
   const deleteEventMutation = useDeleteEvent();
-  const createEventMutation = useCreateEvent();
   const reminderStatus = useEventReminderStore((state) => (event?._id ? state.statuses[event._id] : undefined));
   const presetSelections = useEventReminderStore((state) => state.presetSelections);
   const markMissed = useEventReminderStore((state) => state.markMissed);
@@ -98,39 +97,6 @@ export default function EventDetailScreen() {
         },
       ]
     );
-  };
-
-  const handleDuplicate = async () => {
-    if (!event) return;
-    try {
-      const newStartTime = new Date(event.startTime);
-      newStartTime.setDate(newStartTime.getDate() + 1);
-      const newEndTime = event.endTime ? new Date(event.endTime) : null;
-      if (newEndTime) newEndTime.setDate(newEndTime.getDate() + 1);
-
-      const duplicatedEvent = {
-        petId: event.petId,
-        type: event.type,
-        title: `${event.title} (${t('events.copy')})`,
-        description: event.description,
-        startTime: newStartTime.toISOString(),
-        endTime: newEndTime?.toISOString() || undefined,
-        location: event.location,
-        reminder: event.reminder,
-        notes: event.notes,
-        vaccineName: event.vaccineName,
-        vaccineManufacturer: event.vaccineManufacturer,
-        batchNumber: event.batchNumber,
-        medicationName: event.medicationName,
-        dosage: event.dosage,
-        frequency: event.frequency,
-        reminderPresetKey: event._id ? presetSelections[event._id] : undefined,
-      };
-      await createEventMutation.mutateAsync(duplicatedEvent);
-      Alert.alert(t('common.success'), t('events.eventDuplicated'));
-    } catch (error) {
-      console.error(error);
-    }
   };
 
   const handleShare = async () => {
@@ -244,23 +210,14 @@ export default function EventDetailScreen() {
       <StatusBar barStyle="light-content" translucent backgroundColor="transparent" />
       
       <View style={[styles.header, { paddingTop: insets.top + 10 }]}>
-        <TouchableOpacity 
+        <TouchableOpacity
           onPress={() => router.back()}
           style={[styles.iconButton, { backgroundColor: COLORS.blackOp20 }]}
         >
-          <MaterialIcons name="arrow-back" size={24} color={COLORS.white} />
+          <MaterialIcons name="arrow-back" size={24} color="#FFF" />
         </TouchableOpacity>
-        
+
         <View style={styles.headerActions}>
-          <TouchableOpacity
-            onPress={handleDuplicate}
-            style={[styles.iconButton, { backgroundColor: COLORS.blackOp20 }]}
-            accessibilityLabel={t('events.duplicateEvent')}
-            accessibilityHint={t('events.duplicateEventHint')}
-            accessibilityRole="button"
-          >
-            <MaterialIcons name="content-copy" size={20} color={COLORS.white} />
-          </TouchableOpacity>
           <TouchableOpacity
             onPress={handleShare}
             style={[styles.iconButton, { backgroundColor: COLORS.blackOp20 }]}
@@ -268,10 +225,7 @@ export default function EventDetailScreen() {
             accessibilityHint={t('events.shareEventHint')}
             accessibilityRole="button"
           >
-            <MaterialIcons name="share" size={20} color={COLORS.white} />
-          </TouchableOpacity>
-          <TouchableOpacity style={[styles.iconButton, { backgroundColor: COLORS.blackOp20 }]}>
-            <MaterialIcons name="more-vert" size={20} color={COLORS.white} />
+            <MaterialIcons name="share" size={20} color="#FFF" />
           </TouchableOpacity>
         </View>
       </View>

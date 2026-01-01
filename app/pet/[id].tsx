@@ -6,7 +6,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTranslation } from 'react-i18next';
 import { format, differenceInYears, differenceInMonths } from 'date-fns';
 import { tr, enUS } from 'date-fns/locale';
-import { Ionicons, MaterialIcons, MaterialCommunityIcons } from '@expo/vector-icons';
+import { Ionicons, MaterialCommunityIcons, MaterialIcons } from '@expo/vector-icons';
 
 import { Text, ActivityIndicator } from '@/components/ui';
 import { useTheme } from '@/lib/theme';
@@ -317,11 +317,12 @@ export default function PetDetailScreen() {
             <Ionicons name="arrow-back" size={24} color={theme.colors.inverseOnSurface} />
           </TouchableOpacity>
           <TouchableOpacity
+            onPress={handleShare}
             style={[styles.iconButtonBlur, { backgroundColor: theme.colors.overlay, borderColor: theme.colors.overlayLight }]}
-            accessibilityLabel={t('common.moreOptions')}
+            accessibilityLabel={t('pets.sharePet')}
             accessibilityRole="button"
           >
-            <Ionicons name="ellipsis-horizontal" size={24} color={theme.colors.inverseOnSurface} />
+            <MaterialCommunityIcons name="share-variant" size={24} color={theme.colors.inverseOnSurface} />
           </TouchableOpacity>
         </View>
 

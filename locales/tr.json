@@ -252,9 +252,6 @@
     "eventDeleted": "Etkinlik başarıyla silindi",
     "deleteEventError": "Etkinlik silinirken bir hata oluştu",
     "copy": "Kopya",
-    "eventDuplicated": "Etkinlik kopyalandı",
-    "duplicateEventError": "Etkinlik kopyalanırken bir hata oluştu",
-    "duplicate": "Kopyala",
     "sharedFrom": "Petopia Petcare ile paylaşıldı",
     "dateAndTime": "Tarih ve Saat",
     "date": "Tarih",
@@ -320,8 +317,6 @@
       "compact": "3 adım (1g, 1s, etkinlik zamanı)",
       "minimal": "Hızlı (1s, etkinlik zamanı)"
     },
-    "duplicateEvent": "Etkinliği Kopyala",
-    "duplicateEventHint": "Bu etkinliğin bir kopyasını ertesi gün için oluşturur",
     "shareEvent": "Etkinliği Paylaş",
     "shareEventHint": "Bu etkinliği başkalarıyla paylaşır",
     "editEventHint": "Etkinlik detaylarını düzenler"
@@ -481,7 +476,6 @@
     "unsavedChangesMessage": "Kaydedilmemiş değişiklikleriniz var. Bunları silmek istediğinizden emin misiniz?",
     "discard": "Değişiklikleri Sil",
     "close": "Kapat",
-    "moreOptions": "Daha fazla seçenek",
     "offline": "Çevrimdışı",
     "wifi": "Wi-Fi",
     "cellular": "Mobil",
