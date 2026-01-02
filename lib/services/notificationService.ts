@@ -526,8 +526,8 @@ export class NotificationService {
     if (data?.screen === 'event' && data?.eventId) {
       if (this.navigationHandler) {
         this.navigationHandler({
-          pathname: '/(tabs)/calendar',
-          params: { editEventId: String(data.eventId) },
+          pathname: '/event/[id]',
+          params: { id: String(data.eventId) },
         });
       } else {
         console.log(`Navigate to event: ${data.eventId}`);

@@ -12,6 +12,7 @@ import type {
   UserSettings,
   UserSettingsUpdate,
 } from '@/lib/types';
+import { useEventReminderStore } from '@/stores/eventReminderStore';
 
 export type {
   SupportedCurrency,
@@ -48,6 +49,15 @@ const defaultSettings: UserSettings = {
   timezone: 'Europe/Istanbul',
   language: 'en',
   theme: 'dark',
+  notificationsEnabled: true,
+  budgetNotificationsEnabled: true,
+  quietHoursEnabled: true,
+  quietHours: {
+    startHour: 22,
+    startMinute: 0,
+    endHour: 8,
+    endMinute: 0,
+  },
   createdAt: new Date().toISOString(),
   updatedAt: new Date().toISOString(),
 };
@@ -86,6 +96,14 @@ export const useUserSettingsStore = create<UserSettingsState & UserSettingsActio
 
           if (response.success && response.data) {
             const settings = response.data;
+            const { setQuietHours, setQuietHoursEnabled } = useEventReminderStore.getState();
+
+            if (settings.quietHours) {
+              setQuietHours(settings.quietHours);
+            }
+            if (typeof settings.quietHoursEnabled === 'boolean') {
+              setQuietHoursEnabled(settings.quietHoursEnabled);
+            }
 
             set({
               settings,
@@ -130,6 +148,14 @@ export const useUserSettingsStore = create<UserSettingsState & UserSettingsActio
 
           if (response.success && response.data) {
             const updatedSettings = response.data;
+            const { setQuietHours, setQuietHoursEnabled } = useEventReminderStore.getState();
+
+            if (updatedSettings.quietHours) {
+              setQuietHours(updatedSettings.quietHours);
+            }
+            if (typeof updatedSettings.quietHoursEnabled === 'boolean') {
+              setQuietHoursEnabled(updatedSettings.quietHoursEnabled);
+            }
 
             set({
               settings: updatedSettings,
@@ -247,12 +273,19 @@ export const useUserSettingsStore = create<UserSettingsState & UserSettingsActio
       onRehydrateStorage: () => (state) => {
         if (state && state.settings) {
           const { settings } = state;
+          const { setQuietHours, setQuietHoursEnabled } = useEventReminderStore.getState();
           state.isRTL = deriveRTL(settings.language);
           state.theme = deriveTheme(settings.theme);
           state.isDark = settings.theme === 'dark';
 
           if (i18n.language !== settings.language) {
             i18n.changeLanguage(settings.language);
+          }
+          if (settings.quietHours) {
+            setQuietHours(settings.quietHours);
+          }
+          if (typeof settings.quietHoursEnabled === 'boolean') {
+            setQuietHoursEnabled(settings.quietHoursEnabled);
           }
 
         }

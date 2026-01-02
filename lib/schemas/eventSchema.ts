@@ -267,6 +267,10 @@ export const eventSchema = () => {
       .boolean()
       .optional(),
 
+    reminderPreset: z
+      .enum(['standard', 'compact', 'minimal'])
+      .optional(),
+
     notes: z
       .string()
       .optional(),
@@ -329,6 +333,7 @@ export const updateEventSchema = () => {
       .nullable()
       .optional(),
     reminder: z.boolean().optional(),
+    reminderPreset: z.enum(['standard', 'compact', 'minimal']).optional(),
     notes: z
       .string()
       .max(1000, { message: t('forms.validation.event.notesMax') })
@@ -470,6 +475,7 @@ export const transformFormDataToAPI = (formData: EventFormData): EventData => {
     endTime,
     location: formData.location || undefined,
     reminder: formData.reminder || undefined,
+    reminderPreset: formData.reminder ? formData.reminderPreset : undefined,
     notes: formData.notes || undefined,
   };
 };

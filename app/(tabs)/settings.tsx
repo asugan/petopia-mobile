@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { SubscriptionCard } from "@/components/subscription";
 import { Button, Card, ListItem, Switch, Text } from "@/components/ui";
@@ -19,6 +19,9 @@ import { useOnboardingStore } from "@/stores/onboardingStore";
 import CurrencyPicker from "@/components/CurrencyPicker";
 import LoadingSpinner from "@/components/LoadingSpinner";
 import { LanguageSettings } from "@/components/LanguageSettings";
+import { NotificationPermissionCard } from "@/components/NotificationPermissionPrompt";
+import { useUpcomingEvents } from "@/lib/hooks/useEvents";
+import { useReminderScheduler } from "@/hooks/useReminderScheduler";
 
 type ModalState = "none" | "contact" | "deleteWarning" | "deleteConfirm";
 
@@ -31,21 +34,34 @@ export default function SettingsScreen() {
   const { isLoading: authLoading, setLoading } = useAuthStore();
   const { resetOnboarding } = useOnboardingStore();
   const isDarkMode = settings?.theme === "dark";
-  const [notificationsEnabled, setNotificationsEnabled] = useState(false);
+  const [notificationPermissionEnabled, setNotificationPermissionEnabled] = useState(false);
   const [notificationLoading, setNotificationLoading] = useState(true);
-  const quietHoursEnabled = useEventReminderStore((state) => state.quietHoursEnabled);
-  const quietHours = useEventReminderStore((state) => state.quietHours);
+  const quietHoursEnabled = settings?.quietHoursEnabled ?? true;
+  const quietHours = useMemo(() => (
+    settings?.quietHours ?? {
+      startHour: 22,
+      startMinute: 0,
+      endHour: 8,
+      endMinute: 0,
+    }
+  ), [settings?.quietHours]);
+  const notificationsEnabled = settings?.notificationsEnabled ?? true;
+  const budgetNotificationsEnabled = settings?.budgetNotificationsEnabled ?? true;
+  const notificationsActive = notificationsEnabled && notificationPermissionEnabled;
   const setQuietHoursEnabled = useEventReminderStore((state) => state.setQuietHoursEnabled);
   const setQuietHours = useEventReminderStore((state) => state.setQuietHours);
+  const { data: upcomingEvents = [] } = useUpcomingEvents();
+  const { scheduleChainForEvent } = useReminderScheduler();
   const [activeModal, setActiveModal] = useState<ModalState>("none");
   const [deleteConfirmText, setDeleteConfirmText] = useState("");
   const [deletingAccount, setDeletingAccount] = useState(false);
+  const rescheduleKeyRef = useRef<string | null>(null);
 
   useEffect(() => {
     const fetchPermissionStatus = async () => {
       try {
         const enabled = await notificationService.areNotificationsEnabled();
-        setNotificationsEnabled(enabled);
+        setNotificationPermissionEnabled(enabled);
       } catch (error) {
         console.error("Notification status check failed:", error);
       } finally {
@@ -56,17 +72,51 @@ export default function SettingsScreen() {
     fetchPermissionStatus();
   }, []);
 
+  useEffect(() => {
+    const rescheduleUpcomingReminders = async () => {
+      if (!notificationsActive) {
+        return;
+      }
+
+      const key = [
+        quietHoursEnabled,
+        quietHours.startHour,
+        quietHours.startMinute,
+        quietHours.endHour,
+        quietHours.endMinute,
+      ].join(":");
+
+      if (rescheduleKeyRef.current === key) {
+        return;
+      }
+
+      rescheduleKeyRef.current = key;
+
+      for (const event of upcomingEvents) {
+        if (event.reminder) {
+          await scheduleChainForEvent(event, event.reminderPreset);
+        }
+      }
+    };
+
+    void rescheduleUpcomingReminders();
+  }, [notificationsActive, quietHours, quietHoursEnabled, upcomingEvents, scheduleChainForEvent]);
+
   const handleNotificationToggle = async (value: boolean) => {
     setNotificationLoading(true);
     try {
       if (value) {
         const granted = await requestNotificationPermissions();
-        setNotificationsEnabled(granted);
         if (!granted) {
           Alert.alert(
             t("settings.notifications"),
             t("settings.notificationPermissionDenied", "Notifications are blocked at the system level. Please enable them from settings.")
           );
+          await updateSettings({ notificationsEnabled: false });
+        }
+        setNotificationPermissionEnabled(granted);
+        if (granted) {
+          await updateSettings({ notificationsEnabled: true });
         }
       } else {
         Alert.alert(
@@ -77,10 +127,21 @@ export default function SettingsScreen() {
           )
         );
         await notificationService.cancelAllNotifications();
-        setNotificationsEnabled(false);
+        await updateSettings({ notificationsEnabled: false });
       }
     } catch (error) {
       console.error("Notification toggle failed:", error);
+    } finally {
+      setNotificationLoading(false);
+    }
+  };
+
+  const handleBudgetNotificationToggle = async (value: boolean) => {
+    setNotificationLoading(true);
+    try {
+      await updateSettings({ budgetNotificationsEnabled: value });
+    } catch (error) {
+      console.error("Budget notification toggle failed:", error);
     } finally {
       setNotificationLoading(false);
     }
@@ -193,6 +254,7 @@ export default function SettingsScreen() {
     };
     setQuietHours(nextQuietHours);
     notificationService.setQuietHours(nextQuietHours);
+    void updateSettings({ quietHours: nextQuietHours });
   };
 
   const handleQuietHoursEndChange = (date: Date) => {
@@ -203,6 +265,7 @@ export default function SettingsScreen() {
     };
     setQuietHours(nextQuietHours);
     notificationService.setQuietHours(nextQuietHours);
+    void updateSettings({ quietHours: nextQuietHours });
   };
 
   return (
@@ -338,7 +401,26 @@ export default function SettingsScreen() {
                 <Switch
                   value={notificationsEnabled}
                   onValueChange={handleNotificationToggle}
-                  disabled={notificationLoading}
+                  disabled={notificationLoading || !settings}
+                  color={theme.colors.primary}
+                />
+              }
+            />
+            <ListItem
+              title={t("settings.budgetNotifications", "Budget notifications")}
+              description={t("settings.budgetNotificationsDescription", "Alerts when you approach your budget limit")}
+              left={
+                <MaterialCommunityIcons
+                  name="cash-multiple"
+                  size={24}
+                  color={theme.colors.onSurfaceVariant}
+                />
+              }
+              right={
+                <Switch
+                  value={budgetNotificationsEnabled}
+                  onValueChange={handleBudgetNotificationToggle}
+                  disabled={notificationLoading || !settings || !notificationsActive}
                   color={theme.colors.primary}
                 />
               }
@@ -356,8 +438,11 @@ export default function SettingsScreen() {
               right={
                 <Switch
                   value={quietHoursEnabled}
-                  onValueChange={setQuietHoursEnabled}
-                  disabled={notificationLoading || !notificationsEnabled}
+                  onValueChange={(value) => {
+                    setQuietHoursEnabled(value);
+                    void updateSettings({ quietHoursEnabled: value });
+                  }}
+                  disabled={notificationLoading || !notificationsActive}
                   color={theme.colors.primary}
                 />
               }
@@ -369,17 +454,18 @@ export default function SettingsScreen() {
                   label={t("settings.quietHoursStart")}
                   value={createTimeDate(quietHours.startHour, quietHours.startMinute)}
                   onChange={handleQuietHoursStartChange}
-                  disabled={notificationLoading || !notificationsEnabled}
+                  disabled={notificationLoading || !notificationsActive}
                 />
                 <DateTimePicker
                   mode="time"
                   label={t("settings.quietHoursEnd")}
                   value={createTimeDate(quietHours.endHour, quietHours.endMinute)}
                   onChange={handleQuietHoursEndChange}
-                  disabled={notificationLoading || !notificationsEnabled}
+                  disabled={notificationLoading || !notificationsActive}
                 />
               </View>
             )}
+            <NotificationPermissionCard />
             <LanguageSettings variant="embedded" />
 
             <View style={styles.currencyPickerContainer}>

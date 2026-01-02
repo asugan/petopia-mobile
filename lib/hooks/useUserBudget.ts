@@ -11,6 +11,7 @@ import type {
 import { CACHE_TIMES } from "../config/queryConfig";
 import { userBudgetService } from "../services/userBudgetService";
 import { notificationService } from "../services/notificationService";
+import { useUserSettingsStore } from "@/stores/userSettingsStore";
 import { createQueryKeys } from "./core/createQueryKeys";
 import { useConditionalQuery } from "./core/useConditionalQuery";
 
@@ -196,13 +197,19 @@ export function useDeleteUserBudget() {
  */
 export function useBudgetAlerts() {
   const { data: budget } = useUserBudget();
+  const notificationsEnabled = useUserSettingsStore(
+    (state) => state.settings?.notificationsEnabled ?? true
+  );
+  const budgetNotificationsEnabled = useUserSettingsStore(
+    (state) => state.settings?.budgetNotificationsEnabled ?? true
+  );
 
   return useConditionalQuery<BudgetAlert | null>({
     queryKey: userBudgetKeys.alerts(),
     queryFn: () => userBudgetService.checkBudgetAlerts(),
     staleTime: CACHE_TIMES.VERY_SHORT,
     gcTime: CACHE_TIMES.SHORT,
-    enabled: !!budget && budget.isActive,
+    enabled: !!budget && budget.isActive && notificationsEnabled && budgetNotificationsEnabled,
     refetchInterval: CACHE_TIMES.VERY_SHORT, // Refetch every 30 seconds for real-time alerts
     defaultValue: null,
     errorMessage: "Budget alerts could not be checked",
@@ -268,10 +275,20 @@ export function useBudgetSummary() {
 export function useBudgetAlertNotifications() {
   const { data: alert } = useBudgetAlerts();
   const { data: budget } = useUserBudget();
+  const notificationsEnabled = useUserSettingsStore(
+    (state) => state.settings?.notificationsEnabled ?? true
+  );
+  const budgetNotificationsEnabled = useUserSettingsStore(
+    (state) => state.settings?.budgetNotificationsEnabled ?? true
+  );
   const notifiedCache = useRef<Record<string, boolean>>({});
 
   useEffect(() => {
     const handleAlertNotification = async () => {
+      if (!notificationsEnabled || !budgetNotificationsEnabled) {
+        return;
+      }
+
       const budgetId =
         alert?.budget?.id ||
         (alert?.budget as unknown as { _id?: string })?._id ||
@@ -312,7 +329,7 @@ export function useBudgetAlertNotifications() {
     };
 
     void handleAlertNotification();
-  }, [alert, budget]);
+  }, [alert, budget, budgetNotificationsEnabled, notificationsEnabled]);
 }
 
 // Export types for external use
