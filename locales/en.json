@@ -86,6 +86,7 @@
     "feeding": "Feeding"
   },
   "pets": {
+    "pet": "Pet",
     "myPets": "My Pets",
     "noPetsYet": "No pets yet",
     "addFirstPet": "Press the + button to add your first pet",
@@ -352,6 +353,7 @@
   "eventForm": {
     "suggestions": {
       "feeding": "Regular feeding times are important for pet health. Adjust portions based on food type.",
+      "vet_visit": "Vet visits are essential for maintaining pet health. Don't forget regular checkups.",
       "vetVisit": "Vet visits are essential for maintaining pet health. Don't forget regular checkups.",
       "vaccination": "Vaccinations help keep your pet protected. Schedule reminders ahead of time.",
       "medication": "Medication schedules work best with consistent timing and dosage notes.",
@@ -427,6 +429,7 @@
     "noConnection": "No internet connection. Please check your connection."
   },
   "settings": {
+    "title": "Settings",
     "appearance": "Appearance",
     "darkMode": "Dark Mode",
     "changeTheme": "Change theme",
@@ -497,6 +500,7 @@
   "common": {
     "loading": "Loading...",
     "error": "Error",
+    "today": "Today",
     "retry": "Retry",
     "save": "Save",
     "add": "Add",
@@ -690,6 +694,7 @@
     "deleteSuccess": "Feeding schedule deleted successfully"
   },
   "forms": {
+    "petSelection": "Pet Selection",
     "petForm": {
       "title": "Pet Information",
       "addNewPet": "Add New Pet",
@@ -1035,6 +1040,9 @@
   },
   "budgets": {
     "title": "Budgets",
+    "budgetSetSuccess": "Budget set successfully",
+    "monthlyBudget": "Monthly Budget",
+    "currentSpending": "Current spending",
     "selectPetFirst": "Please select a pet first",
     "selectPet": "Select a pet",
     "selectPetMessage": "Choose a pet to view budgets",

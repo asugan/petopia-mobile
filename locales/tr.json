@@ -86,6 +86,7 @@
     "feeding": "Besleme"
   },
   "pets": {
+    "pet": "Pet",
     "myPets": "Evcil Dostlarım",
     "noPetsYet": "Henüz pet yok",
     "addFirstPet": "+ butonuna basarak ilk evcil dostunuzu ekleyin",
@@ -328,6 +329,7 @@
   "eventForm": {
     "suggestions": {
       "feeding": "Düzenli besleme zamanları pet sağlığı için önemlidir. Mama türüne göre porsiyonları ayarlayın.",
+      "vet_visit": "Veteriner ziyaretleri pet sağlığının korunması için gereklidir. Düzenli kontrolleri unutmayın.",
       "vetVisit": "Veteriner ziyaretleri pet sağlığının korunması için gereklidir. Düzenli kontrolleri unutmayın.",
       "vaccination": "Aşılar petinizi korur. Hatırlatıcıları önceden planlayın.",
       "medication": "İlaç kullanımında düzenli zamanlama ve doz notları faydalıdır.",
@@ -403,6 +405,7 @@
     "noConnection": "İnternet bağlantısı yok. Lütfen bağlantınızı kontrol edin."
   },
   "settings": {
+    "title": "Ayarlar",
     "appearance": "Görünüm",
     "darkMode": "Karanlık Mod",
     "changeTheme": "Temayı değiştir",
@@ -473,6 +476,7 @@
   "common": {
     "loading": "Yükleniyor...",
     "error": "Hata",
+    "today": "Bugün",
     "retry": "Tekrar Dene",
     "save": "Kaydet",
     "add": "Ekle",
@@ -666,6 +670,7 @@
     "deleteSuccess": "Besleme programı başarıyla silindi"
   },
   "forms": {
+    "petSelection": "Pet Seçimi",
     "petForm": {
       "title": "Pet Bilgileri",
       "addNewPet": "Yeni Pet Ekle",
@@ -1011,6 +1016,9 @@
   },
   "budgets": {
     "title": "Bütçeler",
+    "budgetSetSuccess": "Bütçe başarıyla ayarlandı",
+    "monthlyBudget": "Aylık Bütçe",
+    "currentSpending": "Mevcut harcama",
     "selectPetFirst": "Lütfen önce bir evcil hayvan seçin",
     "selectPet": "Bir evcil hayvan seçin",
     "selectPetMessage": "Bütçeleri görüntülemek için bir evcil hayvan seçin",
