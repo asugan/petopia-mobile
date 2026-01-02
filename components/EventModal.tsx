@@ -1,6 +1,7 @@
 import React from 'react';
 import { View, StyleSheet, Modal as RNModal } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { useTranslation } from 'react-i18next';
 import { Portal, Snackbar, Text, Button } from '@/components/ui';
 import { useTheme } from '@/lib/theme';
 import { Event } from '../lib/types';
@@ -27,6 +28,7 @@ export function EventModal({
   onSuccess,
   testID,
 }: EventModalProps) {
+  const { t } = useTranslation();
   const { theme } = useTheme();
   const [loading, setLoading] = React.useState(false);
   const [snackbarVisible, setSnackbarVisible] = React.useState(false);
@@ -55,22 +57,23 @@ export function EventModal({
           _id: event._id,
           data: { ...apiData, reminderPresetKey }
         });
-        showSnackbar('Etkinlik başarıyla güncellendi');
+        showSnackbar(t('serviceResponse.event.updateSuccess'));
       } else {
         // Yeni event oluşturma
         await createEventMutation.mutateAsync({ ...apiData, reminderPresetKey });
-        showSnackbar('Etkinlik başarıyla eklendi');
+        showSnackbar(t('serviceResponse.event.createSuccess'));
       }
 
       onSuccess();
       onClose();
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : 'İşlem başarısız oldu';
+      const fallbackMessage = event ? t('serviceResponse.event.updateError') : t('serviceResponse.event.createError');
+      const errorMessage = error instanceof Error ? error.message : fallbackMessage;
       showSnackbar(errorMessage);
     } finally {
       setLoading(false);
     }
-  }, [event, createEventMutation, updateEventMutation, onSuccess, onClose, showSnackbar]);
+  }, [event, createEventMutation, updateEventMutation, onSuccess, onClose, showSnackbar, t]);
 
   const handleClose = React.useCallback(() => {
     if (!loading) {
@@ -95,7 +98,7 @@ export function EventModal({
         <SafeAreaView style={[styles.container, { backgroundColor: theme.colors.surface }]}>
           <View style={styles.header}>
             <Text style={[styles.title, { color: theme.colors.onSurface }]}>
-              {event ? 'Etkinliği Düzenle' : 'Yeni Etkinlik Ekle'}
+              {event ? t('events.editTitle') : t('events.createTitle')}
             </Text>
             <Button
               mode="text"
@@ -103,7 +106,7 @@ export function EventModal({
               disabled={loading}
               compact
             >
-              Kapat
+              {t('common.close')}
             </Button>
           </View>
 
@@ -126,7 +129,11 @@ export function EventModal({
           message={snackbarMessage}
           style={{
             ...styles.snackbar,
-            backgroundColor: snackbarMessage.includes('başarıyla') ? theme.colors.primary : theme.colors.error
+            backgroundColor:
+              snackbarMessage === t('serviceResponse.event.createSuccess') ||
+              snackbarMessage === t('serviceResponse.event.updateSuccess')
+                ? theme.colors.primary
+                : theme.colors.error
           }}
         />
       </Portal>

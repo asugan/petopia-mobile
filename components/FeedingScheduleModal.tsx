@@ -56,17 +56,17 @@ export function FeedingScheduleModal({
           _id: schedule._id,
           data: apiData,
         });
-        showSnackbar(t('feedingSchedule.updateSuccess') || 'Besleme programı başarıyla güncellendi');
+        showSnackbar(t('feedingSchedule.updateSuccess'));
       } else {
         // Create new schedule
         await createMutation.mutateAsync(apiData);
-        showSnackbar(t('feedingSchedule.createSuccess') || 'Besleme programı başarıyla eklendi');
+        showSnackbar(t('feedingSchedule.createSuccess'));
       }
 
       onSuccess();
       onClose();
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : t('feedingSchedule.errors.submitFailed') || 'İşlem başarısız oldu';
+      const errorMessage = error instanceof Error ? error.message : t('feedingSchedule.errors.submitFailed');
       showSnackbar(errorMessage);
     } finally {
       setLoading(false);
@@ -104,7 +104,7 @@ export function FeedingScheduleModal({
               disabled={loading}
               compact
             >
-              {t('common.close') || 'Kapat'}
+              {t('common.close')}
             </Button>
           </View>
 
@@ -127,7 +127,11 @@ export function FeedingScheduleModal({
           message={snackbarMessage}
           style={{
             ...styles.snackbar,
-            backgroundColor: snackbarMessage.includes('başarıyla') ? theme.colors.primary : theme.colors.error
+            backgroundColor:
+              snackbarMessage === t('feedingSchedule.createSuccess') ||
+              snackbarMessage === t('feedingSchedule.updateSuccess')
+                ? theme.colors.primary
+                : theme.colors.error
           }}
         />
       </Portal>

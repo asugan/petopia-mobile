@@ -1,6 +1,7 @@
 import { Portal, Snackbar } from '@/components/ui';
 import { useTheme } from '@/lib/theme';
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { Modal as RNModal, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useCreatePet, useUpdatePet } from '../lib/hooks/usePets';
@@ -23,6 +24,7 @@ export function PetModal({
   onSuccess,
   testID,
 }: PetModalProps) {
+  const { t } = useTranslation();
   const { theme } = useTheme();
   const [loading, setLoading] = React.useState(false);
   const [snackbarVisible, setSnackbarVisible] = React.useState(false);
@@ -46,22 +48,23 @@ export function PetModal({
       if (pet) {
         // Pet güncelleme
         await updatePetMutation.mutateAsync({ _id: pet._id, data: apiData });
-        showSnackbar('Pet başarıyla güncellendi');
+        showSnackbar(t('pets.updateSuccess'));
       } else {
         // Yeni pet oluşturma
         await createPetMutation.mutateAsync(apiData);
-        showSnackbar('Pet başarıyla eklendi');
+        showSnackbar(t('pets.saveSuccess'));
       }
 
       onSuccess();
       onClose();
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : 'İşlem başarısız oldu';
+      const fallbackMessage = pet ? t('pets.updateError') : t('pets.createError');
+      const errorMessage = error instanceof Error ? error.message : fallbackMessage;
       showSnackbar(errorMessage);
     } finally {
       setLoading(false);
     }
-  }, [pet, createPetMutation, updatePetMutation, onSuccess, onClose, showSnackbar]);
+  }, [pet, createPetMutation, updatePetMutation, onSuccess, onClose, showSnackbar, t]);
 
   const handleClose = React.useCallback(() => {
     if (!loading) {
@@ -86,7 +89,7 @@ export function PetModal({
         <SafeAreaView style={[styles.container, { backgroundColor: theme.colors.surface }]}>
           <View style={styles.header}>
             <Text style={[styles.title, { color: theme.colors.onSurface }]}>
-              {pet ? 'Pet Düzenle' : 'Yeni Pet Ekle'}
+              {pet ? t('pets.editPet') : t('pets.addNewPet')}
             </Text>
           </View>
 
@@ -107,7 +110,10 @@ export function PetModal({
           message={snackbarMessage}
           style={{
             ...styles.snackbar,
-            backgroundColor: snackbarMessage.includes('başarıyla') ? theme.colors.primary : theme.colors.error
+            backgroundColor:
+              snackbarMessage === t('pets.saveSuccess') || snackbarMessage === t('pets.updateSuccess')
+                ? theme.colors.primary
+                : theme.colors.error
           }}
         />
       </Portal>

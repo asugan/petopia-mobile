@@ -338,6 +338,7 @@
       "play": "Oyun zamanı petinizle bağ kurmanın ve egzersiz yapmanın harika bir yoludur.",
       "training": "Eğitim seansları petinizin öğrenmesi ve sosyalleşmesi için önemlidir. Sabır ve ödülle ilerleyin.",
       "bath": "Banyo petin temizliği için gereklidir. Sıklığı pet türüne göre ayarlayın.",
+      "other": "Diğer etkinlikler de hatırlatıcıyla daha iyi takip edilir. Ayrıntı ekleyin.",
       "default": "Bu etkinlik petinizin sağlık ve mutluluğu için önemlidir. Düzenli olarak planlayın."
     }
   },
@@ -534,7 +535,8 @@
     "title": "Bir Hata Oluştu",
     "networkError": "İnternet bağlantınızda bir sorun var. Lütfen bağlantınızı kontrol edip tekrar deneyin.",
     "generalError": "Veriler yüklenirken bir hata oluştu. Lütfen tekrar deneyin.",
-    "retry": "Tekrar Dene"
+    "retry": "Tekrar Dene",
+    "unexpectedError": "Beklenmedik bir hata meydana geldi. Lütfen tekrar deneyin."
   },
   "petTypes": {
     "dog": "Köpek",
