@@ -159,7 +159,8 @@ export default function EventDetailScreen() {
 
       void syncMissedStatus();
     }
-  }, [cancelRemindersForEvent, derivedStatus, event, markMissed, t, updateEventMutation]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps -- mutation object is stable per TanStack Query
+  }, [cancelRemindersForEvent, derivedStatus, event, markMissed, t]);
 
   const handleMarkCompleted = async () => {
     if (!event) return;
@@ -438,6 +439,8 @@ export default function EventDetailScreen() {
                   <TouchableOpacity
                     onPress={handleResumeReminders}
                     style={[styles.statusAction, { borderColor: COLORS.primary }]}
+                    accessibilityLabel={t('events.resumeReminders')}
+                    accessibilityRole="button"
                   >
                     <Text style={[styles.statusActionText, { color: COLORS.primary }]}>
                       {t('events.resumeReminders')}
@@ -450,18 +453,24 @@ export default function EventDetailScreen() {
                   <TouchableOpacity
                     onPress={handleMarkCompleted}
                     style={[styles.reminderActionButton, { backgroundColor: COLORS.primary }]}
+                    accessibilityLabel={t('events.markCompleted')}
+                    accessibilityRole="button"
                   >
                     <Text style={styles.reminderActionText}>{t('events.markCompleted')}</Text>
                   </TouchableOpacity>
                   <TouchableOpacity
                     onPress={handleMarkMissed}
                     style={[styles.reminderActionButton, { backgroundColor: COLORS.red400 }]}
+                    accessibilityLabel={t('events.markMissed')}
+                    accessibilityRole="button"
                   >
                     <Text style={styles.reminderActionText}>{t('events.markMissed')}</Text>
                   </TouchableOpacity>
                   <TouchableOpacity
                     onPress={handleMarkCancelled}
                     style={[styles.reminderActionButton, { backgroundColor: COLORS.surfaceDarker, borderColor: COLORS.gray400 }]}
+                    accessibilityLabel={t('events.markCancelled')}
+                    accessibilityRole="button"
                   >
                     <Text style={[styles.reminderActionText, { color: COLORS.gray400 }]}>
                       {t('events.markCancelled')}
