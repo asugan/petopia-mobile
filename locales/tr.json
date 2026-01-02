@@ -36,8 +36,7 @@
     "linkOpenError": "Bağlantı açılamadı. Lütfen tekrar deneyin.",
     "logoutConfirm": "Çıkış yapmak istediğinizden emin misiniz?",
     "logoutSuccess": "Başarıyla çıkış yapıldı",
-    "freeTrialNotice": "Giriş yaptığınızda 14 günlük ücretsiz deneme başlar. Kredi kartı gerekmez.",
-    "freeTrialBadge": "14 GÜN ÜCRETSİZ"
+    "freeTrialNotice": "Giriş yaptığınızda 14 günlük ücretsiz deneme başlar. Kredi kartı gerekmez."
   },
   "navigation": {
     "home": "Ana Sayfa",

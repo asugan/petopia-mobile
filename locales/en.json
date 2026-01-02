@@ -36,8 +36,7 @@
     "linkOpenError": "Could not open the link. Please try again.",
     "logoutConfirm": "Are you sure you want to log out?",
     "logoutSuccess": "Successfully logged out",
-    "freeTrialNotice": "You get a 14-day free trial. No credit card required.",
-    "freeTrialBadge": "14 DAYS FREE"
+    "freeTrialNotice": "You get a 14-day free trial. No credit card required."
   },
   "navigation": {
     "home": "Home",
