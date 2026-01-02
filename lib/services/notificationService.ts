@@ -223,7 +223,11 @@ export class NotificationService {
         ? options.triggerDate
         : new Date(eventDate.getTime() - reminderTime * 60 * 1000);
 
-      if (!options?.triggerDate && (options?.respectQuietHours ?? true)) {
+      if (
+        !options?.triggerDate &&
+        (options?.respectQuietHours ?? true) &&
+        reminderTime !== 0
+      ) {
         triggerDate = this.adjustForQuietHours(triggerDate);
       }
 
@@ -373,6 +377,12 @@ export class NotificationService {
     reminderTimes: readonly number[],
     options?: { respectQuietHours?: boolean }
   ): Promise<string[]> {
+    const hasPermission = await this.areNotificationsEnabled();
+    if (!hasPermission) {
+      console.warn('📵 Notifications not enabled, skipping reminder schedule');
+      return [];
+    }
+
     const notificationIds: string[] = [];
     const seenTimes = new Set<number>();
     const respectQuietHours = options?.respectQuietHours ?? true;
@@ -381,7 +391,7 @@ export class NotificationService {
 
     for (const reminderTime of reminderTimes) {
       const triggerDate = new Date(eventDate.getTime() - reminderTime * 60 * 1000);
-      const adjustedTrigger = respectQuietHours
+      const adjustedTrigger = respectQuietHours && reminderTime !== 0
         ? this.adjustForQuietHours(triggerDate)
         : triggerDate;
 
@@ -442,7 +452,7 @@ export class NotificationService {
           data: data || {},
           sound: 'default',
         },
-        trigger: { channelId: this.eventChannelId },
+        trigger: Platform.OS === 'android' ? { channelId: this.eventChannelId } : null,
       });
 
       console.log(`✅ Sent immediate notification: ${notificationId}`);
@@ -479,7 +489,7 @@ export class NotificationService {
         sound: 'default',
         priority: Notifications.AndroidNotificationPriority.HIGH,
       },
-      trigger: { channelId: this.budgetChannelId },
+      trigger: Platform.OS === 'android' ? { channelId: this.budgetChannelId } : null,
     });
   }
 

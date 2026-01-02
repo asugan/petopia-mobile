@@ -6,6 +6,7 @@ import { StatusBar } from 'expo-status-bar';
 import * as Notifications from 'expo-notifications';
 import { Stack, useRouter } from "expo-router";
 import { QueryClient, QueryClientProvider, focusManager } from '@tanstack/react-query';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { ApiErrorBoundary } from "@/lib/components/ApiErrorBoundary";
 import { MOBILE_QUERY_CONFIG } from "@/lib/config/queryConfig";
 import { useAuth } from '@/lib/auth';
@@ -18,6 +19,8 @@ import { AuthProvider } from "@/providers/AuthProvider";
 import { SubscriptionProvider } from "@/providers/SubscriptionProvider";
 import { useUserSettingsStore } from '@/stores/userSettingsStore';
 import { useEventReminderStore } from '@/stores/eventReminderStore';
+import { useUpcomingEvents } from '@/lib/hooks/useEvents';
+import { useReminderScheduler } from '@/hooks/useReminderScheduler';
 import "../lib/i18n";
 
 // Enhanced QueryClient with better configuration
@@ -90,6 +93,9 @@ export default function RootLayout() {
   const { isAuthenticated } = useAuth();
   const { initialize, theme, setAuthenticated, clear } = useUserSettingsStore();
   const quietHours = useEventReminderStore((state) => state.quietHours);
+  const { data: upcomingEvents = [] } = useUpcomingEvents();
+  const { scheduleChainForEvent } = useReminderScheduler();
+  const TIMEZONE_STORAGE_KEY = 'last-known-timezone';
 
   useEffect(() => {
     setAuthenticated(isAuthenticated);
@@ -121,6 +127,31 @@ export default function RootLayout() {
 
     void checkLastNotification();
   }, [router]);
+
+  useEffect(() => {
+    if (!isAuthenticated) {
+      return;
+    }
+
+    const refreshOnTimezoneChange = async () => {
+      const deviceTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+      const storedTimezone = await AsyncStorage.getItem(TIMEZONE_STORAGE_KEY);
+
+      if (!deviceTimezone || storedTimezone === deviceTimezone) {
+        return;
+      }
+
+      await AsyncStorage.setItem(TIMEZONE_STORAGE_KEY, deviceTimezone);
+
+      for (const event of upcomingEvents) {
+        if (event.reminder) {
+          await scheduleChainForEvent(event, event.reminderPreset);
+        }
+      }
+    };
+
+    void refreshOnTimezoneChange();
+  }, [isAuthenticated, scheduleChainForEvent, upcomingEvents]);
 
   const isDark = theme.mode === 'dark';
 
