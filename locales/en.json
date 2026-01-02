@@ -404,6 +404,18 @@
     "disabled": "Notifications Disabled",
     "disabledDescription": "Enable notifications in settings",
     "openSettings": "Open Settings",
+    "reminderTitle": "{{emoji}} {{eventType}} reminder",
+    "reminderBody": "Reminder for your pet's {{eventType}} event",
+    "reminderTimes": {
+      "5m": "5 minutes before",
+      "15m": "15 minutes before",
+      "30m": "30 minutes before",
+      "1h": "1 hour before",
+      "2h": "2 hours before",
+      "1d": "1 day before",
+      "2d": "2 days before",
+      "1w": "1 week before"
+    },
     "testTitle": "Petopia reminder",
     "testBody": "Notifications are set up. We'll remind you about pet care events."
   },

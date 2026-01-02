@@ -380,6 +380,18 @@
     "disabled": "Bildirimler Devre Dışı",
     "disabledDescription": "Ayarlardan bildirimleri etkinleştirin",
     "openSettings": "Ayarları Aç",
+    "reminderTitle": "{{emoji}} {{eventType}} hatırlatması",
+    "reminderBody": "{{eventType}} etkinliği için hatırlatma",
+    "reminderTimes": {
+      "5m": "5 dakika önce",
+      "15m": "15 dakika önce",
+      "30m": "30 dakika önce",
+      "1h": "1 saat önce",
+      "2h": "2 saat önce",
+      "1d": "1 gün önce",
+      "2d": "2 gün önce",
+      "1w": "1 hafta önce"
+    },
     "testTitle": "Petopia hatırlatması",
     "testBody": "Bildirimler hazır. Pet bakım etkinliklerini sana hatırlatacağız."
   },

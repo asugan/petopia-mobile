@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import * as Notifications from 'expo-notifications';
-import { notificationService, REMINDER_TIMES } from '../services/notificationService';
+import { notificationService, getReminderTimes } from '../services/notificationService';
 import { Event } from '../types';
 import { useEventReminderStore } from '@/stores/eventReminderStore';
 
@@ -190,4 +190,4 @@ export const useNotificationStats = () => {
 };
 
 // Export reminder times for convenience
-export { REMINDER_TIMES };
+export { getReminderTimes };

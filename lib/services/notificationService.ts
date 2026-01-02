@@ -3,6 +3,7 @@ import { Platform } from 'react-native';
 import { Event } from '../types';
 import { EVENT_TYPE_DEFAULT_REMINDERS } from '../../constants/eventIcons';
 import { REMINDER_PRESETS, QUIET_HOURS_WINDOW } from '@/constants/reminders';
+import i18n from '@/lib/i18n';
 
 /**
  * Notification Service - Handles all push notification operations
@@ -31,6 +32,11 @@ export interface ReminderTime {
   label: string;
 }
 
+interface ReminderTimeOption {
+  value: number;
+  labelKey: string;
+}
+
 const isNotificationPermissionGranted = (
   permissions: Notifications.NotificationPermissionsStatus
 ): boolean => {
@@ -46,16 +52,24 @@ const isNotificationPermissionGranted = (
   );
 };
 
-export const REMINDER_TIMES: ReminderTime[] = [
-  { value: 5, label: '5 minutes before' },
-  { value: 15, label: '15 minutes before' },
-  { value: 30, label: '30 minutes before' },
-  { value: 60, label: '1 hour before' },
-  { value: 120, label: '2 hours before' },
-  { value: 1440, label: '1 day before' },
-  { value: 2880, label: '2 days before' },
-  { value: 10080, label: '1 week before' },
+const REMINDER_TIME_OPTIONS: ReminderTimeOption[] = [
+  { value: 5, labelKey: 'notifications.reminderTimes.5m' },
+  { value: 15, labelKey: 'notifications.reminderTimes.15m' },
+  { value: 30, labelKey: 'notifications.reminderTimes.30m' },
+  { value: 60, labelKey: 'notifications.reminderTimes.1h' },
+  { value: 120, labelKey: 'notifications.reminderTimes.2h' },
+  { value: 1440, labelKey: 'notifications.reminderTimes.1d' },
+  { value: 2880, labelKey: 'notifications.reminderTimes.2d' },
+  { value: 10080, labelKey: 'notifications.reminderTimes.1w' },
 ];
+
+export const getReminderTimes = (
+  t: (key: string, options?: Record<string, any>) => string = i18n.t.bind(i18n)
+): ReminderTime[] =>
+  REMINDER_TIME_OPTIONS.map((option) => ({
+    value: option.value,
+    label: t(option.labelKey),
+  }));
 
 export class NotificationService {
   private static instance: NotificationService;
@@ -225,13 +239,23 @@ export class NotificationService {
 
       // Get event type emoji
       const eventTypeEmoji = this.getEventTypeEmoji(event.type);
+      const eventTypeLabel = i18n.t(`eventTypes.${event.type}`, event.type);
+      const notificationTitle = event.title?.trim()
+        ? `${eventTypeEmoji} ${event.title}`
+        : i18n.t('notifications.reminderTitle', {
+          eventType: eventTypeLabel,
+          emoji: eventTypeEmoji,
+        });
+      const notificationBody = event.description || i18n.t('notifications.reminderBody', {
+        eventType: eventTypeLabel,
+      });
 
       // Schedule notification
       await this.ensureNotificationChannel();
       const notificationId = await Notifications.scheduleNotificationAsync({
         content: {
-          title: `${eventTypeEmoji} ${event.title}`,
-          body: event.description || `Reminder for your pet's ${event.type} event`,
+          title: notificationTitle,
+          body: notificationBody,
           data: {
             eventId: event._id,
             petId: event.petId,
