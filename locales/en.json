@@ -362,6 +362,7 @@
       "play": "Playtime is a great way to bond with your pet and get exercise.",
       "training": "Training sessions are important for your pet's learning and socialization. Progress with patience and rewards.",
       "bath": "Bathing is necessary for your pet's cleanliness. Adjust frequency based on pet type.",
+      "other": "Other activities can benefit from reminders too. Add details to make it actionable.",
       "default": "This activity is important for your pet's health and happiness. Schedule regularly."
     }
   },
@@ -558,7 +559,7 @@
     "title": "An Error Occurred",
     "networkError": "There's a problem with your internet connection. Please check your connection and try again.",
     "generalError": "An error occurred while loading data. Please try again.",
-    "retry": "Try Again"
+    "unexpectedError": "Something went wrong. Please try again."
   },
   "petTypes": {
     "dog": "Dog",

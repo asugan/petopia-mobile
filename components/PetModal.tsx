@@ -1,6 +1,7 @@
 import { Portal, Snackbar } from '@/components/ui';
 import { useTheme } from '@/lib/theme';
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { Modal as RNModal, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useCreatePet, useUpdatePet } from '../lib/hooks/usePets';
@@ -23,20 +24,24 @@ export function PetModal({
   onSuccess,
   testID,
 }: PetModalProps) {
+  const { t } = useTranslation();
   const { theme } = useTheme();
   const [loading, setLoading] = React.useState(false);
   const [snackbarVisible, setSnackbarVisible] = React.useState(false);
   const [snackbarMessage, setSnackbarMessage] = React.useState('');
+  const [snackbarType, setSnackbarType] = React.useState<'success' | 'error'>('success');
 
   // ✅ React Query hooks for server state
   const createPetMutation = useCreatePet();
   const updatePetMutation = useUpdatePet();
 
-  const showSnackbar = React.useCallback((message: string) => {
+  const showSnackbar = React.useCallback((message: string, type: 'success' | 'error' = 'success') => {
     setSnackbarMessage(message);
+    setSnackbarType(type);
     setSnackbarVisible(true);
   }, []);
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   const handleSubmit = React.useCallback(async (data: PetCreateFormInput) => {
     setLoading(true);
     try {
@@ -46,18 +51,19 @@ export function PetModal({
       if (pet) {
         // Pet güncelleme
         await updatePetMutation.mutateAsync({ _id: pet._id, data: apiData });
-        showSnackbar('Pet başarıyla güncellendi');
+        showSnackbar(t('pets.updateSuccess'), 'success');
       } else {
         // Yeni pet oluşturma
         await createPetMutation.mutateAsync(apiData);
-        showSnackbar('Pet başarıyla eklendi');
+        showSnackbar(t('pets.saveSuccess'), 'success');
       }
 
       onSuccess();
       onClose();
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : 'İşlem başarısız oldu';
-      showSnackbar(errorMessage);
+      const fallbackMessage = pet ? t('pets.updateError') : t('pets.createError');
+      const errorMessage = error instanceof Error ? error.message : fallbackMessage;
+      showSnackbar(errorMessage, 'error');
     } finally {
       setLoading(false);
     }
@@ -86,7 +92,7 @@ export function PetModal({
         <SafeAreaView style={[styles.container, { backgroundColor: theme.colors.surface }]}>
           <View style={styles.header}>
             <Text style={[styles.title, { color: theme.colors.onSurface }]}>
-              {pet ? 'Pet Düzenle' : 'Yeni Pet Ekle'}
+              {pet ? t('pets.editPet') : t('pets.addNewPet')}
             </Text>
           </View>
 
@@ -107,7 +113,7 @@ export function PetModal({
           message={snackbarMessage}
           style={{
             ...styles.snackbar,
-            backgroundColor: snackbarMessage.includes('başarıyla') ? theme.colors.primary : theme.colors.error
+            backgroundColor: snackbarType === 'success' ? theme.colors.primary : theme.colors.error
           }}
         />
       </Portal>

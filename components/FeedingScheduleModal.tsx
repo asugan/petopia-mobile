@@ -36,13 +36,15 @@ export function FeedingScheduleModal({
   const [loading, setLoading] = React.useState(false);
   const [snackbarVisible, setSnackbarVisible] = React.useState(false);
   const [snackbarMessage, setSnackbarMessage] = React.useState('');
+  const [snackbarType, setSnackbarType] = React.useState<'success' | 'error'>('success');
 
   // React Query hooks for server state
   const createMutation = useCreateFeedingSchedule();
   const updateMutation = useUpdateFeedingSchedule();
 
-  const showSnackbar = React.useCallback((message: string) => {
+  const showSnackbar = React.useCallback((message: string, type: 'success' | 'error' = 'success') => {
     setSnackbarMessage(message);
+    setSnackbarType(type);
     setSnackbarVisible(true);
   }, []);
 
@@ -56,18 +58,18 @@ export function FeedingScheduleModal({
           _id: schedule._id,
           data: apiData,
         });
-        showSnackbar(t('feedingSchedule.updateSuccess') || 'Besleme programı başarıyla güncellendi');
+        showSnackbar(t('feedingSchedule.updateSuccess'), 'success');
       } else {
         // Create new schedule
         await createMutation.mutateAsync(apiData);
-        showSnackbar(t('feedingSchedule.createSuccess') || 'Besleme programı başarıyla eklendi');
+        showSnackbar(t('feedingSchedule.createSuccess'), 'success');
       }
 
       onSuccess();
       onClose();
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : t('feedingSchedule.errors.submitFailed') || 'İşlem başarısız oldu';
-      showSnackbar(errorMessage);
+      const errorMessage = error instanceof Error ? error.message : t('feedingSchedule.errors.submitFailed');
+      showSnackbar(errorMessage, 'error');
     } finally {
       setLoading(false);
     }
@@ -104,7 +106,7 @@ export function FeedingScheduleModal({
               disabled={loading}
               compact
             >
-              {t('common.close') || 'Kapat'}
+              {t('common.close')}
             </Button>
           </View>
 
@@ -127,7 +129,7 @@ export function FeedingScheduleModal({
           message={snackbarMessage}
           style={{
             ...styles.snackbar,
-            backgroundColor: snackbarMessage.includes('başarıyla') ? theme.colors.primary : theme.colors.error
+            backgroundColor: snackbarType === 'success' ? theme.colors.primary : theme.colors.error
           }}
         />
       </Portal>

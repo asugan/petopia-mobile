@@ -1,6 +1,7 @@
 import React, { Component, ReactNode } from 'react';
 import { View, StyleSheet } from 'react-native';
-import { Card, Text, Button,  } from '@/components/ui';
+import { useTranslation } from 'react-i18next';
+import { Card, Text, Button } from '@/components/ui';
 import { useTheme } from '@/lib/theme';
 
 interface Props {
@@ -55,6 +56,7 @@ interface ErrorBoundaryDisplayProps {
 
 const ErrorBoundaryDisplay: React.FC<ErrorBoundaryDisplayProps> = ({ error, onRetry }) => {
   const { theme } = useTheme();
+  const { t } = useTranslation();
 
   return (
     <View style={[styles.container, { backgroundColor: theme.colors.background }]}>
@@ -64,14 +66,14 @@ const ErrorBoundaryDisplay: React.FC<ErrorBoundaryDisplayProps> = ({ error, onRe
             variant="headlineMedium"
             style={[styles.title, { color: theme.colors.error }]}
           >
-            Ops! Bir hata oluştu
+            {t('errors.title')}
           </Text>
 
           <Text
             variant="bodyMedium"
             style={[styles.message, { color: theme.colors.onSurface }]}
           >
-            {error?.message || 'Beklenmedik bir hata meydana geldi. Lütfen tekrar deneyin.'}
+            {error?.message || t('errors.unexpectedError')}
           </Text>
 
           {__DEV__ && error?.stack && (
@@ -91,7 +93,7 @@ const ErrorBoundaryDisplay: React.FC<ErrorBoundaryDisplayProps> = ({ error, onRe
             onPress={onRetry}
             style={styles.retryButton}
           >
-            Tekrar Dene
+            {t('common.retry')}
           </Button>
         </View>
       </Card>
