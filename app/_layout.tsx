@@ -1,20 +1,22 @@
+import { useEffect } from 'react';
+import { AppState, AppStateStatus } from 'react-native';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
+import { StatusBar } from 'expo-status-bar';
+import * as Notifications from 'expo-notifications';
 import { Stack } from "expo-router";
 import { QueryClient, QueryClientProvider, focusManager } from '@tanstack/react-query';
+import { ApiErrorBoundary } from "@/lib/components/ApiErrorBoundary";
 import { MOBILE_QUERY_CONFIG } from "@/lib/config/queryConfig";
+import { useAuth } from '@/lib/auth';
+import { setOnUnauthorized } from '@/lib/api/client';
+import { notificationService } from '@/lib/services/notificationService';
+import { useOnlineManager } from "@/lib/hooks/useOnlineManager";
+import { NetworkStatus } from "@/lib/components/NetworkStatus";
 import { LanguageProvider } from "@/providers/LanguageProvider";
 import { AuthProvider } from "@/providers/AuthProvider";
 import { SubscriptionProvider } from "@/providers/SubscriptionProvider";
-import { NetworkStatus } from "@/lib/components/NetworkStatus";
-import { ApiErrorBoundary } from "@/lib/components/ApiErrorBoundary";
-import { useOnlineManager } from "@/lib/hooks/useOnlineManager";
-import { AppState, AppStateStatus } from 'react-native';
-import { useEffect } from 'react';
-import { SafeAreaProvider } from 'react-native-safe-area-context';
-import { StatusBar } from 'expo-status-bar';
-import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { useUserSettingsStore } from '@/stores/userSettingsStore';
-import { useAuth } from '@/lib/auth';
-import { setOnUnauthorized } from '@/lib/api/client';
 import "../lib/i18n";
 
 // Enhanced QueryClient with better configuration
@@ -35,6 +37,20 @@ function AppProviders({ children }: { children: React.ReactNode }) {
     setOnUnauthorized(() => {
       queryClient.clear();
     });
+  }, []);
+
+  useEffect(() => {
+    const receivedSubscription = Notifications.addNotificationReceivedListener(
+      (notification) => notificationService.handleNotificationReceived(notification)
+    );
+    const responseSubscription = Notifications.addNotificationResponseReceivedListener(
+      (response) => notificationService.handleNotificationResponse(response)
+    );
+
+    return () => {
+      receivedSubscription.remove();
+      responseSubscription.remove();
+    };
   }, []);
 
   return (

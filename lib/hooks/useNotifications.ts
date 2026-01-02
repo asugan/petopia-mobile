@@ -7,7 +7,7 @@ import { Event } from '../types';
  * Custom hook for managing notifications
  */
 export const useNotifications = () => {
-  const [permissionStatus, setPermissionStatus] = useState<'granted' | 'denied' | 'undetermined'>('undetermined');
+  const [permissions, setPermissions] = useState<Notifications.NotificationPermissionsStatus | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
   // Check initial permission status
@@ -17,8 +17,8 @@ export const useNotifications = () => {
 
   const checkPermissionStatus = async () => {
     try {
-      const { status } = await Notifications.getPermissionsAsync();
-      setPermissionStatus(status);
+      const nextPermissions = await Notifications.getPermissionsAsync();
+      setPermissions(nextPermissions);
     } catch (error) {
       console.error('Error checking notification permission:', error);
     }
@@ -28,7 +28,8 @@ export const useNotifications = () => {
     setIsLoading(true);
     try {
       const granted = await notificationService.requestPermissions();
-      setPermissionStatus(granted ? 'granted' : 'denied');
+      const nextPermissions = await Notifications.getPermissionsAsync();
+      setPermissions(nextPermissions);
       return granted;
     } catch (error) {
       console.error('Error requesting notification permission:', error);
@@ -38,7 +39,10 @@ export const useNotifications = () => {
     }
   }, []);
 
+  const permissionStatus = permissions?.status ?? Notifications.PermissionStatus.UNDETERMINED;
+
   return {
+    permissions,
     permissionStatus,
     isLoading,
     requestPermission,
