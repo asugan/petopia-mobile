@@ -290,6 +290,7 @@ export const EventSchema = () => {
 
   return eventSchema().extend({
     _id: objectIdSchema,
+    status: z.enum(['upcoming', 'completed', 'cancelled', 'missed']).default('upcoming'),
     createdAt: z.string().datetime(),
     updatedAt: z.string().datetime(),
   });
@@ -334,6 +335,7 @@ export const updateEventSchema = () => {
       .optional(),
     reminder: z.boolean().optional(),
     reminderPreset: z.enum(['standard', 'compact', 'minimal']).optional(),
+    status: z.enum(['upcoming', 'completed', 'cancelled', 'missed']).optional(),
     notes: z
       .string()
       .max(1000, { message: t('forms.validation.event.notesMax') })

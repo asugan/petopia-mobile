@@ -24,7 +24,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { getEventTypeLabel } from '@/constants/eventIcons';
 import { useReminderScheduler } from '@/hooks/useReminderScheduler';
-import { useDeleteEvent, useEvent } from '@/lib/hooks/useEvents';
+import { useDeleteEvent, useEvent, useUpdateEvent } from '@/lib/hooks/useEvents';
 import { usePet } from '@/lib/hooks/usePets';
 import { useTheme } from '@/lib/theme';
 import { useEventReminderStore } from '@/stores/eventReminderStore';
@@ -42,8 +42,10 @@ export default function EventDetailScreen() {
   const { data: event, isLoading, error } = useEvent(id);
   const { data: pet } = usePet(event?.petId || '');
   const deleteEventMutation = useDeleteEvent();
+  const updateEventMutation = useUpdateEvent();
   const reminderStatus = useEventReminderStore((state) => (event?._id ? state.statuses[event._id] : undefined));
   const markMissed = useEventReminderStore((state) => state.markMissed);
+  const markCompleted = useEventReminderStore((state) => state.markCompleted);
   const markCancelled = useEventReminderStore((state) => state.markCancelled);
   const resetStatus = useEventReminderStore((state) => state.resetStatus);
   const { cancelRemindersForEvent, scheduleChainForEvent } = useReminderScheduler();
@@ -112,6 +114,7 @@ export default function EventDetailScreen() {
 
   const derivedStatus = useMemo(() => {
     if (!event) return 'upcoming';
+    if (event.status && event.status !== 'upcoming') return event.status;
     if (reminderStatus?.status === 'completed') return 'completed';
     if (reminderStatus?.status === 'cancelled') return 'cancelled';
     if (reminderStatus?.status === 'missed') return 'missed';
@@ -119,14 +122,75 @@ export default function EventDetailScreen() {
     return start < new Date() ? 'missed' : 'upcoming';
   }, [event, reminderStatus]);
 
+  const statusLabel = useMemo(() => {
+    switch (eventStatus) {
+      case 'completed':
+        return t('events.statusCompleted');
+      case 'cancelled':
+        return t('events.statusCancelled');
+      case 'missed':
+        return t('events.statusMissed');
+      default:
+        return t('events.statusUpcoming');
+    }
+  }, [eventStatus, t]);
+
   useEffect(() => {
     if (!event) return;
     setEventStatus(derivedStatus);
-    if (derivedStatus === 'missed' && reminderStatus?.status !== 'missed') {
+    if (derivedStatus === 'missed' && event.status !== 'missed') {
       markMissed(event._id);
       void cancelRemindersForEvent(event._id);
+      void updateEventMutation.mutateAsync({
+        _id: event._id,
+        data: { status: 'missed' },
+      });
     }
-  }, [cancelRemindersForEvent, derivedStatus, event, markMissed, reminderStatus]);
+  }, [cancelRemindersForEvent, derivedStatus, event, markMissed, updateEventMutation]);
+
+  const handleMarkCompleted = async () => {
+    if (!event) return;
+    await cancelRemindersForEvent(event._id);
+    await updateEventMutation.mutateAsync({
+      _id: event._id,
+      data: { status: 'completed' },
+    });
+    markCompleted(event._id);
+    setEventStatus('completed');
+  };
+
+  const handleMarkMissed = async () => {
+    if (!event) return;
+    await cancelRemindersForEvent(event._id);
+    await updateEventMutation.mutateAsync({
+      _id: event._id,
+      data: { status: 'missed' },
+    });
+    markMissed(event._id);
+    setEventStatus('missed');
+  };
+
+  const handleMarkCancelled = async () => {
+    if (!event) return;
+    await cancelRemindersForEvent(event._id);
+    await updateEventMutation.mutateAsync({
+      _id: event._id,
+      data: { status: 'cancelled' },
+    });
+    markCancelled(event._id);
+    setEventStatus('cancelled');
+  };
+
+  const handleResumeReminders = async () => {
+    if (!event) return;
+    await scheduleChainForEvent(event);
+    await updateEventMutation.mutateAsync({
+      _id: event._id,
+      data: { status: 'upcoming' },
+    });
+    resetStatus(event._id);
+    setEventStatus('upcoming');
+  };
 
   const footerStyles = useMemo(() => StyleSheet.create({
     footer: {
@@ -330,14 +394,52 @@ export default function EventDetailScreen() {
                       setEventStatus('upcoming');
                     } else {
                       await cancelRemindersForEvent(event._id);
-                      markCancelled(event._id);
-                      setEventStatus('cancelled');
+                      resetStatus(event._id);
                     }
                   }}
                   trackColor={{ false: '#767577', true: COLORS.primary }}
                   thumbColor={'#f4f3f4'}
                 />
               </View>
+              <View style={styles.statusRow}>
+                <View style={[styles.statusChip, { borderColor: COLORS.primary }]}>
+                  <Text style={[styles.statusChipText, { color: COLORS.primary }]}>{statusLabel}</Text>
+                </View>
+                {eventStatus === 'cancelled' && (
+                  <TouchableOpacity
+                    onPress={handleResumeReminders}
+                    style={[styles.statusAction, { borderColor: COLORS.primary }]}
+                  >
+                    <Text style={[styles.statusActionText, { color: COLORS.primary }]}>
+                      {t('events.resumeReminders')}
+                    </Text>
+                  </TouchableOpacity>
+                )}
+              </View>
+              {eventStatus === 'upcoming' && (
+                <View style={styles.reminderActions}>
+                  <TouchableOpacity
+                    onPress={handleMarkCompleted}
+                    style={[styles.reminderActionButton, { backgroundColor: COLORS.primary }]}
+                  >
+                    <Text style={styles.reminderActionText}>{t('events.markCompleted')}</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    onPress={handleMarkMissed}
+                    style={[styles.reminderActionButton, { backgroundColor: COLORS.red400 }]}
+                  >
+                    <Text style={styles.reminderActionText}>{t('events.markMissed')}</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    onPress={handleMarkCancelled}
+                    style={[styles.reminderActionButton, { backgroundColor: COLORS.surfaceDarker, borderColor: COLORS.gray400 }]}
+                  >
+                    <Text style={[styles.reminderActionText, { color: COLORS.gray400 }]}>
+                      {t('events.markCancelled')}
+                    </Text>
+                  </TouchableOpacity>
+                </View>
+              )}
             </View>
           )}
         </View>
@@ -559,6 +661,51 @@ const styles = StyleSheet.create({
   },
   reminderSubtitle: {
     fontSize: 12,
+  },
+  statusRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginTop: 10,
+    gap: 12,
+  },
+  statusChip: {
+    borderWidth: 1,
+    borderRadius: 999,
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+  },
+  statusChipText: {
+    fontSize: 12,
+    fontWeight: '600',
+  },
+  statusAction: {
+    borderWidth: 1,
+    borderRadius: 10,
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+  },
+  statusActionText: {
+    fontSize: 12,
+    fontWeight: '600',
+  },
+  reminderActions: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 10,
+    marginTop: 12,
+  },
+  reminderActionButton: {
+    borderRadius: 10,
+    paddingHorizontal: 12,
+    paddingVertical: 10,
+    borderWidth: 1,
+    borderColor: 'transparent',
+  },
+  reminderActionText: {
+    color: '#fff',
+    fontSize: 12,
+    fontWeight: '700',
   },
   buttonSecondary: {
     marginTop: 16,
