@@ -4,7 +4,7 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { StatusBar } from 'expo-status-bar';
 import * as Notifications from 'expo-notifications';
-import { Stack } from "expo-router";
+import { Stack, useRouter } from "expo-router";
 import { QueryClient, QueryClientProvider, focusManager } from '@tanstack/react-query';
 import { ApiErrorBoundary } from "@/lib/components/ApiErrorBoundary";
 import { MOBILE_QUERY_CONFIG } from "@/lib/config/queryConfig";
@@ -17,6 +17,7 @@ import { LanguageProvider } from "@/providers/LanguageProvider";
 import { AuthProvider } from "@/providers/AuthProvider";
 import { SubscriptionProvider } from "@/providers/SubscriptionProvider";
 import { useUserSettingsStore } from '@/stores/userSettingsStore';
+import { useEventReminderStore } from '@/stores/eventReminderStore';
 import "../lib/i18n";
 
 // Enhanced QueryClient with better configuration
@@ -85,8 +86,10 @@ function OnlineManagerProvider({ children }: { children: React.ReactNode }) {
 }
 
 export default function RootLayout() {
+  const router = useRouter();
   const { isAuthenticated } = useAuth();
   const { initialize, theme, setAuthenticated, clear } = useUserSettingsStore();
+  const quietHours = useEventReminderStore((state) => state.quietHours);
 
   useEffect(() => {
     setAuthenticated(isAuthenticated);
@@ -99,6 +102,25 @@ export default function RootLayout() {
       clear();
     }
   }, [isAuthenticated, initialize, clear]);
+
+  useEffect(() => {
+    notificationService.setQuietHours(quietHours);
+  }, [quietHours]);
+
+  useEffect(() => {
+    notificationService.setNavigationHandler((target) => {
+      router.push(target as any);
+    });
+
+    const checkLastNotification = async () => {
+      const response = await Notifications.getLastNotificationResponseAsync();
+      if (response) {
+        notificationService.handleNotificationResponse(response);
+      }
+    };
+
+    void checkLastNotification();
+  }, [router]);
 
   const isDark = theme.mode === 'dark';
 

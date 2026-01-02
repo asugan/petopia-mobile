@@ -1,7 +1,7 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
-import { ReminderPresetKey } from '@/constants/reminders';
+import { QUIET_HOURS_WINDOW, ReminderPresetKey } from '@/constants/reminders';
 
 export type EventLocalStatus = 'pending' | 'completed' | 'cancelled' | 'missed';
 
@@ -14,10 +14,15 @@ interface EventReminderState {
   reminderIds: Record<string, string[]>;
   statuses: Record<string, EventStatusMeta>;
   presetSelections: Record<string, ReminderPresetKey>;
+  quietHoursEnabled: boolean;
   quietHours: {
     startHour: number;
+    startMinute: number;
     endHour: number;
+    endMinute: number;
   };
+  setQuietHoursEnabled: (enabled: boolean) => void;
+  setQuietHours: (quietHours: EventReminderState['quietHours']) => void;
   setReminderIds: (eventId: string, ids: string[]) => void;
   clearReminderIds: (eventId: string) => void;
   markCompleted: (eventId: string) => void;
@@ -29,8 +34,10 @@ interface EventReminderState {
 }
 
 const defaultQuietHours = {
-  startHour: 22,
-  endHour: 8,
+  startHour: QUIET_HOURS_WINDOW.startHour,
+  startMinute: QUIET_HOURS_WINDOW.startMinute,
+  endHour: QUIET_HOURS_WINDOW.endHour,
+  endMinute: QUIET_HOURS_WINDOW.endMinute,
 };
 
 export const useEventReminderStore = create<EventReminderState>()(
@@ -39,7 +46,16 @@ export const useEventReminderStore = create<EventReminderState>()(
       reminderIds: {},
       statuses: {},
       presetSelections: {},
+      quietHoursEnabled: true,
       quietHours: defaultQuietHours,
+      setQuietHoursEnabled: (enabled) =>
+        set(() => ({
+          quietHoursEnabled: enabled,
+        })),
+      setQuietHours: (quietHours) =>
+        set(() => ({
+          quietHours,
+        })),
       setReminderIds: (eventId, ids) =>
         set((state) => ({
           reminderIds: { ...state.reminderIds, [eventId]: ids },
@@ -95,6 +111,7 @@ export const useEventReminderStore = create<EventReminderState>()(
         reminderIds: state.reminderIds,
         statuses: state.statuses,
         presetSelections: state.presetSelections,
+        quietHoursEnabled: state.quietHoursEnabled,
         quietHours: state.quietHours,
       }),
     }

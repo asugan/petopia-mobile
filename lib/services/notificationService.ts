@@ -59,12 +59,16 @@ export const REMINDER_TIMES: ReminderTime[] = [
 
 export class NotificationService {
   private static instance: NotificationService;
-  private notificationChannelId = 'event-reminders';
+  private eventChannelId = 'event-reminders';
+  private budgetChannelId = 'budget-alerts';
   private quietHours = {
     startHour: QUIET_HOURS_WINDOW.startHour,
+    startMinute: QUIET_HOURS_WINDOW.startMinute,
     endHour: QUIET_HOURS_WINDOW.endHour,
+    endMinute: QUIET_HOURS_WINDOW.endMinute,
   };
   private notificationChannelPromise: Promise<void> | null = null;
+  private navigationHandler?: (target: { pathname: string; params?: Record<string, string> } | string) => void;
 
   private constructor() {
     this.notificationChannelPromise = this.setupNotificationChannel();
@@ -86,13 +90,21 @@ export class NotificationService {
   private async setupNotificationChannel() {
     if (Platform.OS === 'android') {
       try {
-        await Notifications.setNotificationChannelAsync(this.notificationChannelId, {
+        await Notifications.setNotificationChannelAsync(this.eventChannelId, {
           name: 'Event Reminders',
           importance: Notifications.AndroidImportance.HIGH,
           vibrationPattern: [0, 250, 250, 250],
           lightColor: '#FFB3D1',
           sound: 'default',
           description: 'Notifications for pet care events and activities',
+        });
+        await Notifications.setNotificationChannelAsync(this.budgetChannelId, {
+          name: 'Budget Alerts',
+          importance: Notifications.AndroidImportance.DEFAULT,
+          vibrationPattern: [0, 250, 250],
+          lightColor: '#FFD166',
+          sound: 'default',
+          description: 'Notifications for budget alerts and limits',
         });
       } catch (error) {
         console.error('❌ Error setting notification channel:', error);
@@ -110,6 +122,21 @@ export class NotificationService {
     }
 
     await this.notificationChannelPromise;
+  }
+
+  setNavigationHandler(
+    handler: (target: { pathname: string; params?: Record<string, string> } | string) => void
+  ) {
+    this.navigationHandler = handler;
+  }
+
+  setQuietHours(quietHours: {
+    startHour: number;
+    startMinute: number;
+    endHour: number;
+    endMinute: number;
+  }) {
+    this.quietHours = quietHours;
   }
 
   /**
@@ -186,9 +213,13 @@ export class NotificationService {
         triggerDate = this.adjustForQuietHours(triggerDate);
       }
 
-      // Don't schedule if trigger time is in the past
+      // Don't schedule if trigger time is in the past or after the event
       if (triggerDate <= new Date()) {
         console.warn('⚠️ Reminder time is in the past, not scheduling');
+        return null;
+      }
+      if (triggerDate > eventDate) {
+        console.warn('⚠️ Reminder time is after event time, not scheduling');
         return null;
       }
 
@@ -213,7 +244,7 @@ export class NotificationService {
         },
         trigger: {
           date: triggerDate,
-          channelId: this.notificationChannelId,
+          channelId: this.eventChannelId,
         },
       });
 
@@ -330,7 +361,7 @@ export class NotificationService {
         ? this.adjustForQuietHours(triggerDate)
         : triggerDate;
 
-      if (adjustedTrigger >= eventDate) {
+      if (adjustedTrigger > eventDate) {
         continue;
       }
 
@@ -387,7 +418,7 @@ export class NotificationService {
           data: data || {},
           sound: 'default',
         },
-        trigger: null, // Send immediately
+        trigger: { channelId: this.eventChannelId },
       });
 
       console.log(`✅ Sent immediate notification: ${notificationId}`);
@@ -417,11 +448,14 @@ export class NotificationService {
       content: {
         title,
         body,
-        data: data || {},
+        data: {
+          ...(data || {}),
+          screen: 'budget',
+        },
         sound: 'default',
         priority: Notifications.AndroidNotificationPriority.HIGH,
       },
-      trigger: null,
+      trigger: { channelId: this.budgetChannelId },
     });
   }
 
@@ -466,8 +500,21 @@ export class NotificationService {
 
     // You can navigate to specific screens based on notification data
     if (data?.screen === 'event' && data?.eventId) {
-      // Navigate to event detail screen
-      console.log(`Navigate to event: ${data.eventId}`);
+      if (this.navigationHandler) {
+        this.navigationHandler({
+          pathname: '/(tabs)/calendar',
+          params: { editEventId: String(data.eventId) },
+        });
+      } else {
+        console.log(`Navigate to event: ${data.eventId}`);
+      }
+      return;
+    }
+
+    if (data?.screen === 'budget') {
+      if (this.navigationHandler) {
+        this.navigationHandler('/(tabs)/finance');
+      }
     }
   }
 
@@ -506,20 +553,27 @@ export class NotificationService {
    */
   private adjustForQuietHours(triggerDate: Date): Date {
     const adjusted = new Date(triggerDate);
-    const hour = triggerDate.getHours();
-    const inQuietHours =
-      hour >= this.quietHours.startHour || hour < this.quietHours.endHour;
+    const triggerMinutes = triggerDate.getHours() * 60 + triggerDate.getMinutes();
+    const startMinutes =
+      this.quietHours.startHour * 60 + this.quietHours.startMinute;
+    const endMinutes =
+      this.quietHours.endHour * 60 + this.quietHours.endMinute;
+    const crossesMidnight = startMinutes > endMinutes;
+    const inQuietHours = startMinutes === endMinutes
+      ? false
+      : crossesMidnight
+        ? triggerMinutes >= startMinutes || triggerMinutes < endMinutes
+        : triggerMinutes >= startMinutes && triggerMinutes < endMinutes;
 
     if (!inQuietHours) {
       return triggerDate;
     }
 
-    if (hour >= this.quietHours.startHour) {
+    if (crossesMidnight && triggerMinutes >= startMinutes) {
       adjusted.setDate(adjusted.getDate() + 1);
-      adjusted.setHours(this.quietHours.endHour, 0, 0, 0);
-    } else {
-      adjusted.setHours(this.quietHours.endHour, 0, 0, 0);
     }
+
+    adjusted.setHours(this.quietHours.endHour, this.quietHours.endMinute, 0, 0);
     return adjusted;
   }
 }

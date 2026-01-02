@@ -1,5 +1,5 @@
 import { useCallback } from 'react';
-import { cancelEventNotifications, scheduleReminderChain } from '@/lib/services/notificationService';
+import { cancelEventNotifications, scheduleReminderChain, notificationService } from '@/lib/services/notificationService';
 import { REMINDER_PRESETS, ReminderPresetKey } from '@/constants/reminders';
 import { Event } from '@/lib/types';
 import { useEventReminderStore } from '@/stores/eventReminderStore';
@@ -13,6 +13,8 @@ const getPresetMinutes = (preset: ReminderPresetKey | undefined): readonly numbe
 
 export const useReminderScheduler = () => {
   const presetSelections = useEventReminderStore((state) => state.presetSelections);
+  const quietHoursEnabled = useEventReminderStore((state) => state.quietHoursEnabled);
+  const quietHours = useEventReminderStore((state) => state.quietHours);
   const setPresetSelection = useEventReminderStore((state) => state.setPresetSelection);
   const setReminderIds = useEventReminderStore((state) => state.setReminderIds);
   const clearReminderIds = useEventReminderStore((state) => state.clearReminderIds);
@@ -43,8 +45,9 @@ export const useReminderScheduler = () => {
       const reminderTimes = getPresetMinutes(presetKey);
 
       try {
+        notificationService.setQuietHours(quietHours);
         await cancelRemindersForEvent(event._id);
-        const ids = await scheduleReminderChain(event, reminderTimes, true);
+        const ids = await scheduleReminderChain(event, reminderTimes, quietHoursEnabled);
         if (ids.length > 0) {
           setReminderIds(event._id, ids);
           setPresetSelection(event._id, presetKey);
@@ -60,6 +63,8 @@ export const useReminderScheduler = () => {
     [
       cancelRemindersForEvent,
       clearReminderIds,
+      quietHours,
+      quietHoursEnabled,
       presetSelections,
       resetStatus,
       setPresetSelection,

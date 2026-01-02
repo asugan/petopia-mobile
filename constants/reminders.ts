@@ -17,5 +17,7 @@ export type ReminderPresetKey = keyof typeof REMINDER_PRESETS;
 
 export const QUIET_HOURS_WINDOW = {
   startHour: 22,
+  startMinute: 0,
   endHour: 8,
+  endMinute: 0,
 };

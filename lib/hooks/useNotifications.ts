@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import * as Notifications from 'expo-notifications';
 import { notificationService, REMINDER_TIMES } from '../services/notificationService';
 import { Event } from '../types';
+import { useEventReminderStore } from '@/stores/eventReminderStore';
 
 /**
  * Custom hook for managing notifications
@@ -9,11 +10,16 @@ import { Event } from '../types';
 export const useNotifications = () => {
   const [permissions, setPermissions] = useState<Notifications.NotificationPermissionsStatus | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const quietHours = useEventReminderStore((state) => state.quietHours);
 
   // Check initial permission status
   useEffect(() => {
     checkPermissionStatus();
   }, []);
+
+  useEffect(() => {
+    notificationService.setQuietHours(quietHours);
+  }, [quietHours]);
 
   const checkPermissionStatus = async () => {
     try {
@@ -56,6 +62,8 @@ export const useNotifications = () => {
 export const useEventReminders = (eventId?: string) => {
   const [scheduledReminders, setScheduledReminders] = useState<Notifications.NotificationRequest[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+  const quietHoursEnabled = useEventReminderStore((state) => state.quietHoursEnabled);
+  const quietHours = useEventReminderStore((state) => state.quietHours);
 
   useEffect(() => {
     if (eventId) {
@@ -77,7 +85,10 @@ export const useEventReminders = (eventId?: string) => {
   const scheduleReminder = useCallback(async (event: Event, reminderMinutes?: number) => {
     setIsLoading(true);
     try {
-      const notificationId = await notificationService.scheduleEventReminder(event, reminderMinutes);
+      notificationService.setQuietHours(quietHours);
+      const notificationId = await notificationService.scheduleEventReminder(event, reminderMinutes, {
+        respectQuietHours: quietHoursEnabled,
+      });
       if (notificationId) {
         await loadScheduledReminders();
         return notificationId;
@@ -89,12 +100,15 @@ export const useEventReminders = (eventId?: string) => {
     } finally {
       setIsLoading(false);
     }
-  }, []);
+  }, [quietHours, quietHoursEnabled]);
 
   const scheduleMultipleReminders = useCallback(async (event: Event, reminderTimes: number[]) => {
     setIsLoading(true);
     try {
-      const notificationIds = await notificationService.scheduleMultipleReminders(event, reminderTimes);
+      notificationService.setQuietHours(quietHours);
+      const notificationIds = await notificationService.scheduleMultipleReminders(event, reminderTimes, {
+        respectQuietHours: quietHoursEnabled,
+      });
       await loadScheduledReminders();
       return notificationIds;
     } catch (error) {
@@ -103,7 +117,7 @@ export const useEventReminders = (eventId?: string) => {
     } finally {
       setIsLoading(false);
     }
-  }, []);
+  }, [quietHours, quietHoursEnabled]);
 
   const cancelReminder = useCallback(async (notificationId: string) => {
     setIsLoading(true);

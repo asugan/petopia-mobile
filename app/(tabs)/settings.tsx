@@ -2,10 +2,12 @@ import React, { useEffect, useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { SubscriptionCard } from "@/components/subscription";
 import { Button, Card, ListItem, Switch, Text } from "@/components/ui";
+import { DateTimePicker } from "@/components/DateTimePicker";
 import { useAuth } from "@/lib/auth";
 import { accountService } from "@/lib/services/accountService";
 import { notificationService, requestNotificationPermissions } from "@/lib/services/notificationService";
 import { useAuthStore } from "@/stores/authStore";
+import { useEventReminderStore } from "@/stores/eventReminderStore";
 import { SupportedCurrency, useUserSettingsStore } from "@/stores/userSettingsStore";
 import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
@@ -31,6 +33,10 @@ export default function SettingsScreen() {
   const isDarkMode = settings?.theme === "dark";
   const [notificationsEnabled, setNotificationsEnabled] = useState(false);
   const [notificationLoading, setNotificationLoading] = useState(true);
+  const quietHoursEnabled = useEventReminderStore((state) => state.quietHoursEnabled);
+  const quietHours = useEventReminderStore((state) => state.quietHours);
+  const setQuietHoursEnabled = useEventReminderStore((state) => state.setQuietHoursEnabled);
+  const setQuietHours = useEventReminderStore((state) => state.setQuietHours);
   const [activeModal, setActiveModal] = useState<ModalState>("none");
   const [deleteConfirmText, setDeleteConfirmText] = useState("");
   const [deletingAccount, setDeletingAccount] = useState(false);
@@ -70,6 +76,7 @@ export default function SettingsScreen() {
             "You can disable notifications from your device settings. We'll stop scheduling new reminders from here."
           )
         );
+        await notificationService.cancelAllNotifications();
         setNotificationsEnabled(false);
       }
     } catch (error) {
@@ -170,6 +177,32 @@ export default function SettingsScreen() {
       setActiveModal("none");
       setDeleteConfirmText("");
     }
+  };
+
+  const createTimeDate = (hour: number, minute: number) => {
+    const date = new Date();
+    date.setHours(hour, minute, 0, 0);
+    return date;
+  };
+
+  const handleQuietHoursStartChange = (date: Date) => {
+    const nextQuietHours = {
+      ...quietHours,
+      startHour: date.getHours(),
+      startMinute: date.getMinutes(),
+    };
+    setQuietHours(nextQuietHours);
+    notificationService.setQuietHours(nextQuietHours);
+  };
+
+  const handleQuietHoursEndChange = (date: Date) => {
+    const nextQuietHours = {
+      ...quietHours,
+      endHour: date.getHours(),
+      endMinute: date.getMinutes(),
+    };
+    setQuietHours(nextQuietHours);
+    notificationService.setQuietHours(nextQuietHours);
   };
 
   return (
@@ -310,6 +343,43 @@ export default function SettingsScreen() {
                 />
               }
             />
+            <ListItem
+              title={t("settings.quietHours")}
+              description={t("settings.quietHoursDescription")}
+              left={
+                <MaterialCommunityIcons
+                  name="moon-waning-crescent"
+                  size={24}
+                  color={theme.colors.onSurfaceVariant}
+                />
+              }
+              right={
+                <Switch
+                  value={quietHoursEnabled}
+                  onValueChange={setQuietHoursEnabled}
+                  disabled={notificationLoading || !notificationsEnabled}
+                  color={theme.colors.primary}
+                />
+              }
+            />
+            {quietHoursEnabled && (
+              <View style={styles.quietHoursContainer}>
+                <DateTimePicker
+                  mode="time"
+                  label={t("settings.quietHoursStart")}
+                  value={createTimeDate(quietHours.startHour, quietHours.startMinute)}
+                  onChange={handleQuietHoursStartChange}
+                  disabled={notificationLoading || !notificationsEnabled}
+                />
+                <DateTimePicker
+                  mode="time"
+                  label={t("settings.quietHoursEnd")}
+                  value={createTimeDate(quietHours.endHour, quietHours.endMinute)}
+                  onChange={handleQuietHoursEndChange}
+                  disabled={notificationLoading || !notificationsEnabled}
+                />
+              </View>
+            )}
             <LanguageSettings variant="embedded" />
 
             <View style={styles.currencyPickerContainer}>
@@ -703,6 +773,9 @@ const styles = StyleSheet.create({
   },
   currencyPickerContainer: {
     marginTop: 16,
+  },
+  quietHoursContainer: {
+    marginBottom: 16,
   },
   currencyWarning: {
     marginTop: 8,
