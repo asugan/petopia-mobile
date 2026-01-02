@@ -19,28 +19,45 @@ import { StepHeader } from './StepHeader';
 
 interface PetFormProps {
   pet?: Pet;
-  onSubmit: (data: PetCreateFormInput) => void | Promise<void>;
+  onSubmit: (data: PetCreateFormInput) => void | boolean | Promise<void | boolean>;
   onCancel: () => void;
+  onError?: (error: unknown) => void;
   loading?: boolean;
   testID?: string;
 }
 
-export function PetForm({ pet, onSubmit, onCancel, loading = false, testID }: PetFormProps) {
+export function PetForm({
+  pet,
+  onSubmit,
+  onCancel,
+  onError,
+  loading = false,
+  testID,
+}: PetFormProps) {
   const { t } = useTranslation();
   const { theme } = useTheme();
   const { form, handleSubmit, isValid } = usePetForm(pet);
 
   const [currentStep, setCurrentStep] = React.useState(0);
   const [showStepError, setShowStepError] = React.useState(false);
+  const [submitError, setSubmitError] = React.useState<string | null>(null);
 
   const onFormSubmit = React.useCallback(
     async (data: PetCreateFormInput) => {
       try {
-        await onSubmit(data);
-      } catch {
+        setSubmitError(null);
+        const result = await onSubmit(data);
+        return result ?? true;
+      } catch (error) {
+        if (__DEV__) {
+          console.error('Pet form submit failed', error);
+        }
+        setSubmitError(t('errors.generalError'));
+        onError?.(error);
+        return false;
       }
     },
-    [onSubmit]
+    [onSubmit, onError, t]
   );
 
   const isEditMode = !!pet;
@@ -94,7 +111,7 @@ export function PetForm({ pet, onSubmit, onCancel, loading = false, testID }: Pe
       return;
     }
     setShowStepError(false);
-    handleSubmit(onFormSubmit)();
+    await handleSubmit(onFormSubmit)();
   }, [form, handleSubmit, onFormSubmit]);
 
   return (
@@ -234,6 +251,13 @@ export function PetForm({ pet, onSubmit, onCancel, loading = false, testID }: Pe
           <View style={[styles.statusContainer, { backgroundColor: theme.colors.errorContainer }]}>
             <Text style={[styles.statusText, { color: theme.colors.onErrorContainer }]}>
               {t('pets.pleaseFillRequiredFields')}
+            </Text>
+          </View>
+        )}
+        {submitError && (
+          <View style={[styles.statusContainer, { backgroundColor: theme.colors.errorContainer }]}>
+            <Text style={[styles.statusText, { color: theme.colors.onErrorContainer }]}>
+              {submitError}
             </Text>
           </View>
         )}

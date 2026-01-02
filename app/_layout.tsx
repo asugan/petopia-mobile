@@ -135,60 +135,43 @@ function RootLayoutContent() {
       return;
     }
 
-    const refreshOnTimezoneChange = async () => {
+    const rescheduleUpcomingReminders = async () => {
       const deviceTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
       const storedTimezone = await AsyncStorage.getItem(TIMEZONE_STORAGE_KEY);
+      const timezoneForSignature = deviceTimezone || storedTimezone || 'unknown';
 
-      if (!deviceTimezone || storedTimezone === deviceTimezone) {
+      if (deviceTimezone && storedTimezone !== deviceTimezone) {
+        await AsyncStorage.setItem(TIMEZONE_STORAGE_KEY, deviceTimezone);
+      }
+
+      const quietKey = [
+        quietHoursEnabled,
+        quietHours.startHour,
+        quietHours.startMinute,
+        quietHours.endHour,
+        quietHours.endMinute,
+      ].join(':');
+
+      const eventsSignature = upcomingEvents
+        .filter((event) => event.reminder)
+        .map((event) =>
+          [
+            event._id,
+            event.updatedAt,
+            event.startTime,
+            event.reminderPreset ?? 'standard',
+            event.reminder ? 1 : 0,
+          ].join(':')
+        )
+        .sort()
+        .join('|');
+
+      const nextSignature = `${timezoneForSignature}|${quietKey}|${eventsSignature}`;
+      if (rescheduleSignatureRef.current === nextSignature) {
         return;
       }
+      rescheduleSignatureRef.current = nextSignature;
 
-      await AsyncStorage.setItem(TIMEZONE_STORAGE_KEY, deviceTimezone);
-
-      for (const event of upcomingEvents) {
-        if (event.reminder) {
-          await scheduleChainForEvent(event, event.reminderPreset);
-        }
-      }
-    };
-
-    void refreshOnTimezoneChange();
-  }, [isAuthenticated, scheduleChainForEvent, upcomingEvents]);
-
-  useEffect(() => {
-    if (!isAuthenticated) {
-      return;
-    }
-
-    const quietKey = [
-      quietHoursEnabled,
-      quietHours.startHour,
-      quietHours.startMinute,
-      quietHours.endHour,
-      quietHours.endMinute,
-    ].join(':');
-
-    const eventsSignature = upcomingEvents
-      .filter((event) => event.reminder)
-      .map((event) =>
-        [
-          event._id,
-          event.updatedAt,
-          event.startTime,
-          event.reminderPreset ?? 'standard',
-          event.reminder ? 1 : 0,
-        ].join(':')
-      )
-      .sort()
-      .join('|');
-
-    const nextSignature = `${quietKey}|${eventsSignature}`;
-    if (rescheduleSignatureRef.current === nextSignature) {
-      return;
-    }
-    rescheduleSignatureRef.current = nextSignature;
-
-    const rescheduleUpcomingReminders = async () => {
       for (const event of upcomingEvents) {
         if (event.reminder) {
           await scheduleChainForEvent(event, event.reminderPreset);
@@ -197,7 +180,13 @@ function RootLayoutContent() {
     };
 
     void rescheduleUpcomingReminders();
-  }, [isAuthenticated, upcomingEvents, scheduleChainForEvent, quietHours, quietHoursEnabled]);
+  }, [
+    isAuthenticated,
+    upcomingEvents,
+    scheduleChainForEvent,
+    quietHours,
+    quietHoursEnabled,
+  ]);
 
   const isDark = theme.mode === 'dark';
 

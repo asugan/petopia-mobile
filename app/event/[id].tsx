@@ -144,7 +144,7 @@ export default function EventDetailScreen() {
         data: { status: 'missed' },
       });
     }
-  }, [cancelRemindersForEvent, derivedStatus, event, markMissed, updateEventMutation]);
+  }, [cancelRemindersForEvent, derivedStatus, event, markMissed]);
 
   const handleMarkCompleted = async () => {
     if (!event) return;

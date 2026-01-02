@@ -1,6 +1,63 @@
 import { QueryClient, QueryClientConfig } from '@tanstack/react-query';
 import { AxiosError } from 'axios';
 import { QueryFilters } from '../types';
+import i18n from '@/lib/i18n';
+import { showAlert } from '@/lib/utils/alert';
+
+const getMutationErrorDetails = (error: unknown) => {
+  if (error instanceof Error) {
+    return {
+      message: error.message,
+      stack: error.stack,
+    };
+  }
+
+  if (typeof error === 'object' && error !== null) {
+    const maybeError = error as {
+      message?: unknown;
+      stack?: unknown;
+      response?: { data?: unknown; status?: unknown; statusText?: unknown };
+    };
+
+    return {
+      message: typeof maybeError.message === 'string' ? maybeError.message : 'Unknown error',
+      stack: typeof maybeError.stack === 'string' ? maybeError.stack : undefined,
+      response: maybeError.response?.data ?? maybeError.response,
+      status: maybeError.response?.status,
+      statusText: maybeError.response?.statusText,
+    };
+  }
+
+  return {
+    message: 'Unknown error',
+  };
+};
+
+const reportMutationError = (error: unknown) => {
+  const details = getMutationErrorDetails(error);
+  const isAxiosError = error instanceof AxiosError;
+  const responsePayload = isAxiosError ? error.response?.data : undefined;
+  const message =
+    typeof details.message === 'string' && details.message.length > 0
+      ? details.message
+      : i18n.t('errors.generalError');
+
+  if (__DEV__) {
+    console.error('Mutation error', { error, ...details, responsePayload });
+    showAlert(i18n.t('common.error'), message);
+    return;
+  }
+
+  const sentry = (globalThis as typeof globalThis & {
+    Sentry?: { captureException: (err: unknown, context?: Record<string, unknown>) => void };
+  }).Sentry;
+
+  if (sentry?.captureException) {
+    sentry.captureException(error, { extra: { ...details, responsePayload } });
+  }
+
+  showAlert(i18n.t('common.error'), i18n.t('errors.generalError'));
+};
 
 // Cache time constants
 export const CACHE_TIMES = {
@@ -103,7 +160,9 @@ export const MOBILE_QUERY_CONFIG: QueryClientConfig = {
       retry: 1, // Retry mutations once
       networkMode: 'online', // Only when online
       // Global error handling for mutations
-      onError: () => {},
+      onError: (error) => {
+        reportMutationError(error);
+      },
     },
   },
 };
