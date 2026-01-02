@@ -247,6 +247,9 @@ export default function HealthRecordDetailScreen() {
       fontWeight: '500',
       color: theme.colors.primary,
     },
+    paidTextMuted: {
+      color: theme.colors.onSurfaceVariant,
+    },
     section: {
       gap: 12,
     },
@@ -654,16 +657,27 @@ ${healthRecord.notes ? `${t('common.notes')}: ${healthRecord.notes}` : ''}
                   <Text style={styles.cardLabel}>{t('healthRecords.cost')}</Text>
                   <MoneyDisplay
                     amount={healthRecord.cost}
-                    currency={(healthRecord as { currency?: string }).currency}
-                    baseCurrency={(healthRecord as { baseCurrency?: string }).baseCurrency || baseCurrency}
-                    amountBase={(healthRecord as { amountBase?: number }).amountBase}
+                    currency={healthRecord.currency}
+                    baseCurrency={healthRecord.baseCurrency || baseCurrency}
+                    amountBase={healthRecord.amountBase}
                   />
                 </View>
                 <MaterialCommunityIcons name="cash" size={20} color={theme.colors.primary} />
               </View>
               <View style={styles.paidBadge}>
-                <MaterialCommunityIcons name="check-circle" size={14} color={theme.colors.primary} />
-                <Text style={styles.paidText}>{healthRecord.cost != null ? t('common.paid') : '-'}</Text>
+                <MaterialCommunityIcons
+                  name={healthRecord.cost != null ? 'check-circle' : 'minus-circle'}
+                  size={14}
+                  color={healthRecord.cost != null ? theme.colors.primary : theme.colors.onSurfaceVariant}
+                />
+                <Text
+                  style={[
+                    styles.paidText,
+                    healthRecord.cost == null && styles.paidTextMuted,
+                  ]}
+                >
+                  {healthRecord.cost != null ? t('common.paid') : '-'}
+                </Text>
               </View>
             </View>
           </View>
