@@ -90,6 +90,23 @@ export default function OnboardingCompleted() {
       width: '100%',
       alignItems: 'center',
     },
+    trialNotice: {
+      backgroundColor: theme.colors.primary + '15',
+      borderWidth: 1,
+      borderColor: theme.colors.primary + '30',
+      borderRadius: theme.roundness,
+      paddingVertical: 12,
+      paddingHorizontal: 16,
+      marginBottom: 16,
+      width: '100%',
+      maxWidth: 480,
+    },
+    trialNoticeText: {
+      color: theme.colors.primary,
+      fontSize: 14,
+      fontWeight: '600',
+      textAlign: 'center',
+    },
     button: {
       backgroundColor: theme.colors.primary,
       height: 48,
@@ -132,6 +149,9 @@ export default function OnboardingCompleted() {
 
         {/* Footer Button */}
         <View style={styles.footer}>
+          <View style={styles.trialNotice}>
+            <Text style={styles.trialNoticeText}>{t('onboarding.screen3.trialNotice')}</Text>
+          </View>
           <Pressable 
             style={styles.button}
             onPress={handleComplete}

@@ -184,6 +184,25 @@ export default function LoginScreen() {
           maxWidth: 480,
           alignSelf: 'center',
         },
+        trialBadge: {
+          flexDirection: 'row',
+          alignItems: 'center',
+          justifyContent: 'center',
+          backgroundColor: theme.colors.primary + '15',
+          borderWidth: 1,
+          borderColor: theme.colors.primary + '30',
+          borderRadius: theme.roundness,
+          paddingVertical: 12,
+          paddingHorizontal: 16,
+          marginBottom: 20,
+          gap: 8,
+        },
+        trialBadgeText: {
+          color: theme.colors.primary,
+          fontSize: 14,
+          fontWeight: '600',
+          textAlign: 'center',
+        },
         socialButton: {
           flexDirection: 'row',
           alignItems: 'center',
@@ -298,6 +317,11 @@ export default function LoginScreen() {
         )}
 
         <View style={styles.buttonsContainer}>
+          <View style={styles.trialBadge}>
+            <MaterialCommunityIcons name="star-circle" size={20} color={theme.colors.primary} />
+            <Text style={styles.trialBadgeText}>{t('auth.freeTrialNotice')}</Text>
+          </View>
+
           {Platform.OS === 'ios' && (
             <TouchableOpacity
               style={styles.socialButton}
