@@ -31,6 +31,7 @@ interface EventReminderState {
   resetStatus: (eventId: string) => void;
   setPresetSelection: (eventId: string, preset: ReminderPresetKey) => void;
   clearPresetSelection: (eventId: string) => void;
+  clearAllReminderState: () => void;
 }
 
 const defaultQuietHours = {
@@ -103,6 +104,12 @@ export const useEventReminderStore = create<EventReminderState>()(
           delete updatedPresets[eventId];
           return { presetSelections: updatedPresets };
         }),
+      clearAllReminderState: () =>
+        set(() => ({
+          reminderIds: {},
+          statuses: {},
+          presetSelections: {},
+        })),
     }),
     {
       name: 'event-reminders-storage',

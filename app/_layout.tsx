@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { AppState, AppStateStatus } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
@@ -93,9 +93,11 @@ export default function RootLayout() {
   const { isAuthenticated } = useAuth();
   const { initialize, theme, setAuthenticated, clear } = useUserSettingsStore();
   const quietHours = useEventReminderStore((state) => state.quietHours);
+  const quietHoursEnabled = useEventReminderStore((state) => state.quietHoursEnabled);
   const { data: upcomingEvents = [] } = useUpcomingEvents();
   const { scheduleChainForEvent } = useReminderScheduler();
   const TIMEZONE_STORAGE_KEY = 'last-known-timezone';
+  const rescheduleSignatureRef = useRef<string | null>(null);
 
   useEffect(() => {
     setAuthenticated(isAuthenticated);
@@ -152,6 +154,50 @@ export default function RootLayout() {
 
     void refreshOnTimezoneChange();
   }, [isAuthenticated, scheduleChainForEvent, upcomingEvents]);
+
+  useEffect(() => {
+    if (!isAuthenticated) {
+      return;
+    }
+
+    const quietKey = [
+      quietHoursEnabled,
+      quietHours.startHour,
+      quietHours.startMinute,
+      quietHours.endHour,
+      quietHours.endMinute,
+    ].join(':');
+
+    const eventsSignature = upcomingEvents
+      .filter((event) => event.reminder)
+      .map((event) =>
+        [
+          event._id,
+          event.updatedAt,
+          event.startTime,
+          event.reminderPreset ?? 'standard',
+          event.reminder ? 1 : 0,
+        ].join(':')
+      )
+      .sort()
+      .join('|');
+
+    const nextSignature = `${quietKey}|${eventsSignature}`;
+    if (rescheduleSignatureRef.current === nextSignature) {
+      return;
+    }
+    rescheduleSignatureRef.current = nextSignature;
+
+    const rescheduleUpcomingReminders = async () => {
+      for (const event of upcomingEvents) {
+        if (event.reminder) {
+          await scheduleChainForEvent(event, event.reminderPreset);
+        }
+      }
+    };
+
+    void rescheduleUpcomingReminders();
+  }, [isAuthenticated, upcomingEvents, scheduleChainForEvent, quietHours, quietHoursEnabled]);
 
   const isDark = theme.mode === 'dark';
 

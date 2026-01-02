@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useRef, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { SubscriptionCard } from "@/components/subscription";
 import { Button, Card, ListItem, Switch, Text } from "@/components/ui";
@@ -20,8 +20,6 @@ import CurrencyPicker from "@/components/CurrencyPicker";
 import LoadingSpinner from "@/components/LoadingSpinner";
 import { LanguageSettings } from "@/components/LanguageSettings";
 import { NotificationPermissionCard } from "@/components/NotificationPermissionPrompt";
-import { useUpcomingEvents } from "@/lib/hooks/useEvents";
-import { useReminderScheduler } from "@/hooks/useReminderScheduler";
 
 type ModalState = "none" | "contact" | "deleteWarning" | "deleteConfirm";
 
@@ -50,12 +48,10 @@ export default function SettingsScreen() {
   const notificationsActive = notificationsEnabled && notificationPermissionEnabled;
   const setQuietHoursEnabled = useEventReminderStore((state) => state.setQuietHoursEnabled);
   const setQuietHours = useEventReminderStore((state) => state.setQuietHours);
-  const { data: upcomingEvents = [] } = useUpcomingEvents();
-  const { scheduleChainForEvent } = useReminderScheduler();
+  const clearAllReminderState = useEventReminderStore((state) => state.clearAllReminderState);
   const [activeModal, setActiveModal] = useState<ModalState>("none");
   const [deleteConfirmText, setDeleteConfirmText] = useState("");
   const [deletingAccount, setDeletingAccount] = useState(false);
-  const rescheduleKeyRef = useRef<string | null>(null);
 
   useEffect(() => {
     const fetchPermissionStatus = async () => {
@@ -72,35 +68,6 @@ export default function SettingsScreen() {
     fetchPermissionStatus();
   }, []);
 
-  useEffect(() => {
-    const rescheduleUpcomingReminders = async () => {
-      if (!notificationsActive) {
-        return;
-      }
-
-      const key = [
-        quietHoursEnabled,
-        quietHours.startHour,
-        quietHours.startMinute,
-        quietHours.endHour,
-        quietHours.endMinute,
-      ].join(":");
-
-      if (rescheduleKeyRef.current === key) {
-        return;
-      }
-
-      rescheduleKeyRef.current = key;
-
-      for (const event of upcomingEvents) {
-        if (event.reminder) {
-          await scheduleChainForEvent(event, event.reminderPreset);
-        }
-      }
-    };
-
-    void rescheduleUpcomingReminders();
-  }, [notificationsActive, quietHours, quietHoursEnabled, upcomingEvents, scheduleChainForEvent]);
 
   const handleNotificationToggle = async (value: boolean) => {
     setNotificationLoading(true);
@@ -127,6 +94,7 @@ export default function SettingsScreen() {
           )
         );
         await notificationService.cancelAllNotifications();
+        clearAllReminderState();
         await updateSettings({ notificationsEnabled: false });
       }
     } catch (error) {

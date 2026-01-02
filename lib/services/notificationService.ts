@@ -213,8 +213,9 @@ export class NotificationService {
       }
 
       // Get default reminder time for event type if not specified
-      const reminderTime = reminderMinutes ||
-        EVENT_TYPE_DEFAULT_REMINDERS[event.type as keyof typeof EVENT_TYPE_DEFAULT_REMINDERS] ||
+      const reminderTime =
+        reminderMinutes ??
+        EVENT_TYPE_DEFAULT_REMINDERS[event.type as keyof typeof EVENT_TYPE_DEFAULT_REMINDERS] ??
         60;
 
       // Calculate trigger time
