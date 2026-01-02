@@ -58,8 +58,7 @@ export default function SettingsScreen() {
       try {
         const enabled = await notificationService.areNotificationsEnabled();
         setNotificationPermissionEnabled(enabled);
-      } catch (error) {
-        console.error("Notification status check failed:", error);
+      } catch {
       } finally {
         setNotificationLoading(false);
       }
@@ -97,8 +96,7 @@ export default function SettingsScreen() {
         clearAllReminderState();
         await updateSettings({ notificationsEnabled: false });
       }
-    } catch (error) {
-      console.error("Notification toggle failed:", error);
+    } catch {
     } finally {
       setNotificationLoading(false);
     }
@@ -108,8 +106,7 @@ export default function SettingsScreen() {
     setNotificationLoading(true);
     try {
       await updateSettings({ budgetNotificationsEnabled: value });
-    } catch (error) {
-      console.error("Budget notification toggle failed:", error);
+    } catch {
     } finally {
       setNotificationLoading(false);
     }
@@ -129,8 +126,7 @@ export default function SettingsScreen() {
           try {
             await signOut();
             router.replace("/(auth)/login");
-          } catch (error) {
-            console.error("Logout error:", error);
+          } catch {
           } finally {
             setLoading(false);
           }
@@ -180,8 +176,7 @@ export default function SettingsScreen() {
                 try {
                   await signOut();
                   router.replace("/(auth)/login");
-                } catch (error) {
-                  console.error("Sign out error:", error);
+                } catch {
                 } finally {
                   setLoading(false);
                 }
@@ -195,8 +190,7 @@ export default function SettingsScreen() {
           t("settings.accountDeleteError", "Failed to delete account")
         );
       }
-    } catch (error) {
-      console.error("Delete account error:", error);
+    } catch {
       Alert.alert(
         t("common.error"),
         t("settings.accountDeleteError", "Failed to delete account")

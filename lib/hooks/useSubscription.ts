@@ -101,8 +101,7 @@ export function useSubscription(): UseSubscriptionReturn {
     try {
       const configured = await Purchases.isConfigured();
       if (configured) return true;
-    } catch (error) {
-      console.warn('[Subscription] RevenueCat not configured:', error);
+    } catch {
     }
 
     showAlert(
@@ -124,28 +123,23 @@ export function useSubscription(): UseSubscriptionReturn {
         switch (result) {
           case PAYWALL_RESULT.PURCHASED:
           case PAYWALL_RESULT.RESTORED:
-            console.log('[Subscription] Paywall completed');
             refetchStatusMutation.mutate();
             return true;
 
           case PAYWALL_RESULT.CANCELLED:
-            console.log('[Subscription] Paywall cancelled');
             return false;
 
           case PAYWALL_RESULT.ERROR:
-            console.error('[Subscription] Paywall error');
             showAlert(t('common.error'), t('subscription.paywallError'));
             return false;
 
           case PAYWALL_RESULT.NOT_PRESENTED:
-            console.log('[Subscription] Paywall not presented');
             return false;
 
           default:
             return false;
         }
       } catch (error) {
-        console.error('[Subscription] Paywall error:', error);
         showAlert(t('common.error'), (error as Error).message);
         return false;
       }
@@ -165,14 +159,12 @@ export function useSubscription(): UseSubscriptionReturn {
         result === PAYWALL_RESULT.PURCHASED ||
         result === PAYWALL_RESULT.RESTORED
       ) {
-        console.log('[Subscription] Paywall completed if needed');
         refetchStatusMutation.mutate();
         return true;
       }
 
       return false;
     } catch (error) {
-      console.error('[Subscription] Paywall error:', error);
       showAlert(t('common.error'), (error as Error).message);
       return false;
     }
@@ -185,25 +177,19 @@ export function useSubscription(): UseSubscriptionReturn {
       await RevenueCatUI.presentCustomerCenter({
         callbacks: {
           onRestoreStarted: () => {
-            console.log('[Subscription] Restore started');
           },
           onRestoreCompleted: async ({ customerInfo }) => {
-            console.log('[Subscription] Restore completed');
           },
           onRestoreFailed: ({ error }) => {
-            console.error('[Subscription] Restore failed:', error);
             showAlert(t('common.error'), error.message);
           },
           onShowingManageSubscriptions: () => {
-            console.log('[Subscription] Showing manage subscriptions');
           },
           onFeedbackSurveyCompleted: ({ feedbackSurveyOptionId }) => {
-            console.log('[Subscription] Feedback completed:', feedbackSurveyOptionId);
           },
         },
       });
     } catch (error) {
-      console.error('[Subscription] Customer center error:', error);
       showAlert(t('common.error'), (error as Error).message);
     }
   }, [ensureRevenueCatReady, t]);

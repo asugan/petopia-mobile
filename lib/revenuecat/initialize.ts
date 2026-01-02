@@ -11,11 +11,7 @@ import { getRevenueCatApiKey, REVENUECAT_CONFIG } from './config';
 export async function initializeRevenueCat(userId: string | null): Promise<void> {
   // Set a default log handler to prevent "customLogHandler is not a function" error
   // This must be called before configure() to handle log events properly
-  Purchases.setLogHandler((logLevel: LOG_LEVEL, message: string) => {
-    if (__DEV__) {
-      console.log(`[RevenueCat][${LOG_LEVEL[logLevel]}] ${message}`);
-    }
-  });
+  Purchases.setLogHandler((_logLevel: LOG_LEVEL, _message: string) => {});
 
   // Enable debug logs in development
   if (__DEV__) {
@@ -35,22 +31,14 @@ export async function initializeRevenueCat(userId: string | null): Promise<void>
       apiKey,
       appUserID: userId ?? undefined, // null creates anonymous user
     });
-
-    console.log('[RevenueCat] SDK initialized', {
-      userId: userId ?? 'anonymous',
-      platform: Platform.OS,
-    });
   } else {
     // If already configured, sync identity to the provided userId
     // This ensures proper identity switching when users change during same app session
-    console.log('[RevenueCat] SDK already configured, syncing identity...');
 
     if (userId) {
       try {
         await syncUserIdentity(userId);
-        console.log('[RevenueCat] Identity synced to user:', userId);
       } catch (error) {
-        console.error('[RevenueCat] Error syncing identity:', error);
         throw error;
       }
     } else {
@@ -59,10 +47,8 @@ export async function initializeRevenueCat(userId: string | null): Promise<void>
         const currentUserId = await Purchases.getAppUserID();
         if (currentUserId && !currentUserId.startsWith('$RCAnonymousID')) {
           await resetUserIdentity();
-          console.log('[RevenueCat] Reset to anonymous user');
         }
-      } catch (error) {
-        console.error('[RevenueCat] Error resetting to anonymous:', error);
+      } catch {
       }
     }
   }
@@ -87,11 +73,6 @@ export async function syncUserIdentity(userId: string): Promise<CustomerInfo> {
   // 3. Merge purchase history if the user exists
   const { customerInfo } = await Purchases.logIn(userId);
 
-  console.log('[RevenueCat] User identity synced', {
-    userId,
-    activeEntitlements: Object.keys(customerInfo.entitlements.active),
-  });
-
   return customerInfo;
 }
 
@@ -109,14 +90,10 @@ export async function resetUserIdentity(): Promise<CustomerInfo> {
 
   const currentUserId = await Purchases.getAppUserID();
   if (currentUserId && currentUserId.startsWith('$RCAnonymousID')) {
-    console.log('[RevenueCat] Already anonymous user, skipping logout');
     return Purchases.getCustomerInfo();
   }
 
   const customerInfo = await Purchases.logOut();
-
-  console.log('[RevenueCat] User logged out, reset to anonymous');
-
   return customerInfo;
 }
 
@@ -148,10 +125,6 @@ export async function restorePurchases(): Promise<CustomerInfo> {
   }
 
   const customerInfo = await Purchases.restorePurchases();
-
-  console.log('[RevenueCat] Purchases restored', {
-    activeEntitlements: Object.keys(customerInfo.entitlements.active),
-  });
 
   return customerInfo;
 }

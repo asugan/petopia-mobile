@@ -61,7 +61,7 @@ export function CurrencyInput({
       error={error}
       placeholder={placeholder}
       testID={testID}
-      left={<MaterialCommunityIcons name={getCurrencyIcon(currency) as any} size={24} color={theme.colors.onSurfaceVariant} />}
+      left={<MaterialCommunityIcons name={getCurrencyIcon(currency)} size={24} color={theme.colors.onSurfaceVariant} />}
       style={{
         backgroundColor: disabled
           ? theme.colors.surfaceDisabled

@@ -1,4 +1,5 @@
 import * as Notifications from 'expo-notifications';
+import type { Href } from 'expo-router';
 import { Platform } from 'react-native';
 import { Event } from '../types';
 import { EVENT_TYPE_DEFAULT_REMINDERS } from '../../constants/eventIcons';
@@ -64,7 +65,7 @@ const REMINDER_TIME_OPTIONS: ReminderTimeOption[] = [
 ];
 
 export const getReminderTimes = (
-  t: (key: string, options?: Record<string, any>) => string = i18n.t.bind(i18n)
+  t: (key: string, options?: Record<string, unknown>) => string = i18n.t.bind(i18n)
 ): ReminderTime[] =>
   REMINDER_TIME_OPTIONS.map((option) => ({
     value: option.value,
@@ -82,7 +83,7 @@ export class NotificationService {
     endMinute: QUIET_HOURS_WINDOW.endMinute,
   };
   private notificationChannelPromise: Promise<void> | null = null;
-  private navigationHandler?: (target: { pathname: string; params?: Record<string, string> } | string) => void;
+  private navigationHandler?: (target: Href) => void;
 
   private constructor() {
     this.notificationChannelPromise = this.setupNotificationChannel();
@@ -120,8 +121,7 @@ export class NotificationService {
           sound: 'default',
           description: 'Notifications for budget alerts and limits',
         });
-      } catch (error) {
-        console.error('❌ Error setting notification channel:', error);
+      } catch {
       }
     }
   }
@@ -138,9 +138,7 @@ export class NotificationService {
     await this.notificationChannelPromise;
   }
 
-  setNavigationHandler(
-    handler: (target: { pathname: string; params?: Record<string, string> } | string) => void
-  ) {
+  setNavigationHandler(handler: (target: Href) => void) {
     this.navigationHandler = handler;
   }
 
@@ -166,14 +164,11 @@ export class NotificationService {
 
       const updatedPermissions = await Notifications.requestPermissionsAsync();
       if (!isNotificationPermissionGranted(updatedPermissions)) {
-        console.warn('📵 Notification permission denied');
         return false;
       }
 
-      console.log('✅ Notification permission granted');
       return true;
-    } catch (error) {
-      console.error('❌ Error requesting notification permissions:', error);
+    } catch {
       return false;
     }
   }
@@ -186,8 +181,7 @@ export class NotificationService {
     try {
       const permissions = await Notifications.getPermissionsAsync();
       return isNotificationPermissionGranted(permissions);
-    } catch (error) {
-      console.error('❌ Error checking notification status:', error);
+    } catch {
       return false;
     }
   }
@@ -208,7 +202,6 @@ export class NotificationService {
       // Check permissions first
       const hasPermission = await this.areNotificationsEnabled();
       if (!hasPermission) {
-        console.warn('📵 Notifications not enabled, cannot schedule reminder');
         return null;
       }
 
@@ -234,11 +227,9 @@ export class NotificationService {
 
       // Don't schedule if trigger time is in the past or after the event
       if (triggerDate <= new Date()) {
-        console.warn('⚠️ Reminder time is in the past, not scheduling');
         return null;
       }
       if (triggerDate > eventDate) {
-        console.warn('⚠️ Reminder time is after event time, not scheduling');
         return null;
       }
 
@@ -277,13 +268,9 @@ export class NotificationService {
         },
       });
 
-      console.log(`✅ Scheduled reminder for event ${event._id}: ${notificationId}`);
-      console.log(`   Trigger time: ${triggerDate.toISOString()}`);
-      console.log(`   Event time: ${eventDate.toISOString()}`);
 
       return notificationId;
-    } catch (error) {
-      console.error('❌ Error scheduling event reminder:', error);
+    } catch {
       return null;
     }
   }
@@ -295,9 +282,7 @@ export class NotificationService {
   async cancelNotification(notificationId: string): Promise<void> {
     try {
       await Notifications.cancelScheduledNotificationAsync(notificationId);
-      console.log(`✅ Cancelled notification: ${notificationId}`);
-    } catch (error) {
-      console.error('❌ Error cancelling notification:', error);
+    } catch {
     }
   }
 
@@ -317,9 +302,7 @@ export class NotificationService {
         await Notifications.cancelScheduledNotificationAsync(notification.identifier);
       }
 
-      console.log(`✅ Cancelled ${eventNotifications.length} notifications for event ${eventId}`);
-    } catch (error) {
-      console.error('❌ Error cancelling event notifications:', error);
+    } catch {
     }
   }
 
@@ -329,9 +312,7 @@ export class NotificationService {
   async cancelAllNotifications(): Promise<void> {
     try {
       await Notifications.cancelAllScheduledNotificationsAsync();
-      console.log('✅ Cancelled all scheduled notifications');
-    } catch (error) {
-      console.error('❌ Error cancelling all notifications:', error);
+    } catch {
     }
   }
 
@@ -342,10 +323,8 @@ export class NotificationService {
   async getAllScheduledNotifications(): Promise<Notifications.NotificationRequest[]> {
     try {
       const notifications = await Notifications.getAllScheduledNotificationsAsync();
-      console.log(`📋 Found ${notifications.length} scheduled notifications`);
       return notifications;
-    } catch (error) {
-      console.error('❌ Error getting scheduled notifications:', error);
+    } catch {
       return [];
     }
   }
@@ -361,8 +340,7 @@ export class NotificationService {
       return allNotifications.filter(
         notification => notification.content.data?.eventId === eventId
       );
-    } catch (error) {
-      console.error('❌ Error getting event notifications:', error);
+    } catch {
       return [];
     }
   }
@@ -380,7 +358,6 @@ export class NotificationService {
   ): Promise<string[]> {
     const hasPermission = await this.areNotificationsEnabled();
     if (!hasPermission) {
-      console.warn('📵 Notifications not enabled, skipping reminder schedule');
       return [];
     }
 
@@ -418,7 +395,6 @@ export class NotificationService {
       }
     }
 
-    console.log(`✅ Scheduled ${notificationIds.length} reminders for event ${event._id}`);
     return notificationIds;
   }
 
@@ -442,7 +418,7 @@ export class NotificationService {
   async sendImmediateNotification(
     title: string,
     body: string,
-    data?: Record<string, any>
+    data?: Record<string, unknown>
   ): Promise<string> {
     try {
       await this.ensureNotificationChannel();
@@ -456,10 +432,8 @@ export class NotificationService {
         trigger: Platform.OS === 'android' ? { channelId: this.eventChannelId } : null,
       });
 
-      console.log(`✅ Sent immediate notification: ${notificationId}`);
       return notificationId;
     } catch (error) {
-      console.error('❌ Error sending immediate notification:', error);
       throw error;
     }
   }
@@ -470,11 +444,10 @@ export class NotificationService {
   async sendBudgetAlertNotification(
     title: string,
     body: string,
-    data?: Record<string, any>
+    data?: Record<string, unknown>
   ): Promise<void> {
     const enabled = await this.areNotificationsEnabled();
     if (!enabled) {
-      console.warn('📵 Notifications disabled, skipping budget alert');
       return;
     }
 
@@ -520,7 +493,6 @@ export class NotificationService {
    * @param notification Received notification
    */
   handleNotificationReceived(notification: Notifications.Notification): void {
-    console.log('📬 Notification received:', notification);
     // You can add custom logic here, like showing an in-app alert
   }
 
@@ -529,7 +501,6 @@ export class NotificationService {
    * @param response Notification response
    */
   handleNotificationResponse(response: Notifications.NotificationResponse): void {
-    console.log('👆 Notification tapped:', response);
 
     const data = response.notification.request.content.data;
 
@@ -540,8 +511,6 @@ export class NotificationService {
           pathname: '/event/[id]',
           params: { id: String(data.eventId) },
         });
-      } else {
-        console.log(`Navigate to event: ${data.eventId}`);
       }
       return;
     }
@@ -577,8 +546,7 @@ export class NotificationService {
       }
 
       return stats;
-    } catch (error) {
-      console.error('❌ Error getting notification stats:', error);
+    } catch {
       return { total: 0, byType: {} };
     }
   }

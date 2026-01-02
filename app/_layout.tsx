@@ -88,7 +88,7 @@ function OnlineManagerProvider({ children }: { children: React.ReactNode }) {
   return <>{children}</>;
 }
 
-export default function RootLayout() {
+function RootLayoutContent() {
   const router = useRouter();
   const { isAuthenticated } = useAuth();
   const { initialize, theme, setAuthenticated, clear } = useUserSettingsStore();
@@ -117,7 +117,7 @@ export default function RootLayout() {
 
   useEffect(() => {
     notificationService.setNavigationHandler((target) => {
-      router.push(target as any);
+      router.push(target);
     });
 
     const checkLastNotification = async () => {
@@ -202,27 +202,35 @@ export default function RootLayout() {
   const isDark = theme.mode === 'dark';
 
   return (
+    <>
+      <StatusBar style={isDark ? 'light' : 'dark'} />
+      <Stack
+        screenOptions={{
+          contentStyle: { backgroundColor: theme.colors.background },
+        }}
+      >
+        <Stack.Screen name="index" options={{ headerShown: false }} />
+        <Stack.Screen name="(onboarding)" options={{ headerShown: false }} />
+        <Stack.Screen name="(auth)" options={{ headerShown: false }} />
+        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+        <Stack.Screen
+          name="subscription"
+          options={{
+            headerShown: false,
+            presentation: 'modal',
+          }}
+        />
+      </Stack>
+    </>
+  );
+}
+
+export default function RootLayout() {
+  return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <SafeAreaProvider>
-        <StatusBar style={isDark ? 'light' : 'dark'} />
         <AppProviders>
-          <Stack
-            screenOptions={{
-              contentStyle: { backgroundColor: theme.colors.background },
-            }}
-          >
-            <Stack.Screen name="index" options={{ headerShown: false }} />
-            <Stack.Screen name="(onboarding)" options={{ headerShown: false }} />
-            <Stack.Screen name="(auth)" options={{ headerShown: false }} />
-            <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-            <Stack.Screen
-              name="subscription"
-              options={{
-                headerShown: false,
-                presentation: 'modal',
-              }}
-            />
-          </Stack>
+          <RootLayoutContent />
         </AppProviders>
       </SafeAreaProvider>
     </GestureHandlerRootView>

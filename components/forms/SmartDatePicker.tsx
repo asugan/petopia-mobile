@@ -260,11 +260,6 @@ export const SmartDatePicker = ({
                 minimumDate={minimumDate}
                 maximumDate={maximumDate}
                 locale={Platform.OS === 'ios' ? iosLocale : undefined}
-                onError={(pickerError) => {
-                  if (Platform.OS === 'android' && pickerError) {
-                    console.error('DateTimePicker error:', pickerError);
-                  }
-                }}
               />
             )}
           </View>

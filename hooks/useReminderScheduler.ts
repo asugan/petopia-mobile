@@ -29,8 +29,7 @@ export const useReminderScheduler = () => {
     async (eventId: string) => {
       try {
         await cancelEventNotifications(eventId);
-      } catch (error) {
-        console.error('❌ Failed to cancel event notifications:', error);
+      } catch {
       } finally {
         clearReminderIds(eventId);
       }
@@ -69,7 +68,6 @@ export const useReminderScheduler = () => {
         resetStatus(event._id);
         return ids;
       } catch (error) {
-        console.error('❌ Failed to schedule reminder chain:', error);
         return [];
       }
     },

@@ -25,8 +25,7 @@ export const useNotifications = () => {
     try {
       const nextPermissions = await Notifications.getPermissionsAsync();
       setPermissions(nextPermissions);
-    } catch (error) {
-      console.error('Error checking notification permission:', error);
+    } catch {
     }
   };
 
@@ -38,7 +37,6 @@ export const useNotifications = () => {
       setPermissions(nextPermissions);
       return granted;
     } catch (error) {
-      console.error('Error requesting notification permission:', error);
       return false;
     } finally {
       setIsLoading(false);
@@ -77,8 +75,7 @@ export const useEventReminders = (eventId?: string) => {
     try {
       const reminders = await notificationService.getEventNotifications(eventId);
       setScheduledReminders(reminders);
-    } catch (error) {
-      console.error('Error loading scheduled reminders:', error);
+    } catch {
     }
   };
 
@@ -95,7 +92,6 @@ export const useEventReminders = (eventId?: string) => {
       }
       return null;
     } catch (error) {
-      console.error('Error scheduling reminder:', error);
       return null;
     } finally {
       setIsLoading(false);
@@ -112,7 +108,6 @@ export const useEventReminders = (eventId?: string) => {
       await loadScheduledReminders();
       return notificationIds;
     } catch (error) {
-      console.error('Error scheduling multiple reminders:', error);
       return [];
     } finally {
       setIsLoading(false);
@@ -124,8 +119,7 @@ export const useEventReminders = (eventId?: string) => {
     try {
       await notificationService.cancelNotification(notificationId);
       await loadScheduledReminders();
-    } catch (error) {
-      console.error('Error cancelling reminder:', error);
+    } catch {
     } finally {
       setIsLoading(false);
     }
@@ -138,8 +132,7 @@ export const useEventReminders = (eventId?: string) => {
     try {
       await notificationService.cancelEventNotifications(eventId);
       await loadScheduledReminders();
-    } catch (error) {
-      console.error('Error cancelling all reminders:', error);
+    } catch {
     } finally {
       setIsLoading(false);
     }
@@ -171,8 +164,7 @@ export const useNotificationStats = () => {
     try {
       const notificationStats = await notificationService.getNotificationStats();
       setStats(notificationStats);
-    } catch (error) {
-      console.error('Error loading notification stats:', error);
+    } catch {
     } finally {
       setIsLoading(false);
     }

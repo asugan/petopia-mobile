@@ -85,7 +85,6 @@ export const useUserSettingsStore = create<UserSettingsState & UserSettingsActio
         const { isAuthenticated } = get();
 
         if (!isAuthenticated) {
-          console.log('⚠️ Skipping settings fetch - not authenticated');
           return;
         }
 
@@ -118,13 +117,11 @@ export const useUserSettingsStore = create<UserSettingsState & UserSettingsActio
               i18n.changeLanguage(settings.language);
             }
 
-            console.log('✅ User settings fetched successfully:', settings);
           } else {
             throw new Error(response.message || 'Failed to fetch settings');
           }
         } catch (error) {
           const errorMessage = error instanceof Error ? error.message : 'Failed to fetch settings';
-          console.error('❌ Error fetching user settings:', errorMessage);
 
           set({
             isLoading: false,
@@ -137,7 +134,6 @@ export const useUserSettingsStore = create<UserSettingsState & UserSettingsActio
         const { isAuthenticated, settings } = get();
 
         if (!isAuthenticated) {
-          console.log('⚠️ Skipping settings update - not authenticated');
           return;
         }
 
@@ -176,13 +172,11 @@ export const useUserSettingsStore = create<UserSettingsState & UserSettingsActio
               });
             }
 
-            console.log('✅ User settings updated successfully:', updatedSettings);
           } else {
             throw new Error(response.message || 'Failed to update settings');
           }
         } catch (error) {
           const errorMessage = error instanceof Error ? error.message : 'Failed to update settings';
-          console.error('❌ Error updating user settings:', errorMessage);
 
           set({
             isLoading: false,
@@ -197,7 +191,6 @@ export const useUserSettingsStore = create<UserSettingsState & UserSettingsActio
         const { isAuthenticated, settings } = get();
 
         if (!isAuthenticated) {
-          console.log('⚠️ Skipping currency update - not authenticated');
           return;
         }
 
@@ -215,13 +208,11 @@ export const useUserSettingsStore = create<UserSettingsState & UserSettingsActio
               error: null,
             });
 
-            console.log('✅ Base currency updated successfully:', currency);
           } else {
             throw new Error(response.message || 'Failed to update base currency');
           }
         } catch (error) {
           const errorMessage = error instanceof Error ? error.message : 'Failed to update base currency';
-          console.error('❌ Error updating base currency:', errorMessage);
 
           set({
             isLoading: false,
@@ -236,7 +227,6 @@ export const useUserSettingsStore = create<UserSettingsState & UserSettingsActio
         const { isAuthenticated, settings } = get();
 
         if (!isAuthenticated) {
-          console.log('⚠️ Skipping initialization - not authenticated');
           return;
         }
 

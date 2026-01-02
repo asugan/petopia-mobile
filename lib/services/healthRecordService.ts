@@ -13,14 +13,12 @@ export class HealthRecordService {
     try {
       const response = await api.post<HealthRecord>(ENV.ENDPOINTS.HEALTH_RECORDS, data);
 
-      console.log('✅ Health record created successfully:', response.data?._id);
       return {
         success: true,
         data: response.data!,
         message: 'serviceResponse.healthRecord.createSuccess',
       };
     } catch (error) {
-      console.error('❌ Create health record error:', error);
       if (error instanceof ApiError) {
         return {
           success: false,
@@ -48,14 +46,12 @@ export class HealthRecordService {
     try {
       const response = await api.get<HealthRecord[]>(ENV.ENDPOINTS.HEALTH_RECORDS);
 
-      console.log(`✅ ${response.data?.length || 0} health records loaded successfully`);
       return {
         success: true,
         data: response.data || [],
         message: 'serviceResponse.healthRecord.fetchSuccess',
       };
     } catch (error) {
-      console.error('❌ Get health records error:', error);
       if (error instanceof ApiError) {
         return {
           success: false,
@@ -83,14 +79,12 @@ export class HealthRecordService {
     try {
       const response = await api.get<HealthRecord[]>(ENV.ENDPOINTS.HEALTH_RECORDS_BY_PET(petId));
 
-      console.log(`✅ ${response.data?.length || 0} health records loaded for pet ${petId}`);
       return {
         success: true,
         data: response.data || [],
         message: 'serviceResponse.healthRecord.fetchSuccess',
       };
     } catch (error) {
-      console.error('❌ Get health records by pet error:', error);
       if (error instanceof ApiError) {
         return {
           success: false,
@@ -118,14 +112,12 @@ export class HealthRecordService {
     try {
       const response = await api.get<HealthRecord>(ENV.ENDPOINTS.HEALTH_RECORD_BY_ID(id));
 
-      console.log('✅ Health record loaded successfully:', response.data?._id);
       return {
         success: true,
         data: response.data!,
         message: 'serviceResponse.healthRecord.fetchOneSuccess',
       };
     } catch (error) {
-      console.error('❌ Get health record error:', error);
       if (error instanceof ApiError) {
         if (error.status === 404) {
           return {
@@ -162,14 +154,12 @@ export class HealthRecordService {
     try {
       const response = await api.put<HealthRecord>(ENV.ENDPOINTS.HEALTH_RECORD_BY_ID(id), data);
 
-      console.log('✅ Health record updated successfully:', response.data?._id);
       return {
         success: true,
         data: response.data!,
         message: 'serviceResponse.healthRecord.updateSuccess',
       };
     } catch (error) {
-      console.error('❌ Update health record error:', error);
       if (error instanceof ApiError) {
         if (error.status === 404) {
           return {
@@ -206,13 +196,11 @@ export class HealthRecordService {
     try {
       await api.delete(ENV.ENDPOINTS.HEALTH_RECORD_BY_ID(id));
 
-      console.log('✅ Health record deleted successfully:', id);
       return {
         success: true,
         message: 'serviceResponse.healthRecord.deleteSuccess',
       };
     } catch (error) {
-      console.error('❌ Delete health record error:', error);
       if (error instanceof ApiError) {
         if (error.status === 404) {
           return {
@@ -253,14 +241,12 @@ export class HealthRecordService {
       }
       const filteredRecords = (response.data || []).filter((record: HealthRecord) => record.type === type);
 
-      console.log(`✅ ${filteredRecords.length} ${type} records loaded for pet ${petId}`);
       return {
         success: true,
         data: filteredRecords,
         message: 'serviceResponse.healthRecord.fetchByTypeSuccess',
       };
     } catch (error) {
-      console.error('❌ Get health records by type error:', error);
       if (error instanceof ApiError) {
         return {
           success: false,

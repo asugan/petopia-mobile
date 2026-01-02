@@ -103,9 +103,7 @@ export const MOBILE_QUERY_CONFIG: QueryClientConfig = {
       retry: 1, // Retry mutations once
       networkMode: 'online', // Only when online
       // Global error handling for mutations
-      onError: (error) => {
-        console.error('Mutation error:', error);
-      },
+      onError: () => {},
     },
   },
 };

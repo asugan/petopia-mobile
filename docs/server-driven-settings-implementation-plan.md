@@ -389,10 +389,10 @@ if (!settings && isLoading) {
   - Verify entire app updates theme immediately
 - [ ] Test components that previously used languageStore:
   - Verify they now use userSettingsStore
-  - Verify no console errors
+  - Verify no runtime errors
 - [ ] Test components that previously used themeStore:
   - Verify they now use userSettingsStore
-  - Verify no console errors
+  - Verify no runtime errors
 
 #### 📝 Phase 6.4: Backend Integration Testing
 
@@ -431,7 +431,7 @@ if (!settings && isLoading) {
 #### 📝 Phase 7.1: Code Cleanup
 
 **Tasks:**
-- [ ] Remove console.log statements
+- [ ] Remove debug logging statements
 - [ ] Double-check for TODO comments
 - [ ] Remove unused imports
 - [ ] Format code if needed
@@ -483,7 +483,7 @@ if (!settings && isLoading) {
 - [x] TypeScript typecheck passes
 - [x] ESLint passes with no errors
 - [x] LSP diagnostics clean
-- [x] No console warnings
+- [x] No warning logs
 - [x] All async operations properly handled
 - [x] Error states are user-friendly
 

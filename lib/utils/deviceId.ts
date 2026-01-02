@@ -53,7 +53,6 @@ export async function getDeviceId(): Promise<string> {
 
     return deviceId;
   } catch (error) {
-    console.error('Error getting device ID:', error);
 
     // Last resort: try to get stored ID or generate new one
     try {
@@ -67,7 +66,6 @@ export async function getDeviceId(): Promise<string> {
       return newId;
     } catch (fallbackError) {
       // If all else fails, return a temporary ID (not ideal but prevents crashes)
-      console.error('Fallback device ID generation failed:', fallbackError);
       return `temp_${generateUUID()}`;
     }
   }
@@ -79,7 +77,6 @@ export async function getDeviceId(): Promise<string> {
 export async function clearDeviceId(): Promise<void> {
   try {
     await SecureStore.deleteItemAsync(DEVICE_ID_KEY);
-  } catch (error) {
-    console.error('Error clearing device ID:', error);
+  } catch {
   }
 }

@@ -111,11 +111,9 @@ export function EventForm({
     async (data: EventFormData) => {
       try {
         setIsSubmitting(true);
-        console.log('Event form submitting:', data);
 
         await onSubmit(data);
-      } catch (error) {
-        console.error('Event form submission error:', error);
+      } catch {
         Alert.alert(t('common.error'), t('events.saveError'));
       } finally {
         setIsSubmitting(false);

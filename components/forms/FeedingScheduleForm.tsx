@@ -79,13 +79,10 @@ export function FeedingScheduleForm({
     async (data: FeedingScheduleFormData) => {
       try {
         setIsSubmitting(true);
-        console.log('Feeding schedule form submitting:', data);
 
-        console.log('Form data:', data);
 
         await onSubmit(data);
-      } catch (error) {
-        console.error('Feeding schedule form submission error:', error);
+      } catch {
         Alert.alert(t('common.error'), t('feedingSchedule.errors.submitFailed'));
       } finally {
         setIsSubmitting(false);

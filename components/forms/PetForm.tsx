@@ -37,8 +37,7 @@ export function PetForm({ pet, onSubmit, onCancel, loading = false, testID }: Pe
     async (data: PetCreateFormInput) => {
       try {
         await onSubmit(data);
-      } catch (error) {
-        console.error('Pet form submission error:', error);
+      } catch {
       }
     },
     [onSubmit]

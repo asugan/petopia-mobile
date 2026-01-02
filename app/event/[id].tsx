@@ -91,8 +91,7 @@ export default function EventDetailScreen() {
             try {
               await deleteEventMutation.mutateAsync(event._id);
               router.back();
-            } catch (error) {
-              console.error(error);
+            } catch {
             }
           },
         },
@@ -107,8 +106,7 @@ export default function EventDetailScreen() {
       const eventTime = format(new Date(event.startTime), 'HH:mm', { locale });
       const shareMessage = `📅 ${event.title}\n🐾 ${pet?.name || t('events.pet')}\n📍 ${event.location || t('events.noLocation')}\n🕐 ${eventDate} - ${eventTime}\n\n${event.description || ''}\n\n${t('events.sharedFrom')} PawPa`;
       await Share.share({ message: shareMessage, title: event.title });
-    } catch (error) {
-      console.error('Error sharing event:', error);
+    } catch {
     }
   };
 

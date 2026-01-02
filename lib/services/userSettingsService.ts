@@ -18,18 +18,12 @@ export class UserSettingsService {
       const response = await api.get<UserSettings>(ENV.ENDPOINTS.USER_SETTINGS);
 
       if (response.success && response.data) {
-        console.log("✅ User settings loaded successfully");
         return {
           success: true,
           data: response.data,
           message: "serviceResponse.settings.fetchSuccess",
         };
       }
-
-      console.error("❌ Get user settings: missing payload", {
-        endpoint: ENV.ENDPOINTS.USER_SETTINGS,
-        success: response.success,
-      });
 
       return {
         success: false,
@@ -43,7 +37,6 @@ export class UserSettingsService {
         },
       };
     } catch (error) {
-      console.error("❌ Get user settings error:", error);
       if (error instanceof ApiError) {
         return {
           success: false,
@@ -77,19 +70,12 @@ export class UserSettingsService {
       );
 
       if (response.success && response.data) {
-        console.log("✅ User settings updated successfully");
         return {
           success: true,
           data: response.data,
           message: "serviceResponse.settings.updateSuccess",
         };
       }
-
-      console.error("❌ Update user settings: missing payload", {
-        endpoint: ENV.ENDPOINTS.USER_SETTINGS,
-        success: response.success,
-        updates,
-      });
 
       return {
         success: false,
@@ -103,7 +89,6 @@ export class UserSettingsService {
         },
       };
     } catch (error) {
-      console.error("❌ Update user settings error:", error);
       if (error instanceof ApiError) {
         return {
           success: false,
@@ -137,19 +122,12 @@ export class UserSettingsService {
       );
 
       if (response.success && response.data) {
-        console.log("✅ Base currency updated successfully:", currency);
         return {
           success: true,
           data: response.data,
           message: "serviceResponse.settings.updateBaseCurrencySuccess",
         };
       }
-
-      console.error("❌ Update base currency: missing payload", {
-        endpoint: ENV.ENDPOINTS.USER_SETTINGS_CURRENCY,
-        success: response.success,
-        currency,
-      });
 
       return {
         success: false,
@@ -163,7 +141,6 @@ export class UserSettingsService {
         },
       };
     } catch (error) {
-      console.error("❌ Update base currency error:", error);
       if (error instanceof ApiError) {
         return {
           success: false,

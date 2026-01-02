@@ -1,7 +1,7 @@
 import { useInfiniteQuery, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { expenseService } from '../services/expenseService';
 import { petService } from '../services/petService';
-import type { CreateExpenseInput, Expense, ExpenseStats, MonthlyExpense, YearlyExpense, UpdateExpenseInput } from '../types';
+import type { CreateExpenseInput, Expense, ExpenseStats, MonthlyExpense, Pet, YearlyExpense, UpdateExpenseInput } from '../types';
 import { CACHE_TIMES } from '../config/queryConfig';
 import { ENV } from '../config/env';
 import { useCreateResource, useDeleteResource, useUpdateResource } from './useCrud';
@@ -77,7 +77,7 @@ export function useExpenses(petId?: string, filters: Omit<ExpenseFilters, 'petId
 
         const pets = petsResult.data || [];
         const allExpenses = await Promise.all(
-          pets.map(async (pet: any) => {
+          pets.map(async (pet: Pet) => {
             const result = await expenseService.getExpensesByPetId(pet._id, filters);
             return result.success ? (result.data?.expenses || []) : [];
           })

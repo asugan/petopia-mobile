@@ -157,8 +157,7 @@ export function HealthRecordForm({
         }
 
         onSuccess?.();
-      } catch (error) {
-        console.error('Health record form error:', error);
+      } catch {
         Alert.alert(t('common.error'), t('healthRecords.saveError'));
       } finally {
         setIsLoading(false);

@@ -90,8 +90,7 @@ export const SmartDateTimePicker = ({
         const normalizedTime = normalizeTimeValue(timeValue);
         const isoDateTime = combineDateTimeToISO(normalizedDate, normalizedTime);
         setValue(combinedOutputName, isoDateTime);
-      } catch (error) {
-        console.warn('Invalid date/time combination:', { dateValue, timeValue, error });
+      } catch {
         // Don't set invalid value, just log the error
       }
     }
@@ -114,13 +113,11 @@ export const SmartDateTimePicker = ({
 
       // Validate the date
       if (isNaN(date.getTime())) {
-        console.error('Invalid combined date:', { year, month, day, hours, minutes });
         return null;
       }
 
       return date;
-    } catch (error) {
-      console.error('Error in getCombinedDateTime:', error);
+    } catch {
       return null;
     }
   };
@@ -141,13 +138,11 @@ export const SmartDateTimePicker = ({
 
       // Validate the date before formatting
       if (isNaN(date.getTime())) {
-        console.error('Invalid date constructed:', { year, month, day, hours, minutes });
         return '';
       }
 
       return format(date, 'dd MMMM yyyy HH:mm', { locale });
-    } catch (error) {
-      console.error('Error in formatDateTimeDisplay:', error);
+    } catch {
       return '';
     }
   };
