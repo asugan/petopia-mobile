@@ -36,7 +36,7 @@
           "category": ["BROWSABLE", "DEFAULT"]
         }
       ],
-      "permissions": ["android.permission.RECORD_AUDIO"]
+      "permissions": []
     },
     "web": {
       "output": "static",
@@ -59,7 +59,8 @@
       [
         "expo-image-picker",
         {
-          "photosPermission": "Uygulamanın fotoğraflarınıza erişmesine izin verin."
+          "photosPermission": "Allow Petopia to access your photos.",
+          "cameraPermission": "Allow Petopia to take photos."
         }
       ],
       "expo-secure-store",

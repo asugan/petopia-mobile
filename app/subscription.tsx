@@ -43,13 +43,11 @@ export default function SubscriptionScreen() {
   };
 
   const handleTerms = () => {
-    // Replace with your actual terms URL
-    Linking.openURL('https://dekadans.com/terms');
+    Linking.openURL('https://asugan.github.io/petopia-legal/terms.html');
   };
 
   const handlePrivacy = () => {
-    // Replace with your actual privacy URL
-    Linking.openURL('https://dekadans.com/privacy');
+    Linking.openURL('https://asugan.github.io/petopia-legal/privacy.html');
   };
 
   const handleBack = () => {

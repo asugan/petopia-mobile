@@ -351,14 +351,14 @@ export default function LoginScreen() {
             {t('auth.agreementPrefix')}
             <Text 
               style={styles.linkText} 
-              onPress={() => openLink('https://petopia.app/terms')}
+              onPress={() => openLink('https://asugan.github.io/petopia-legal/terms.html')}
             >
               {t('auth.termsOfUse')}
             </Text>
             {t('auth.agreementMiddle')}
             <Text 
               style={styles.linkText} 
-              onPress={() => openLink('https://petopia.app/privacy')}
+              onPress={() => openLink('https://asugan.github.io/petopia-legal/privacy.html')}
             >
               {t('auth.privacyPolicy')}
             </Text>
@@ -369,4 +369,3 @@ export default function LoginScreen() {
     </View>
   );
 }
-
