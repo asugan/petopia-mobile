@@ -35,7 +35,9 @@
     "socialLoginError": "Sosyal giriş başarısız. Lütfen tekrar deneyin.",
     "linkOpenError": "Bağlantı açılamadı. Lütfen tekrar deneyin.",
     "logoutConfirm": "Çıkış yapmak istediğinizden emin misiniz?",
-    "logoutSuccess": "Başarıyla çıkış yapıldı"
+    "logoutSuccess": "Başarıyla çıkış yapıldı",
+    "freeTrialNotice": "Giriş yaptığınızda 14 günlük ücretsiz deneme başlar. Kredi kartı gerekmez.",
+    "freeTrialBadge": "14 GÜN ÜCRETSİZ"
   },
   "navigation": {
     "home": "Ana Sayfa",
@@ -1120,6 +1122,7 @@
     "screen3": {
       "title": "Artık Hazırsınız!",
       "description": "Evcil hayvanınızın bakım ve sağlık verilerini yönetmek için her şey hazır.",
+      "trialNotice": "14 günlük ücretsiz deneme süreniz başlıyor. Kredi kartı gerekmez.",
       "button": "Ana Sayfaya Git"
     }
   },

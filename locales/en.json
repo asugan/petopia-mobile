@@ -35,7 +35,9 @@
     "socialLoginError": "Social login failed. Please try again.",
     "linkOpenError": "Could not open the link. Please try again.",
     "logoutConfirm": "Are you sure you want to log out?",
-    "logoutSuccess": "Successfully logged out"
+    "logoutSuccess": "Successfully logged out",
+    "freeTrialNotice": "You get a 14-day free trial. No credit card required.",
+    "freeTrialBadge": "14 DAYS FREE"
   },
   "navigation": {
     "home": "Home",
@@ -1144,6 +1146,7 @@
     "screen3": {
       "title": "You Are Ready!",
       "description": "Everything is ready to manage your pet's care and health data.",
+      "trialNotice": "Your 14-day free trial starts now. No credit card required.",
       "button": "Go to Home"
     }
   },
