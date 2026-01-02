@@ -193,10 +193,11 @@ export class ExpenseService {
    */
   async updateExpense(id: string, data: UpdateExpenseInput): Promise<ApiResponse<Expense>> {
     try {
-      const cleanedData: Partial<UpdateExpenseInput> & { date?: string } = { ...data };
-      if (data.date) {
-        cleanedData.date = convertDateToISOString(data.date);
-      }
+      const { date, ...rest } = data;
+      const cleanedData: UpdateExpenseInput = {
+        ...rest,
+        ...(date ? { date: convertDateToISOString(date) } : {}),
+      };
 
       const response = await api.put<Expense>(`/api/expenses/${id}`, cleanedData);
 

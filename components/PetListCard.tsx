@@ -16,9 +16,9 @@ interface PetListCardProps {
   onUrgencyChange?: (petId: string, isUrgent: boolean, isLoading: boolean) => void;
 }
 
-const getAgeText = (birthDate: string | undefined, t: (key: string) => string) => {
+const getAgeText = (birthDate: string | Date | undefined, t: (key: string) => string) => {
   if (!birthDate) return t('pets.ageUnknown');
-  const date = new Date(birthDate);
+  const date = birthDate instanceof Date ? birthDate : new Date(birthDate);
   if (Number.isNaN(date.getTime())) return t('pets.ageUnknown');
 
   const now = new Date();

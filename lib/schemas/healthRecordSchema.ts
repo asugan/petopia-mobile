@@ -1,54 +1,29 @@
 import { z } from 'zod';
-import { toUTCWithOffset, isValidUTCISOString } from '@/lib/utils/dateConversion';
-import { createObjectIdSchema, t } from './createZodI18n';
-import { CURRENCIES } from './expenseSchema';
+import { objectIdSchema, currencyValidator, optionalUrlValidator } from './core/validators';
+import { utcDateStringSchema, futureDateSchema, dateRangeSchema } from './core/dateSchemas';
+import { HEALTH_RECORD_TYPES, CURRENCIES } from './core/constants';
+import { t } from './core/i18n';
+import { toUTCWithOffset } from '@/lib/utils/dateConversion';
 
-// Custom validation regex for Turkish characters
-const TURKISH_TEXT_REGEX = /^[a-zA-ZçÇğĞıİöÖşŞüÜ\s]+$/;
-const TURKISH_CLINIC_REGEX = /^[a-zA-Z0-zA-Z0-9çÇğĞıİöÖşŞüÜ\s.,'-]+$/;
+// Re-export constants for convenience
+export { HEALTH_RECORD_TYPES, CURRENCIES };
 
-// Custom validation functions
-const validateHealthDate = (dateString: string) => {
-  const date = new Date(dateString);
-  if (isNaN(date.getTime())) return false;
-  const now = new Date();
-  const minDate = new Date(now.getFullYear() - 30, now.getMonth(), now.getDate()); // 30 years ago
-  return date <= now && date >= minDate;
-};
-
-
-const validateVeterinarianName = (name: string | undefined) => {
-  if (!name || name.trim() === '') return true; // Optional field
-  return TURKISH_TEXT_REGEX.test(name.trim());
-};
-
-const validateClinicName = (name: string | undefined) => {
-  if (!name || name.trim() === '') return true; // Optional field
-  return TURKISH_CLINIC_REGEX.test(name.trim());
-};
+export type HealthRecordType = (typeof HEALTH_RECORD_TYPES)[number];
+export type Currency = (typeof CURRENCIES)[number];
 
 // Base health record schema for common validations
 const BaseHealthRecordSchema = () => {
   const HealthRecordTypeEnum = z.enum(
-    [
-      'checkup',
-      'visit',
-      'surgery',
-      'dental',
-      'grooming',
-      'other',
-    ],
+    HEALTH_RECORD_TYPES as unknown as [string, ...string[]],
     {
       message: t('forms.validation.healthRecord.typeInvalid'),
     }
   );
-  const objectIdSchema = createObjectIdSchema();
 
   return z.object({
-    petId: z
-      .string()
-      .min(1, { message: t('forms.validation.healthRecord.petRequired') })
-      .pipe(objectIdSchema),
+    petId: objectIdSchema().refine(() => true, {
+      params: { i18nKey: 'forms.validation.healthRecord.petRequired' },
+    }),
 
     type: HealthRecordTypeEnum,
 
@@ -56,22 +31,20 @@ const BaseHealthRecordSchema = () => {
       .string()
       .min(2, { message: t('forms.validation.healthRecord.titleMin') })
       .max(100, { message: t('forms.validation.healthRecord.titleMax') })
-      .transform(val => val.trim()),
+      .transform((val) => val.trim()),
 
     description: z
       .string()
       .max(1000, { message: t('forms.validation.healthRecord.descriptionMax') })
       .optional()
-      .transform(val => val?.trim() || undefined),
+      .transform((val) => val?.trim() || undefined),
 
     date: z
       .union([z.string(), z.date()])
       .transform((val): string => {
-        // If it's a Date object, convert to UTC ISO
         if (val instanceof Date) {
           return toUTCWithOffset(val);
         }
-        // If it's a string without timezone info, convert to UTC
         if (typeof val === 'string') {
           if (!val.endsWith('Z') && !val.includes('+')) {
             return toUTCWithOffset(new Date(val));
@@ -80,10 +53,12 @@ const BaseHealthRecordSchema = () => {
         }
         throw new Error('Invalid date type');
       })
-      .refine((val) => isValidUTCISOString(val), {
-        params: { i18nKey: 'forms.validation.healthRecord.dateUtcInvalid' },
-      })
-      .refine(validateHealthDate, {
+      .refine((val) => {
+        const date = new Date(val);
+        const now = new Date();
+        const minDate = new Date(now.getFullYear() - 30, now.getMonth(), now.getDate());
+        return date <= now && date >= minDate;
+      }, {
         params: { i18nKey: 'forms.validation.healthRecord.dateFuture' },
       }),
 
@@ -103,14 +78,10 @@ const BaseHealthRecordSchema = () => {
         }
         throw new Error('Invalid date type');
       })
-      .refine((val) => !val || isValidUTCISOString(val), {
-        params: { i18nKey: 'forms.validation.healthRecord.dateUtcInvalid' },
-      })
       .refine((val) => {
         if (!val) return true;
         const date = new Date(val);
-        if (isNaN(date.getTime())) return false;
-        return date > new Date();
+        return !isNaN(date.getTime()) && date > new Date();
       }, {
         params: { i18nKey: 'forms.validation.event.startInFuture' },
       }),
@@ -119,48 +90,32 @@ const BaseHealthRecordSchema = () => {
       .string()
       .max(100, { message: t('forms.validation.healthRecord.veterinarianMax') })
       .optional()
-      .refine(validateVeterinarianName, {
-        params: { i18nKey: 'forms.validation.healthRecord.veterinarianInvalid' },
-      })
-      .transform(val => val?.trim() || undefined),
+      .transform((val) => val?.trim() || undefined),
 
     clinic: z
       .string()
       .max(100, { message: t('forms.validation.healthRecord.clinicMax') })
       .optional()
-      .refine(validateClinicName, {
-        params: { i18nKey: 'forms.validation.healthRecord.clinicInvalid' },
-      })
-      .transform(val => val?.trim() || undefined),
+      .transform((val) => val?.trim() || undefined),
 
     cost: z
       .number()
       .nonnegative({ message: t('forms.validation.healthRecord.costNonNegative') })
       .max(50000, { message: t('forms.validation.healthRecord.costMax') })
       .optional()
-      .transform(val => val === undefined ? undefined : parseFloat(val.toFixed(2))),
+      .transform((val) => (val === undefined ? undefined : parseFloat(val.toFixed(2)))),
 
-    currency: z
-      .enum(CURRENCIES, {
-        message: t('forms.validation.expense.currencyInvalid'),
-      })
-      .optional(),
+    currency: currencyValidator().optional(),
 
-    amountBase: z
-      .number()
-      .optional(),
+    amountBase: z.number().optional(),
 
-    baseCurrency: z
-      .enum(CURRENCIES, {
-        message: t('forms.validation.expense.currencyInvalid'),
-      })
-      .optional(),
+    baseCurrency: currencyValidator().optional(),
 
     notes: z
       .string()
       .max(2000, { message: t('forms.validation.healthRecord.notesMax') })
       .optional()
-      .transform(val => val?.trim() || undefined),
+      .transform((val) => val?.trim() || undefined),
 
     treatmentPlan: z
       .array(
@@ -174,55 +129,39 @@ const BaseHealthRecordSchema = () => {
       )
       .optional(),
 
-    nextVisitEventId: objectIdSchema.optional(),
+    nextVisitEventId: objectIdSchema().optional(),
   });
 };
 
 // Base schema for form input (before transformation)
-const BaseHealthRecordFormSchema = () => {
-  const objectIdSchema = createObjectIdSchema();
-
-  return z.object({
+const BaseHealthRecordFormSchema = () =>
+  z.object({
     title: z
       .string()
       .min(1, { message: t('forms.validation.healthRecord.titleRequired') })
       .max(100, { message: t('forms.validation.healthRecord.titleMax') })
-      .regex(
-        /^[a-zA-ZğüşıöçĞÜŞİÖÇ0-9\s\-_.,!?()]+$/,
-        { message: t('forms.validation.healthRecord.titleInvalidChars') }
-      ),
+      .regex(/^[a-zA-ZğüşıöçĞÜŞİÖÇ0-9\s\-_.,!?()]+$/, {
+        message: t('forms.validation.healthRecord.titleInvalidChars'),
+      }),
 
-    type: z.enum(['visit', 'other', 'grooming', 'checkup', 'surgery', 'dental'] as const, {
+    type: z.enum(HEALTH_RECORD_TYPES as unknown as [string, ...string[]], {
       message: t('forms.validation.healthRecord.typeInvalid'),
     }),
 
-    date: z
-      .union([z.string(), z.date()])
-      .refine((val) => {
-        if (val instanceof Date) return !isNaN(val.getTime());
-        if (typeof val === 'string') {
-          const date = new Date(val);
-          return !isNaN(date.getTime());
-        }
-        return false;
-      }, {
-        params: { i18nKey: 'forms.validation.healthRecord.dateInvalid' },
-      })
-      .refine((val) => {
-        const date = val instanceof Date ? val : new Date(val);
-        const now = new Date();
-        return date <= now;
-      }, {
-        params: { i18nKey: 'forms.validation.healthRecord.dateFuture' },
-      }),
+    date: dateRangeSchema({
+      maxYearsAgo: 30,
+      allowFuture: false,
+      messageKey: 'forms.validation.healthRecord.dateInvalidRange',
+      messageParams: { maxYears: 30 },
+    }),
 
     description: z
       .string()
       .max(1000, { message: t('forms.validation.healthRecord.descriptionMax') })
       .optional()
-      .transform(val => val?.trim() || undefined),
+      .transform((val) => val?.trim() || undefined),
 
-    petId: objectIdSchema.refine(() => true, {
+    petId: objectIdSchema().refine(() => true, {
       params: { i18nKey: 'forms.validation.healthRecord.petRequired' },
     }),
 
@@ -230,75 +169,47 @@ const BaseHealthRecordFormSchema = () => {
       .string()
       .max(100, { message: t('forms.validation.healthRecord.veterinarianMax') })
       .optional()
-      .transform(val => val?.trim() || undefined),
+      .transform((val) => val?.trim() || undefined),
 
     clinic: z
       .string()
       .max(100, { message: t('forms.validation.healthRecord.clinicMax') })
       .optional()
-      .transform(val => val?.trim() || undefined),
+      .transform((val) => val?.trim() || undefined),
 
     cost: z
       .number()
-      .positive({ message: t('forms.validation.healthRecord.costPositive') })
-      .max(100000, { message: t('forms.validation.healthRecord.costMaxForm') })
+      .min(0, { message: t('forms.validation.healthRecord.costNonNegative') })
+      .max(50000, { message: t('forms.validation.healthRecord.costMax') })
       .optional()
       .nullable(),
 
-    currency: z
-      .enum(CURRENCIES, {
-        message: t('forms.validation.expense.currencyInvalid'),
-      })
-      .optional(),
+    currency: currencyValidator().optional(),
 
-    amountBase: z
-      .number()
-      .optional(),
+    amountBase: z.number().optional(),
 
-    baseCurrency: z
-      .enum(CURRENCIES, {
-        message: t('forms.validation.expense.currencyInvalid'),
-      })
-      .optional(),
+    baseCurrency: currencyValidator().optional(),
 
     notes: z
       .string()
       .max(2000, { message: t('forms.validation.healthRecord.notesMax') })
       .optional()
-      .transform(val => val?.trim() || undefined),
+      .transform((val) => val?.trim() || undefined),
 
-    treatmentPlan: z.array(z.object({
-      name: z.string().min(1, { message: t('forms.validation.required') }),
-      dosage: z.string().min(1, { message: t('forms.validation.required') }),
-      frequency: z.string().min(1, { message: t('forms.validation.required') }),
-      duration: z.string().optional(),
-      notes: z.string().optional(),
-    })).optional(),
+    treatmentPlan: z
+      .array(
+        z.object({
+          name: z.string().min(1, { message: t('forms.validation.required') }),
+          dosage: z.string().min(1, { message: t('forms.validation.required') }),
+          frequency: z.string().min(1, { message: t('forms.validation.required') }),
+          duration: z.string().optional(),
+          notes: z.string().optional(),
+        })
+      )
+      .optional(),
 
-    nextVisitDate: z
-      .union([z.string(), z.date()])
-      .optional()
-      .refine((val) => {
-        if (!val) return true;
-        if (val instanceof Date) return !isNaN(val.getTime());
-        if (typeof val === 'string') {
-          const date = new Date(val);
-          return !isNaN(date.getTime());
-        }
-        return false;
-      }, {
-        params: { i18nKey: 'forms.validation.healthRecord.dateInvalid' },
-      })
-      .refine((val) => {
-        if (!val) return true;
-        const date = val instanceof Date ? val : new Date(val);
-        const now = new Date();
-        return date > now;
-      }, {
-        params: { i18nKey: 'forms.validation.event.startInFuture' },
-      }),
+    nextVisitDate: futureDateSchema().optional(),
   });
-};
 
 // Schema for form input (before transformation)
 export const HealthRecordCreateFormSchema = () => BaseHealthRecordFormSchema();
@@ -307,15 +218,12 @@ export const HealthRecordCreateFormSchema = () => BaseHealthRecordFormSchema();
 export const HealthRecordUpdateFormSchema = () => BaseHealthRecordFormSchema().partial();
 
 // Full HealthRecord schema including server-side fields
-export const HealthRecordSchema = () => {
-  const objectIdSchema = createObjectIdSchema();
-
-  return BaseHealthRecordSchema().extend({
-    _id: objectIdSchema,
+export const HealthRecordSchema = () =>
+  BaseHealthRecordSchema().extend({
+    _id: objectIdSchema(),
     createdAt: z.string().datetime(),
     updatedAt: z.string().datetime(),
   });
-};
 
 // Schema for creating a new health record
 export const HealthRecordCreateSchema = () => BaseHealthRecordSchema();
@@ -339,17 +247,20 @@ const NextVisitDateUpdateSchema = z
     }
     throw new Error('Invalid date type');
   })
-  .refine((val) => val == null || isValidUTCISOString(val), {
+  .refine((val) => val == null || utcDateStringSchema().safeParse(val).success, {
     params: { i18nKey: 'forms.validation.healthRecord.dateUtcInvalid' },
   })
-  .refine((val) => {
-    if (val == null) return true;
-    const date = new Date(val);
-    if (isNaN(date.getTime())) return false;
-    return date > new Date();
-  }, {
-    params: { i18nKey: 'forms.validation.event.startInFuture' },
-  });
+  .refine(
+    (val) => {
+      if (val == null) return true;
+      const date = new Date(val);
+      if (isNaN(date.getTime())) return false;
+      return date > new Date();
+    },
+    {
+      params: { i18nKey: 'forms.validation.event.startInFuture' },
+    }
+  );
 
 export const HealthRecordUpdateSchema = () =>
   BaseHealthRecordSchema().partial().extend({
@@ -372,7 +283,7 @@ export type ValidationError = {
 
 // Helper function to format validation errors
 export const formatValidationErrors = (error: z.ZodError): ValidationError[] => {
-  return error.issues.map(err => ({
+  return error.issues.map((err) => ({
     path: err.path.map(String),
     message: err.message,
     code: err.code,
@@ -381,7 +292,7 @@ export const formatValidationErrors = (error: z.ZodError): ValidationError[] => 
 
 // Helper function to get field-specific error message
 export const getFieldError = (error: z.ZodError, fieldName: string): string | undefined => {
-  const fieldError = error.issues.find(err => err.path[0] === fieldName);
+  const fieldError = error.issues.find((err) => err.path[0] === fieldName);
   return fieldError?.message;
 };
 
@@ -447,7 +358,7 @@ export const TurkishHealthValidations = {
 };
 
 // Type union for health record types
-type HealthRecordType = 'checkup' | 'visit' | 'surgery' | 'dental' | 'grooming' | 'other';
+type HealthRecordTypeUnion = 'checkup' | 'visit' | 'surgery' | 'dental' | 'grooming' | 'other';
 
 // Health record type-specific validation schemas
 export const HealthRecordTypeSchemas = {
@@ -460,14 +371,12 @@ export const HealthRecordTypeSchemas = {
 } as const;
 
 // Dynamic schema selector based on record type
-export const getHealthRecordSchema = (type: HealthRecordType) => {
+export const getHealthRecordSchema = (type: HealthRecordTypeUnion) => {
   return HealthRecordTypeSchemas[type]();
 };
 
 // Helper function to validate health record data with type-specific rules
 export const validateHealthRecord = (data: unknown, type: string) => {
-  const schema = getHealthRecordSchema(type as HealthRecordType);
+  const schema = getHealthRecordSchema(type as HealthRecordTypeUnion);
   return schema.safeParse(data);
 };
-
-// Export the Zod error map for internationalization (disabled for now)

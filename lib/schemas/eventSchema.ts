@@ -1,279 +1,229 @@
 import { z } from 'zod';
 import { EVENT_TYPES } from '../../constants';
-import { combineDateTimeToISO, toUTCWithOffset, isValidUTCISOString } from '../utils/dateConversion';
-import { createObjectIdSchema, t } from './createZodI18n';
+import { combineDateTimeToISO } from '../utils/dateConversion';
+import { objectIdSchema } from './core/validators';
+import { utcDateStringSchema, futureDateSchema } from './core/dateSchemas';
+import { t } from './core/i18n';
+
+// Re-export constants for convenience
+export { EVENT_TYPES };
+
+export type EventType = (typeof EVENT_TYPES)[keyof typeof EVENT_TYPES];
 
 // Form input schema (matches the form structure with separate date/time fields)
-export const eventFormSchema = () => {
-  return z.object({
-    title: z
-      .string()
-      .min(1, { message: t('forms.validation.event.titleRequired') })
-      .max(100, { message: t('forms.validation.event.titleMax') })
-      .regex(
-        /^[a-zA-ZğüşıöçĞÜŞİÖÇ0-9\s\-_.,!?()]+$/,
-        { message: t('forms.validation.event.titleInvalidChars') }
-      ),
+export const eventFormSchema = () =>
+  z
+    .object({
+      title: z
+        .string()
+        .min(1, { message: t('forms.validation.event.titleRequired') })
+        .max(100, { message: t('forms.validation.event.titleMax') })
+        .regex(/^[a-zA-ZğüşıöçĞÜŞİÖÇ0-9\s\-_.,!?()]+$/, {
+          message: t('forms.validation.event.titleInvalidChars'),
+        }),
 
-    description: z
-      .string()
-      .optional()
-      .transform(val => val?.trim() || undefined),
+      description: z
+        .string()
+        .optional()
+        .transform((val) => val?.trim() || undefined),
 
-    petId: z
-      .string({ error: t('forms.validation.event.petRequired') })
-      .min(1, { message: t('forms.validation.event.petRequired') })
-      .regex(/^[0-9a-fA-F]{24}$/, { message: t('forms.validation.objectIdInvalid') }),
+      petId: z
+        .string({
+          error: t('forms.validation.event.petRequired'),
+        })
+        .min(1, { message: t('forms.validation.event.petRequired') })
+        .regex(/^[0-9a-fA-F]{24}$/, { message: t('forms.validation.objectIdInvalid') }),
 
-    type: z
-      .enum(Object.values(EVENT_TYPES) as [string, ...string[]], {
+      type: z.enum(Object.values(EVENT_TYPES) as [string, ...string[]], {
         message: t('forms.validation.event.typeInvalid'),
       }),
 
-    startDate: z
-      .string()
-      .min(1, { message: t('forms.validation.event.startDateRequired') }),
+      startDate: z.string().min(1, { message: t('forms.validation.event.startDateRequired') }),
 
-    startTime: z
-      .string()
-      .min(1, { message: t('forms.validation.event.startTimeRequired') }),
+      startTime: z.string().min(1, { message: t('forms.validation.event.startTimeRequired') }),
 
-    endDate: z
-      .string()
-      .optional()
-      .transform(val => val?.trim() || undefined),
+      endDate: z
+        .string()
+        .optional()
+        .transform((val) => val?.trim() || undefined),
 
-    endTime: z
-      .string()
-      .optional()
-      .transform(val => val?.trim() || undefined),
+      endTime: z
+        .string()
+        .optional()
+        .transform((val) => val?.trim() || undefined),
 
-    location: z
-      .string()
-      .optional()
-      .transform(val => val?.trim() || undefined),
+      location: z
+        .string()
+        .optional()
+        .transform((val) => val?.trim() || undefined),
 
-    reminder: z
-      .boolean(),
+      reminder: z.boolean(),
 
-    reminderPreset: z
-      .enum(['standard', 'compact', 'minimal'])
-      .default('standard'),
+      reminderPreset: z.enum(['standard', 'compact', 'minimal']).default('standard'),
 
-    notes: z
-      .string()
-      .optional()
-      .transform(val => val?.trim() || undefined),
+      notes: z
+        .string()
+        .optional()
+        .transform((val) => val?.trim() || undefined),
 
-    vaccineName: z
-      .string()
-      .optional()
-      .transform(val => val?.trim() || undefined),
+      vaccineName: z
+        .string()
+        .optional()
+        .transform((val) => val?.trim() || undefined),
 
-    vaccineManufacturer: z
-      .string()
-      .optional()
-      .transform(val => val?.trim() || undefined),
+      vaccineManufacturer: z
+        .string()
+        .optional()
+        .transform((val) => val?.trim() || undefined),
 
-    batchNumber: z
-      .string()
-      .optional()
-      .transform(val => val?.trim() || undefined),
+      batchNumber: z
+        .string()
+        .optional()
+        .transform((val) => val?.trim() || undefined),
 
-    medicationName: z
-      .string()
-      .optional()
-      .transform(val => val?.trim() || undefined),
+      medicationName: z
+        .string()
+        .optional()
+        .transform((val) => val?.trim() || undefined),
 
-    dosage: z
-      .string()
-      .optional()
-      .transform(val => val?.trim() || undefined),
+      dosage: z
+        .string()
+        .optional()
+        .transform((val) => val?.trim() || undefined),
 
-    frequency: z
-      .string()
-      .optional()
-      .transform(val => val?.trim() || undefined),
-  }).superRefine((data, ctx) => {
-    // Validate end time is provided completely if either endDate or endTime is provided
-    if ((data.endDate && !data.endTime) || (!data.endDate && data.endTime)) {
-      ctx.addIssue({
-        code: z.ZodIssueCode.custom,
-        message: t('forms.validation.event.endDateTimeRequired'),
-        path: ['endTime']
-      });
-    }
-
-    // Validate end time is after start time
-    if (data.endDate && data.endTime && data.startDate && data.startTime) {
-      const startDateTime = combineDateTimeToISO(data.startDate, data.startTime);
-      const endDateTime = combineDateTimeToISO(data.endDate, data.endTime);
-
-      const start = new Date(startDateTime);
-      const end = new Date(endDateTime);
-
-      // End time must be at least 15 minutes after start time
-      const minimumEndTime = new Date(start.getTime() + 15 * 60000);
-      if (end < minimumEndTime) {
+      frequency: z
+        .string()
+        .optional()
+        .transform((val) => val?.trim() || undefined),
+    })
+    .superRefine((data, ctx) => {
+      // Validate end time is provided completely if either endDate or endTime is provided
+      if ((data.endDate && !data.endTime) || (!data.endDate && data.endTime)) {
         ctx.addIssue({
           code: z.ZodIssueCode.custom,
-          message: t('forms.validation.event.endAfterStart'),
-          path: ['endTime']
+          message: t('forms.validation.event.endDateTimeRequired'),
+          path: ['endTime'],
         });
       }
-    }
 
-    // Validate start time is in the future
-    if (data.startDate && data.startTime) {
-      const startDateTime = combineDateTimeToISO(data.startDate, data.startTime);
-      const selectedDate = new Date(startDateTime);
-      const now = new Date();
+      // Validate end time is after start time
+      if (data.endDate && data.endTime && data.startDate && data.startTime) {
+        const startDateTime = combineDateTimeToISO(data.startDate, data.startTime);
+        const endDateTime = combineDateTimeToISO(data.endDate, data.endTime);
 
-      // Allow events that are at least 1 minute in the future
-      const oneMinuteFromNow = new Date(now.getTime() + 60000);
-      if (selectedDate < oneMinuteFromNow) {
+        const start = new Date(startDateTime);
+        const end = new Date(endDateTime);
+
+        // End time must be at least 15 minutes after start time
+        const minimumEndTime = new Date(start.getTime() + 15 * 60000);
+        if (end < minimumEndTime) {
+          ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            message: t('forms.validation.event.endAfterStart'),
+            path: ['endTime'],
+          });
+        }
+      }
+
+      // Validate start time is in the future
+      if (data.startDate && data.startTime) {
+        const startDateTime = combineDateTimeToISO(data.startDate, data.startTime);
+        const selectedDate = new Date(startDateTime);
+        const now = new Date();
+
+        // Allow events that are at least 1 minute in the future
+        const oneMinuteFromNow = new Date(now.getTime() + 60000);
+        if (selectedDate < oneMinuteFromNow) {
+          ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            message: t('forms.validation.event.startInFuture'),
+            path: ['startTime'],
+          });
+        }
+      }
+
+      // Additional validation: reminder time should be reasonable if reminder is enabled
+      if (data.reminder && data.startDate && data.startTime) {
+        const startDateTime = combineDateTimeToISO(data.startDate, data.startTime);
+        const eventTime = new Date(startDateTime);
+        const now = new Date();
+
+        // Don't allow reminders for events more than 1 year in the future
+        const oneYearFromNow = new Date(now.getTime() + 365 * 24 * 60 * 60 * 1000);
+        if (eventTime > oneYearFromNow) {
+          ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            message: t('forms.validation.event.reminderTooFar'),
+            path: ['reminder'],
+          });
+        }
+      }
+
+      if (data.type === EVENT_TYPES.VACCINATION && !data.vaccineName) {
         ctx.addIssue({
           code: z.ZodIssueCode.custom,
-          message: t('forms.validation.event.startInFuture'),
-          path: ['startTime']
+          message: t('forms.validation.event.vaccineNameRequired'),
+          path: ['vaccineName'],
         });
       }
-    }
 
-    // Additional validation: reminder time should be reasonable if reminder is enabled
-    if (data.reminder && data.startDate && data.startTime) {
-      const startDateTime = combineDateTimeToISO(data.startDate, data.startTime);
-      const eventTime = new Date(startDateTime);
-      const now = new Date();
-
-      // Don't allow reminders for events more than 1 year in the future
-      const oneYearFromNow = new Date(now.getTime() + 365 * 24 * 60 * 60 * 1000);
-      if (eventTime > oneYearFromNow) {
-        ctx.addIssue({
-          code: z.ZodIssueCode.custom,
-          message: t('forms.validation.event.reminderTooFar'),
-          path: ['reminder']
-        });
+      if (data.type === EVENT_TYPES.MEDICATION) {
+        if (!data.medicationName) {
+          ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            message: t('forms.validation.event.medicationNameRequired'),
+            path: ['medicationName'],
+          });
+        }
+        if (!data.dosage) {
+          ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            message: t('forms.validation.event.dosageRequired'),
+            path: ['dosage'],
+          });
+        }
+        if (!data.frequency) {
+          ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            message: t('forms.validation.event.frequencyRequired'),
+            path: ['frequency'],
+          });
+        }
       }
-    }
-
-    if (data.type === EVENT_TYPES.VACCINATION && !data.vaccineName) {
-      ctx.addIssue({
-        code: z.ZodIssueCode.custom,
-        message: t('forms.validation.event.vaccineNameRequired'),
-        path: ['vaccineName']
-      });
-    }
-
-    if (data.type === EVENT_TYPES.MEDICATION) {
-      if (!data.medicationName) {
-        ctx.addIssue({
-          code: z.ZodIssueCode.custom,
-          message: t('forms.validation.event.medicationNameRequired'),
-          path: ['medicationName']
-        });
-      }
-      if (!data.dosage) {
-        ctx.addIssue({
-          code: z.ZodIssueCode.custom,
-          message: t('forms.validation.event.dosageRequired'),
-          path: ['dosage']
-        });
-      }
-      if (!data.frequency) {
-        ctx.addIssue({
-          code: z.ZodIssueCode.custom,
-          message: t('forms.validation.event.frequencyRequired'),
-          path: ['frequency']
-        });
-      }
-    }
-  });
-};
+    });
 
 // Type inference from the form schema
 export type EventFormData = z.infer<ReturnType<typeof eventFormSchema>>;
 
 // API schema (matches backend expectations with ISO datetime strings)
-export const eventSchema = () => {
-  const objectIdSchema = createObjectIdSchema();
-
-  return z.object({
+export const eventSchema = () =>
+  z.object({
     title: z
       .string()
       .min(1, { message: t('forms.validation.event.titleRequired') })
       .max(100, { message: t('forms.validation.event.titleMax') }),
 
-    description: z
-      .string()
-      .optional(),
+    description: z.string().optional(),
 
-    petId: objectIdSchema.refine(() => true, {
+    petId: objectIdSchema().refine(() => true, {
       params: { i18nKey: 'forms.validation.event.petRequired' },
     }),
 
-    type: z
-      .enum(Object.values(EVENT_TYPES) as [string, ...string[]], {
-        message: t('forms.validation.event.typeInvalid'),
-      }),
+    type: z.enum(Object.values(EVENT_TYPES) as [string, ...string[]], {
+      message: t('forms.validation.event.typeInvalid'),
+    }),
 
-    startTime: z
-      .union([z.string(), z.date()])
-      .transform((val): string => {
-        // If it's a Date object, convert to UTC ISO
-        if (val instanceof Date) {
-          return toUTCWithOffset(val);
-        }
-        // If it's a string without timezone info, convert to UTC
-        if (typeof val === 'string') {
-          if (!val.endsWith('Z') && !val.includes('+')) {
-            return toUTCWithOffset(new Date(val));
-          }
-          return val;
-        }
-        throw new Error('Invalid date type');
-      })
-      .refine((val) => isValidUTCISOString(val), {
-        params: { i18nKey: 'forms.validation.event.startTimeUtcInvalid' },
-      }),
+    startTime: utcDateStringSchema(),
 
-    endTime: z
-      .union([z.string(), z.date()])
-      .optional()
-      .transform((val): string | undefined => {
-        if (!val) return val;
-        // If it's a Date object, convert to UTC ISO
-        if (val instanceof Date) {
-          return toUTCWithOffset(val);
-        }
-        // If it's a string without timezone info, convert to UTC
-        if (typeof val === 'string') {
-          if (!val.endsWith('Z') && !val.includes('+')) {
-            return toUTCWithOffset(new Date(val));
-          }
-          return val;
-        }
-        throw new Error('Invalid date type');
-      })
-      .refine((val) => !val || isValidUTCISOString(val), {
-        params: { i18nKey: 'forms.validation.event.endTimeUtcInvalid' },
-      }),
+    endTime: utcDateStringSchema().optional(),
 
-    location: z
-      .string()
-      .optional(),
+    location: z.string().optional(),
 
-    reminder: z
-      .boolean()
-      .optional(),
+    reminder: z.boolean().optional(),
 
-    reminderPreset: z
-      .enum(['standard', 'compact', 'minimal'])
-      .optional(),
+    reminderPreset: z.enum(['standard', 'compact', 'minimal']).optional(),
 
-    notes: z
-      .string()
-      .optional(),
+    notes: z.string().optional(),
 
     vaccineName: z.string().optional(),
     vaccineManufacturer: z.string().optional(),
@@ -282,29 +232,23 @@ export const eventSchema = () => {
     dosage: z.string().optional(),
     frequency: z.string().optional(),
   });
-};
 
 // Full Event schema including server-side fields
-export const EventSchema = () => {
-  const objectIdSchema = createObjectIdSchema();
-
-  return eventSchema().extend({
-    _id: objectIdSchema,
+export const EventSchema = () =>
+  eventSchema().extend({
+    _id: objectIdSchema(),
     status: z.enum(['upcoming', 'completed', 'cancelled', 'missed']).default('upcoming'),
     createdAt: z.string().datetime(),
     updatedAt: z.string().datetime(),
   });
-};
 
 // Type inference from the API schema
 export type EventData = z.infer<ReturnType<typeof eventSchema>>;
 export type Event = z.infer<ReturnType<typeof EventSchema>>;
 
 // Schema for event updates (all fields optional)
-export const updateEventSchema = () => {
-  const objectIdSchema = createObjectIdSchema();
-
-  return z.object({
+export const updateEventSchema = () =>
+  z.object({
     title: z
       .string()
       .min(1, { message: t('forms.validation.event.titleRequired') })
@@ -314,16 +258,14 @@ export const updateEventSchema = () => {
       .string()
       .max(500, { message: t('forms.validation.event.descriptionMax') })
       .optional(),
-    petId: objectIdSchema.optional(),
-    type: z
-      .enum(Object.values(EVENT_TYPES) as [string, ...string[]], {
-        message: t('forms.validation.event.typeInvalid'),
-      })
-      .optional(),
+    petId: objectIdSchema().optional(),
+    type: z.enum(Object.values(EVENT_TYPES) as [string, ...string[]], {
+      message: t('forms.validation.event.typeInvalid'),
+    }).optional(),
     startTime: z
       .string()
       .min(1, { message: t('forms.validation.event.startTimeRequired') })
-      .refine((val) => isValidUTCISOString(val), {
+      .refine((val) => utcDateStringSchema().safeParse(val).success, {
         params: { i18nKey: 'forms.validation.event.startTimeUtcInvalid' },
       })
       .optional(),
@@ -372,7 +314,6 @@ export const updateEventSchema = () => {
       .nullable()
       .optional(),
   });
-};
 
 export type UpdateEventFormData = z.infer<ReturnType<typeof updateEventSchema>>;
 export type CreateEventInput = EventData;
@@ -416,12 +357,12 @@ export const getEventTypeSpecificRules = (eventType: string) => {
           min: 1,
           max: 50,
           pattern: /^[a-zA-ZğüşıöçĞÜŞİÖÇ0-9\s\-_.,!?()]+$/,
-          message: t('forms.validation.event.rules.feedingTitleMax')
+          message: t('forms.validation.event.rules.feedingTitleMax'),
         },
         duration: {
           maxMinutes: 60, // Feeding activities shouldn't exceed 1 hour
-          message: t('forms.validation.event.rules.feedingDurationMax')
-        }
+          message: t('forms.validation.event.rules.feedingDurationMax'),
+        },
       };
 
     case 'vet_visit':
@@ -430,13 +371,13 @@ export const getEventTypeSpecificRules = (eventType: string) => {
           min: 1,
           max: 100,
           pattern: /^[a-zA-ZğüşıöçĞÜŞİÖÇ0-9\s\-_.,!?()]+$/,
-          message: t('forms.validation.event.rules.vetVisitTitleRequired')
+          message: t('forms.validation.event.rules.vetVisitTitleRequired'),
         },
         duration: {
           minMinutes: 30, // Vet visits usually take at least 30 minutes
           maxMinutes: 480, // 8 hours max
-          message: t('forms.validation.event.rules.vetVisitDurationRange')
-        }
+          message: t('forms.validation.event.rules.vetVisitDurationRange'),
+        },
       };
 
     case 'exercise':
@@ -445,8 +386,8 @@ export const getEventTypeSpecificRules = (eventType: string) => {
         duration: {
           minMinutes: 15,
           maxMinutes: 240, // 4 hours max
-          message: t('forms.validation.event.rules.exerciseDurationRange')
-        }
+          message: t('forms.validation.event.rules.exerciseDurationRange'),
+        },
       };
 
     default:
@@ -454,8 +395,8 @@ export const getEventTypeSpecificRules = (eventType: string) => {
         duration: {
           minMinutes: 15,
           maxMinutes: 480, // 8 hours max default
-          message: t('forms.validation.event.rules.defaultDurationRange')
-        }
+          message: t('forms.validation.event.rules.defaultDurationRange'),
+        },
       };
   }
 };
@@ -464,9 +405,10 @@ export const getEventTypeSpecificRules = (eventType: string) => {
 export const transformFormDataToAPI = (formData: EventFormData): EventData => {
   // Combine date and time into ISO datetime strings
   const startTime = combineDateTimeToISO(formData.startDate, formData.startTime);
-  const endTime = formData.endDate && formData.endTime
-    ? combineDateTimeToISO(formData.endDate, formData.endTime)
-    : undefined;
+  const endTime =
+    formData.endDate && formData.endTime
+      ? combineDateTimeToISO(formData.endDate, formData.endTime)
+      : undefined;
 
   return {
     title: formData.title,

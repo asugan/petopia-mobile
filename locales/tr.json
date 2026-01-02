@@ -727,6 +727,7 @@
       "invalid": "Geçersiz değer",
       "error": "Validasyon Hatası",
       "objectIdInvalid": "Geçersiz ObjectId formatı",
+      "dateInvalidRange": "Tarih gelecekte olamaz veya {{maxYears}} yıldan eski olamaz",
       "event": {
         "titleRequired": "Etkinlik başlığı zorunludur",
         "titleMax": "Etkinlik başlığı en fazla 100 karakter olabilir",
@@ -773,7 +774,6 @@
         "paymentMethodInvalid": "Geçerli bir ödeme yöntemi seçiniz",
         "descriptionMax": "Açıklama en fazla 500 karakter olabilir",
         "dateRequired": "Tarih zorunludur",
-        "dateInvalidRange": "Tarih gelecekte veya 10 yıldan eski olamaz",
         "receiptUrl": "Fiş fotoğrafı geçerli bir URL olmalıdır",
         "vendorMax": "Satıcı adı en fazla 200 karakter olabilir",
         "notesMax": "Notlar en fazla 1000 karakter olabilir",
@@ -835,14 +835,13 @@
         "dateInvalid": "Geçerli bir tarih giriniz",
         "dateUtcInvalid": "Sağlık kayıt tarihi geçersiz format. UTC formatında olmalı",
         "dateFuture": "Tarih gelecekte olamaz",
+        "dateInvalidRange": "Tarih gelecekte olamaz veya {{maxYears}} yıldan eski olamaz",
         "veterinarianMax": "Veteriner adı en fazla 100 karakter olabilir",
         "veterinarianInvalid": "Veteriner adı geçersiz karakterler içeriyor",
         "clinicMax": "Klinik adı en fazla 100 karakter olabilir",
         "clinicInvalid": "Klinik adı geçersiz karakterler içeriyor",
         "costNonNegative": "Maliyet negatif olamaz",
-        "costPositive": "Maliyet pozitif olmalıdır",
         "costMax": "Maliyet en fazla 50000 olabilir",
-        "costMaxForm": "Maliyet en fazla 100000 olabilir",
         "notesMax": "Notlar en fazla 2000 karakter olabilir"
       },
       "pet": {

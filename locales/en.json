@@ -751,6 +751,7 @@
       "invalid": "Invalid value",
       "error": "Validation Error",
       "objectIdInvalid": "Invalid ObjectId format",
+      "dateInvalidRange": "Date cannot be in the future or more than {{maxYears}} years ago",
       "event": {
         "titleRequired": "Event title is required",
         "titleMax": "Event title cannot exceed 100 characters",
@@ -797,7 +798,6 @@
         "paymentMethodInvalid": "Please select a valid payment method",
         "descriptionMax": "Description cannot exceed 500 characters",
         "dateRequired": "Date is required",
-        "dateInvalidRange": "Date cannot be in the future or more than 10 years ago",
         "receiptUrl": "Receipt photo must be a valid URL",
         "vendorMax": "Vendor name cannot exceed 200 characters",
         "notesMax": "Notes cannot exceed 1000 characters",
@@ -859,14 +859,13 @@
         "dateInvalid": "Please enter a valid date",
         "dateUtcInvalid": "Record date must be in valid UTC format",
         "dateFuture": "Date cannot be in the future",
+        "dateInvalidRange": "Date cannot be in the future or more than {{maxYears}} years ago",
         "veterinarianMax": "Veterinarian name cannot exceed 100 characters",
         "veterinarianInvalid": "Veterinarian name contains invalid characters",
         "clinicMax": "Clinic name cannot exceed 100 characters",
         "clinicInvalid": "Clinic name contains invalid characters",
         "costNonNegative": "Cost cannot be negative",
-        "costPositive": "Cost must be positive",
         "costMax": "Cost cannot exceed 50,000",
-        "costMaxForm": "Cost cannot exceed 100,000",
         "notesMax": "Notes cannot exceed 2000 characters"
       },
       "pet": {

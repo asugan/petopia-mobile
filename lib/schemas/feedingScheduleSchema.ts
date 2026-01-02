@@ -1,90 +1,97 @@
 import { z } from 'zod';
 import { DAYS_OF_WEEK, FOOD_TYPES } from '../../constants';
-import { createObjectIdSchema, t } from './createZodI18n';
+import { objectIdSchema, timeFormatValidator } from './core/validators';
+import { t } from './core/i18n';
+
+// Re-export constants for convenience
+export { DAYS_OF_WEEK, FOOD_TYPES };
+
+export type DayOfWeek = (typeof DAYS_OF_WEEK)[keyof typeof DAYS_OF_WEEK];
+export type FoodType = (typeof FOOD_TYPES)[keyof typeof FOOD_TYPES];
 
 // Valid day names for validation
 const VALID_DAYS = Object.values(DAYS_OF_WEEK);
-
-// Helper function to validate time format (HH:MM)
-const isValidTimeFormat = (time: string): boolean => {
-  const timeRegex = /^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/;
-  return timeRegex.test(time);
-};
 
 // Helper function to validate days string (comma-separated day names)
 const isValidDaysString = (days: string): boolean => {
   if (!days || days.trim() === '') return false;
 
-  const dayArray = days.split(',').map(d => d.trim().toLowerCase());
+  const dayArray = days.split(',').map((d) => d.trim().toLowerCase());
 
   // Check if all days are valid
-  return dayArray.every(day => VALID_DAYS.includes(day as typeof VALID_DAYS[number])) && dayArray.length > 0;
+  return (
+    dayArray.every((day) => VALID_DAYS.includes(day as DayOfWeek)) && dayArray.length > 0
+  );
 };
 
 // Form input schema (for create/edit forms with multi-select days)
-export const feedingScheduleFormSchema = () => {
-  const objectIdSchema = createObjectIdSchema();
-
-  return z.object({
-    petId: objectIdSchema.refine(() => true, {
-      params: { i18nKey: 'forms.validation.feedingSchedule.petRequired' },
-    }),
-
-    time: z
-      .string()
-      .min(1, { message: t('forms.validation.feedingSchedule.timeRequired') })
-      .refine(isValidTimeFormat, {
-        params: { i18nKey: 'forms.validation.feedingSchedule.timeInvalidFormatExample' },
+export const feedingScheduleFormSchema = () =>
+  z
+    .object({
+      petId: objectIdSchema().refine(() => true, {
+        params: { i18nKey: 'forms.validation.feedingSchedule.petRequired' },
       }),
 
-    foodType: z
-      .enum(Object.values(FOOD_TYPES) as [string, ...string[]], {
+      time: z
+        .string()
+        .min(1, { message: t('forms.validation.feedingSchedule.timeRequired') })
+        .refine(
+          (val) => timeFormatValidator().safeParse(val).success,
+          {
+            params: { i18nKey: 'forms.validation.feedingSchedule.timeInvalidFormatExample' },
+          }
+        ),
+
+      foodType: z.enum(Object.values(FOOD_TYPES) as [string, ...string[]], {
         message: t('forms.validation.feedingSchedule.foodTypeInvalid'),
       }),
 
-    amount: z
-      .string()
-      .min(1, { message: t('forms.validation.feedingSchedule.amountRequired') })
-      .max(50, { message: t('forms.validation.feedingSchedule.amountMax') })
-      .refine(
-        (val) => val.trim().length > 0,
-        { params: { i18nKey: 'forms.validation.feedingSchedule.amountNotEmpty' } }
-      ),
+      amount: z
+        .string()
+        .min(1, { message: t('forms.validation.feedingSchedule.amountRequired') })
+        .max(50, { message: t('forms.validation.feedingSchedule.amountMax') })
+        .refine((val) => val.trim().length > 0, {
+          params: { i18nKey: 'forms.validation.feedingSchedule.amountNotEmpty' },
+        }),
 
-    // Days as array for form (easier to work with multi-select)
-    daysArray: z
-      .array(z.enum(Object.values(DAYS_OF_WEEK) as [string, ...string[]]))
-      .min(1, { message: t('forms.validation.feedingSchedule.daysMin') })
-      .max(7, { message: t('forms.validation.feedingSchedule.daysMax') }),
+      // Days as array for form (easier to work with multi-select)
+      daysArray: z
+        .array(z.enum(Object.values(DAYS_OF_WEEK) as [string, ...string[]]))
+        .min(1, { message: t('forms.validation.feedingSchedule.daysMin') })
+        .max(7, { message: t('forms.validation.feedingSchedule.daysMax') }),
 
-    isActive: z.boolean(),
-  }).refine((data) => {
-    // Validate that time is reasonable (not empty after trim)
-    return data.time.trim().length > 0;
-  }, {
-    params: { i18nKey: 'forms.validation.feedingSchedule.timeInvalidValue' },
-    path: ['time'],
-  });
-};
+      isActive: z.boolean(),
+    })
+    .refine(
+      (data) => {
+        // Validate that time is reasonable (not empty after trim)
+        return data.time.trim().length > 0;
+      },
+      {
+        params: { i18nKey: 'forms.validation.feedingSchedule.timeInvalidValue' },
+        path: ['time'],
+      }
+    );
 
 // Type inference from the form schema
 export type FeedingScheduleFormData = z.infer<ReturnType<typeof feedingScheduleFormSchema>>;
 
 // API schema (matches backend expectations with comma-separated days string)
-export const feedingScheduleSchema = () => {
-  const objectIdSchema = createObjectIdSchema();
-
-  return z.object({
-    petId: objectIdSchema.refine(() => true, {
+export const feedingScheduleSchema = () =>
+  z.object({
+    petId: objectIdSchema().refine(() => true, {
       params: { i18nKey: 'forms.validation.feedingSchedule.petRequired' },
     }),
 
     time: z
       .string()
       .min(1, { message: t('forms.validation.feedingSchedule.timeRequired') })
-      .refine(isValidTimeFormat, {
-        params: { i18nKey: 'forms.validation.feedingSchedule.timeInvalidFormat' },
-      }),
+      .refine(
+        (val) => timeFormatValidator().safeParse(val).success,
+        {
+          params: { i18nKey: 'forms.validation.feedingSchedule.timeInvalidFormat' },
+        }
+      ),
 
     foodType: z
       .string()
@@ -102,59 +109,52 @@ export const feedingScheduleSchema = () => {
         params: { i18nKey: 'forms.validation.feedingSchedule.daysInvalidFormat' },
       }),
 
-    isActive: z
-      .boolean()
-      .optional()
-      .default(true),
+    isActive: z.boolean().optional().default(true),
   });
-};
 
 // Full FeedingSchedule schema including server-side fields
-export const FeedingScheduleSchema = () => {
-  const objectIdSchema = createObjectIdSchema();
-
-  return feedingScheduleSchema().extend({
-    _id: objectIdSchema,
+export const FeedingScheduleSchema = () =>
+  feedingScheduleSchema().extend({
+    _id: objectIdSchema(),
     createdAt: z.string().datetime(),
   });
-};
 
 // Type inference from the API schema
 export type FeedingScheduleData = z.infer<ReturnType<typeof feedingScheduleSchema>>;
 export type FeedingSchedule = z.infer<ReturnType<typeof FeedingScheduleSchema>>;
 
 // Schema for feeding schedule updates (all fields optional)
-export const updateFeedingScheduleSchema = () => z.object({
-  time: z
-    .string()
-    .refine(isValidTimeFormat, {
-      params: { i18nKey: 'forms.validation.feedingSchedule.timeInvalidFormat' },
-    })
-    .optional(),
+export const updateFeedingScheduleSchema = () =>
+  z.object({
+    time: z
+      .string()
+      .refine(
+        (val) => timeFormatValidator().safeParse(val).success,
+        {
+          params: { i18nKey: 'forms.validation.feedingSchedule.timeInvalidFormat' },
+        }
+      )
+      .optional(),
 
-  foodType: z
-    .enum(Object.values(FOOD_TYPES) as [string, ...string[]], {
+    foodType: z.enum(Object.values(FOOD_TYPES) as [string, ...string[]], {
       message: t('forms.validation.feedingSchedule.foodTypeInvalid'),
-    })
-    .optional(),
+    }).optional(),
 
-  amount: z
-    .string()
-    .min(1, { message: t('forms.validation.feedingSchedule.amountRequired') })
-    .max(50, { message: t('forms.validation.feedingSchedule.amountMax') })
-    .optional(),
+    amount: z
+      .string()
+      .min(1, { message: t('forms.validation.feedingSchedule.amountRequired') })
+      .max(50, { message: t('forms.validation.feedingSchedule.amountMax') })
+      .optional(),
 
-  days: z
-    .string()
-    .refine(isValidDaysString, {
-      params: { i18nKey: 'forms.validation.feedingSchedule.daysInvalid' },
-    })
-    .optional(),
+    days: z
+      .string()
+      .refine(isValidDaysString, {
+        params: { i18nKey: 'forms.validation.feedingSchedule.daysInvalid' },
+      })
+      .optional(),
 
-  isActive: z
-    .boolean()
-    .optional(),
-});
+    isActive: z.boolean().optional(),
+  });
 
 export type UpdateFeedingScheduleFormData = z.infer<ReturnType<typeof updateFeedingScheduleSchema>>;
 export type CreateFeedingScheduleInput = FeedingScheduleData;
@@ -176,14 +176,18 @@ export const transformFormDataToAPI = (formData: FeedingScheduleFormData): Feedi
 };
 
 // Helper function to transform API data to form format
-export const transformAPIDataToForm = (apiData: FeedingScheduleData): FeedingScheduleFormData => {
+export const transformAPIDataToForm = (
+  apiData: FeedingScheduleData
+): FeedingScheduleFormData => {
   // Convert comma-separated days string to array
-  const daysArray = apiData.days.split(',').map(d => d.trim()) as Array<typeof DAYS_OF_WEEK[keyof typeof DAYS_OF_WEEK]>;
+  const daysArray = apiData.days.split(',').map((d) => d.trim()) as Array<
+    (typeof DAYS_OF_WEEK)[keyof typeof DAYS_OF_WEEK]
+  >;
 
   return {
     petId: apiData.petId,
     time: apiData.time,
-    foodType: apiData.foodType as typeof FOOD_TYPES[keyof typeof FOOD_TYPES],
+    foodType: apiData.foodType as (typeof FOOD_TYPES)[keyof typeof FOOD_TYPES],
     amount: apiData.amount,
     daysArray,
     isActive: apiData.isActive ?? true,
@@ -192,12 +196,14 @@ export const transformAPIDataToForm = (apiData: FeedingScheduleData): FeedingSch
 
 // Helper function to validate time string
 export const validateTimeString = (time: string): boolean => {
-  return isValidTimeFormat(time);
+  return timeFormatValidator().safeParse(time).success;
 };
 
 // Helper function to parse time to hours and minutes
-export const parseTime = (time: string): { hours: number; minutes: number } | null => {
-  if (!isValidTimeFormat(time)) return null;
+export const parseTime = (
+  time: string
+): { hours: number; minutes: number } | null => {
+  if (!validateTimeString(time)) return null;
 
   const [hours, minutes] = time.split(':').map(Number);
   return { hours, minutes };
@@ -217,10 +223,15 @@ export const formatTimeForDisplay = (time: string): string => {
 };
 
 // Helper function to get next feeding time
-export const getNextFeedingTime = (schedules: Array<{ time: string; days: string; isActive: boolean }>): Date | null => {
+export const getNextFeedingTime = (
+  schedules: Array<{ time: string; days: string; isActive: boolean }>
+): Date | null => {
   const now = new Date();
   const currentDay = now.getDay(); // 0 = Sunday, 1 = Monday, etc.
-  const currentTime = `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`;
+  const currentTime = `${now.getHours().toString().padStart(2, '0')}:${now
+    .getMinutes()
+    .toString()
+    .padStart(2, '0')}`;
 
   // Map JS day index to day name
   const dayNames = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
@@ -228,7 +239,7 @@ export const getNextFeedingTime = (schedules: Array<{ time: string; days: string
 
   // Filter active schedules for today that haven't passed yet
   const upcomingToday = schedules
-    .filter(s => s.isActive && s.days.toLowerCase().includes(todayName) && s.time > currentTime)
+    .filter((s) => s.isActive && s.days.toLowerCase().includes(todayName) && s.time > currentTime)
     .sort((a, b) => a.time.localeCompare(b.time));
 
   if (upcomingToday.length > 0) {
@@ -246,7 +257,7 @@ export const getNextFeedingTime = (schedules: Array<{ time: string; days: string
     const futureDayName = dayNames[futureDay];
 
     const futureDaySchedules = schedules
-      .filter(s => s.isActive && s.days.toLowerCase().includes(futureDayName))
+      .filter((s) => s.isActive && s.days.toLowerCase().includes(futureDayName))
       .sort((a, b) => a.time.localeCompare(b.time));
 
     if (futureDaySchedules.length > 0) {
@@ -262,16 +273,21 @@ export const getNextFeedingTime = (schedules: Array<{ time: string; days: string
   return null;
 };
 
-export const getPreviousFeedingTime = (schedules: Array<{ time: string; days: string; isActive: boolean }>): Date | null => {
+export const getPreviousFeedingTime = (
+  schedules: Array<{ time: string; days: string; isActive: boolean }>
+): Date | null => {
   const now = new Date();
   const currentDay = now.getDay();
-  const currentTime = `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`;
+  const currentTime = `${now.getHours().toString().padStart(2, '0')}:${now
+    .getMinutes()
+    .toString()
+    .padStart(2, '0')}`;
 
   const dayNames = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
   const todayName = dayNames[currentDay];
 
   const pastToday = schedules
-    .filter(s => s.isActive && s.days.toLowerCase().includes(todayName) && s.time <= currentTime)
+    .filter((s) => s.isActive && s.days.toLowerCase().includes(todayName) && s.time <= currentTime)
     .sort((a, b) => b.time.localeCompare(a.time));
 
   if (pastToday.length > 0) {
@@ -287,7 +303,7 @@ export const getPreviousFeedingTime = (schedules: Array<{ time: string; days: st
     const pastDayName = dayNames[pastDay];
 
     const pastDaySchedules = schedules
-      .filter(s => s.isActive && s.days.toLowerCase().includes(pastDayName))
+      .filter((s) => s.isActive && s.days.toLowerCase().includes(pastDayName))
       .sort((a, b) => b.time.localeCompare(a.time));
 
     if (pastDaySchedules.length > 0) {
