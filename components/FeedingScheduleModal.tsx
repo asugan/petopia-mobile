@@ -66,7 +66,6 @@ export function FeedingScheduleModal({
       onSuccess();
       onClose();
     } catch (error) {
-      console.error('Feeding schedule operation error:', error);
       const errorMessage = error instanceof Error ? error.message : t('feedingSchedule.errors.submitFailed') || 'İşlem başarısız oldu';
       showSnackbar(errorMessage);
     } finally {

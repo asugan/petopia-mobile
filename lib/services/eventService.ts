@@ -13,14 +13,12 @@ export class EventService {
     try {
       const response = await api.post<Event>(ENV.ENDPOINTS.EVENTS, data);
 
-      console.log('✅ Event created successfully:', response.data?._id);
       return {
         success: true,
         data: response.data!,
         message: 'serviceResponse.event.createSuccess',
       };
     } catch (error) {
-      console.error('❌ Create event error:', error);
       if (error instanceof ApiError) {
       return {
         success: false,
@@ -47,14 +45,12 @@ export class EventService {
     try {
       const response = await api.get<Event[]>(ENV.ENDPOINTS.EVENTS);
 
-      console.log(`✅ ${response.data?.length || 0} events loaded successfully`);
       return {
         success: true,
         data: response.data || [],
         message: 'event.fetchSuccess',
       };
     } catch (error) {
-      console.error('❌ Get events error:', error);
       if (error instanceof ApiError) {
         return {
           success: false,
@@ -81,14 +77,12 @@ export class EventService {
     try {
       const response = await api.get<Event[]>(ENV.ENDPOINTS.EVENTS_BY_PET(petId));
 
-      console.log(`✅ ${response.data?.length || 0} events loaded for pet ${petId}`);
       return {
         success: true,
         data: response.data || [],
         message: 'event.fetchSuccess',
       };
     } catch (error) {
-      console.error('❌ Get events by pet error:', error);
       if (error instanceof ApiError) {
         return {
           success: false,
@@ -115,14 +109,12 @@ export class EventService {
     try {
       const response = await api.get<Event>(ENV.ENDPOINTS.EVENT_BY_ID(id));
 
-      console.log('✅ Event loaded successfully:', response.data?._id);
       return {
         success: true,
         data: response.data!,
         message: 'serviceResponse.event.fetchOneSuccess',
       };
     } catch (error) {
-      console.error('❌ Get event error:', error);
       if (error instanceof ApiError) {
         if (error.status === 404) {
           return {
@@ -158,14 +150,12 @@ export class EventService {
     try {
       const response = await api.put<Event>(ENV.ENDPOINTS.EVENT_BY_ID(id), data);
 
-      console.log('✅ Event updated successfully:', response.data?._id);
       return {
         success: true,
         data: response.data!,
         message: 'serviceResponse.event.updateSuccess',
       };
     } catch (error) {
-      console.error('❌ Update event error:', error);
       if (error instanceof ApiError) {
         if (error.status === 404) {
           return {
@@ -201,13 +191,11 @@ export class EventService {
     try {
       await api.delete(ENV.ENDPOINTS.EVENT_BY_ID(id));
 
-      console.log('✅ Event deleted successfully:', id);
       return {
         success: true,
         message: 'serviceResponse.event.deleteSuccess',
       };
     } catch (error) {
-      console.error('❌ Delete event error:', error);
       if (error instanceof ApiError) {
         if (error.status === 404) {
           return {
@@ -243,14 +231,12 @@ export class EventService {
     try {
       const response = await api.get<Event[]>(ENV.ENDPOINTS.EVENTS_BY_DATE(date));
 
-      console.log(`✅ ${response.data?.length || 0} events loaded for date ${date}`);
       return {
         success: true,
         data: response.data || [],
         message: 'serviceResponse.event.fetchTodaySuccess',
       };
     } catch (error) {
-      console.error('❌ Get events by date error:', error);
       if (error instanceof ApiError) {
         return {
           success: false,
@@ -277,14 +263,12 @@ export class EventService {
     try {
       const response = await api.get<Event[]>(ENV.ENDPOINTS.UPCOMING_EVENTS);
 
-      console.log(`✅ ${response.data?.length || 0} upcoming events loaded`);
       return {
         success: true,
         data: response.data || [],
         message: 'serviceResponse.event.fetchUpcomingSuccess',
       };
     } catch (error) {
-      console.error('❌ Get upcoming events error:', error);
       if (error instanceof ApiError) {
         return {
           success: false,
@@ -311,14 +295,12 @@ export class EventService {
     try {
       const response = await api.get<Event[]>(ENV.ENDPOINTS.TODAY_EVENTS);
 
-      console.log(`✅ ${response.data?.length || 0} today events loaded`);
       return {
         success: true,
         data: response.data || [],
         message: 'serviceResponse.event.fetchByDateSuccess',
       };
     } catch (error) {
-      console.error('❌ Get today events error:', error);
       if (error instanceof ApiError) {
         return {
           success: false,

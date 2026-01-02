@@ -113,16 +113,14 @@ export default function CareScreen() {
   const handleDeleteSchedule = async (schedule: FeedingSchedule) => {
     try {
       await deleteScheduleMutation.mutateAsync(schedule._id);
-    } catch (error) {
-      console.error('Error deleting schedule:', error);
+    } catch {
     }
   };
 
   const handleToggleActive = async (schedule: FeedingSchedule, isActive: boolean) => {
     try {
       await toggleScheduleMutation.mutateAsync({ id: schedule._id, isActive });
-    } catch (error) {
-      console.error('Error toggling schedule:', error);
+    } catch {
     }
   };
 

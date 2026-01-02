@@ -21,14 +21,12 @@ export class PetService {
 
       const response = await api.post<Pet>(ENV.ENDPOINTS.PETS, cleanedData);
 
-      console.log('✅ Pet created successfully:', response.data?._id);
       return {
         success: true,
         data: response.data!,
         message: 'serviceResponse.pet.createSuccess',
       };
     } catch (error) {
-      console.error('❌ Create pet error:', error);
       if (error instanceof ApiError) {
       return {
         success: false,
@@ -76,14 +74,12 @@ export class PetService {
         Object.keys(queryParams).length > 0 ? queryParams : undefined
       );
 
-      console.log(`✅ ${response.data?.length || 0} pets loaded successfully`);
       return {
         success: true,
         data: response.data || [],
         message: 'serviceResponse.pet.fetchSuccess',
       };
     } catch (error) {
-      console.error('❌ Get pets error:', error);
       if (error instanceof ApiError) {
         return {
           success: false,
@@ -110,14 +106,12 @@ export class PetService {
     try {
       const response = await api.get<Pet>(ENV.ENDPOINTS.PET_BY_ID(id));
 
-      console.log('✅ Pet loaded successfully:', response.data?._id);
       return {
         success: true,
         data: response.data!,
         message: 'serviceResponse.pet.fetchOneSuccess',
       };
     } catch (error) {
-      console.error('❌ Get pet error:', error);
       if (error instanceof ApiError) {
         if (error.status === 404) {
           return {
@@ -160,14 +154,12 @@ export class PetService {
 
       const response = await api.put<Pet>(ENV.ENDPOINTS.PET_BY_ID(id), updateData);
 
-      console.log('✅ Pet updated successfully:', response.data?._id);
       return {
         success: true,
         data: response.data!,
         message: 'serviceResponse.pet.updateSuccess',
       };
     } catch (error) {
-      console.error('❌ Update pet error:', error);
       if (error instanceof ApiError) {
         if (error.status === 404) {
           return {
@@ -203,13 +195,11 @@ export class PetService {
     try {
       await api.delete(ENV.ENDPOINTS.PET_BY_ID(id));
 
-      console.log('✅ Pet deleted successfully:', id);
       return {
         success: true,
         message: 'serviceResponse.pet.deleteSuccess',
       };
     } catch (error) {
-      console.error('❌ Delete pet error:', error);
       if (error instanceof ApiError) {
         if (error.status === 404) {
           return {
@@ -245,14 +235,12 @@ export class PetService {
     try {
       const response = await api.get<Pet[]>(ENV.ENDPOINTS.PETS, { type });
 
-      console.log(`✅ ${response.data?.length || 0} pets of type ${type} loaded successfully`);
       return {
         success: true,
         data: response.data || [],
         message: 'serviceResponse.pet.fetchByTypeSuccess',
       };
     } catch (error) {
-      console.error('❌ Get pets by type error:', error);
       if (error instanceof ApiError) {
         return {
           success: false,
@@ -279,14 +267,12 @@ export class PetService {
     try {
       const response = await api.get<Pet[]>(ENV.ENDPOINTS.PETS, { search: query });
 
-      console.log(`✅ ${response.data?.length || 0} pets found for query: ${query}`);
       return {
         success: true,
         data: response.data || [],
         message: 'serviceResponse.pet.searchSuccess',
       };
     } catch (error) {
-      console.error('❌ Search pets error:', error);
       if (error instanceof ApiError) {
         return {
           success: false,
@@ -322,14 +308,12 @@ export class PetService {
 
       const response = await api.upload<Pet>(ENV.ENDPOINTS.PET_PHOTO(id), formData);
 
-      console.log('✅ Pet photo uploaded successfully:', response.data?._id);
       return {
         success: true,
         data: response.data!,
         message: 'serviceResponse.pet.uploadPhotoSuccess',
       };
     } catch (error) {
-      console.error('❌ Upload pet photo error:', error);
       if (error instanceof ApiError) {
         return {
           success: false,
@@ -388,7 +372,6 @@ export class PetService {
 
       const averageAge = allPets.length > 0 ? totalAge / allPets.length : 0;
 
-      console.log('✅ Pet stats calculated successfully');
       return {
         success: true,
         data: {
@@ -400,7 +383,6 @@ export class PetService {
         message: 'serviceResponse.pet.statsCalculatedSuccess',
       };
     } catch (error) {
-      console.error('❌ Get pet stats error:', error);
       if (error instanceof ApiError) {
         return {
           success: false,

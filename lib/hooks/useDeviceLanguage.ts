@@ -35,7 +35,6 @@ export function useDeviceLanguage() {
 
         return "en";
       } catch (error) {
-        console.warn("Error getting device language:", error);
         return "en";
       }
     };
@@ -55,8 +54,7 @@ export function useDeviceLanguage() {
 
     try {
       await updateSettings({ language: deviceLanguage });
-    } catch (error) {
-      console.warn("Error applying device language:", error);
+    } catch {
     }
   };
 

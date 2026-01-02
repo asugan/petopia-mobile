@@ -49,20 +49,17 @@ export function SubscriptionProvider({ children }: SubscriptionProviderProps) {
     trialInitRef.current = true;
 
     try {
-      console.log('[SubscriptionProvider] Initializing subscription status');
 
       const canStartTrial = subscriptionStatusRef.current?.canStartTrial ?? false;
 
       if (canStartTrial && !isActivatingTrialRef.current) {
-        console.log('[SubscriptionProvider] New user detected, starting trial...');
         isActivatingTrialRef.current = true;
 
         await startTrialMutateAsyncRef.current();
 
         isActivatingTrialRef.current = false;
       }
-    } catch (error) {
-      console.error('[SubscriptionProvider] Error initializing subscription status:', error);
+    } catch {
       isActivatingTrialRef.current = false;
       trialInitRef.current = false;
     }
@@ -70,7 +67,6 @@ export function SubscriptionProvider({ children }: SubscriptionProviderProps) {
 
   const initializeSDK = useCallback(async () => {
     if (isInitialized) {
-      console.log('[SubscriptionProvider] SDK already initialized');
       return;
     }
 
@@ -82,7 +78,6 @@ export function SubscriptionProvider({ children }: SubscriptionProviderProps) {
       if (!migrated) {
         await AsyncStorage.removeItem('subscription-storage');
         await AsyncStorage.setItem(TRIAL_MIGRATION_KEY, 'true');
-        console.log('[SubscriptionProvider] Migrated from local trial storage');
       }
 
       const userId = isAuthenticated ? user?.id ?? null : null;
@@ -96,9 +91,7 @@ export function SubscriptionProvider({ children }: SubscriptionProviderProps) {
       setCustomerInfo(customerInfo);
 
       setInitialized(true);
-      console.log('[SubscriptionProvider] SDK initialized successfully');
     } catch (error) {
-      console.error('[SubscriptionProvider] SDK initialization error:', error);
       setError((error as Error).message);
     } finally {
       setLoading(false);
@@ -118,7 +111,6 @@ export function SubscriptionProvider({ children }: SubscriptionProviderProps) {
 
     try {
       setLoading(true);
-      console.log('[SubscriptionProvider] Syncing user identity:', user.id);
 
       const customerInfo = await syncUserIdentity(user.id);
       setCustomerInfo(customerInfo);
@@ -128,16 +120,12 @@ export function SubscriptionProvider({ children }: SubscriptionProviderProps) {
 
       try {
         await refetchStatusMutation.mutateAsync();
-        console.log('[SubscriptionProvider] Subscription status refetched after sync');
-      } catch (refetchError) {
-        console.error('[SubscriptionProvider] Error refetching subscription status:', refetchError);
+      } catch {
       }
 
       await initializeStatusRef.current?.();
 
-      console.log('[SubscriptionProvider] User identity synced');
     } catch (error) {
-      console.error('[SubscriptionProvider] Error syncing user identity:', error);
       setError((error as Error).message);
     } finally {
       setLoading(false);
@@ -154,7 +142,6 @@ export function SubscriptionProvider({ children }: SubscriptionProviderProps) {
   const handleUserLogout = useCallback(async () => {
     try {
       setLoading(true);
-      console.log('[SubscriptionProvider] Resetting user identity');
 
       const customerInfo = await resetUserIdentity();
       setCustomerInfo(customerInfo);
@@ -162,9 +149,7 @@ export function SubscriptionProvider({ children }: SubscriptionProviderProps) {
       syncedUserIdRef.current = null;
       trialInitRef.current = false;
 
-      console.log('[SubscriptionProvider] Reset to anonymous user');
     } catch (error) {
-      console.error('[SubscriptionProvider] Error resetting user identity:', error);
       setError((error as Error).message);
     } finally {
       setLoading(false);
@@ -172,7 +157,6 @@ export function SubscriptionProvider({ children }: SubscriptionProviderProps) {
   }, [setCustomerInfo, setLoading, setError]);
 
   const handleCustomerInfoUpdate = useCallback((info: CustomerInfo) => {
-    console.log('[SubscriptionProvider] CustomerInfo updated');
     setCustomerInfo(info);
   }, [setCustomerInfo]);
 
@@ -216,14 +200,12 @@ export function SubscriptionProvider({ children }: SubscriptionProviderProps) {
   useEffect(() => {
     if (!isInitialized) return;
 
-    console.log('[SubscriptionProvider] Setting up CustomerInfo listener');
 
     const setupTimer = setTimeout(() => {
       Purchases.addCustomerInfoUpdateListener(handleCustomerInfoUpdate);
     }, 100);
 
     return () => {
-      console.log('[SubscriptionProvider] Removing CustomerInfo listener');
       clearTimeout(setupTimer);
       Purchases.removeCustomerInfoUpdateListener(handleCustomerInfoUpdate);
     };

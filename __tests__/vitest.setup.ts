@@ -3,10 +3,11 @@
  * Mocks React Native and Expo modules that aren't available in Node.js
  */
 
+import type { ReactNode } from 'react';
 import { vi, afterEach } from 'vitest';
 
 // Mock __DEV__ global (used in React Native)
-(globalThis as any).__DEV__ = false;
+(globalThis as { __DEV__?: boolean }).__DEV__ = false;
 
 // Mock React Native
 vi.mock(
@@ -14,7 +15,7 @@ vi.mock(
   () => ({
   Platform: {
     OS: 'ios',
-    select: (obj: any) => obj.ios,
+    select: (obj: { ios?: unknown }) => obj.ios,
     Version: 18,
   },
   Dimensions: {
@@ -23,8 +24,8 @@ vi.mock(
     removeEventListener: vi.fn(),
   },
   StyleSheet: {
-    create: (styles: any) => styles,
-    flatten: (style: any) => style,
+    create: <T extends Record<string, unknown>>(styles: T) => styles,
+    flatten: (style: unknown) => style,
   },
   View: 'View',
   Text: 'Text',
@@ -111,7 +112,7 @@ vi.mock(
 
 // Mock Zustand persist
 vi.mock('zustand/middleware', () => ({
-  persist: (config: any) => config,
+  persist: <T>(config: T) => config,
   createJSONStorage: () => ({
     getItem: vi.fn(),
     setItem: vi.fn(),
@@ -153,14 +154,14 @@ vi.mock('react-i18next', () => {
       t,
       i18n: i18nInstance,
     }),
-    I18nextProvider: ({ children }: any) => children,
+    I18nextProvider: ({ children }: { children: ReactNode }) => children,
   };
 });
 
 // Mock i18next
 vi.mock('i18next', () => ({
   default: {
-    use: vi.fn(function(this: any) {
+    use: vi.fn(function (this: Record<string, unknown>) {
       return this;
     }),
     init: vi.fn(),
@@ -266,8 +267,8 @@ vi.mock('@/stores/userSettingsStore', () => ({
     clear: vi.fn(),
     setAuthenticated: vi.fn(),
   }),
-  isLanguageSupported: (lang: any): lang is 'tr' | 'en' =>
-    ['tr', 'en'].includes(lang),
+  isLanguageSupported: (lang: unknown): lang is 'tr' | 'en' =>
+    typeof lang === 'string' && ['tr', 'en'].includes(lang),
   getLanguageDirection: (_lang: string) => 'ltr',
   getLanguageDisplayName: (lang: string) => ({ tr: 'Türkçe', en: 'English' })[lang] || lang,
   getLanguageNativeName: (lang: string) => ({ tr: 'Türkçe', en: 'English' })[lang] || lang,

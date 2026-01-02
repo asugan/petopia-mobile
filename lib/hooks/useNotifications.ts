@@ -1,26 +1,31 @@
 import { useState, useEffect, useCallback } from 'react';
 import * as Notifications from 'expo-notifications';
-import { notificationService, REMINDER_TIMES } from '../services/notificationService';
+import { notificationService, getReminderTimes } from '../services/notificationService';
 import { Event } from '../types';
+import { useEventReminderStore } from '@/stores/eventReminderStore';
 
 /**
  * Custom hook for managing notifications
  */
 export const useNotifications = () => {
-  const [permissionStatus, setPermissionStatus] = useState<'granted' | 'denied' | 'undetermined'>('undetermined');
+  const [permissions, setPermissions] = useState<Notifications.NotificationPermissionsStatus | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const quietHours = useEventReminderStore((state) => state.quietHours);
 
   // Check initial permission status
   useEffect(() => {
     checkPermissionStatus();
   }, []);
 
+  useEffect(() => {
+    notificationService.setQuietHours(quietHours);
+  }, [quietHours]);
+
   const checkPermissionStatus = async () => {
     try {
-      const { status } = await Notifications.getPermissionsAsync();
-      setPermissionStatus(status);
-    } catch (error) {
-      console.error('Error checking notification permission:', error);
+      const nextPermissions = await Notifications.getPermissionsAsync();
+      setPermissions(nextPermissions);
+    } catch {
     }
   };
 
@@ -28,17 +33,20 @@ export const useNotifications = () => {
     setIsLoading(true);
     try {
       const granted = await notificationService.requestPermissions();
-      setPermissionStatus(granted ? 'granted' : 'denied');
+      const nextPermissions = await Notifications.getPermissionsAsync();
+      setPermissions(nextPermissions);
       return granted;
     } catch (error) {
-      console.error('Error requesting notification permission:', error);
       return false;
     } finally {
       setIsLoading(false);
     }
   }, []);
 
+  const permissionStatus = permissions?.status ?? Notifications.PermissionStatus.UNDETERMINED;
+
   return {
+    permissions,
     permissionStatus,
     isLoading,
     requestPermission,
@@ -52,6 +60,8 @@ export const useNotifications = () => {
 export const useEventReminders = (eventId?: string) => {
   const [scheduledReminders, setScheduledReminders] = useState<Notifications.NotificationRequest[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+  const quietHoursEnabled = useEventReminderStore((state) => state.quietHoursEnabled);
+  const quietHours = useEventReminderStore((state) => state.quietHours);
 
   useEffect(() => {
     if (eventId) {
@@ -65,49 +75,51 @@ export const useEventReminders = (eventId?: string) => {
     try {
       const reminders = await notificationService.getEventNotifications(eventId);
       setScheduledReminders(reminders);
-    } catch (error) {
-      console.error('Error loading scheduled reminders:', error);
+    } catch {
     }
   };
 
   const scheduleReminder = useCallback(async (event: Event, reminderMinutes?: number) => {
     setIsLoading(true);
     try {
-      const notificationId = await notificationService.scheduleEventReminder(event, reminderMinutes);
+      notificationService.setQuietHours(quietHours);
+      const notificationId = await notificationService.scheduleEventReminder(event, reminderMinutes, {
+        respectQuietHours: quietHoursEnabled,
+      });
       if (notificationId) {
         await loadScheduledReminders();
         return notificationId;
       }
       return null;
     } catch (error) {
-      console.error('Error scheduling reminder:', error);
       return null;
     } finally {
       setIsLoading(false);
     }
-  }, []);
+  }, [quietHours, quietHoursEnabled]);
 
   const scheduleMultipleReminders = useCallback(async (event: Event, reminderTimes: number[]) => {
     setIsLoading(true);
     try {
-      const notificationIds = await notificationService.scheduleMultipleReminders(event, reminderTimes);
+      notificationService.setQuietHours(quietHours);
+      const notificationIds = await notificationService.scheduleMultipleReminders(event, reminderTimes, {
+        respectQuietHours: quietHoursEnabled,
+      });
       await loadScheduledReminders();
       return notificationIds;
     } catch (error) {
-      console.error('Error scheduling multiple reminders:', error);
       return [];
     } finally {
       setIsLoading(false);
     }
-  }, []);
+  }, [quietHours, quietHoursEnabled]);
 
   const cancelReminder = useCallback(async (notificationId: string) => {
     setIsLoading(true);
     try {
       await notificationService.cancelNotification(notificationId);
       await loadScheduledReminders();
-    } catch (error) {
-      console.error('Error cancelling reminder:', error);
+    } catch {
     } finally {
       setIsLoading(false);
     }
@@ -120,8 +132,7 @@ export const useEventReminders = (eventId?: string) => {
     try {
       await notificationService.cancelEventNotifications(eventId);
       await loadScheduledReminders();
-    } catch (error) {
-      console.error('Error cancelling all reminders:', error);
+    } catch {
     } finally {
       setIsLoading(false);
     }
@@ -153,8 +164,7 @@ export const useNotificationStats = () => {
     try {
       const notificationStats = await notificationService.getNotificationStats();
       setStats(notificationStats);
-    } catch (error) {
-      console.error('Error loading notification stats:', error);
+    } catch {
     } finally {
       setIsLoading(false);
     }
@@ -172,4 +182,4 @@ export const useNotificationStats = () => {
 };
 
 // Export reminder times for convenience
-export { REMINDER_TIMES };
+export { getReminderTimes };

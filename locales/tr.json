@@ -86,6 +86,7 @@
     "feeding": "Besleme"
   },
   "pets": {
+    "pet": "Pet",
     "myPets": "Evcil Dostlarım",
     "noPetsYet": "Henüz pet yok",
     "addFirstPet": "+ butonuna basarak ilk evcil dostunuzu ekleyin",
@@ -269,6 +270,10 @@
     "statusCompleted": "Tamamlandı",
     "statusCancelled": "İptal Edildi",
     "statusMissed": "Kaçırıldı",
+    "markCompleted": "Tamamlandı olarak işaretle",
+    "markMissed": "Kaçırıldı olarak işaretle",
+    "markCancelled": "Hatırlatmayı iptal et",
+    "resumeReminders": "Hatırlatmayı yeniden aç",
     "viewPetProfile": "Pet Profilini Görüntüle",
     "noUpcomingEvents": "Yaklaşan etkinlik yok",
     "createTitle": "Yeni Etkinlik",
@@ -324,6 +329,7 @@
   "eventForm": {
     "suggestions": {
       "feeding": "Düzenli besleme zamanları pet sağlığı için önemlidir. Mama türüne göre porsiyonları ayarlayın.",
+      "vet_visit": "Veteriner ziyaretleri pet sağlığının korunması için gereklidir. Düzenli kontrolleri unutmayın.",
       "vetVisit": "Veteriner ziyaretleri pet sağlığının korunması için gereklidir. Düzenli kontrolleri unutmayın.",
       "vaccination": "Aşılar petinizi korur. Hatırlatıcıları önceden planlayın.",
       "medication": "İlaç kullanımında düzenli zamanlama ve doz notları faydalıdır.",
@@ -380,6 +386,18 @@
     "disabled": "Bildirimler Devre Dışı",
     "disabledDescription": "Ayarlardan bildirimleri etkinleştirin",
     "openSettings": "Ayarları Aç",
+    "reminderTitle": "{{emoji}} {{eventType}} hatırlatması",
+    "reminderBody": "{{eventType}} etkinliği için hatırlatma",
+    "reminderTimes": {
+      "5m": "5 dakika önce",
+      "15m": "15 dakika önce",
+      "30m": "30 dakika önce",
+      "1h": "1 saat önce",
+      "2h": "2 saat önce",
+      "1d": "1 gün önce",
+      "2d": "2 gün önce",
+      "1w": "1 hafta önce"
+    },
     "testTitle": "Petopia hatırlatması",
     "testBody": "Bildirimler hazır. Pet bakım etkinliklerini sana hatırlatacağız."
   },
@@ -387,14 +405,22 @@
     "noConnection": "İnternet bağlantısı yok. Lütfen bağlantınızı kontrol edin."
   },
   "settings": {
+    "title": "Ayarlar",
     "appearance": "Görünüm",
     "darkMode": "Karanlık Mod",
     "changeTheme": "Temayı değiştir",
     "appSettings": "Uygulama Ayarları",
     "notifications": "Bildirimler",
     "reminderNotifications": "Hatırlatıcı bildirimleri etkinleştir",
+    "budgetNotifications": "Bütçe bildirimleri",
+    "budgetNotificationsDescription": "Bütçe limitine yaklaştığında uyarı ver",
+    "quietHours": "Sessiz Saatler",
+    "quietHoursDescription": "Belirlenen saatlerde hatırlatmaları geciktir",
+    "quietHoursStart": "Başlangıç saati",
+    "quietHoursEnd": "Bitiş saati",
     "notificationPermissionDenied": "Bildirimler sistemde kapalı. Lütfen cihaz ayarlarından etkinleştirin.",
     "notificationDisableInfo": "Bildirimleri cihaz ayarlarından kapatabilirsiniz. Buradan yeni hatırlatıcı planlamayacağız.",
+    "notificationDisabled": "Bildirimler ayarlardan kapatıldı.",
     "language": "Dil",
     "changeLanguage": "Uygulama dilini değiştir",
     "currentLanguage": "Mevcut Dil",
@@ -450,6 +476,7 @@
   "common": {
     "loading": "Yükleniyor...",
     "error": "Hata",
+    "today": "Bugün",
     "retry": "Tekrar Dene",
     "save": "Kaydet",
     "add": "Ekle",
@@ -643,6 +670,7 @@
     "deleteSuccess": "Besleme programı başarıyla silindi"
   },
   "forms": {
+    "petSelection": "Pet Seçimi",
     "petForm": {
       "title": "Pet Bilgileri",
       "addNewPet": "Yeni Pet Ekle",
@@ -988,6 +1016,9 @@
   },
   "budgets": {
     "title": "Bütçeler",
+    "budgetSetSuccess": "Bütçe başarıyla ayarlandı",
+    "monthlyBudget": "Aylık Bütçe",
+    "currentSpending": "Mevcut harcama",
     "selectPetFirst": "Lütfen önce bir evcil hayvan seçin",
     "selectPet": "Bir evcil hayvan seçin",
     "selectPetMessage": "Bütçeleri görüntülemek için bir evcil hayvan seçin",

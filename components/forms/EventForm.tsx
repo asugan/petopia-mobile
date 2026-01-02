@@ -1,5 +1,5 @@
 import React from 'react';
-import { Alert, ScrollView, StyleSheet, View } from 'react-native';
+import { Alert, Linking, ScrollView, StyleSheet, View } from 'react-native';
 import { FormProvider, useWatch } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import { Button, Text } from '@/components/ui';
@@ -7,6 +7,7 @@ import { useEventForm } from '@/hooks/useEventForm';
 import { useTheme } from '@/lib/theme';
 import { REMINDER_PRESETS, ReminderPresetKey } from '@/constants/reminders';
 import { requestNotificationPermissions } from '@/lib/services/notificationService';
+import { useUserSettingsStore } from '@/stores/userSettingsStore';
 import { type EventFormData } from '../../lib/schemas/eventSchema';
 import { Event, Pet } from '../../lib/types';
 import { FormSection } from './FormSection';
@@ -39,6 +40,9 @@ export function EventForm({
 }: EventFormProps) {
   const { t } = useTranslation();
   const { theme } = useTheme();
+  const notificationsEnabled = useUserSettingsStore(
+    (state) => state.settings?.notificationsEnabled ?? true
+  );
   const [isSubmitting, setIsSubmitting] = React.useState(false);
   const [currentStep, setCurrentStep] = React.useState(0);
   const [showStepError, setShowStepError] = React.useState(false);
@@ -65,21 +69,51 @@ export function EventForm({
   };
 
   React.useEffect(() => {
-    if (reminderEnabled) {
-      requestNotificationPermissions();
-    }
-  }, [reminderEnabled]);
+    const ensureNotificationAccess = async () => {
+      if (!reminderEnabled) {
+        return;
+      }
+
+      if (!notificationsEnabled) {
+        form.setValue('reminder', false);
+        Alert.alert(
+          t('settings.notifications'),
+          t('settings.notificationDisabled', 'Notifications are turned off in settings.')
+        );
+        return;
+      }
+
+      const granted = await requestNotificationPermissions();
+      if (!granted) {
+        form.setValue('reminder', false);
+        Alert.alert(
+          t('settings.notifications'),
+          t(
+            'settings.notificationPermissionDenied',
+            'Notifications are blocked at the system level. Please enable them from settings.'
+          ),
+          [
+            { text: t('common.cancel'), style: 'cancel' },
+            {
+              text: t('notifications.openSettings', 'Open Settings'),
+              onPress: () => Linking.openSettings(),
+            },
+          ]
+        );
+      }
+    };
+
+    void ensureNotificationAccess();
+  }, [form, notificationsEnabled, reminderEnabled, t]);
 
   // Handle form submission
   const onFormSubmit = React.useCallback(
     async (data: EventFormData) => {
       try {
         setIsSubmitting(true);
-        console.log('Event form submitting:', data);
 
         await onSubmit(data);
-      } catch (error) {
-        console.error('Event form submission error:', error);
+      } catch {
         Alert.alert(t('common.error'), t('events.saveError'));
       } finally {
         setIsSubmitting(false);
@@ -334,7 +368,7 @@ export function EventForm({
               name="reminder"
               label={t('events.enableReminder')}
               description={t('events.reminderDescription')}
-              disabled={loading || isSubmitting}
+              disabled={loading || isSubmitting || !notificationsEnabled}
               testID={`${testID}-reminder`}
             />
 

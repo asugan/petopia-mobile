@@ -1,11 +1,13 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { SubscriptionCard } from "@/components/subscription";
 import { Button, Card, ListItem, Switch, Text } from "@/components/ui";
+import { DateTimePicker } from "@/components/DateTimePicker";
 import { useAuth } from "@/lib/auth";
 import { accountService } from "@/lib/services/accountService";
 import { notificationService, requestNotificationPermissions } from "@/lib/services/notificationService";
 import { useAuthStore } from "@/stores/authStore";
+import { useEventReminderStore } from "@/stores/eventReminderStore";
 import { SupportedCurrency, useUserSettingsStore } from "@/stores/userSettingsStore";
 import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
@@ -17,6 +19,7 @@ import { useOnboardingStore } from "@/stores/onboardingStore";
 import CurrencyPicker from "@/components/CurrencyPicker";
 import LoadingSpinner from "@/components/LoadingSpinner";
 import { LanguageSettings } from "@/components/LanguageSettings";
+import { NotificationPermissionCard } from "@/components/NotificationPermissionPrompt";
 
 type ModalState = "none" | "contact" | "deleteWarning" | "deleteConfirm";
 
@@ -29,8 +32,23 @@ export default function SettingsScreen() {
   const { isLoading: authLoading, setLoading } = useAuthStore();
   const { resetOnboarding } = useOnboardingStore();
   const isDarkMode = settings?.theme === "dark";
-  const [notificationsEnabled, setNotificationsEnabled] = useState(false);
+  const [notificationPermissionEnabled, setNotificationPermissionEnabled] = useState(false);
   const [notificationLoading, setNotificationLoading] = useState(true);
+  const quietHoursEnabled = settings?.quietHoursEnabled ?? true;
+  const quietHours = useMemo(() => (
+    settings?.quietHours ?? {
+      startHour: 22,
+      startMinute: 0,
+      endHour: 8,
+      endMinute: 0,
+    }
+  ), [settings?.quietHours]);
+  const notificationsEnabled = settings?.notificationsEnabled ?? true;
+  const budgetNotificationsEnabled = settings?.budgetNotificationsEnabled ?? true;
+  const notificationsActive = notificationsEnabled && notificationPermissionEnabled;
+  const setQuietHoursEnabled = useEventReminderStore((state) => state.setQuietHoursEnabled);
+  const setQuietHours = useEventReminderStore((state) => state.setQuietHours);
+  const clearAllReminderState = useEventReminderStore((state) => state.clearAllReminderState);
   const [activeModal, setActiveModal] = useState<ModalState>("none");
   const [deleteConfirmText, setDeleteConfirmText] = useState("");
   const [deletingAccount, setDeletingAccount] = useState(false);
@@ -39,9 +57,8 @@ export default function SettingsScreen() {
     const fetchPermissionStatus = async () => {
       try {
         const enabled = await notificationService.areNotificationsEnabled();
-        setNotificationsEnabled(enabled);
-      } catch (error) {
-        console.error("Notification status check failed:", error);
+        setNotificationPermissionEnabled(enabled);
+      } catch {
       } finally {
         setNotificationLoading(false);
       }
@@ -50,17 +67,22 @@ export default function SettingsScreen() {
     fetchPermissionStatus();
   }, []);
 
+
   const handleNotificationToggle = async (value: boolean) => {
     setNotificationLoading(true);
     try {
       if (value) {
         const granted = await requestNotificationPermissions();
-        setNotificationsEnabled(granted);
         if (!granted) {
           Alert.alert(
             t("settings.notifications"),
             t("settings.notificationPermissionDenied", "Notifications are blocked at the system level. Please enable them from settings.")
           );
+          await updateSettings({ notificationsEnabled: false });
+        }
+        setNotificationPermissionEnabled(granted);
+        if (granted) {
+          await updateSettings({ notificationsEnabled: true });
         }
       } else {
         Alert.alert(
@@ -70,10 +92,21 @@ export default function SettingsScreen() {
             "You can disable notifications from your device settings. We'll stop scheduling new reminders from here."
           )
         );
-        setNotificationsEnabled(false);
+        await notificationService.cancelAllNotifications();
+        clearAllReminderState();
+        await updateSettings({ notificationsEnabled: false });
       }
-    } catch (error) {
-      console.error("Notification toggle failed:", error);
+    } catch {
+    } finally {
+      setNotificationLoading(false);
+    }
+  };
+
+  const handleBudgetNotificationToggle = async (value: boolean) => {
+    setNotificationLoading(true);
+    try {
+      await updateSettings({ budgetNotificationsEnabled: value });
+    } catch {
     } finally {
       setNotificationLoading(false);
     }
@@ -93,8 +126,7 @@ export default function SettingsScreen() {
           try {
             await signOut();
             router.replace("/(auth)/login");
-          } catch (error) {
-            console.error("Logout error:", error);
+          } catch {
           } finally {
             setLoading(false);
           }
@@ -144,8 +176,7 @@ export default function SettingsScreen() {
                 try {
                   await signOut();
                   router.replace("/(auth)/login");
-                } catch (error) {
-                  console.error("Sign out error:", error);
+                } catch {
                 } finally {
                   setLoading(false);
                 }
@@ -159,8 +190,7 @@ export default function SettingsScreen() {
           t("settings.accountDeleteError", "Failed to delete account")
         );
       }
-    } catch (error) {
-      console.error("Delete account error:", error);
+    } catch {
       Alert.alert(
         t("common.error"),
         t("settings.accountDeleteError", "Failed to delete account")
@@ -170,6 +200,34 @@ export default function SettingsScreen() {
       setActiveModal("none");
       setDeleteConfirmText("");
     }
+  };
+
+  const createTimeDate = (hour: number, minute: number) => {
+    const date = new Date();
+    date.setHours(hour, minute, 0, 0);
+    return date;
+  };
+
+  const handleQuietHoursStartChange = (date: Date) => {
+    const nextQuietHours = {
+      ...quietHours,
+      startHour: date.getHours(),
+      startMinute: date.getMinutes(),
+    };
+    setQuietHours(nextQuietHours);
+    notificationService.setQuietHours(nextQuietHours);
+    void updateSettings({ quietHours: nextQuietHours });
+  };
+
+  const handleQuietHoursEndChange = (date: Date) => {
+    const nextQuietHours = {
+      ...quietHours,
+      endHour: date.getHours(),
+      endMinute: date.getMinutes(),
+    };
+    setQuietHours(nextQuietHours);
+    notificationService.setQuietHours(nextQuietHours);
+    void updateSettings({ quietHours: nextQuietHours });
   };
 
   return (
@@ -305,11 +363,71 @@ export default function SettingsScreen() {
                 <Switch
                   value={notificationsEnabled}
                   onValueChange={handleNotificationToggle}
-                  disabled={notificationLoading}
+                  disabled={notificationLoading || !settings}
                   color={theme.colors.primary}
                 />
               }
             />
+            <ListItem
+              title={t("settings.budgetNotifications", "Budget notifications")}
+              description={t("settings.budgetNotificationsDescription", "Alerts when you approach your budget limit")}
+              left={
+                <MaterialCommunityIcons
+                  name="cash-multiple"
+                  size={24}
+                  color={theme.colors.onSurfaceVariant}
+                />
+              }
+              right={
+                <Switch
+                  value={budgetNotificationsEnabled}
+                  onValueChange={handleBudgetNotificationToggle}
+                  disabled={notificationLoading || !settings || !notificationsActive}
+                  color={theme.colors.primary}
+                />
+              }
+            />
+            <ListItem
+              title={t("settings.quietHours")}
+              description={t("settings.quietHoursDescription")}
+              left={
+                <MaterialCommunityIcons
+                  name="moon-waning-crescent"
+                  size={24}
+                  color={theme.colors.onSurfaceVariant}
+                />
+              }
+              right={
+                <Switch
+                  value={quietHoursEnabled}
+                  onValueChange={(value) => {
+                    setQuietHoursEnabled(value);
+                    void updateSettings({ quietHoursEnabled: value });
+                  }}
+                  disabled={notificationLoading || !notificationsActive}
+                  color={theme.colors.primary}
+                />
+              }
+            />
+            {quietHoursEnabled && (
+              <View style={styles.quietHoursContainer}>
+                <DateTimePicker
+                  mode="time"
+                  label={t("settings.quietHoursStart")}
+                  value={createTimeDate(quietHours.startHour, quietHours.startMinute)}
+                  onChange={handleQuietHoursStartChange}
+                  disabled={notificationLoading || !notificationsActive}
+                />
+                <DateTimePicker
+                  mode="time"
+                  label={t("settings.quietHoursEnd")}
+                  value={createTimeDate(quietHours.endHour, quietHours.endMinute)}
+                  onChange={handleQuietHoursEndChange}
+                  disabled={notificationLoading || !notificationsActive}
+                />
+              </View>
+            )}
+            <NotificationPermissionCard />
             <LanguageSettings variant="embedded" />
 
             <View style={styles.currencyPickerContainer}>
@@ -703,6 +821,9 @@ const styles = StyleSheet.create({
   },
   currencyPickerContainer: {
     marginTop: 16,
+  },
+  quietHoursContainer: {
+    marginBottom: 16,
   },
   currencyWarning: {
     marginTop: 8,

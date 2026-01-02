@@ -1,4 +1,5 @@
 import type { Currency } from '@/lib/schemas/expenseSchema';
+import type { IconName } from '@/lib/types';
 
 // Currency to locale mapping for proper number formatting
 const CURRENCY_LOCALE_MAP: Record<Currency, string> = {
@@ -9,7 +10,7 @@ const CURRENCY_LOCALE_MAP: Record<Currency, string> = {
 };
 
 // Currency to icon name mapping for MaterialCommunityIcons
-const CURRENCY_ICON_MAP: Record<Currency, string> = {
+const CURRENCY_ICON_MAP: Record<Currency, IconName> = {
   TRY: 'currency-try',
   USD: 'currency-usd',
   EUR: 'currency-eur',
@@ -29,7 +30,7 @@ const CURRENCY_SYMBOLS: Record<Currency, string> = {
  * @param currency - Currency code (e.g., 'TRY', 'USD', 'EUR', 'GBP')
  * @returns Icon name or undefined if not found
  */
-export const getCurrencyIcon = (currency: Currency): string => {
+export const getCurrencyIcon = (currency: Currency): IconName => {
   return CURRENCY_ICON_MAP[currency] || 'cash';
 };
 

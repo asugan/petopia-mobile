@@ -4,6 +4,7 @@ import { Text, Button, Card, Portal, Dialog } from '@/components/ui';
 import { useTheme } from '@/lib/theme';
 import { useTranslation } from 'react-i18next';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
+import * as Notifications from 'expo-notifications';
 import { useNotifications } from '@/lib/hooks/useNotifications';
 
 interface NotificationPermissionPromptProps {
@@ -116,7 +117,15 @@ export default function NotificationPermissionPrompt({
 export function NotificationPermissionCard() {
   const { theme } = useTheme();
   const { t } = useTranslation();
-  const { permissionStatus, requestPermission, isLoading } = useNotifications();
+  const { permissions, permissionStatus, requestPermission, isLoading } = useNotifications();
+
+  const iosStatus = permissions?.ios?.status;
+  const isEnabled =
+    permissions?.granted ||
+    permissionStatus === Notifications.PermissionStatus.GRANTED ||
+    iosStatus === Notifications.IosAuthorizationStatus.AUTHORIZED ||
+    iosStatus === Notifications.IosAuthorizationStatus.PROVISIONAL ||
+    iosStatus === Notifications.IosAuthorizationStatus.EPHEMERAL;
 
   const handleOpenSettings = () => {
     if (Platform.OS === 'ios') {
@@ -126,7 +135,7 @@ export function NotificationPermissionCard() {
     }
   };
 
-  if (permissionStatus === 'granted') {
+  if (isEnabled) {
     return (
       <Card style={[styles.card, { backgroundColor: theme.colors.primaryContainer }]}>
         <View style={styles.cardContent}>
@@ -150,7 +159,7 @@ export function NotificationPermissionCard() {
     );
   }
 
-  if (permissionStatus === 'denied') {
+  if (permissionStatus === Notifications.PermissionStatus.DENIED && !isEnabled) {
     return (
       <Card style={[styles.card, { backgroundColor: theme.colors.errorContainer }]}>
         <View style={styles.cardContent}>

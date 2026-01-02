@@ -53,8 +53,7 @@ export const PetPhotoPicker: React.FC<PetPhotoPickerProps> = ({
         return false;
       }
       return true;
-    } catch (error) {
-      console.error('Permission request error:', error);
+    } catch {
       return false;
     }
   };
@@ -69,7 +68,7 @@ export const PetPhotoPicker: React.FC<PetPhotoPickerProps> = ({
     setLoading(true);
     try {
       const result = await ImagePicker.launchImageLibraryAsync({
-        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        mediaTypes: ['images'],
         allowsEditing: true,
         aspect: [1, 1],
         quality: 0.7,
@@ -80,8 +79,7 @@ export const PetPhotoPicker: React.FC<PetPhotoPickerProps> = ({
         const photoUri = result.assets[0].uri;
         onChange(photoUri);
       }
-    } catch (error) {
-      console.error('Gallery picker error:', error);
+    } catch {
       Alert.alert(t('common.error'), t('forms.photoPicker.errorSelectingPhoto'));
     } finally {
       setLoading(false);
@@ -98,7 +96,7 @@ export const PetPhotoPicker: React.FC<PetPhotoPickerProps> = ({
     setLoading(true);
     try {
       const result = await ImagePicker.launchCameraAsync({
-        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        mediaTypes: ['images'],
         allowsEditing: true,
         aspect: [1, 1],
         quality: 0.7,
@@ -109,8 +107,7 @@ export const PetPhotoPicker: React.FC<PetPhotoPickerProps> = ({
         const photoUri = result.assets[0].uri;
         onChange(photoUri);
       }
-    } catch (error) {
-      console.error('Camera picker error:', error);
+    } catch {
       Alert.alert(t('common.error'), t('forms.photoPicker.errorTakingPhoto'));
     } finally {
       setLoading(false);
@@ -124,7 +121,6 @@ export const PetPhotoPicker: React.FC<PetPhotoPickerProps> = ({
 
   const openPicker = () => {
     if (!disabled) {
-      console.log('Pet photo picker açılıyor...');
       setModalVisible(true);
     }
   };
@@ -191,7 +187,6 @@ export const PetPhotoPicker: React.FC<PetPhotoPickerProps> = ({
         <Modal
           visible={modalVisible}
           onDismiss={() => {
-            console.log('Photo picker modal kapanıyor');
             setModalVisible(false);
           }}
           contentContainerStyle={[

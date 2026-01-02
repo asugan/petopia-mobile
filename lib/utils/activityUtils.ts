@@ -62,7 +62,6 @@ export const formatActivityTime = (time: Date, locale: string = 'en'): string =>
         locale: dateLocale
       });
     } catch (error) {
-      console.warn('Error formatting relative time:', error);
       return time.toLocaleTimeString(dateLocale === enUS ? 'en-US' : 'tr-TR', {
         hour: '2-digit',
         minute: '2-digit'
@@ -76,7 +75,6 @@ export const formatActivityTime = (time: Date, locale: string = 'en'): string =>
       locale: dateLocale
     });
   } catch (error) {
-    console.warn('Error formatting absolute time:', error);
     // Fallback to native date formatting
     return time.toLocaleDateString(dateLocale === enUS ? 'en-US' : 'tr-TR', {
       month: 'short',

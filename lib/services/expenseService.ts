@@ -60,14 +60,12 @@ export class ExpenseService {
 
       const response = await api.post<Expense>('/api/expenses', cleanedData);
 
-      console.log('✅ Expense created successfully:', response.data?._id);
       return {
         success: true,
         data: response.data!,
         message: 'serviceResponse.expense.createSuccess'
       };
     } catch (error) {
-      console.error('❌ Create expense error:', error);
       if (error instanceof ApiError) {
       return {
         success: false,
@@ -131,7 +129,6 @@ export class ExpenseService {
         }
       };
     } catch (error) {
-      console.error('❌ Get expenses error:', error);
       if (error instanceof ApiError) {
         return {
           success: false,
@@ -163,7 +160,6 @@ export class ExpenseService {
         data: response.data!
       };
     } catch (error) {
-      console.error('❌ Get expense error:', error);
       if (error instanceof ApiError) {
         if (error.status === 404) {
           return {
@@ -204,14 +200,12 @@ export class ExpenseService {
 
       const response = await api.put<Expense>(`/api/expenses/${id}`, cleanedData);
 
-      console.log('✅ Expense updated successfully:', id);
       return {
         success: true,
         data: response.data!,
         message: 'serviceResponse.expense.updateSuccess'
       };
     } catch (error) {
-      console.error('❌ Update expense error:', error);
       if (error instanceof ApiError) {
         if (error.status === 404) {
           return {
@@ -247,13 +241,11 @@ export class ExpenseService {
     try {
       await api.delete(`/api/expenses/${id}`);
 
-      console.log('✅ Expense deleted successfully:', id);
       return {
         success: true,
         message: 'serviceResponse.expense.deleteSuccess'
       };
     } catch (error) {
-      console.error('❌ Delete expense error:', error);
       if (error instanceof ApiError) {
         if (error.status === 404) {
           return {
@@ -306,7 +298,6 @@ export class ExpenseService {
         data: response.data!
       };
     } catch (error) {
-      console.error('❌ Get expense stats error:', error);
       if (error instanceof ApiError) {
         return {
           success: false,
@@ -348,7 +339,6 @@ export class ExpenseService {
         data: response.data || []
       };
     } catch (error) {
-      console.error('❌ Get monthly expenses error:', error);
       if (error instanceof ApiError) {
         return {
           success: false,
@@ -388,7 +378,6 @@ export class ExpenseService {
         data: response.data || []
       };
     } catch (error) {
-      console.error('❌ Get yearly expenses error:', error);
       if (error instanceof ApiError) {
         return {
           success: false,
@@ -427,7 +416,6 @@ export class ExpenseService {
         data: response.data || []
       };
     } catch (error) {
-      console.error('❌ Get expenses by category error:', error);
       if (error instanceof ApiError) {
         return {
           success: false,
@@ -469,7 +457,6 @@ export class ExpenseService {
         data: response.data || []
       };
     } catch (error) {
-      console.error('❌ Get expenses by date range error:', error);
       if (error instanceof ApiError) {
         return {
           success: false,
@@ -511,7 +498,6 @@ export class ExpenseService {
         data: response.data!
       };
     } catch (error) {
-      console.error('❌ Export expenses CSV error:', error);
       if (error instanceof ApiError) {
         return {
           success: false,
@@ -563,7 +549,6 @@ export class ExpenseService {
         message: 'serviceResponse.expense.exportPDFSuccess',
       };
     } catch (error) {
-      console.error('❌ Export expenses PDF error:', error);
       if (error instanceof ApiError) {
         return { 
           success: false, 
@@ -611,7 +596,6 @@ export class ExpenseService {
         message: 'serviceResponse.expense.exportVetSummaryPDFSuccess',
       };
     } catch (error) {
-      console.error('❌ Export vet summary PDF error:', error);
       if (error instanceof ApiError) {
         return { 
           success: false, 
@@ -650,7 +634,6 @@ export class ExpenseService {
       await Sharing.shareAsync(uri, { dialogTitle });
       return { success: true, message: 'serviceResponse.expense.sharePDFSuccess' };
     } catch (error) {
-      console.error('❌ Share PDF error:', error);
       return {
         success: false,
         error: {

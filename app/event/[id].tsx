@@ -24,7 +24,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { getEventTypeLabel } from '@/constants/eventIcons';
 import { useReminderScheduler } from '@/hooks/useReminderScheduler';
-import { useDeleteEvent, useEvent } from '@/lib/hooks/useEvents';
+import { useDeleteEvent, useEvent, useUpdateEvent } from '@/lib/hooks/useEvents';
 import { usePet } from '@/lib/hooks/usePets';
 import { useTheme } from '@/lib/theme';
 import { useEventReminderStore } from '@/stores/eventReminderStore';
@@ -42,8 +42,10 @@ export default function EventDetailScreen() {
   const { data: event, isLoading, error } = useEvent(id);
   const { data: pet } = usePet(event?.petId || '');
   const deleteEventMutation = useDeleteEvent();
+  const updateEventMutation = useUpdateEvent();
   const reminderStatus = useEventReminderStore((state) => (event?._id ? state.statuses[event._id] : undefined));
   const markMissed = useEventReminderStore((state) => state.markMissed);
+  const markCompleted = useEventReminderStore((state) => state.markCompleted);
   const markCancelled = useEventReminderStore((state) => state.markCancelled);
   const resetStatus = useEventReminderStore((state) => state.resetStatus);
   const { cancelRemindersForEvent, scheduleChainForEvent } = useReminderScheduler();
@@ -90,7 +92,9 @@ export default function EventDetailScreen() {
               await deleteEventMutation.mutateAsync(event._id);
               router.back();
             } catch (error) {
-              console.error(error);
+              console.error('Failed to delete event', error);
+              Alert.alert(t('common.error'), t('serviceResponse.event.deleteError'));
+              return;
             }
           },
         },
@@ -106,12 +110,15 @@ export default function EventDetailScreen() {
       const shareMessage = `📅 ${event.title}\n🐾 ${pet?.name || t('events.pet')}\n📍 ${event.location || t('events.noLocation')}\n🕐 ${eventDate} - ${eventTime}\n\n${event.description || ''}\n\n${t('events.sharedFrom')} PawPa`;
       await Share.share({ message: shareMessage, title: event.title });
     } catch (error) {
-      console.error('Error sharing event:', error);
+      console.error('Failed to share event', error);
+      Alert.alert(t('common.error'), t('errors.generalError'));
+      return;
     }
   };
 
   const derivedStatus = useMemo(() => {
     if (!event) return 'upcoming';
+    if (event.status && event.status !== 'upcoming') return event.status;
     if (reminderStatus?.status === 'completed') return 'completed';
     if (reminderStatus?.status === 'cancelled') return 'cancelled';
     if (reminderStatus?.status === 'missed') return 'missed';
@@ -119,14 +126,105 @@ export default function EventDetailScreen() {
     return start < new Date() ? 'missed' : 'upcoming';
   }, [event, reminderStatus]);
 
+  const statusLabel = useMemo(() => {
+    switch (eventStatus) {
+      case 'completed':
+        return t('events.statusCompleted');
+      case 'cancelled':
+        return t('events.statusCancelled');
+      case 'missed':
+        return t('events.statusMissed');
+      default:
+        return t('events.statusUpcoming');
+    }
+  }, [eventStatus, t]);
+
   useEffect(() => {
     if (!event) return;
     setEventStatus(derivedStatus);
-    if (derivedStatus === 'missed' && reminderStatus?.status !== 'missed') {
-      markMissed(event._id);
-      void cancelRemindersForEvent(event._id);
+    if (derivedStatus === 'missed' && event.status !== 'missed') {
+      const syncMissedStatus = async () => {
+        try {
+          await updateEventMutation.mutateAsync({
+            _id: event._id,
+            data: { status: 'missed' },
+          });
+          markMissed(event._id);
+          await cancelRemindersForEvent(event._id);
+        } catch (error) {
+          console.error('Failed to mark event as missed', error);
+          Alert.alert(t('common.error'), t('serviceResponse.event.updateError'));
+        }
+      };
+
+      void syncMissedStatus();
     }
-  }, [cancelRemindersForEvent, derivedStatus, event, markMissed, reminderStatus]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps -- mutation object is stable per TanStack Query
+  }, [cancelRemindersForEvent, derivedStatus, event, markMissed, t]);
+
+  const handleMarkCompleted = async () => {
+    if (!event) return;
+    try {
+      await updateEventMutation.mutateAsync({
+        _id: event._id,
+        data: { status: 'completed' },
+      });
+      await cancelRemindersForEvent(event._id);
+      markCompleted(event._id);
+      setEventStatus('completed');
+    } catch (error) {
+      console.error('Failed to mark event as completed', error);
+      Alert.alert(t('common.error'), t('serviceResponse.event.updateError'));
+    }
+  };
+
+  const handleMarkMissed = async () => {
+    if (!event) return;
+    try {
+      await updateEventMutation.mutateAsync({
+        _id: event._id,
+        data: { status: 'missed' },
+      });
+      await cancelRemindersForEvent(event._id);
+      markMissed(event._id);
+      setEventStatus('missed');
+    } catch (error) {
+      console.error('Failed to mark event as missed', error);
+      Alert.alert(t('common.error'), t('serviceResponse.event.updateError'));
+    }
+  };
+
+  const handleMarkCancelled = async () => {
+    if (!event) return;
+    try {
+      await updateEventMutation.mutateAsync({
+        _id: event._id,
+        data: { status: 'cancelled' },
+      });
+      await cancelRemindersForEvent(event._id);
+      markCancelled(event._id);
+      setEventStatus('cancelled');
+    } catch (error) {
+      console.error('Failed to cancel event', error);
+      Alert.alert(t('common.error'), t('serviceResponse.event.updateError'));
+    }
+  };
+
+  const handleResumeReminders = async () => {
+    if (!event) return;
+    try {
+      await updateEventMutation.mutateAsync({
+        _id: event._id,
+        data: { status: 'upcoming' },
+      });
+      await scheduleChainForEvent(event);
+      resetStatus(event._id);
+      setEventStatus('upcoming');
+    } catch (error) {
+      console.error('Failed to resume event reminders', error);
+      Alert.alert(t('common.error'), t('serviceResponse.event.updateError'));
+    }
+  };
 
   const footerStyles = useMemo(() => StyleSheet.create({
     footer: {
@@ -322,22 +420,64 @@ export default function EventDetailScreen() {
                 </View>
                 <Switch
                   value={eventStatus !== 'cancelled'}
-                  onValueChange={async (enabled) => {
-                    if (!event) return;
+                  onValueChange={(enabled) => {
                     if (enabled) {
-                      await scheduleChainForEvent(event);
-                      resetStatus(event._id);
-                      setEventStatus('upcoming');
+                      void handleResumeReminders();
                     } else {
-                      await cancelRemindersForEvent(event._id);
-                      markCancelled(event._id);
-                      setEventStatus('cancelled');
+                      void handleMarkCancelled();
                     }
                   }}
                   trackColor={{ false: '#767577', true: COLORS.primary }}
                   thumbColor={'#f4f3f4'}
                 />
               </View>
+              <View style={styles.statusRow}>
+                <View style={[styles.statusChip, { borderColor: COLORS.primary }]}>
+                  <Text style={[styles.statusChipText, { color: COLORS.primary }]}>{statusLabel}</Text>
+                </View>
+                {eventStatus === 'cancelled' && (
+                  <TouchableOpacity
+                    onPress={handleResumeReminders}
+                    style={[styles.statusAction, { borderColor: COLORS.primary }]}
+                    accessibilityLabel={t('events.resumeReminders')}
+                    accessibilityRole="button"
+                  >
+                    <Text style={[styles.statusActionText, { color: COLORS.primary }]}>
+                      {t('events.resumeReminders')}
+                    </Text>
+                  </TouchableOpacity>
+                )}
+              </View>
+              {eventStatus === 'upcoming' && (
+                <View style={styles.reminderActions}>
+                  <TouchableOpacity
+                    onPress={handleMarkCompleted}
+                    style={[styles.reminderActionButton, { backgroundColor: COLORS.primary }]}
+                    accessibilityLabel={t('events.markCompleted')}
+                    accessibilityRole="button"
+                  >
+                    <Text style={styles.reminderActionText}>{t('events.markCompleted')}</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    onPress={handleMarkMissed}
+                    style={[styles.reminderActionButton, { backgroundColor: COLORS.red400 }]}
+                    accessibilityLabel={t('events.markMissed')}
+                    accessibilityRole="button"
+                  >
+                    <Text style={styles.reminderActionText}>{t('events.markMissed')}</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    onPress={handleMarkCancelled}
+                    style={[styles.reminderActionButton, { backgroundColor: COLORS.surfaceDarker, borderColor: COLORS.gray400 }]}
+                    accessibilityLabel={t('events.markCancelled')}
+                    accessibilityRole="button"
+                  >
+                    <Text style={[styles.reminderActionText, { color: COLORS.gray400 }]}>
+                      {t('events.markCancelled')}
+                    </Text>
+                  </TouchableOpacity>
+                </View>
+              )}
             </View>
           )}
         </View>
@@ -559,6 +699,51 @@ const styles = StyleSheet.create({
   },
   reminderSubtitle: {
     fontSize: 12,
+  },
+  statusRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginTop: 10,
+    gap: 12,
+  },
+  statusChip: {
+    borderWidth: 1,
+    borderRadius: 999,
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+  },
+  statusChipText: {
+    fontSize: 12,
+    fontWeight: '600',
+  },
+  statusAction: {
+    borderWidth: 1,
+    borderRadius: 10,
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+  },
+  statusActionText: {
+    fontSize: 12,
+    fontWeight: '600',
+  },
+  reminderActions: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 10,
+    marginTop: 12,
+  },
+  reminderActionButton: {
+    borderRadius: 10,
+    paddingHorizontal: 12,
+    paddingVertical: 10,
+    borderWidth: 1,
+    borderColor: 'transparent',
+  },
+  reminderActionText: {
+    color: '#fff',
+    fontSize: 12,
+    fontWeight: '700',
   },
   buttonSecondary: {
     marginTop: 16,

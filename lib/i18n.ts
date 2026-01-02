@@ -23,7 +23,6 @@ const getDeviceLanguage = () => {
     const languageCode = locales[0]?.languageCode?.toLowerCase() || 'en';
     return languageCode === 'tr' ? 'tr' : 'en';
   } catch (error) {
-    console.warn('Error detecting device language:', error);
     return 'en';
   }
 };

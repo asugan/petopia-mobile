@@ -20,14 +20,12 @@ export class UserBudgetService {
     try {
       const response = await api.get<UserBudget>(ENV.ENDPOINTS.BUDGET);
 
-      console.log("✅ User budget loaded successfully");
       return {
         success: true,
         data: response.data!,
         message: "serviceResponse.budget.fetchSuccess",
       };
     } catch (error) {
-      console.error("❌ Get user budget error:", error);
       if (error instanceof ApiError) {
         if (error.status === 404) {
           return {
@@ -75,14 +73,12 @@ export class UserBudgetService {
         cleanedData
       );
 
-      console.log("✅ User budget set successfully:", response.data?.id);
       return {
         success: true,
         data: response.data!,
         message: "serviceResponse.budget.updateSuccess",
       };
     } catch (error) {
-      console.error("❌ Set user budget error:", error);
       if (error instanceof ApiError) {
         return {
           success: false,
@@ -110,13 +106,11 @@ export class UserBudgetService {
     try {
       await api.delete(ENV.ENDPOINTS.BUDGET);
 
-      console.log("✅ User budget deleted successfully");
       return {
         success: true,
         message: "serviceResponse.budget.deleteSuccess",
       };
     } catch (error) {
-      console.error("❌ Delete user budget error:", error);
       if (error instanceof ApiError) {
         if (error.status === 404) {
           return {
@@ -155,14 +149,12 @@ export class UserBudgetService {
         ENV.ENDPOINTS.BUDGET_STATUS
       );
 
-      console.log("✅ Budget status loaded successfully");
       return {
         success: true,
         data: response.data!,
         message: "serviceResponse.budget.fetchStatusSuccess",
       };
     } catch (error) {
-      console.error("❌ Get budget status error:", error);
       if (error instanceof ApiError) {
         if (error.status === 404) {
           return {
@@ -201,14 +193,12 @@ export class UserBudgetService {
     try {
       const response = await api.get<BudgetAlert>(ENV.ENDPOINTS.BUDGET_ALERTS);
 
-      console.log("✅ Budget alerts checked successfully");
       return {
         success: true,
         data: response.data!,
         message: "serviceResponse.budget.checkAlertsSuccess",
       };
     } catch (error) {
-      console.error("❌ Check budget alerts error:", error);
       if (error instanceof ApiError) {
         if (error.status === 404) {
           return {
@@ -256,14 +246,12 @@ export class UserBudgetService {
         };
       }
 
-      console.log("✅ Pet spending breakdown loaded successfully");
       return {
         success: true,
         data: statusResponse.data.petBreakdown,
         message: "serviceResponse.budget.fetchBreakdownSuccess",
       };
     } catch (error) {
-      console.error("❌ Get pet spending breakdown error:", error);
       return {
         success: false,
         error: {
@@ -292,7 +280,6 @@ export class UserBudgetService {
 
       const hasBudget = !!(budgetResponse.data && budgetResponse.data.isActive);
 
-      console.log("✅ Active budget check completed:", hasBudget);
       return {
         success: true,
         data: hasBudget,
@@ -301,7 +288,6 @@ export class UserBudgetService {
           : "serviceResponse.budget.hasActiveBudgetFalse",
       };
     } catch (error) {
-      console.error("❌ Check active budget error:", error);
       return {
         success: false,
         error: {
@@ -347,7 +333,6 @@ export class UserBudgetService {
 
       const hasActiveBudget = !!(budget && budget.isActive);
 
-      console.log("✅ Budget summary loaded successfully");
       return {
         success: true,
         data: {
@@ -359,7 +344,6 @@ export class UserBudgetService {
         message: "serviceResponse.budget.fetchSummarySuccess",
       };
     } catch (error) {
-      console.error("❌ Get budget summary error:", error);
       return {
         success: false,
         error: {

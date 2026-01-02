@@ -52,7 +52,6 @@ export default function HealthRecordDetailScreen() {
   const {
     data: nextVisitEvent,
     isError: isEventError,
-    error: nextVisitError,
     refetch: refetchNextVisitEvent,
   } = useEvent(healthRecord?.nextVisitEventId, { enabled: !!healthRecord?.nextVisitEventId });
 
@@ -499,8 +498,7 @@ ${healthRecord.notes ? `${t('common.notes')}: ${healthRecord.notes}` : ''}
         message: shareContent,
         title: t('healthRecords.title'),
       });
-    } catch (error) {
-      console.log('Share error:', error);
+    } catch {
     }
   };
 
@@ -770,7 +768,6 @@ ${healthRecord.notes ? `${t('common.notes')}: ${healthRecord.notes}` : ''}
                        <Text style={styles.nextVisitErrorText}>{t('events.fetchError')}</Text>
                        <TouchableOpacity
                          onPress={() => {
-                           console.warn('Failed to fetch next visit event:', nextVisitError);
                            void refetchNextVisitEvent();
                          }}
                        >

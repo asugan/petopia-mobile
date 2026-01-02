@@ -16,18 +16,12 @@ export class AccountService {
       );
 
       if (response.success) {
-        console.log("Account deleted successfully");
         return {
           success: true,
           data: { success: true },
           message: "Account deleted successfully",
         };
       }
-
-      console.warn("Delete account: unexpected response", {
-        endpoint: ENV.ENDPOINTS.ACCOUNT_DELETE,
-        success: response.success,
-      });
 
       return {
         success: false,
@@ -40,7 +34,6 @@ export class AccountService {
         },
       };
     } catch (error) {
-      console.error("Delete account error:", error);
       if (error instanceof ApiError) {
         return {
           success: false,

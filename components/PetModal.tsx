@@ -56,7 +56,6 @@ export function PetModal({
       onSuccess();
       onClose();
     } catch (error) {
-      console.error('Pet operation error:', error);
       const errorMessage = error instanceof Error ? error.message : 'İşlem başarısız oldu';
       showSnackbar(errorMessage);
     } finally {

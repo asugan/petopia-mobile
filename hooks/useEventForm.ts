@@ -34,7 +34,9 @@ export const useEventForm = (event?: Event, initialPetId?: string): UseEventForm
     
     const endDate = endDateTime ? toISODateString(endDateTime) : '';
     const endTime = endDateTime ? toTimeString(endDateTime) : '';
-    const presetSelection = event ? presetSelections[event._id] : undefined;
+    const presetSelection = event
+      ? (presetSelections[event._id] ?? event.reminderPreset)
+      : undefined;
 
     return {
       title: event?.title || '',

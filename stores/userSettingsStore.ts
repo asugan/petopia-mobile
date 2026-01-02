@@ -12,6 +12,7 @@ import type {
   UserSettings,
   UserSettingsUpdate,
 } from '@/lib/types';
+import { useEventReminderStore } from '@/stores/eventReminderStore';
 
 export type {
   SupportedCurrency,
@@ -48,6 +49,15 @@ const defaultSettings: UserSettings = {
   timezone: 'Europe/Istanbul',
   language: 'en',
   theme: 'dark',
+  notificationsEnabled: true,
+  budgetNotificationsEnabled: true,
+  quietHoursEnabled: true,
+  quietHours: {
+    startHour: 22,
+    startMinute: 0,
+    endHour: 8,
+    endMinute: 0,
+  },
   createdAt: new Date().toISOString(),
   updatedAt: new Date().toISOString(),
 };
@@ -75,7 +85,6 @@ export const useUserSettingsStore = create<UserSettingsState & UserSettingsActio
         const { isAuthenticated } = get();
 
         if (!isAuthenticated) {
-          console.log('⚠️ Skipping settings fetch - not authenticated');
           return;
         }
 
@@ -86,6 +95,14 @@ export const useUserSettingsStore = create<UserSettingsState & UserSettingsActio
 
           if (response.success && response.data) {
             const settings = response.data;
+            const { setQuietHours, setQuietHoursEnabled } = useEventReminderStore.getState();
+
+            if (settings.quietHours) {
+              setQuietHours(settings.quietHours);
+            }
+            if (typeof settings.quietHoursEnabled === 'boolean') {
+              setQuietHoursEnabled(settings.quietHoursEnabled);
+            }
 
             set({
               settings,
@@ -100,13 +117,11 @@ export const useUserSettingsStore = create<UserSettingsState & UserSettingsActio
               i18n.changeLanguage(settings.language);
             }
 
-            console.log('✅ User settings fetched successfully:', settings);
           } else {
             throw new Error(response.message || 'Failed to fetch settings');
           }
         } catch (error) {
           const errorMessage = error instanceof Error ? error.message : 'Failed to fetch settings';
-          console.error('❌ Error fetching user settings:', errorMessage);
 
           set({
             isLoading: false,
@@ -119,7 +134,6 @@ export const useUserSettingsStore = create<UserSettingsState & UserSettingsActio
         const { isAuthenticated, settings } = get();
 
         if (!isAuthenticated) {
-          console.log('⚠️ Skipping settings update - not authenticated');
           return;
         }
 
@@ -130,6 +144,14 @@ export const useUserSettingsStore = create<UserSettingsState & UserSettingsActio
 
           if (response.success && response.data) {
             const updatedSettings = response.data;
+            const { setQuietHours, setQuietHoursEnabled } = useEventReminderStore.getState();
+
+            if (updatedSettings.quietHours) {
+              setQuietHours(updatedSettings.quietHours);
+            }
+            if (typeof updatedSettings.quietHoursEnabled === 'boolean') {
+              setQuietHoursEnabled(updatedSettings.quietHoursEnabled);
+            }
 
             set({
               settings: updatedSettings,
@@ -150,13 +172,11 @@ export const useUserSettingsStore = create<UserSettingsState & UserSettingsActio
               });
             }
 
-            console.log('✅ User settings updated successfully:', updatedSettings);
           } else {
             throw new Error(response.message || 'Failed to update settings');
           }
         } catch (error) {
           const errorMessage = error instanceof Error ? error.message : 'Failed to update settings';
-          console.error('❌ Error updating user settings:', errorMessage);
 
           set({
             isLoading: false,
@@ -171,7 +191,6 @@ export const useUserSettingsStore = create<UserSettingsState & UserSettingsActio
         const { isAuthenticated, settings } = get();
 
         if (!isAuthenticated) {
-          console.log('⚠️ Skipping currency update - not authenticated');
           return;
         }
 
@@ -189,13 +208,11 @@ export const useUserSettingsStore = create<UserSettingsState & UserSettingsActio
               error: null,
             });
 
-            console.log('✅ Base currency updated successfully:', currency);
           } else {
             throw new Error(response.message || 'Failed to update base currency');
           }
         } catch (error) {
           const errorMessage = error instanceof Error ? error.message : 'Failed to update base currency';
-          console.error('❌ Error updating base currency:', errorMessage);
 
           set({
             isLoading: false,
@@ -210,7 +227,6 @@ export const useUserSettingsStore = create<UserSettingsState & UserSettingsActio
         const { isAuthenticated, settings } = get();
 
         if (!isAuthenticated) {
-          console.log('⚠️ Skipping initialization - not authenticated');
           return;
         }
 
@@ -247,12 +263,19 @@ export const useUserSettingsStore = create<UserSettingsState & UserSettingsActio
       onRehydrateStorage: () => (state) => {
         if (state && state.settings) {
           const { settings } = state;
+          const { setQuietHours, setQuietHoursEnabled } = useEventReminderStore.getState();
           state.isRTL = deriveRTL(settings.language);
           state.theme = deriveTheme(settings.theme);
           state.isDark = settings.theme === 'dark';
 
           if (i18n.language !== settings.language) {
             i18n.changeLanguage(settings.language);
+          }
+          if (settings.quietHours) {
+            setQuietHours(settings.quietHours);
+          }
+          if (typeof settings.quietHoursEnabled === 'boolean') {
+            setQuietHoursEnabled(settings.quietHoursEnabled);
           }
 
         }

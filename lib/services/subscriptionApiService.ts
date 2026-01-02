@@ -69,13 +69,11 @@ export class SubscriptionApiService {
         };
       }
 
-      console.log('✅ Subscription status loaded successfully');
       return {
         success: true,
         data: response.data,
       };
     } catch (error) {
-      console.error('❌ Get subscription status error:', error);
       if (error instanceof ApiError) {
         return {
           success: false,
@@ -118,14 +116,12 @@ export class SubscriptionApiService {
         };
       }
 
-      console.log('✅ Trial started successfully');
       return {
         success: true,
         data: response.data,
         message: 'subscription.trialStarted',
       };
     } catch (error) {
-      console.error('❌ Start trial error:', error);
       if (error instanceof ApiError) {
         return {
           success: false,

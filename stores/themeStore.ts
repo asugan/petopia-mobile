@@ -35,7 +35,6 @@ export const useThemeStore = create<ThemeState & ThemeActions>()(
           isDark: newMode === 'dark',
         });
 
-        console.log(`🎨 Theme toggled to: ${newMode}`);
       },
 
       setTheme: (mode: ThemeMode) => {
@@ -47,7 +46,6 @@ export const useThemeStore = create<ThemeState & ThemeActions>()(
           isDark: mode === 'dark',
         });
 
-        console.log(`🎨 Theme set to: ${mode}`);
       },
     }),
     {

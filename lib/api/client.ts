@@ -51,32 +51,13 @@ const authRequestInterceptor = (config: InternalAxiosRequestConfig) => {
 };
 
 // Request interceptor for debugging
-const requestInterceptor = (config: InternalAxiosRequestConfig) => {
-  if (__DEV__) {
-    console.log(`🚀 API Request: ${config.method?.toUpperCase()} ${config.url}`);
-    if (config.data) {
-      console.log('📤 Request data:', config.data);
-    }
-  }
-  return config;
-};
+const requestInterceptor = (config: InternalAxiosRequestConfig) => config;
 
 // Response interceptor for debugging and error handling
-const responseInterceptor = (response: AxiosResponse) => {
-  if (__DEV__) {
-    console.log(`✅ API Response: ${response.config.method?.toUpperCase()} ${response.config.url}`);
-    console.log('📥 Response data:', response.data);
-  }
-  return response;
-};
+const responseInterceptor = (response: AxiosResponse) => response;
 
 // Error interceptor
 const errorInterceptor = (error: AxiosError) => {
-  if (__DEV__) {
-    console.error(`❌ API Error: ${error.config?.method?.toUpperCase()} ${error.config?.url}`);
-    console.error('Error details:', error.response?.data || error.message);
-  }
-
   // Handle network errors
   if (!error.response) {
     throw new ApiError(
@@ -91,7 +72,6 @@ const errorInterceptor = (error: AxiosError) => {
 
   // Handle unauthorized (session expired or invalid)
   if (status === 401) {
-    console.warn('🔒 Session expired or unauthorized');
     onUnauthorized?.();
     authClient.signOut();
   }
@@ -103,16 +83,6 @@ const errorInterceptor = (error: AxiosError) => {
 
   const apiData = isApiErrorResponse(data) ? data : { success: false, message: 'Bilinmeyen hata' };
   const errorInfo = typeof apiData.error === 'object' ? apiData.error : { code: 'UNKNOWN_ERROR', message: apiData.error || apiData.message || 'Bilinmeyen hata' };
-
-  // Handle specific error codes
-  if (errorInfo.code === 'INVALID_ID_FORMAT') {
-    console.warn('🔄 Invalid ObjectId format detected - this might be from old UUID data');
-    // The migration system should handle clearing old data
-  }
-
-  if (errorInfo.code === 'VALIDATION_ERROR') {
-    console.warn('⚠️ Validation error:', errorInfo.details);
-  }
 
   throw new ApiError(
     errorInfo.message,

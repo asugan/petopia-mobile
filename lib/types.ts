@@ -197,6 +197,15 @@ export interface UserSettings {
   timezone: string;
   language: SupportedLanguage;
   theme: ThemeMode;
+  notificationsEnabled: boolean;
+  budgetNotificationsEnabled: boolean;
+  quietHoursEnabled: boolean;
+  quietHours: {
+    startHour: number;
+    startMinute: number;
+    endHour: number;
+    endMinute: number;
+  };
   createdAt: string;
   updatedAt: string;
 }

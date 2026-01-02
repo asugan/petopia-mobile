@@ -86,6 +86,7 @@
     "feeding": "Feeding"
   },
   "pets": {
+    "pet": "Pet",
     "myPets": "My Pets",
     "noPetsYet": "No pets yet",
     "addFirstPet": "Press the + button to add your first pet",
@@ -293,6 +294,10 @@
     "statusCompleted": "Completed",
     "statusCancelled": "Cancelled",
     "statusMissed": "Missed",
+    "markCompleted": "Mark completed",
+    "markMissed": "Mark missed",
+    "markCancelled": "Cancel reminders",
+    "resumeReminders": "Resume reminders",
     "viewPetProfile": "View Pet Profile",
     "noUpcomingEvents": "No upcoming events",
     "createTitle": "New Event",
@@ -348,6 +353,7 @@
   "eventForm": {
     "suggestions": {
       "feeding": "Regular feeding times are important for pet health. Adjust portions based on food type.",
+      "vet_visit": "Vet visits are essential for maintaining pet health. Don't forget regular checkups.",
       "vetVisit": "Vet visits are essential for maintaining pet health. Don't forget regular checkups.",
       "vaccination": "Vaccinations help keep your pet protected. Schedule reminders ahead of time.",
       "medication": "Medication schedules work best with consistent timing and dosage notes.",
@@ -404,6 +410,18 @@
     "disabled": "Notifications Disabled",
     "disabledDescription": "Enable notifications in settings",
     "openSettings": "Open Settings",
+    "reminderTitle": "{{emoji}} {{eventType}} reminder",
+    "reminderBody": "Reminder for your pet's {{eventType}} event",
+    "reminderTimes": {
+      "5m": "5 minutes before",
+      "15m": "15 minutes before",
+      "30m": "30 minutes before",
+      "1h": "1 hour before",
+      "2h": "2 hours before",
+      "1d": "1 day before",
+      "2d": "2 days before",
+      "1w": "1 week before"
+    },
     "testTitle": "Petopia reminder",
     "testBody": "Notifications are set up. We'll remind you about pet care events."
   },
@@ -411,14 +429,22 @@
     "noConnection": "No internet connection. Please check your connection."
   },
   "settings": {
+    "title": "Settings",
     "appearance": "Appearance",
     "darkMode": "Dark Mode",
     "changeTheme": "Change theme",
     "appSettings": "App Settings",
     "notifications": "Notifications",
     "reminderNotifications": "Enable reminder notifications",
+    "budgetNotifications": "Budget notifications",
+    "budgetNotificationsDescription": "Alerts when you approach your budget limit",
+    "quietHours": "Quiet Hours",
+    "quietHoursDescription": "Delay reminders during set hours",
+    "quietHoursStart": "Start time",
+    "quietHoursEnd": "End time",
     "notificationPermissionDenied": "Notifications are blocked at the system level. Please enable them from settings.",
     "notificationDisableInfo": "You can disable notifications from your device settings. We'll stop scheduling new reminders from here.",
+    "notificationDisabled": "Notifications are turned off in settings.",
     "language": "Language",
     "changeLanguage": "Change app language",
     "currentLanguage": "Current Language",
@@ -474,6 +500,7 @@
   "common": {
     "loading": "Loading...",
     "error": "Error",
+    "today": "Today",
     "retry": "Retry",
     "save": "Save",
     "add": "Add",
@@ -667,6 +694,7 @@
     "deleteSuccess": "Feeding schedule deleted successfully"
   },
   "forms": {
+    "petSelection": "Pet Selection",
     "petForm": {
       "title": "Pet Information",
       "addNewPet": "Add New Pet",
@@ -1012,6 +1040,9 @@
   },
   "budgets": {
     "title": "Budgets",
+    "budgetSetSuccess": "Budget set successfully",
+    "monthlyBudget": "Monthly Budget",
+    "currentSpending": "Current spending",
     "selectPetFirst": "Please select a pet first",
     "selectPet": "Select a pet",
     "selectPetMessage": "Choose a pet to view budgets",

@@ -1,8 +1,10 @@
 import * as Notifications from 'expo-notifications';
+import type { Href } from 'expo-router';
 import { Platform } from 'react-native';
 import { Event } from '../types';
 import { EVENT_TYPE_DEFAULT_REMINDERS } from '../../constants/eventIcons';
 import { REMINDER_PRESETS, QUIET_HOURS_WINDOW } from '@/constants/reminders';
+import i18n from '@/lib/i18n';
 
 /**
  * Notification Service - Handles all push notification operations
@@ -18,7 +20,6 @@ import { REMINDER_PRESETS, QUIET_HOURS_WINDOW } from '@/constants/reminders';
 // Configure notification behavior
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
-    shouldShowAlert: true,
     shouldPlaySound: true,
     shouldSetBadge: true,
     shouldShowBanner: true,
@@ -31,27 +32,60 @@ export interface ReminderTime {
   label: string;
 }
 
-export const REMINDER_TIMES: ReminderTime[] = [
-  { value: 5, label: '5 minutes before' },
-  { value: 15, label: '15 minutes before' },
-  { value: 30, label: '30 minutes before' },
-  { value: 60, label: '1 hour before' },
-  { value: 120, label: '2 hours before' },
-  { value: 1440, label: '1 day before' },
-  { value: 2880, label: '2 days before' },
-  { value: 10080, label: '1 week before' },
+interface ReminderTimeOption {
+  value: number;
+  labelKey: string;
+}
+
+const isNotificationPermissionGranted = (
+  permissions: Notifications.NotificationPermissionsStatus
+): boolean => {
+  if (permissions.granted || permissions.status === Notifications.PermissionStatus.GRANTED) {
+    return true;
+  }
+
+  const iosStatus = permissions.ios?.status;
+  return (
+    iosStatus === Notifications.IosAuthorizationStatus.AUTHORIZED ||
+    iosStatus === Notifications.IosAuthorizationStatus.PROVISIONAL ||
+    iosStatus === Notifications.IosAuthorizationStatus.EPHEMERAL
+  );
+};
+
+const REMINDER_TIME_OPTIONS: ReminderTimeOption[] = [
+  { value: 5, labelKey: 'notifications.reminderTimes.5m' },
+  { value: 15, labelKey: 'notifications.reminderTimes.15m' },
+  { value: 30, labelKey: 'notifications.reminderTimes.30m' },
+  { value: 60, labelKey: 'notifications.reminderTimes.1h' },
+  { value: 120, labelKey: 'notifications.reminderTimes.2h' },
+  { value: 1440, labelKey: 'notifications.reminderTimes.1d' },
+  { value: 2880, labelKey: 'notifications.reminderTimes.2d' },
+  { value: 10080, labelKey: 'notifications.reminderTimes.1w' },
 ];
+
+export const getReminderTimes = (
+  t: (key: string, options?: Record<string, unknown>) => string = i18n.t.bind(i18n)
+): ReminderTime[] =>
+  REMINDER_TIME_OPTIONS.map((option) => ({
+    value: option.value,
+    label: t(option.labelKey),
+  }));
 
 export class NotificationService {
   private static instance: NotificationService;
-  private notificationChannelId = 'event-reminders';
+  private eventChannelId = 'event-reminders';
+  private budgetChannelId = 'budget-alerts';
   private quietHours = {
     startHour: QUIET_HOURS_WINDOW.startHour,
+    startMinute: QUIET_HOURS_WINDOW.startMinute,
     endHour: QUIET_HOURS_WINDOW.endHour,
+    endMinute: QUIET_HOURS_WINDOW.endMinute,
   };
+  private notificationChannelPromise: Promise<void> | null = null;
+  private navigationHandler?: (target: Href) => void;
 
   private constructor() {
-    this.setupNotificationChannel();
+    this.notificationChannelPromise = this.setupNotificationChannel();
   }
 
   /**
@@ -69,15 +103,51 @@ export class NotificationService {
    */
   private async setupNotificationChannel() {
     if (Platform.OS === 'android') {
-      await Notifications.setNotificationChannelAsync(this.notificationChannelId, {
-        name: 'Event Reminders',
-        importance: Notifications.AndroidImportance.HIGH,
-        vibrationPattern: [0, 250, 250, 250],
-        lightColor: '#FFB3D1',
-        sound: 'default',
-        description: 'Notifications for pet care events and activities',
-      });
+      try {
+        await Notifications.setNotificationChannelAsync(this.eventChannelId, {
+          name: 'Event Reminders',
+          importance: Notifications.AndroidImportance.HIGH,
+          vibrationPattern: [0, 250, 250, 250],
+          lightColor: '#FFB3D1',
+          sound: 'default',
+          description: 'Notifications for pet care events and activities',
+        });
+        await Notifications.setNotificationChannelAsync(this.budgetChannelId, {
+          name: 'Budget Alerts',
+          importance: Notifications.AndroidImportance.DEFAULT,
+          vibrationPattern: [0, 250, 250],
+          lightColor: '#FFD166',
+          sound: 'default',
+          description: 'Notifications for budget alerts and limits',
+        });
+      } catch {
+      }
     }
+  }
+
+  private async ensureNotificationChannel(): Promise<void> {
+    if (Platform.OS !== 'android') {
+      return;
+    }
+
+    if (!this.notificationChannelPromise) {
+      this.notificationChannelPromise = this.setupNotificationChannel();
+    }
+
+    await this.notificationChannelPromise;
+  }
+
+  setNavigationHandler(handler: (target: Href) => void) {
+    this.navigationHandler = handler;
+  }
+
+  setQuietHours(quietHours: {
+    startHour: number;
+    startMinute: number;
+    endHour: number;
+    endMinute: number;
+  }) {
+    this.quietHours = quietHours;
   }
 
   /**
@@ -86,23 +156,18 @@ export class NotificationService {
    */
   async requestPermissions(): Promise<boolean> {
     try {
-      const { status: existingStatus } = await Notifications.getPermissionsAsync();
-      let finalStatus = existingStatus;
-
-      if (existingStatus !== 'granted') {
-        const { status } = await Notifications.requestPermissionsAsync();
-        finalStatus = status;
+      const existingPermissions = await Notifications.getPermissionsAsync();
+      if (isNotificationPermissionGranted(existingPermissions)) {
+        return true;
       }
 
-      if (finalStatus !== 'granted') {
-        console.warn('📵 Notification permission denied');
+      const updatedPermissions = await Notifications.requestPermissionsAsync();
+      if (!isNotificationPermissionGranted(updatedPermissions)) {
         return false;
       }
 
-      console.log('✅ Notification permission granted');
       return true;
-    } catch (error) {
-      console.error('❌ Error requesting notification permissions:', error);
+    } catch {
       return false;
     }
   }
@@ -113,10 +178,9 @@ export class NotificationService {
    */
   async areNotificationsEnabled(): Promise<boolean> {
     try {
-      const { status } = await Notifications.getPermissionsAsync();
-      return status === 'granted';
-    } catch (error) {
-      console.error('❌ Error checking notification status:', error);
+      const permissions = await Notifications.getPermissionsAsync();
+      return isNotificationPermissionGranted(permissions);
+    } catch {
       return false;
     }
   }
@@ -131,41 +195,62 @@ export class NotificationService {
   async scheduleEventReminder(
     event: Event,
     reminderMinutes?: number,
-    options?: { triggerDate?: Date }
+    options?: { triggerDate?: Date; respectQuietHours?: boolean }
   ): Promise<string | null> {
     try {
       // Check permissions first
       const hasPermission = await this.areNotificationsEnabled();
       if (!hasPermission) {
-        console.warn('📵 Notifications not enabled, cannot schedule reminder');
         return null;
       }
 
       // Get default reminder time for event type if not specified
-      const reminderTime = reminderMinutes ||
-        EVENT_TYPE_DEFAULT_REMINDERS[event.type as keyof typeof EVENT_TYPE_DEFAULT_REMINDERS] ||
+      const reminderTime =
+        reminderMinutes ??
+        EVENT_TYPE_DEFAULT_REMINDERS[event.type as keyof typeof EVENT_TYPE_DEFAULT_REMINDERS] ??
         60;
 
       // Calculate trigger time
       const eventDate = new Date(event.startTime);
-      const triggerDate = options?.triggerDate
+      let triggerDate = options?.triggerDate
         ? options.triggerDate
         : new Date(eventDate.getTime() - reminderTime * 60 * 1000);
 
-      // Don't schedule if trigger time is in the past
+      if (
+        !options?.triggerDate &&
+        (options?.respectQuietHours ?? true) &&
+        reminderTime !== 0
+      ) {
+        triggerDate = this.adjustForQuietHours(triggerDate);
+      }
+
+      // Don't schedule if trigger time is in the past or after the event
       if (triggerDate <= new Date()) {
-        console.warn('⚠️ Reminder time is in the past, not scheduling');
+        return null;
+      }
+      if (triggerDate > eventDate) {
         return null;
       }
 
       // Get event type emoji
       const eventTypeEmoji = this.getEventTypeEmoji(event.type);
+      const eventTypeLabel = i18n.t(`eventTypes.${event.type}`, event.type);
+      const notificationTitle = event.title?.trim()
+        ? `${eventTypeEmoji} ${event.title}`
+        : i18n.t('notifications.reminderTitle', {
+          eventType: eventTypeLabel,
+          emoji: eventTypeEmoji,
+        });
+      const notificationBody = event.description || i18n.t('notifications.reminderBody', {
+        eventType: eventTypeLabel,
+      });
 
       // Schedule notification
+      await this.ensureNotificationChannel();
       const notificationId = await Notifications.scheduleNotificationAsync({
         content: {
-          title: `${eventTypeEmoji} ${event.title}`,
-          body: event.description || `Reminder for your pet's ${event.type} event`,
+          title: notificationTitle,
+          body: notificationBody,
           data: {
             eventId: event._id,
             petId: event.petId,
@@ -178,17 +263,13 @@ export class NotificationService {
         },
         trigger: {
           date: triggerDate,
-          channelId: this.notificationChannelId,
+          channelId: this.eventChannelId,
         },
       });
 
-      console.log(`✅ Scheduled reminder for event ${event._id}: ${notificationId}`);
-      console.log(`   Trigger time: ${triggerDate.toISOString()}`);
-      console.log(`   Event time: ${eventDate.toISOString()}`);
 
       return notificationId;
-    } catch (error) {
-      console.error('❌ Error scheduling event reminder:', error);
+    } catch {
       return null;
     }
   }
@@ -200,9 +281,7 @@ export class NotificationService {
   async cancelNotification(notificationId: string): Promise<void> {
     try {
       await Notifications.cancelScheduledNotificationAsync(notificationId);
-      console.log(`✅ Cancelled notification: ${notificationId}`);
-    } catch (error) {
-      console.error('❌ Error cancelling notification:', error);
+    } catch {
     }
   }
 
@@ -222,9 +301,7 @@ export class NotificationService {
         await Notifications.cancelScheduledNotificationAsync(notification.identifier);
       }
 
-      console.log(`✅ Cancelled ${eventNotifications.length} notifications for event ${eventId}`);
-    } catch (error) {
-      console.error('❌ Error cancelling event notifications:', error);
+    } catch {
     }
   }
 
@@ -234,9 +311,7 @@ export class NotificationService {
   async cancelAllNotifications(): Promise<void> {
     try {
       await Notifications.cancelAllScheduledNotificationsAsync();
-      console.log('✅ Cancelled all scheduled notifications');
-    } catch (error) {
-      console.error('❌ Error cancelling all notifications:', error);
+    } catch {
     }
   }
 
@@ -247,10 +322,8 @@ export class NotificationService {
   async getAllScheduledNotifications(): Promise<Notifications.NotificationRequest[]> {
     try {
       const notifications = await Notifications.getAllScheduledNotificationsAsync();
-      console.log(`📋 Found ${notifications.length} scheduled notifications`);
       return notifications;
-    } catch (error) {
-      console.error('❌ Error getting scheduled notifications:', error);
+    } catch {
       return [];
     }
   }
@@ -266,8 +339,7 @@ export class NotificationService {
       return allNotifications.filter(
         notification => notification.content.data?.eventId === eventId
       );
-    } catch (error) {
-      console.error('❌ Error getting event notifications:', error);
+    } catch {
       return [];
     }
   }
@@ -283,6 +355,11 @@ export class NotificationService {
     reminderTimes: readonly number[],
     options?: { respectQuietHours?: boolean }
   ): Promise<string[]> {
+    const hasPermission = await this.areNotificationsEnabled();
+    if (!hasPermission) {
+      return [];
+    }
+
     const notificationIds: string[] = [];
     const seenTimes = new Set<number>();
     const respectQuietHours = options?.respectQuietHours ?? true;
@@ -291,11 +368,11 @@ export class NotificationService {
 
     for (const reminderTime of reminderTimes) {
       const triggerDate = new Date(eventDate.getTime() - reminderTime * 60 * 1000);
-      const adjustedTrigger = respectQuietHours
+      const adjustedTrigger = respectQuietHours && reminderTime !== 0
         ? this.adjustForQuietHours(triggerDate)
         : triggerDate;
 
-      if (adjustedTrigger >= eventDate) {
+      if (adjustedTrigger > eventDate) {
         continue;
       }
 
@@ -317,7 +394,6 @@ export class NotificationService {
       }
     }
 
-    console.log(`✅ Scheduled ${notificationIds.length} reminders for event ${event._id}`);
     return notificationIds;
   }
 
@@ -341,9 +417,10 @@ export class NotificationService {
   async sendImmediateNotification(
     title: string,
     body: string,
-    data?: Record<string, any>
+    data?: Record<string, unknown>
   ): Promise<string> {
     try {
+      await this.ensureNotificationChannel();
       const notificationId = await Notifications.scheduleNotificationAsync({
         content: {
           title,
@@ -351,13 +428,11 @@ export class NotificationService {
           data: data || {},
           sound: 'default',
         },
-        trigger: null, // Send immediately
+        trigger: Platform.OS === 'android' ? { channelId: this.eventChannelId } : null,
       });
 
-      console.log(`✅ Sent immediate notification: ${notificationId}`);
       return notificationId;
     } catch (error) {
-      console.error('❌ Error sending immediate notification:', error);
       throw error;
     }
   }
@@ -368,23 +443,26 @@ export class NotificationService {
   async sendBudgetAlertNotification(
     title: string,
     body: string,
-    data?: Record<string, any>
+    data?: Record<string, unknown>
   ): Promise<void> {
     const enabled = await this.areNotificationsEnabled();
     if (!enabled) {
-      console.warn('📵 Notifications disabled, skipping budget alert');
       return;
     }
 
+    await this.ensureNotificationChannel();
     await Notifications.scheduleNotificationAsync({
       content: {
         title,
         body,
-        data: data || {},
+        data: {
+          ...(data || {}),
+          screen: 'budget',
+        },
         sound: 'default',
         priority: Notifications.AndroidNotificationPriority.HIGH,
       },
-      trigger: null,
+      trigger: Platform.OS === 'android' ? { channelId: this.budgetChannelId } : null,
     });
   }
 
@@ -414,7 +492,6 @@ export class NotificationService {
    * @param notification Received notification
    */
   handleNotificationReceived(notification: Notifications.Notification): void {
-    console.log('📬 Notification received:', notification);
     // You can add custom logic here, like showing an in-app alert
   }
 
@@ -423,14 +500,24 @@ export class NotificationService {
    * @param response Notification response
    */
   handleNotificationResponse(response: Notifications.NotificationResponse): void {
-    console.log('👆 Notification tapped:', response);
 
     const data = response.notification.request.content.data;
 
     // You can navigate to specific screens based on notification data
     if (data?.screen === 'event' && data?.eventId) {
-      // Navigate to event detail screen
-      console.log(`Navigate to event: ${data.eventId}`);
+      if (this.navigationHandler) {
+        this.navigationHandler({
+          pathname: '/event/[id]',
+          params: { id: String(data.eventId) },
+        });
+      }
+      return;
+    }
+
+    if (data?.screen === 'budget') {
+      if (this.navigationHandler) {
+        this.navigationHandler('/(tabs)/finance');
+      }
     }
   }
 
@@ -458,8 +545,7 @@ export class NotificationService {
       }
 
       return stats;
-    } catch (error) {
-      console.error('❌ Error getting notification stats:', error);
+    } catch {
       return { total: 0, byType: {} };
     }
   }
@@ -469,22 +555,27 @@ export class NotificationService {
    */
   private adjustForQuietHours(triggerDate: Date): Date {
     const adjusted = new Date(triggerDate);
-    const hour = triggerDate.getHours();
-    const inQuietHours =
-      hour >= this.quietHours.startHour || hour < this.quietHours.endHour;
+    const triggerMinutes = triggerDate.getHours() * 60 + triggerDate.getMinutes();
+    const startMinutes =
+      this.quietHours.startHour * 60 + this.quietHours.startMinute;
+    const endMinutes =
+      this.quietHours.endHour * 60 + this.quietHours.endMinute;
+    const crossesMidnight = startMinutes > endMinutes;
+    const inQuietHours = startMinutes === endMinutes
+      ? false
+      : crossesMidnight
+        ? triggerMinutes >= startMinutes || triggerMinutes < endMinutes
+        : triggerMinutes >= startMinutes && triggerMinutes < endMinutes;
 
     if (!inQuietHours) {
       return triggerDate;
     }
 
-    if (hour >= this.quietHours.startHour) {
-      adjusted.setHours(this.quietHours.startHour, 0, 0, 0);
-    } else {
-      adjusted.setDate(adjusted.getDate() - 1);
-      adjusted.setHours(this.quietHours.startHour, 0, 0, 0);
+    if (crossesMidnight && triggerMinutes >= startMinutes) {
+      adjusted.setDate(adjusted.getDate() + 1);
     }
 
-    adjusted.setMinutes(adjusted.getMinutes() - 1);
+    adjusted.setHours(this.quietHours.endHour, this.quietHours.endMinute, 0, 0);
     return adjusted;
   }
 }

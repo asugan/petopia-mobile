@@ -1,7 +1,7 @@
 import { useQuery, useQueries, useQueryClient } from '@tanstack/react-query';
 import { healthRecordService } from '../services/healthRecordService';
 import { petService } from '../services/petService';
-import type { CreateHealthRecordInput, HealthRecord, UpdateHealthRecordInput } from '../types';
+import type { CreateHealthRecordInput, HealthRecord, Pet, UpdateHealthRecordInput } from '../types';
 import { CACHE_TIMES } from '../config/queryConfig';
 import { useCreateResource, useDeleteResource, useUpdateResource } from './useCrud';
 import { createQueryKeys } from './core/createQueryKeys';
@@ -45,7 +45,7 @@ export function useHealthRecords(petId?: string, filters: HealthRecordFilters = 
 
         const pets = petsResult.data || [];
         const allRecords = await Promise.all(
-          pets.map(async (pet: any) => {
+          pets.map(async (pet: Pet) => {
             const result = await healthRecordService.getHealthRecordsByPetId(pet._id);
             return result.success ? (result.data || []) : [];
           })

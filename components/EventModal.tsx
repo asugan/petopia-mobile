@@ -65,7 +65,6 @@ export function EventModal({
       onSuccess();
       onClose();
     } catch (error) {
-      console.error('Event operation error:', error);
       const errorMessage = error instanceof Error ? error.message : 'İşlem başarısız oldu';
       showSnackbar(errorMessage);
     } finally {

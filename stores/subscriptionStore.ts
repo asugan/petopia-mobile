@@ -50,11 +50,6 @@ export const useSubscriptionStore = create<SubscriptionState & SubscriptionActio
 
     setCustomerInfo: (info) => {
       set({ customerInfo: info });
-      if (info) {
-        console.log('[Subscription] Customer info updated:', {
-          activeEntitlements: Object.keys(info.entitlements.active),
-        });
-      }
     },
 
     getActiveEntitlement: () => {
@@ -82,7 +77,6 @@ export const useSubscriptionStore = create<SubscriptionState & SubscriptionActio
       try {
         const { customerInfo } = await Purchases.purchasePackage(pkg);
         set({ customerInfo, isPurchasing: false });
-        console.log('[Subscription] Purchase successful');
         return true;
       } catch (error: unknown) {
         let errorMessage = 'Purchase failed';
@@ -91,10 +85,8 @@ export const useSubscriptionStore = create<SubscriptionState & SubscriptionActio
         if (error && typeof error === 'object' && 'code' in error) {
           const errorCode = (error as { code: string }).code;
           if (errorCode === Purchases.PURCHASES_ERROR_CODE.PURCHASE_CANCELLED_ERROR) {
-            console.log('[Subscription] Purchase cancelled');
             shouldReturnTrue = true;
           } else if (errorCode === Purchases.PURCHASES_ERROR_CODE.PRODUCT_ALREADY_PURCHASED_ERROR) {
-            console.log('[Subscription] Product already purchased, restoring...');
             const result = await get().restorePurchases();
             set({ isPurchasing: false });
             return result;
@@ -103,7 +95,6 @@ export const useSubscriptionStore = create<SubscriptionState & SubscriptionActio
           }
         }
 
-        console.error('[Subscription] Purchase error:', error);
         set({ purchaseError: errorMessage, isPurchasing: false });
         return shouldReturnTrue;
       }
@@ -115,11 +106,9 @@ export const useSubscriptionStore = create<SubscriptionState & SubscriptionActio
         const customerInfo = await restorePurchasesApi();
         set({ customerInfo, isPurchasing: false });
         const hasEntitlement = get().checkEntitlement();
-        console.log('[Subscription] Purchases restored, has entitlement:', hasEntitlement);
         return hasEntitlement;
       } catch (error) {
         const errorMessage = error instanceof Error ? error.message : 'Restore failed';
-        console.error('[Subscription] Restore error:', error);
         set({ purchaseError: errorMessage, isPurchasing: false });
         return false;
       }
@@ -132,7 +121,6 @@ export const useSubscriptionStore = create<SubscriptionState & SubscriptionActio
         set({ offerings, isLoadingOfferings: false });
         return offerings;
       } catch (error) {
-        console.error('[Subscription] Offerings error:', error);
         set({ isLoadingOfferings: false });
         return null;
       }
@@ -156,7 +144,6 @@ export const useSubscriptionStore = create<SubscriptionState & SubscriptionActio
         offerings: null,
         isLoadingOfferings: false,
       });
-      console.log('[Subscription] State reset');
     },
   })
 );

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Platform, View, Text, TouchableOpacity, StyleSheet } from 'react-native';
-import ReactNativeDateTimePicker from '@react-native-community/datetimepicker';
+import ReactNativeDateTimePicker, { type DateTimePickerEvent } from '@react-native-community/datetimepicker';
 import { Text as PaperText, } from '@/components/ui';
 import { useTheme } from '@/lib/theme';
 
@@ -47,7 +47,7 @@ export function DateTimePicker({
     }
   };
 
-  const handlePickerChange = (event: any, selectedDate?: Date) => {
+  const handlePickerChange = (event: DateTimePickerEvent, selectedDate?: Date) => {
     if (Platform.OS === 'ios') {
       setPickerVisible(true); // Keep picker open on iOS
     }
@@ -61,10 +61,6 @@ export function DateTimePicker({
       }
     }
 
-    // Handle Android picker errors
-    if (event.type === 'error') {
-      console.error('DateTimePicker error:', event.nativeEvent?.error || 'Unknown error');
-    }
   };
 
   const formatDate = (date: Date) => {
@@ -141,11 +137,6 @@ export function DateTimePicker({
           onChange={handlePickerChange}
           minimumDate={minimumDate}
           maximumDate={maximumDate}
-          onError={(error: any) => {
-            if (Platform.OS === 'android' && error) {
-              console.error('DateTimePicker error:', error);
-            }
-          }}
         />
       )}
     </View>
