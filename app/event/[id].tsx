@@ -419,16 +419,11 @@ export default function EventDetailScreen() {
                 </View>
                 <Switch
                   value={eventStatus !== 'cancelled'}
-                  onValueChange={async (enabled) => {
-                    if (!event) return;
+                  onValueChange={(enabled) => {
                     if (enabled) {
-                      await scheduleChainForEvent(event);
-                      resetStatus(event._id);
-                      setEventStatus('upcoming');
+                      void handleResumeReminders();
                     } else {
-                      await cancelRemindersForEvent(event._id);
-                      resetStatus(event._id);
-                      setEventStatus('cancelled');
+                      void handleMarkCancelled();
                     }
                   }}
                   trackColor={{ false: '#767577', true: COLORS.primary }}
