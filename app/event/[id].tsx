@@ -91,7 +91,10 @@ export default function EventDetailScreen() {
             try {
               await deleteEventMutation.mutateAsync(event._id);
               router.back();
-            } catch {
+            } catch (error) {
+              console.error('Failed to delete event', error);
+              Alert.alert(t('common.error'), t('serviceResponse.event.deleteError'));
+              return;
             }
           },
         },
@@ -106,7 +109,10 @@ export default function EventDetailScreen() {
       const eventTime = format(new Date(event.startTime), 'HH:mm', { locale });
       const shareMessage = `📅 ${event.title}\n🐾 ${pet?.name || t('events.pet')}\n📍 ${event.location || t('events.noLocation')}\n🕐 ${eventDate} - ${eventTime}\n\n${event.description || ''}\n\n${t('events.sharedFrom')} PawPa`;
       await Share.share({ message: shareMessage, title: event.title });
-    } catch {
+    } catch (error) {
+      console.error('Failed to share event', error);
+      Alert.alert(t('common.error'), t('errors.generalError'));
+      return;
     }
   };
 
@@ -137,14 +143,23 @@ export default function EventDetailScreen() {
     if (!event) return;
     setEventStatus(derivedStatus);
     if (derivedStatus === 'missed' && event.status !== 'missed') {
-      markMissed(event._id);
-      void cancelRemindersForEvent(event._id);
-      void updateEventMutation.mutateAsync({
-        _id: event._id,
-        data: { status: 'missed' },
-      });
+      const syncMissedStatus = async () => {
+        try {
+          await updateEventMutation.mutateAsync({
+            _id: event._id,
+            data: { status: 'missed' },
+          });
+          markMissed(event._id);
+          await cancelRemindersForEvent(event._id);
+        } catch (error) {
+          console.error('Failed to mark event as missed', error);
+          Alert.alert(t('common.error'), t('serviceResponse.event.updateError'));
+        }
+      };
+
+      void syncMissedStatus();
     }
-  }, [cancelRemindersForEvent, derivedStatus, event, markMissed]);
+  }, [cancelRemindersForEvent, derivedStatus, event, markMissed, t, updateEventMutation]);
 
   const handleMarkCompleted = async () => {
     if (!event) return;

@@ -47,14 +47,23 @@ export function PetForm({
       try {
         setSubmitError(null);
         const result = await onSubmit(data);
-        return result ?? true;
+
+        if (result === false) {
+          const submitError = new Error('Pet form submit failed');
+          if (__DEV__) {
+            console.error('Pet form submit failed', submitError);
+          }
+          setSubmitError(t('errors.generalError'));
+          onError?.(submitError);
+          throw submitError;
+        }
       } catch (error) {
         if (__DEV__) {
           console.error('Pet form submit failed', error);
         }
         setSubmitError(t('errors.generalError'));
         onError?.(error);
-        return false;
+        throw error;
       }
     },
     [onSubmit, onError, t]
@@ -111,7 +120,12 @@ export function PetForm({
       return;
     }
     setShowStepError(false);
-    await handleSubmit(onFormSubmit)();
+    try {
+      await handleSubmit(onFormSubmit)();
+    } catch {
+      return false;
+    }
+    return true;
   }, [form, handleSubmit, onFormSubmit]);
 
   return (
