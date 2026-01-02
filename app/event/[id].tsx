@@ -163,46 +163,66 @@ export default function EventDetailScreen() {
 
   const handleMarkCompleted = async () => {
     if (!event) return;
-    await cancelRemindersForEvent(event._id);
-    await updateEventMutation.mutateAsync({
-      _id: event._id,
-      data: { status: 'completed' },
-    });
-    markCompleted(event._id);
-    setEventStatus('completed');
+    try {
+      await updateEventMutation.mutateAsync({
+        _id: event._id,
+        data: { status: 'completed' },
+      });
+      await cancelRemindersForEvent(event._id);
+      markCompleted(event._id);
+      setEventStatus('completed');
+    } catch (error) {
+      console.error('Failed to mark event as completed', error);
+      Alert.alert(t('common.error'), t('serviceResponse.event.updateError'));
+    }
   };
 
   const handleMarkMissed = async () => {
     if (!event) return;
-    await cancelRemindersForEvent(event._id);
-    await updateEventMutation.mutateAsync({
-      _id: event._id,
-      data: { status: 'missed' },
-    });
-    markMissed(event._id);
-    setEventStatus('missed');
+    try {
+      await updateEventMutation.mutateAsync({
+        _id: event._id,
+        data: { status: 'missed' },
+      });
+      await cancelRemindersForEvent(event._id);
+      markMissed(event._id);
+      setEventStatus('missed');
+    } catch (error) {
+      console.error('Failed to mark event as missed', error);
+      Alert.alert(t('common.error'), t('serviceResponse.event.updateError'));
+    }
   };
 
   const handleMarkCancelled = async () => {
     if (!event) return;
-    await cancelRemindersForEvent(event._id);
-    await updateEventMutation.mutateAsync({
-      _id: event._id,
-      data: { status: 'cancelled' },
-    });
-    markCancelled(event._id);
-    setEventStatus('cancelled');
+    try {
+      await updateEventMutation.mutateAsync({
+        _id: event._id,
+        data: { status: 'cancelled' },
+      });
+      await cancelRemindersForEvent(event._id);
+      markCancelled(event._id);
+      setEventStatus('cancelled');
+    } catch (error) {
+      console.error('Failed to cancel event', error);
+      Alert.alert(t('common.error'), t('serviceResponse.event.updateError'));
+    }
   };
 
   const handleResumeReminders = async () => {
     if (!event) return;
-    await scheduleChainForEvent(event);
-    await updateEventMutation.mutateAsync({
-      _id: event._id,
-      data: { status: 'upcoming' },
-    });
-    resetStatus(event._id);
-    setEventStatus('upcoming');
+    try {
+      await updateEventMutation.mutateAsync({
+        _id: event._id,
+        data: { status: 'upcoming' },
+      });
+      await scheduleChainForEvent(event);
+      resetStatus(event._id);
+      setEventStatus('upcoming');
+    } catch (error) {
+      console.error('Failed to resume event reminders', error);
+      Alert.alert(t('common.error'), t('serviceResponse.event.updateError'));
+    }
   };
 
   const footerStyles = useMemo(() => StyleSheet.create({
@@ -408,6 +428,7 @@ export default function EventDetailScreen() {
                     } else {
                       await cancelRemindersForEvent(event._id);
                       resetStatus(event._id);
+                      setEventStatus('cancelled');
                     }
                   }}
                   trackColor={{ false: '#767577', true: COLORS.primary }}
