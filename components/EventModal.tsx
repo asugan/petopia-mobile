@@ -33,14 +33,16 @@ export function EventModal({
   const [loading, setLoading] = React.useState(false);
   const [snackbarVisible, setSnackbarVisible] = React.useState(false);
   const [snackbarMessage, setSnackbarMessage] = React.useState('');
+  const [snackbarType, setSnackbarType] = React.useState<'success' | 'error'>('success');
 
   // React Query hooks for server state
   const createEventMutation = useCreateEvent();
   const updateEventMutation = useUpdateEvent();
   const { data: pets = [] } = usePets();
 
-  const showSnackbar = React.useCallback((message: string) => {
+  const showSnackbar = React.useCallback((message: string, type: 'success' | 'error' = 'success') => {
     setSnackbarMessage(message);
+    setSnackbarType(type);
     setSnackbarVisible(true);
   }, []);
 
@@ -57,11 +59,11 @@ export function EventModal({
           _id: event._id,
           data: { ...apiData, reminderPresetKey }
         });
-        showSnackbar(t('serviceResponse.event.updateSuccess'));
+        showSnackbar(t('serviceResponse.event.updateSuccess'), 'success');
       } else {
         // Yeni event oluşturma
         await createEventMutation.mutateAsync({ ...apiData, reminderPresetKey });
-        showSnackbar(t('serviceResponse.event.createSuccess'));
+        showSnackbar(t('serviceResponse.event.createSuccess'), 'success');
       }
 
       onSuccess();
@@ -69,7 +71,7 @@ export function EventModal({
     } catch (error) {
       const fallbackMessage = event ? t('serviceResponse.event.updateError') : t('serviceResponse.event.createError');
       const errorMessage = error instanceof Error ? error.message : fallbackMessage;
-      showSnackbar(errorMessage);
+      showSnackbar(errorMessage, 'error');
     } finally {
       setLoading(false);
     }
@@ -129,11 +131,7 @@ export function EventModal({
           message={snackbarMessage}
           style={{
             ...styles.snackbar,
-            backgroundColor:
-              snackbarMessage === t('serviceResponse.event.createSuccess') ||
-              snackbarMessage === t('serviceResponse.event.updateSuccess')
-                ? theme.colors.primary
-                : theme.colors.error
+            backgroundColor: snackbarType === 'success' ? theme.colors.primary : theme.colors.error
           }}
         />
       </Portal>

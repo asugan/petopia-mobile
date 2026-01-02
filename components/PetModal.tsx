@@ -29,13 +29,15 @@ export function PetModal({
   const [loading, setLoading] = React.useState(false);
   const [snackbarVisible, setSnackbarVisible] = React.useState(false);
   const [snackbarMessage, setSnackbarMessage] = React.useState('');
+  const [snackbarType, setSnackbarType] = React.useState<'success' | 'error'>('success');
 
   // ✅ React Query hooks for server state
   const createPetMutation = useCreatePet();
   const updatePetMutation = useUpdatePet();
 
-  const showSnackbar = React.useCallback((message: string) => {
+  const showSnackbar = React.useCallback((message: string, type: 'success' | 'error' = 'success') => {
     setSnackbarMessage(message);
+    setSnackbarType(type);
     setSnackbarVisible(true);
   }, []);
 
@@ -48,11 +50,11 @@ export function PetModal({
       if (pet) {
         // Pet güncelleme
         await updatePetMutation.mutateAsync({ _id: pet._id, data: apiData });
-        showSnackbar(t('pets.updateSuccess'));
+        showSnackbar(t('pets.updateSuccess'), 'success');
       } else {
         // Yeni pet oluşturma
         await createPetMutation.mutateAsync(apiData);
-        showSnackbar(t('pets.saveSuccess'));
+        showSnackbar(t('pets.saveSuccess'), 'success');
       }
 
       onSuccess();
@@ -60,11 +62,11 @@ export function PetModal({
     } catch (error) {
       const fallbackMessage = pet ? t('pets.updateError') : t('pets.createError');
       const errorMessage = error instanceof Error ? error.message : fallbackMessage;
-      showSnackbar(errorMessage);
+      showSnackbar(errorMessage, 'error');
     } finally {
       setLoading(false);
     }
-  }, [pet, createPetMutation, updatePetMutation, onSuccess, onClose, showSnackbar, t]);
+  }, [pet, createPetMutation, updatePetMutation, onSuccess, onClose, showSnackbar]);
 
   const handleClose = React.useCallback(() => {
     if (!loading) {
@@ -110,10 +112,7 @@ export function PetModal({
           message={snackbarMessage}
           style={{
             ...styles.snackbar,
-            backgroundColor:
-              snackbarMessage === t('pets.saveSuccess') || snackbarMessage === t('pets.updateSuccess')
-                ? theme.colors.primary
-                : theme.colors.error
+            backgroundColor: snackbarType === 'success' ? theme.colors.primary : theme.colors.error
           }}
         />
       </Portal>

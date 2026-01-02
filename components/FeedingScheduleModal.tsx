@@ -36,13 +36,15 @@ export function FeedingScheduleModal({
   const [loading, setLoading] = React.useState(false);
   const [snackbarVisible, setSnackbarVisible] = React.useState(false);
   const [snackbarMessage, setSnackbarMessage] = React.useState('');
+  const [snackbarType, setSnackbarType] = React.useState<'success' | 'error'>('success');
 
   // React Query hooks for server state
   const createMutation = useCreateFeedingSchedule();
   const updateMutation = useUpdateFeedingSchedule();
 
-  const showSnackbar = React.useCallback((message: string) => {
+  const showSnackbar = React.useCallback((message: string, type: 'success' | 'error' = 'success') => {
     setSnackbarMessage(message);
+    setSnackbarType(type);
     setSnackbarVisible(true);
   }, []);
 
@@ -56,18 +58,18 @@ export function FeedingScheduleModal({
           _id: schedule._id,
           data: apiData,
         });
-        showSnackbar(t('feedingSchedule.updateSuccess'));
+        showSnackbar(t('feedingSchedule.updateSuccess'), 'success');
       } else {
         // Create new schedule
         await createMutation.mutateAsync(apiData);
-        showSnackbar(t('feedingSchedule.createSuccess'));
+        showSnackbar(t('feedingSchedule.createSuccess'), 'success');
       }
 
       onSuccess();
       onClose();
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : t('feedingSchedule.errors.submitFailed');
-      showSnackbar(errorMessage);
+      showSnackbar(errorMessage, 'error');
     } finally {
       setLoading(false);
     }
@@ -127,11 +129,7 @@ export function FeedingScheduleModal({
           message={snackbarMessage}
           style={{
             ...styles.snackbar,
-            backgroundColor:
-              snackbarMessage === t('feedingSchedule.createSuccess') ||
-              snackbarMessage === t('feedingSchedule.updateSuccess')
-                ? theme.colors.primary
-                : theme.colors.error
+            backgroundColor: snackbarType === 'success' ? theme.colors.primary : theme.colors.error
           }}
         />
       </Portal>

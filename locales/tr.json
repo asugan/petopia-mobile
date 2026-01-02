@@ -535,7 +535,6 @@
     "title": "Bir Hata Oluştu",
     "networkError": "İnternet bağlantınızda bir sorun var. Lütfen bağlantınızı kontrol edip tekrar deneyin.",
     "generalError": "Veriler yüklenirken bir hata oluştu. Lütfen tekrar deneyin.",
-    "retry": "Tekrar Dene",
     "unexpectedError": "Beklenmedik bir hata meydana geldi. Lütfen tekrar deneyin."
   },
   "petTypes": {

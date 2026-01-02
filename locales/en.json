@@ -559,7 +559,6 @@
     "title": "An Error Occurred",
     "networkError": "There's a problem with your internet connection. Please check your connection and try again.",
     "generalError": "An error occurred while loading data. Please try again.",
-    "retry": "Try Again",
     "unexpectedError": "Something went wrong. Please try again."
   },
   "petTypes": {

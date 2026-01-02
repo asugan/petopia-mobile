@@ -93,7 +93,7 @@ const ErrorBoundaryDisplay: React.FC<ErrorBoundaryDisplayProps> = ({ error, onRe
             onPress={onRetry}
             style={styles.retryButton}
           >
-            {t('errors.retry')}
+            {t('common.retry')}
           </Button>
         </View>
       </Card>

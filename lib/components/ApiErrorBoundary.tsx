@@ -65,7 +65,7 @@ function ApiErrorFallback({ error, reset }: { error: Error; reset: () => void })
           onPress={reset}
         >
           <Text style={[styles.retryButtonText, { color: theme.colors.onPrimary }]}>
-            {t('errors.retry')}
+            {t('common.retry')}
           </Text>
         </TouchableOpacity>
       </View>
