@@ -255,7 +255,7 @@ export default function LoginScreen() {
       
       <View style={styles.heroContainer}>
         <Image
-          source={{ uri: "https://lh3.googleusercontent.com/aida-public/AB6AXuCwHdb5UEA6-PQNnAd2eyZMDNAoT_sMeZpRKOmjJuAlaz6Woq6uODS4NqrSrcT9WIMBUKvnJzoFhxRyknk028l_0-K-Flmjo2kihkclCJ25VjwfDYddS1pFDgwFZn1GzzLEpLfTCcMEkBXojYXaIutolLikF2T6CcxZXeVFNqdUHRfWwaNp7M7Ht3Syw-XQxlOZI4ZG1BGDr7cpT1bDlu3AAFqiAJ8RJr73mET0UiJZEb8Rd2IFrWFv9mBEqK2jkbZkbNgvIIk35v5G" }}
+          source={require('../../assets/images/login-hero.jpg')}
           style={styles.heroImage}
           contentFit="cover"
           transition={1000}

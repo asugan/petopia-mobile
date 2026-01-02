@@ -114,7 +114,7 @@ export default function OnboardingStep1() {
       {/* Background Section with Image */}
       <View style={styles.imageContainer}>
         <Image
-          source={{ uri: "https://lh3.googleusercontent.com/aida-public/AB6AXuDDvLNHd_lGDVB9hD2VKsLzWkQrNAzRueOkSQO1UNc61uVLpn3Od0G4CAOsth5B0WUXdQXv2G5JlLTOdaBfQM41agELxjkPRlK1b2XSD365aC8X3DLNwQWmepGd55ZPPuRjUy4veRzJWJl7Z2kQlkI7VSBRGuUbmyv_zpaEm0WCX0wZK11OLd06eg3wmZDUdnHi2ABAepkA1_PvTaWatWGingFRfys2PJTYdH7Qk8sTWzRy7X_SrDu4i1jIcqjLpHRyIYZez5peNRUY" }}
+          source={require('../../assets/images/onboarding-hero.jpg')}
           style={styles.image}
           resizeMode="cover"
         />
