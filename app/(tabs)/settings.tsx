@@ -7,8 +7,7 @@ import { accountService } from "@/lib/services/accountService";
 import { notificationService, requestNotificationPermissions } from "@/lib/services/notificationService";
 import { useAuthStore } from "@/stores/authStore";
 import { SupportedCurrency, useUserSettingsStore } from "@/stores/userSettingsStore";
-import { Ionicons } from "@expo/vector-icons";
-import { MaterialCommunityIcons } from "@expo/vector-icons";
+import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import { useTranslation } from "react-i18next";
 import { Alert, Image, Keyboard, KeyboardAvoidingView, Platform, Pressable, ScrollView, StyleSheet, TextInput, View } from "react-native";
@@ -122,6 +121,7 @@ export default function SettingsScreen() {
             await updateBaseCurrency(currency);
             await queryClient.invalidateQueries({ predicate: (query) => query.queryKey[0] === "expenses" });
             await queryClient.invalidateQueries({ predicate: (query) => query.queryKey[0] === "budget" });
+            await queryClient.invalidateQueries({ predicate: (query) => query.queryKey[0] === "health-records" });
           },
         },
       ]

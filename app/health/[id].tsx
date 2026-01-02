@@ -28,6 +28,7 @@ import { HealthRecordForm } from '@/components/forms/HealthRecordForm';
 import LoadingSpinner from '@/components/LoadingSpinner';
 import EmptyState from '@/components/EmptyState';
 import { TURKCE_LABELS } from '@/constants';
+import MoneyDisplay from '@/components/ui/MoneyDisplay';
 
 const { width } = Dimensions.get('window');
 const FOOTER_HEIGHT = 80; // padding(16) + button height(48) + bottom padding(16)
@@ -245,6 +246,9 @@ export default function HealthRecordDetailScreen() {
       fontSize: 12,
       fontWeight: '500',
       color: theme.colors.primary,
+    },
+    paidTextMuted: {
+      color: theme.colors.onSurfaceVariant,
     },
     section: {
       gap: 12,
@@ -472,6 +476,12 @@ export default function HealthRecordDetailScreen() {
   const handleShare = async () => {
     if (!healthRecord) return;
 
+    const recordCurrency = healthRecord.currency || baseCurrency;
+    const recordBaseCurrency = healthRecord.baseCurrency || baseCurrency;
+    const hasCost = healthRecord.cost != null;
+    const hasAmountBase = healthRecord.amountBase != null;
+    const showConverted = hasCost && recordCurrency !== recordBaseCurrency && hasAmountBase;
+
     const shareContent = `
 ${healthRecord.title}
 ${t('pets.type')}: ${TURKCE_LABELS.HEALTH_RECORD_TYPES[healthRecord.type as keyof typeof TURKCE_LABELS.HEALTH_RECORD_TYPES]}
@@ -479,7 +489,7 @@ ${t('events.date')}: ${new Date(healthRecord.date).toLocaleDateString(dateLocale
 
 ${healthRecord.veterinarian ? `${t('healthRecords.veterinarian')}: Dr. ${healthRecord.veterinarian}` : ''}
 ${healthRecord.clinic ? `${t('healthRecords.clinic')}: ${healthRecord.clinic}` : ''}
-${healthRecord.cost ? `${t('healthRecords.cost')}: ${formatCurrency(healthRecord.cost, baseCurrency)}` : ''}
+${hasCost ? `${t('healthRecords.cost')}: ${formatCurrency(healthRecord.cost, recordCurrency)}${showConverted ? ` (≈ ${formatCurrency(healthRecord.amountBase, recordBaseCurrency)})` : ''}` : ''}
 ${healthRecord.description ? `${t('healthRecords.descriptionField')}: ${healthRecord.description}` : ''}
 ${healthRecord.notes ? `${t('common.notes')}: ${healthRecord.notes}` : ''}
     `.trim();
@@ -645,18 +655,30 @@ ${healthRecord.notes ? `${t('common.notes')}: ${healthRecord.notes}` : ''}
               <View style={styles.cardHeader}>
                 <View>
                   <Text style={styles.cardLabel}>{t('healthRecords.cost')}</Text>
-                  <Text style={styles.cardValueSmall}>
-                    {healthRecord.cost ? formatCurrency(healthRecord.cost, baseCurrency) : '-'}
-                  </Text>
+                  <MoneyDisplay
+                    amount={healthRecord.cost}
+                    currency={healthRecord.currency}
+                    baseCurrency={healthRecord.baseCurrency || baseCurrency}
+                    amountBase={healthRecord.amountBase}
+                  />
                 </View>
                 <MaterialCommunityIcons name="cash" size={20} color={theme.colors.primary} />
               </View>
-              {healthRecord.cost ? (
-                <View style={styles.paidBadge}>
-                  <MaterialCommunityIcons name="check-circle" size={14} color={theme.colors.primary} />
-                  <Text style={styles.paidText}>{t('common.paid')}</Text>
-                </View>
-              ) : null}
+              <View style={styles.paidBadge}>
+                <MaterialCommunityIcons
+                  name={healthRecord.cost != null ? 'check-circle' : 'minus-circle'}
+                  size={14}
+                  color={healthRecord.cost != null ? theme.colors.primary : theme.colors.onSurfaceVariant}
+                />
+                <Text
+                  style={[
+                    styles.paidText,
+                    healthRecord.cost == null && styles.paidTextMuted,
+                  ]}
+                >
+                  {healthRecord.cost != null ? t('common.paid') : '-'}
+                </Text>
+              </View>
             </View>
           </View>
 

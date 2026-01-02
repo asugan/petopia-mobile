@@ -6,8 +6,8 @@ import { useTranslation } from 'react-i18next';
 import { Ionicons } from '@expo/vector-icons';
 import { usePets } from '@/lib/hooks/usePets';
 import type { HealthRecord } from '@/lib/types';
-import { formatCurrency } from '@/lib/utils/currency';
 import { useUserSettingsStore } from '@/stores/userSettingsStore';
+import MoneyDisplay from '@/components/ui/MoneyDisplay';
 
 interface HealthOverviewProps {
   healthRecords?: HealthRecord[];
@@ -66,6 +66,8 @@ const HealthOverview: React.FC<HealthOverviewProps> = ({
     date: record.date,
     type: record.type,
     cost: record.cost,
+    currency: record.currency,
+    amountBase: record.amountBase,
   }));
 
   if (loading) {
@@ -119,11 +121,13 @@ const HealthOverview: React.FC<HealthOverviewProps> = ({
                   <Text variant="bodyMedium" style={{ color: theme.colors.onSurface }}>
                     {item.title}{petName ? ` - ${petName}` : ''}
                   </Text>
-                  {item.cost !== undefined && item.cost !== null && (
-                    <Text variant="bodySmall" style={{ color: theme.colors.onSurfaceVariant }}>
-                      {formatCurrency(item.cost, baseCurrency)}
-                    </Text>
-                  )}
+                  <MoneyDisplay
+                    amount={item.cost}
+                    currency={item.currency}
+                    baseCurrency={baseCurrency}
+                    amountBase={item.amountBase}
+                    size="small"
+                  />
                 </View>
                 <Text variant="bodySmall" style={{ color: theme.colors.onSurfaceVariant }}>
                   {formatDate(item.date)}
