@@ -95,6 +95,18 @@ export const futureDateSchema = (
       message: t(messageKey),
     });
 
+export const futureDateStringSchema = (
+  messageKey: string = 'forms.validation.healthRecord.dateFuture'
+) =>
+  z
+    .string()
+    .refine((val) => {
+      const date = parseDateValue(val);
+      return date !== null && date >= new Date();
+    }, {
+      message: t(messageKey),
+    });
+
 /**
  * Past date validation - ensures date is not in the future.
  */

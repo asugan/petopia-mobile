@@ -738,6 +738,8 @@
         "startTimeRequired": "Başlangıç saati zorunludur",
         "endDateTimeRequired": "Hem bitiş tarihi hem de saati gereklidir",
         "endAfterStart": "Bitiş zamanı başlangıçtan en az 15 dakika sonra olmalıdır",
+        "invalidStartDateTime": "Başlangıç tarih/saat formatı geçersiz",
+        "invalidEndDateTime": "Bitiş tarih/saat formatı geçersiz",
         "startInFuture": "Başlangıç zamanı gelecekte bir tarih olmalıdır",
         "reminderTooFar": "Hatırlatıcı 1 yıldan uzun süreli etkinlikler için ayarlanamaz",
         "vaccineNameRequired": "Aşı adı zorunludur",

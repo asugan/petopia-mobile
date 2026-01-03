@@ -1,6 +1,11 @@
 import { z } from 'zod';
 import { objectIdSchema, currencyValidator, optionalUrlValidator } from './core/validators';
-import { utcDateStringSchema, futureDateSchema, dateRangeSchema } from './core/dateSchemas';
+import {
+  utcDateStringSchema,
+  futureDateSchema,
+  futureDateStringSchema,
+  dateRangeSchema,
+} from './core/dateSchemas';
 import { HEALTH_RECORD_TYPES, CURRENCIES } from './core/constants';
 import { t } from './core/i18n';
 import { toUTCWithOffset } from '@/lib/utils/dateConversion';
@@ -42,6 +47,11 @@ const BaseHealthRecordSchema = () => {
 
     date: z
       .union([z.string(), z.date()])
+      .pipe(dateRangeSchema({
+        maxYearsAgo: 30,
+        allowFuture: false,
+        messageKey: 'forms.validation.healthRecord.dateInvalidRange',
+      }))
       .transform((val): string => {
         if (val instanceof Date) {
           return toUTCWithOffset(val);
@@ -53,16 +63,12 @@ const BaseHealthRecordSchema = () => {
           return val;
         }
         throw new Error('Invalid date type');
-      })
-      .pipe(dateRangeSchema({
-        maxYearsAgo: 30,
-        allowFuture: false,
-        messageKey: 'forms.validation.healthRecord.dateInvalidRange',
-      })),
+      }),
 
     nextVisitDate: z
       .union([z.string(), z.date()])
       .optional()
+      .pipe(z.union([z.undefined(), futureDateSchema('forms.validation.healthRecord.startInFuture')]))
       .transform((val): string | undefined => {
         if (!val) return undefined;
         if (val instanceof Date) {
@@ -75,8 +81,7 @@ const BaseHealthRecordSchema = () => {
           return val;
         }
         throw new Error('Invalid date type');
-      })
-      .pipe(futureDateSchema('forms.validation.healthRecord.startInFuture').optional()),
+      }),
 
     veterinarian: z
       .string()
@@ -242,7 +247,9 @@ const NextVisitDateUpdateSchema = z
   .pipe(z.union([
     z.undefined(),
     z.null(),
-    utcDateStringSchema().pipe(futureDateSchema('forms.validation.healthRecord.startInFuture')),
+    utcDateStringSchema().pipe(
+      futureDateStringSchema('forms.validation.healthRecord.startInFuture')
+    ),
   ]));
 
 export const HealthRecordUpdateSchema = () =>

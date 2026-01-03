@@ -1,9 +1,9 @@
 import { z } from 'zod';
-import { EVENT_TYPES } from '../../constants';
-import { combineDateTimeToISO } from '../utils/dateConversion';
-import { objectIdSchema } from './core/validators';
-import { utcDateStringSchema, futureDateSchema } from './core/dateSchemas';
-import { t } from './core/i18n';
+import { EVENT_TYPES } from '@/constants';
+import { combineDateTimeToISO } from '@/lib/utils/dateConversion';
+import { utcDateStringSchema, futureDateSchema } from '@/lib/schemas/core/dateSchemas';
+import { t } from '@/lib/schemas/core/i18n';
+import { objectIdSchema } from '@/lib/schemas/core/validators';
 
 // Re-export constants for convenience
 export { EVENT_TYPES };
@@ -114,7 +114,7 @@ export const eventFormSchema = () =>
         } catch {
           ctx.addIssue({
             code: z.ZodIssueCode.custom,
-            message: t('forms.validation.event.endAfterStart'),
+            message: t('forms.validation.event.invalidStartDateTime'),
             path: ['startDate', 'startTime'],
           });
           return;
@@ -126,7 +126,7 @@ export const eventFormSchema = () =>
         } catch {
           ctx.addIssue({
             code: z.ZodIssueCode.custom,
-            message: t('forms.validation.event.endAfterStart'),
+            message: t('forms.validation.event.invalidEndDateTime'),
             path: ['endDate', 'endTime'],
           });
           return;
@@ -154,7 +154,7 @@ export const eventFormSchema = () =>
         } catch {
           ctx.addIssue({
             code: z.ZodIssueCode.custom,
-            message: t('forms.validation.event.startInFuture'),
+            message: t('forms.validation.event.invalidStartDateTime'),
             path: ['startDate', 'startTime'],
           });
           return;
@@ -181,7 +181,7 @@ export const eventFormSchema = () =>
         } catch {
           ctx.addIssue({
             code: z.ZodIssueCode.custom,
-            message: t('forms.validation.event.reminderTooFar'),
+            message: t('forms.validation.event.invalidStartDateTime'),
             path: ['startDate', 'startTime'],
           });
           return;

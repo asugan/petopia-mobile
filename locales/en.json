@@ -762,6 +762,8 @@
         "startTimeRequired": "Start time is required",
         "endDateTimeRequired": "End date and time are both required",
         "endAfterStart": "End time must be at least 15 minutes after start time",
+        "invalidStartDateTime": "Invalid start date/time format",
+        "invalidEndDateTime": "Invalid end date/time format",
         "startInFuture": "Start time must be in the future",
         "reminderTooFar": "Reminders cannot be set for events more than 1 year away",
         "vaccineNameRequired": "Vaccine name is required",
