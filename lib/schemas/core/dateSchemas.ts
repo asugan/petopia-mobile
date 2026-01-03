@@ -88,7 +88,7 @@ export const futureDateSchema = () =>
     .union([z.string(), z.date()])
     .refine((val) => {
       const date = parseDateValue(val);
-      return Boolean(date) && date >= new Date();
+      return date !== null && date >= new Date();
     }, {
       message: t('forms.validation.healthRecord.dateFuture'),
     });
@@ -101,7 +101,7 @@ export const pastDateSchema = () =>
     .union([z.string(), z.date()])
     .refine((val) => {
       const date = parseDateValue(val);
-      return Boolean(date) && date <= new Date();
+      return date !== null && date <= new Date();
     }, {
       message: t('forms.validation.healthRecord.dateFuture'),
     });
