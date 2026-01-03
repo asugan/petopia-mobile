@@ -1,4 +1,5 @@
 import { Ionicons } from '@expo/vector-icons';
+import { ThemeColors } from '@/lib/theme/types';
 
 export type Gender = 'male' | 'female' | 'other';
 
@@ -15,15 +16,15 @@ export const getGenderIcon = (gender: Gender): keyof typeof Ionicons.glyphMap =>
   }
 };
 
-export const getGenderColor = (gender?: Gender): string => {
+export const getGenderColor = (gender: Gender, themeColors: ThemeColors): string => {
   switch (gender) {
     case 'male':
-      return '#90CAF9'; // Light Blue
+      return themeColors.genderMale;
     case 'female':
-      return '#F48FB1'; // Pink
+      return themeColors.genderFemale;
     case 'other':
-      return '#A5D6A7'; // Light Green
+      return themeColors.genderOther;
     default:
-      return '#E0E0E0'; // Gray
+      return themeColors.genderOther;
   }
 };

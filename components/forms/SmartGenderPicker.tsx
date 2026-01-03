@@ -19,7 +19,7 @@ export const SmartGenderPicker = ({ name, label, testID }: SmartGenderPickerProp
       render={({ field: { onChange, value }, fieldState: { error } }) => (
         <View style={styles.container}>
           <GenderPicker
-            selectedGender={value as string}
+            selectedGender={value}
             onSelect={onChange}
             label={label}
             error={error?.message}

@@ -9,6 +9,7 @@ import { useTheme } from '@/lib/theme';
 import { useSubscription } from '@/lib/hooks/useSubscription';
 import { SubscriptionCard } from '@/components/subscription';
 import { SuccessSubscriptionModal } from '@/components/subscription/SuccessSubscriptionModal';
+import { subscriptionStyles } from '@/lib/styles/subscription';
 
 /**
  * Subscription screen with RevenueCat paywall
@@ -99,10 +100,10 @@ export default function SubscriptionScreen() {
         <SubscriptionCard onUpgrade={handlePresentPaywall} />
 
         {/* Subscription Note */}
-        <Text 
-          variant="bodySmall" 
+        <Text
+          variant="bodySmall"
           style={[
-            styles.subscriptionNote, 
+            subscriptionStyles.note,
             { color: theme.colors.onSurfaceVariant }
           ]}
         >
@@ -227,12 +228,5 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: 8,
     marginTop: 8,
-  },
-  subscriptionNote: {
-    marginTop: 4,
-    marginBottom: 16,
-    lineHeight: 16,
-    textAlign: 'center',
-    opacity: 0.8,
   },
 });

@@ -718,6 +718,7 @@
       "weightPlaceholder": "Enter weight (optional)",
       "selectType": "Select pet type",
       "selectGender": "Select gender (optional)",
+      "selectGenderHint": "Tap to select this gender option",
       "stepIndicator": "Step {{current}} of {{total}}",
       "steps": {
         "basicInfo": "Basic Information",

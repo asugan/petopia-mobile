@@ -20,6 +20,7 @@ import CurrencyPicker from "@/components/CurrencyPicker";
 import LoadingSpinner from "@/components/LoadingSpinner";
 import { LanguageSettings } from "@/components/LanguageSettings";
 import { NotificationPermissionCard } from "@/components/NotificationPermissionPrompt";
+import { subscriptionStyles } from "@/lib/styles/subscription";
 
 type ModalState = "none" | "contact" | "deleteWarning" | "deleteConfirm";
 
@@ -301,10 +302,10 @@ export default function SettingsScreen() {
         <SubscriptionCard />
         
         {/* Subscription Note */}
-        <Text 
-          variant="bodySmall" 
+        <Text
+          variant="bodySmall"
           style={[
-            styles.subscriptionNote, 
+            subscriptionStyles.note,
             { color: theme.colors.onSurfaceVariant }
           ]}
         >
@@ -938,12 +939,5 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     letterSpacing: 6,
     backgroundColor: 'transparent',
-  },
-  subscriptionNote: {
-    marginTop: 4,
-    marginBottom: 16,
-    lineHeight: 16,
-    textAlign: 'center',
-    opacity: 0.8,
   },
 });

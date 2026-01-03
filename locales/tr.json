@@ -694,6 +694,7 @@
       "weightPlaceholder": "Kilo girin (opsiyonel)",
       "selectType": "Pet türünü seçin",
       "selectGender": "Cinsiyet seçin (opsiyonel)",
+      "selectGenderHint": "Bu cinsiyet seçeneğini seçmek için dokunun",
       "stepIndicator": "Adım {{current}} / {{total}}",
       "steps": {
         "basicInfo": "Temel Bilgiler",

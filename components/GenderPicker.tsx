@@ -41,7 +41,7 @@ const GenderPicker: React.FC<GenderPickerProps> = ({
       >
         {genders.map((gender) => {
           const isSelected = selectedGender === gender;
-          const genderColor = getGenderColor(gender);
+          const genderColor = getGenderColor(gender, theme.colors);
           const icon = getGenderIcon(gender);
 
           return (
@@ -49,6 +49,11 @@ const GenderPicker: React.FC<GenderPickerProps> = ({
               key={gender}
               selected={isSelected}
               onPress={() => onSelect(gender)}
+              accessibilityRole="button"
+              accessibilityState={{ selected: isSelected }}
+              accessibilityLabel={`${t('petForm.selectGender')}, ${t(`gender.${gender}`, gender)}`}
+              accessibilityHint={t('petForm.selectGenderHint')}
+              testID={`${testID}-${gender}`}
               style={[
                 styles.chip,
                 isSelected && { backgroundColor: genderColor },
@@ -90,9 +95,7 @@ const styles = StyleSheet.create({
     gap: 8,
     paddingVertical: 4,
   },
-  chip: {
-    marginRight: 8,
-  },
+  chip: {},
   error: {
     marginTop: 4,
     marginLeft: 4,

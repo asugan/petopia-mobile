@@ -28,6 +28,8 @@ export const lightColors: ThemeColors = {
   genderMaleContainer: "#DBEAFE",
   genderFemale: "#EC4899",
   genderFemaleContainer: "#FCE7F3",
+  genderOther: "#10B981",
+  genderOtherContainer: "#D1FAE5",
 
   overlay: "rgba(0,0,0,0.3)",
   overlayLight: "rgba(255,255,255,0.1)",
@@ -96,6 +98,8 @@ export const darkColors: ThemeColors = {
   genderMaleContainer: "#1E3A5F",
   genderFemale: "#F472B6",
   genderFemaleContainer: "#831843",
+  genderOther: "#34D399",
+  genderOtherContainer: "#064E3B",
 
   overlay: "rgba(0,0,0,0.5)",
   overlayLight: "rgba(255,255,255,0.1)",
