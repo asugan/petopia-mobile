@@ -1,172 +1,39 @@
 import { z } from 'zod';
-import { toUTCWithOffset, isValidUTCISOString } from '@/lib/utils/dateConversion';
-import { createObjectIdSchema, t } from './createZodI18n';
+import { BasePetSchema, PetFormSchema } from './common/basePetSchema';
+import { objectIdSchema } from './core/validators';
+import { dateStringSchema } from './core/dateSchemas';
+import { t } from './core/i18n';
 
-// Custom validation regex for Turkish characters
-const TURKISH_NAME_REGEX = /^[a-zA-ZçÇğĞıİöÖşŞüÜ\s]+$/;
-
-// Custom validation functions
-const validateBirthDate = (dateString: string) => {
-  // Ensure the date is valid UTC ISO string
-  const date = new Date(dateString);
-  if (isNaN(date.getTime())) return false;
-
-  const now = new Date();
-  const minDate = new Date(now.getFullYear() - 30, now.getMonth(), now.getDate()); // 30 years ago
-  return date <= now && date >= minDate;
-};
-
-const validateTurkishName = (name: string) => {
-  return TURKISH_NAME_REGEX.test(name.trim());
-};
-
-// Base pet schema for common validations
-const BasePetSchema = () => z.object({
-  name: z
-    .string()
-    .min(2, { message: t('forms.validation.pet.nameMin') })
-    .max(50, { message: t('forms.validation.pet.nameMax') })
-    .regex(TURKISH_NAME_REGEX, { message: t('forms.validation.pet.nameInvalidChars') })
-    .transform(val => val.trim()),
-
-  type: z.enum(['dog', 'cat', 'bird', 'rabbit', 'hamster', 'fish', 'reptile', 'other'] as const, {
-    message: t('forms.validation.pet.typeRequired'),
-  }),
-
-  breed: z
-    .string()
-    .max(100, { message: t('forms.validation.pet.breedMax') })
-    .optional()
-    .transform(val => val?.trim() || undefined),
-
-  birthDate: z
-    .union([z.string(), z.date()])
-    .transform((val): string => {
-      // If it's a Date object, convert to UTC ISO
-      if (val instanceof Date) {
-        return toUTCWithOffset(val);
-      }
-      // If it's a string without timezone info, convert to UTC
-      if (typeof val === 'string') {
-        if (!val.endsWith('Z') && !val.includes('+')) {
-          return toUTCWithOffset(new Date(val));
-        }
-        return val;
-      }
-      throw new Error('Invalid date type');
-    })
-    .refine((val) => isValidUTCISOString(val), {
-      params: { i18nKey: 'forms.validation.pet.birthDateUtcInvalid' },
-    })
-    .refine(validateBirthDate, {
-      params: { i18nKey: 'forms.validation.pet.birthDateRange' },
-    })
-    .optional(),
-
-  weight: z
-    .number()
-    .positive({ message: t('forms.validation.pet.weightPositive') })
-    .min(0.1, { message: t('forms.validation.pet.weightMin') })
-    .max(200, { message: t('forms.validation.pet.weightMax') })
-    .optional(),
-
-  gender: z
-    .enum(['male', 'female', 'other'] as const, {
-      message: t('forms.validation.pet.genderRequired'),
-    })
-    .optional(),
-
-  profilePhoto: z
-    .string()
-    .optional()
-    .or(z.literal('').transform(() => undefined))
-    .refine((val) => {
-      if (!val) return true; // Optional field
-      // Local URI veya URL formatı kontrolü
-      return val.startsWith('file://') || val.startsWith('/') ||
-             val.startsWith('data:image/') || val.startsWith('http');
-    }, {
-      params: { i18nKey: 'forms.validation.pet.photoInvalid' },
-    })
-});
-
-type BasePetInput = z.infer<ReturnType<typeof BasePetSchema>>;
+// Re-export common base schemas for convenience
+export { BasePetSchema, PetFormSchema };
 
 // Full Pet schema including server-side fields
-export const PetSchema = () => {
-  const objectIdSchema = createObjectIdSchema();
-
-  return BasePetSchema().extend({
-    _id: objectIdSchema,
-    createdAt: z.string().datetime(),
-    updatedAt: z.string().datetime(),
+export const PetSchema = () =>
+  BasePetSchema().extend({
+    _id: objectIdSchema(),
+    createdAt: dateStringSchema(),
+    updatedAt: dateStringSchema(),
   });
-};
 
 // Schema for form input (before transformation)
-export const PetCreateFormSchema = () => BasePetSchema().extend({
-  birthDate: z
-    .union([z.string(), z.date()])
-    .refine((val) => {
-      if (val instanceof Date) return !isNaN(val.getTime());
-      if (typeof val === 'string') {
-        const date = new Date(val);
-        return !isNaN(date.getTime());
-      }
-      return false;
-    }, {
-      params: { i18nKey: 'forms.validation.pet.birthDateInvalid' },
-    })
-    .refine((val) => {
-      const date = val instanceof Date ? val : new Date(val);
-      const now = new Date();
-      const minDate = new Date(now.getFullYear() - 30, now.getMonth(), now.getDate());
-      return date <= now && date >= minDate;
-    }, {
-      params: { i18nKey: 'forms.validation.pet.birthDateRange' },
-    })
-    .optional(),
-});
+export const PetCreateFormSchema = () => PetFormSchema();
 
 // Schema for creating a new pet (with transformation)
-export const PetCreateSchema = () => BasePetSchema().refine(
-  (data: BasePetInput) => {
-    const nameValid = data.name && data.name.trim().length >= 2;
-    const typeValid = !!data.type;
-    return nameValid && typeValid;
-  },
-  {
-    params: { i18nKey: 'forms.validation.pet.nameAndTypeRequired' },
-    path: ["name"]
-  }
-);
+export const PetCreateSchema = () =>
+  BasePetSchema().refine(
+    (data) => {
+      const nameValid = data.name && data.name.trim().length >= 2;
+      const typeValid = !!data.type;
+      return nameValid && typeValid;
+    },
+    {
+      params: { i18nKey: 'forms.validation.pet.nameAndTypeRequired' },
+      path: ['name'],
+    }
+  );
 
 // Schema for updating an existing pet form (before transformation)
-export const PetUpdateFormSchema = () => BasePetSchema().partial().extend({
-  birthDate: z
-    .union([z.string(), z.date()])
-    .refine((val) => {
-      if (!val) return true; // Optional field
-      if (val instanceof Date) return !isNaN(val.getTime());
-      if (typeof val === 'string') {
-        const date = new Date(val);
-        return !isNaN(date.getTime());
-      }
-      return false;
-    }, {
-      params: { i18nKey: 'forms.validation.pet.birthDateInvalid' },
-    })
-    .refine((val) => {
-      if (!val) return true; // Optional field
-      const date = val instanceof Date ? val : new Date(val);
-      const now = new Date();
-      const minDate = new Date(now.getFullYear() - 30, now.getMonth(), now.getDate());
-      return date <= now && date >= minDate;
-    }, {
-      params: { i18nKey: 'forms.validation.pet.birthDateRange' },
-    })
-    .optional(),
-});
+export const PetUpdateFormSchema = () => PetFormSchema().partial();
 
 // Schema for updating an existing pet (with transformation)
 export const PetUpdateSchema = () => BasePetSchema().partial();
@@ -186,9 +53,9 @@ export type ValidationError = {
 
 // Helper function to format validation errors
 export const formatValidationErrors = (error: z.ZodError): ValidationError[] => {
-  return error.issues.map(err => ({
+  return error.issues.map((err) => ({
     path: err.path.map(String),
-    message: err.message
+    message: err.message,
   }));
 };
 
@@ -212,5 +79,5 @@ export const TurkishPetValidations = {
   validateTurkishPostalCode: (postalCode: string): boolean => {
     const postalCodeRegex = /^\d{5}$/;
     return postalCodeRegex.test(postalCode);
-  }
+  },
 };

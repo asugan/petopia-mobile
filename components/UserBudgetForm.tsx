@@ -47,7 +47,11 @@ const UserBudgetForm: React.FC<UserBudgetFormProps> = ({
     mode: "onChange",
   });
 
-  const { control, handleSubmit, formState: { isValid }, trigger } = form;
+  const { control, handleSubmit, formState: { isValid }, trigger, setValue } = form;
+
+  React.useEffect(() => {
+    setValue("currency", baseCurrency, { shouldValidate: true });
+  }, [baseCurrency, setValue]);
 
   const handleFormSubmit = React.useCallback(
     (data: SetUserBudgetInput) => {
@@ -122,6 +126,7 @@ const UserBudgetForm: React.FC<UserBudgetFormProps> = ({
               label={t("budgets.monthlyAmount", "Monthly Amount")}
               placeholder={t("budgets.enterAmount", "Enter amount")}
               testID="budget-amount-input"
+              currency={baseCurrency}
             />
           </FormSection>
         )}

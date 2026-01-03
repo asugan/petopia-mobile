@@ -1,38 +1,39 @@
-import { z } from "zod";
-import { CURRENCIES } from "./expenseSchema";
-import { t } from "./createZodI18n";
+import { z } from 'zod';
+import { amountValidator, currencyValidator } from './core/validators';
+import { CURRENCIES } from './core/constants';
+import { t } from './core/i18n';
+
+// Re-export constants for convenience
+export { CURRENCIES };
+
+export type Currency = (typeof CURRENCIES)[number];
 
 // Schema for setting/updating user budget (simplified)
-export const SetUserBudgetSchema = () => z
-  .object({
-    amount: z
-      .number({ message: t("forms.validation.budget.amountInvalidType") })
-      .positive({ message: t("forms.validation.budget.amountPositive") })
-      .min(1, { message: t("forms.validation.budget.amountMin") })
-      .max(10000000, { message: t("forms.validation.budget.amountMax") }),
+export const SetUserBudgetSchema = () =>
+  z
+    .object({
+      amount: amountValidator(),
 
-    currency: z.enum(CURRENCIES, {
-      message: t("forms.validation.budget.currencyInvalid"),
-    }),
+      currency: currencyValidator(),
 
-    alertThreshold: z
-      .number()
-      .min(0, { message: t("forms.validation.budget.alertThresholdMin") })
-      .max(1, { message: t("forms.validation.budget.alertThresholdMax") })
-      .default(0.8)
-      .optional(),
+      alertThreshold: z
+        .number()
+        .min(0, { message: t('forms.validation.budget.alertThresholdMin') })
+        .max(1, { message: t('forms.validation.budget.alertThresholdMax') })
+        .default(0.8)
+        .optional(),
 
-    isActive: z.boolean().default(true).optional(),
-  })
-  .refine(
-    (data) => {
-      return data.amount > 0 && data.currency;
-    },
-    {
-      params: { i18nKey: "forms.validation.budget.amountAndCurrencyRequired" },
-      path: ["amount"],
-    }
-  );
+      isActive: z.boolean().default(true).optional(),
+    })
+    .refine(
+      (data) => {
+        return data.amount > 0 && data.currency;
+      },
+      {
+        params: { i18nKey: 'forms.validation.budget.amountAndCurrencyRequired' },
+        path: ['amount'],
+      }
+    );
 
 // Type exports for TypeScript
 export type SetUserBudgetInput = z.infer<ReturnType<typeof SetUserBudgetSchema>>;
@@ -54,10 +55,7 @@ export const formatUserBudgetValidationErrors = (
 };
 
 // Helper to calculate percentage of budget used
-export const calculateBudgetPercentage = (
-  spent: number,
-  limit: number
-): number => {
+export const calculateBudgetPercentage = (spent: number, limit: number): number => {
   if (limit <= 0) return 0;
   return Math.min((spent / limit) * 100, 100);
 };
@@ -80,14 +78,14 @@ export const formatBudgetAmount = (
   locale?: string
 ): string => {
   const currencySymbols: Record<string, string> = {
-    TRY: "₺",
-    USD: "$",
-    EUR: "€",
-    GBP: "£",
+    TRY: '₺',
+    USD: '$',
+    EUR: '€',
+    GBP: '£',
   };
 
   const symbol = currencySymbols[currency] || currency;
-  const targetLocale = locale === "tr" ? "tr-TR" : "en-US";
+  const targetLocale = locale === 'tr' ? 'tr-TR' : 'en-US';
 
   return `${symbol}${amount.toLocaleString(targetLocale, {
     minimumFractionDigits: 2,

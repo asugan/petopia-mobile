@@ -41,7 +41,6 @@ export function PetModal({
     setSnackbarVisible(true);
   }, []);
 
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   const handleSubmit = React.useCallback(async (data: PetCreateFormInput) => {
     setLoading(true);
     try {
@@ -67,7 +66,7 @@ export function PetModal({
     } finally {
       setLoading(false);
     }
-  }, [pet, createPetMutation, updatePetMutation, onSuccess, onClose, showSnackbar]);
+  }, [pet, createPetMutation, updatePetMutation, onSuccess, onClose, showSnackbar, t]);
 
   const handleClose = React.useCallback(() => {
     if (!loading) {
