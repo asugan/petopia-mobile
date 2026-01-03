@@ -11,8 +11,10 @@ export const getGenderIcon = (gender: Gender): keyof typeof Ionicons.glyphMap =>
       return 'female';
     case 'other':
       return 'person';
-    default:
+    default: {
+      const _exhaustiveCheck: never = gender;
       return 'person';
+    }
   }
 };
 
@@ -24,7 +26,9 @@ export const getGenderColor = (gender: Gender, themeColors: ThemeColors): string
       return themeColors.genderFemale;
     case 'other':
       return themeColors.genderOther;
-    default:
+    default: {
+      const _exhaustiveCheck: never = gender;
       return themeColors.genderOther;
+    }
   }
 };
