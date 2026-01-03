@@ -20,6 +20,7 @@ import CurrencyPicker from "@/components/CurrencyPicker";
 import LoadingSpinner from "@/components/LoadingSpinner";
 import { LanguageSettings } from "@/components/LanguageSettings";
 import { NotificationPermissionCard } from "@/components/NotificationPermissionPrompt";
+import { subscriptionStyles } from "@/lib/styles/subscription";
 
 type ModalState = "none" | "contact" | "deleteWarning" | "deleteConfirm";
 
@@ -299,6 +300,17 @@ export default function SettingsScreen() {
 
         {/* Subscription Status */}
         <SubscriptionCard />
+        
+        {/* Subscription Note */}
+        <Text
+          variant="bodySmall"
+          style={[
+            subscriptionStyles.note,
+            { color: theme.colors.onSurfaceVariant }
+          ]}
+        >
+          {t('subscription.note')}
+        </Text>
 
         {/* Theme Settings */}
         <Card

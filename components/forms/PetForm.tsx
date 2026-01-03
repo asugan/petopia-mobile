@@ -4,14 +4,13 @@ import { FormProvider } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import { Button, Text } from '@/components/ui';
 import { useTheme } from '@/lib/theme';
-import { createGenderOptions } from '../../constants';
 import { usePetForm } from '../../hooks/usePetForm';
 import { PetCreateFormInput } from '../../lib/schemas/petSchema';
 import { Pet } from '../../lib/types';
 import { FormSection } from './FormSection';
 import { FormWeightInput } from './FormWeightInput';
 import { SmartDatePicker } from './SmartDatePicker';
-import { SmartDropdown } from './SmartDropdown';
+import { SmartGenderPicker } from './SmartGenderPicker';
 import { SmartInput } from './SmartInput';
 import { SmartPetPhotoPicker } from './SmartPetPhotoPicker';
 import { SmartPetTypePicker } from './SmartPetTypePicker';
@@ -70,9 +69,6 @@ export function PetForm({
   );
 
   const isEditMode = !!pet;
-
-  // Create dropdown options using i18n helper functions
-  const genderOptions = React.useMemo(() => createGenderOptions(t), [t]);
 
   const steps = React.useMemo(
     () => [
@@ -180,12 +176,10 @@ export function PetForm({
         {currentStep === 1 && (
           <FormSection title={t('forms.petForm.sections.physicalDetails')}>
             {/* Gender */}
-            <SmartDropdown
+            <SmartGenderPicker
               name="gender"
-              options={genderOptions}
-              placeholder={t('forms.petForm.genderPlaceholder')}
               label={t('forms.petForm.gender')}
-              testID="pet-gender-dropdown"
+              testID="pet-gender-picker"
             />
 
             {/* Birth Date */}

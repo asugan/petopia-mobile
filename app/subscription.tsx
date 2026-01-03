@@ -9,6 +9,7 @@ import { useTheme } from '@/lib/theme';
 import { useSubscription } from '@/lib/hooks/useSubscription';
 import { SubscriptionCard } from '@/components/subscription';
 import { SuccessSubscriptionModal } from '@/components/subscription/SuccessSubscriptionModal';
+import { subscriptionStyles } from '@/lib/styles/subscription';
 
 /**
  * Subscription screen with RevenueCat paywall
@@ -97,6 +98,17 @@ export default function SubscriptionScreen() {
       <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
         {/* Current Status Card */}
         <SubscriptionCard onUpgrade={handlePresentPaywall} />
+
+        {/* Subscription Note */}
+        <Text
+          variant="bodySmall"
+          style={[
+            subscriptionStyles.note,
+            { color: theme.colors.onSurfaceVariant }
+          ]}
+        >
+          {t('subscription.note')}
+        </Text>
 
         {/* Features List - Show if not subscribed */}
         {!isSubscribed && (

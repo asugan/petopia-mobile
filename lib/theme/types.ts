@@ -32,6 +32,8 @@ export interface ThemeColors {
   genderMaleContainer: string;
   genderFemale: string;
   genderFemaleContainer: string;
+  genderOther: string;
+  genderOtherContainer: string;
 
   overlay: string;
   overlayLight: string;
