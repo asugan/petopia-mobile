@@ -32,7 +32,7 @@ export const eventFormSchema = () =>
           error: t('forms.validation.event.petRequired'),
         })
         .min(1, { message: t('forms.validation.event.petRequired') })
-        .regex(/^[0-9a-fA-F]{24}$/, { message: t('forms.validation.objectIdInvalid') }),
+        .pipe(objectIdSchema()),
 
       type: z.enum(Object.values(EVENT_TYPES) as [string, ...string[]], {
         message: t('forms.validation.event.typeInvalid'),
