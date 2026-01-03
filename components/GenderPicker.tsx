@@ -51,8 +51,8 @@ const GenderPicker: React.FC<GenderPickerProps> = ({
               onPress={() => onSelect(gender)}
               accessibilityRole="button"
               accessibilityState={{ selected: isSelected }}
-              accessibilityLabel={`${t('petForm.selectGender')}, ${t(`gender.${gender}`, gender)}`}
-              accessibilityHint={t('petForm.selectGenderHint')}
+              accessibilityLabel={`${t('forms.petForm.selectGender')}, ${t(`gender.${gender}`, gender)}`}
+              accessibilityHint={t('forms.petForm.selectGenderHint')}
               testID={`${testID}-${gender}`}
               style={[
                 styles.chip,

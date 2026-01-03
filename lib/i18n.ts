@@ -35,6 +35,7 @@ i18n
     lng: getDeviceLanguage(), // Use device language as default
     fallbackLng: 'en', // Fallback to English
     debug: __DEV__, // Enable debug in development
+    supportedLngs: ['en', 'tr'],
 
     interpolation: {
       escapeValue: false, // React Native already safe from XSS
@@ -42,9 +43,8 @@ i18n
 
     react: {
       useSuspense: false, // Disable suspense mode for React Native
+      bindI18n: 'languageChanged',
     },
-
-    compatibilityJSON: 'v4', // Use v4 format for latest compatibility
   });
 
 export default i18n;
