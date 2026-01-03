@@ -859,6 +859,8 @@
         "dateInvalid": "Please enter a valid date",
         "dateUtcInvalid": "Record date must be in valid UTC format",
         "dateFuture": "Date cannot be in the future",
+        "datePast": "Date cannot be in the past",
+        "startInFuture": "Next visit date must be in the future",
         "dateInvalidRange": "Date cannot be in the future or more than {{maxYears}} years ago",
         "veterinarianMax": "Veterinarian name cannot exceed 100 characters",
         "veterinarianInvalid": "Veterinarian name contains invalid characters",

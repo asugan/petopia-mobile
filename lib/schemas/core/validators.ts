@@ -1,29 +1,6 @@
 import { z } from 'zod';
-import i18n from '../../i18n';
 import { VALIDATION_LIMITS, CURRENCIES, PAYMENT_METHODS } from './constants';
-
-/**
- * Gets the translation function dynamically with fallback.
- */
-const getT = () => {
-  try {
-    const translate = i18n.t;
-    if (typeof translate !== 'function') {
-      return (key: string, _options?: Record<string, unknown>) => key;
-    }
-    return translate.bind(i18n);
-  } catch {
-    return (key: string, _options?: Record<string, unknown>) => key;
-  }
-};
-
-/**
- * Translation function wrapper for validators.
- */
-export const t = (key: string, options?: Record<string, unknown>) => {
-  const translate = getT();
-  return translate(key, options);
-};
+import { t } from './i18n';
 
 /**
  * MongoDB ObjectId validation schema (24-character hex string).
@@ -86,9 +63,11 @@ export const weightValidator = () =>
 /**
  * Time format validator (HH:MM 24-hour format).
  */
-export const timeFormatValidator = () =>
+export const timeFormatValidator = (
+  messageKey: string = 'forms.validation.feedingSchedule.timeInvalidFormat'
+) =>
   z.string().regex(VALIDATION_LIMITS.timeFormat, {
-    message: t('forms.validation.feedingSchedule.timeInvalidFormat'),
+    message: t(messageKey),
   });
 
 /**

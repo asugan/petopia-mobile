@@ -21,9 +21,10 @@ const BaseHealthRecordSchema = () => {
   );
 
   return z.object({
-    petId: objectIdSchema().refine(() => true, {
-      params: { i18nKey: 'forms.validation.healthRecord.petRequired' },
-    }),
+    petId: z
+      .string()
+      .min(1, { message: t('forms.validation.healthRecord.petRequired') })
+      .pipe(objectIdSchema()),
 
     type: HealthRecordTypeEnum,
 
@@ -53,14 +54,11 @@ const BaseHealthRecordSchema = () => {
         }
         throw new Error('Invalid date type');
       })
-      .refine((val) => {
-        const date = new Date(val);
-        const now = new Date();
-        const minDate = new Date(now.getFullYear() - 30, now.getMonth(), now.getDate());
-        return date <= now && date >= minDate;
-      }, {
-        params: { i18nKey: 'forms.validation.healthRecord.dateFuture' },
-      }),
+      .pipe(dateRangeSchema({
+        maxYearsAgo: 30,
+        allowFuture: false,
+        messageKey: 'forms.validation.healthRecord.dateInvalidRange',
+      })),
 
     nextVisitDate: z
       .union([z.string(), z.date()])
@@ -78,13 +76,7 @@ const BaseHealthRecordSchema = () => {
         }
         throw new Error('Invalid date type');
       })
-      .refine((val) => {
-        if (!val) return true;
-        const date = new Date(val);
-        return !isNaN(date.getTime()) && date > new Date();
-      }, {
-        params: { i18nKey: 'forms.validation.event.startInFuture' },
-      }),
+      .pipe(futureDateSchema('forms.validation.healthRecord.startInFuture').optional()),
 
     veterinarian: z
       .string()
@@ -208,7 +200,7 @@ const BaseHealthRecordFormSchema = () =>
       )
       .optional(),
 
-    nextVisitDate: futureDateSchema().optional(),
+    nextVisitDate: futureDateSchema('forms.validation.healthRecord.startInFuture').optional(),
   });
 
 // Schema for form input (before transformation)
@@ -247,20 +239,11 @@ const NextVisitDateUpdateSchema = z
     }
     throw new Error('Invalid date type');
   })
-  .refine((val) => val == null || utcDateStringSchema().safeParse(val).success, {
-    params: { i18nKey: 'forms.validation.healthRecord.dateUtcInvalid' },
-  })
-  .refine(
-    (val) => {
-      if (val == null) return true;
-      const date = new Date(val);
-      if (isNaN(date.getTime())) return false;
-      return date > new Date();
-    },
-    {
-      params: { i18nKey: 'forms.validation.event.startInFuture' },
-    }
-  );
+  .pipe(z.union([
+    z.undefined(),
+    z.null(),
+    utcDateStringSchema().pipe(futureDateSchema('forms.validation.healthRecord.startInFuture')),
+  ]));
 
 export const HealthRecordUpdateSchema = () =>
   BaseHealthRecordSchema().partial().extend({
@@ -375,8 +358,25 @@ export const getHealthRecordSchema = (type: HealthRecordTypeUnion) => {
   return HealthRecordTypeSchemas[type]();
 };
 
+const isHealthRecordType = (type: string): type is HealthRecordTypeUnion => {
+  return Object.prototype.hasOwnProperty.call(HealthRecordTypeSchemas, type);
+};
+
 // Helper function to validate health record data with type-specific rules
 export const validateHealthRecord = (data: unknown, type: string) => {
-  const schema = getHealthRecordSchema(type as HealthRecordTypeUnion);
+  if (!isHealthRecordType(type)) {
+    return {
+      success: false,
+      error: new z.ZodError([
+        {
+          code: z.ZodIssueCode.custom,
+          path: ['type'],
+          message: t('forms.validation.healthRecord.typeInvalid'),
+        },
+      ]),
+    };
+  }
+
+  const schema = getHealthRecordSchema(type);
   return schema.safeParse(data);
 };

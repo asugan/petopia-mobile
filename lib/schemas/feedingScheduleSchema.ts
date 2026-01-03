@@ -28,19 +28,15 @@ const isValidDaysString = (days: string): boolean => {
 export const feedingScheduleFormSchema = () =>
   z
     .object({
-      petId: objectIdSchema().refine(() => true, {
-        params: { i18nKey: 'forms.validation.feedingSchedule.petRequired' },
-      }),
+      petId: z
+        .string()
+        .min(1, { message: t('forms.validation.feedingSchedule.petRequired') })
+        .pipe(objectIdSchema()),
 
       time: z
         .string()
         .min(1, { message: t('forms.validation.feedingSchedule.timeRequired') })
-        .refine(
-          (val) => timeFormatValidator().safeParse(val).success,
-          {
-            params: { i18nKey: 'forms.validation.feedingSchedule.timeInvalidFormatExample' },
-          }
-        ),
+        .pipe(timeFormatValidator('forms.validation.feedingSchedule.timeInvalidFormatExample')),
 
       foodType: z.enum(Object.values(FOOD_TYPES) as [string, ...string[]], {
         message: t('forms.validation.feedingSchedule.foodTypeInvalid'),
@@ -51,7 +47,7 @@ export const feedingScheduleFormSchema = () =>
         .min(1, { message: t('forms.validation.feedingSchedule.amountRequired') })
         .max(50, { message: t('forms.validation.feedingSchedule.amountMax') })
         .refine((val) => val.trim().length > 0, {
-          params: { i18nKey: 'forms.validation.feedingSchedule.amountNotEmpty' },
+          error: () => t('forms.validation.feedingSchedule.amountNotEmpty'),
         }),
 
       // Days as array for form (easier to work with multi-select)
@@ -61,17 +57,7 @@ export const feedingScheduleFormSchema = () =>
         .max(7, { message: t('forms.validation.feedingSchedule.daysMax') }),
 
       isActive: z.boolean(),
-    })
-    .refine(
-      (data) => {
-        // Validate that time is reasonable (not empty after trim)
-        return data.time.trim().length > 0;
-      },
-      {
-        params: { i18nKey: 'forms.validation.feedingSchedule.timeInvalidValue' },
-        path: ['time'],
-      }
-    );
+    });
 
 // Type inference from the form schema
 export type FeedingScheduleFormData = z.infer<ReturnType<typeof feedingScheduleFormSchema>>;
@@ -79,19 +65,15 @@ export type FeedingScheduleFormData = z.infer<ReturnType<typeof feedingScheduleF
 // API schema (matches backend expectations with comma-separated days string)
 export const feedingScheduleSchema = () =>
   z.object({
-    petId: objectIdSchema().refine(() => true, {
-      params: { i18nKey: 'forms.validation.feedingSchedule.petRequired' },
-    }),
+    petId: z
+      .string()
+      .min(1, { message: t('forms.validation.feedingSchedule.petRequired') })
+      .pipe(objectIdSchema()),
 
     time: z
       .string()
       .min(1, { message: t('forms.validation.feedingSchedule.timeRequired') })
-      .refine(
-        (val) => timeFormatValidator().safeParse(val).success,
-        {
-          params: { i18nKey: 'forms.validation.feedingSchedule.timeInvalidFormat' },
-        }
-      ),
+      .pipe(timeFormatValidator('forms.validation.feedingSchedule.timeInvalidFormat')),
 
     foodType: z
       .string()
@@ -106,7 +88,7 @@ export const feedingScheduleSchema = () =>
       .string()
       .min(1, { message: t('forms.validation.feedingSchedule.daysRequired') })
       .refine(isValidDaysString, {
-        params: { i18nKey: 'forms.validation.feedingSchedule.daysInvalidFormat' },
+        error: () => t('forms.validation.feedingSchedule.daysInvalidFormat'),
       }),
 
     isActive: z.boolean().optional().default(true),
@@ -128,12 +110,7 @@ export const updateFeedingScheduleSchema = () =>
   z.object({
     time: z
       .string()
-      .refine(
-        (val) => timeFormatValidator().safeParse(val).success,
-        {
-          params: { i18nKey: 'forms.validation.feedingSchedule.timeInvalidFormat' },
-        }
-      )
+      .pipe(timeFormatValidator('forms.validation.feedingSchedule.timeInvalidFormat'))
       .optional(),
 
     foodType: z.enum(Object.values(FOOD_TYPES) as [string, ...string[]], {
@@ -149,7 +126,7 @@ export const updateFeedingScheduleSchema = () =>
     days: z
       .string()
       .refine(isValidDaysString, {
-        params: { i18nKey: 'forms.validation.feedingSchedule.daysInvalid' },
+        error: () => t('forms.validation.feedingSchedule.daysInvalid'),
       })
       .optional(),
 

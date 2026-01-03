@@ -83,14 +83,16 @@ export const birthDateSchema = () =>
 /**
  * Future date validation - ensures date is not in the past.
  */
-export const futureDateSchema = () =>
+export const futureDateSchema = (
+  messageKey: string = 'forms.validation.healthRecord.dateFuture'
+) =>
   z
     .union([z.string(), z.date()])
     .refine((val) => {
       const date = parseDateValue(val);
       return date !== null && date >= new Date();
     }, {
-      message: t('forms.validation.healthRecord.dateFuture'),
+      message: t(messageKey),
     });
 
 /**
@@ -103,7 +105,7 @@ export const pastDateSchema = () =>
       const date = parseDateValue(val);
       return date !== null && date <= new Date();
     }, {
-      message: t('forms.validation.healthRecord.dateFuture'),
+      message: t('forms.validation.healthRecord.datePast'),
     });
 
 /**
@@ -143,7 +145,8 @@ export const utcDateStringSchema = () =>
     .refine((val) => {
       // Check for valid UTC ISO format
       const date = new Date(val);
-      return !isNaN(date.getTime()) && (val.endsWith('Z') || val.includes('+'));
+      const hasTimezone = val.endsWith('Z') || /([+-]\d{2}:\d{2}|[+-]\d{4})$/.test(val);
+      return !isNaN(date.getTime()) && hasTimezone;
     }, {
       message: t('forms.validation.healthRecord.dateUtcInvalid'),
     });

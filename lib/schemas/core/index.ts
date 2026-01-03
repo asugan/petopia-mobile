@@ -15,8 +15,5 @@ export * from './dateSchemas';
 // Error formatting utilities
 export * from './errorHelpers';
 
-// i18n utilities (includes 't' function)
-export { t, createNamespaceT, safeT } from './i18n';
-
 // Re-export common Zod types
 export type { ZodError, ZodIssue } from 'zod';

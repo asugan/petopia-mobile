@@ -835,6 +835,8 @@
         "dateInvalid": "Geçerli bir tarih giriniz",
         "dateUtcInvalid": "Sağlık kayıt tarihi geçersiz format. UTC formatında olmalı",
         "dateFuture": "Tarih gelecekte olamaz",
+        "datePast": "Tarih geçmişte olamaz",
+        "startInFuture": "Sonraki ziyaret tarihi gelecekte olmalıdır",
         "dateInvalidRange": "Tarih gelecekte olamaz veya {{maxYears}} yıldan eski olamaz",
         "veterinarianMax": "Veteriner adı en fazla 100 karakter olabilir",
         "veterinarianInvalid": "Veteriner adı geçersiz karakterler içeriyor",

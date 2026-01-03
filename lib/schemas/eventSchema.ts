@@ -205,9 +205,10 @@ export const eventSchema = () =>
 
     description: z.string().optional(),
 
-    petId: objectIdSchema().refine(() => true, {
-      params: { i18nKey: 'forms.validation.event.petRequired' },
-    }),
+    petId: z
+      .string()
+      .min(1, { message: t('forms.validation.event.petRequired') })
+      .pipe(objectIdSchema()),
 
     type: z.enum(Object.values(EVENT_TYPES) as [string, ...string[]], {
       message: t('forms.validation.event.typeInvalid'),
