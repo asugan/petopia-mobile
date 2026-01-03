@@ -6,7 +6,7 @@ import {
   RefreshControl,
   Alert,
 } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
+import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
 import { useTranslation } from "react-i18next";
 import { useQueryClient } from "@tanstack/react-query";
 import { Button, Card, FAB, SegmentedButtons, Snackbar, Text } from "@/components/ui";
@@ -57,6 +57,10 @@ type FinanceTabValue = 'budget' | 'expenses';
 export default function FinanceScreen() {
   const { theme } = useTheme();
   const { t } = useTranslation();
+  const insets = useSafeAreaInsets();
+  const TAB_BAR_HEIGHT = LAYOUT.TAB_BAR_HEIGHT + insets.bottom;
+  const contentBottomPadding = TAB_BAR_HEIGHT + LAYOUT.FAB_OFFSET;
+
   const queryClient = useQueryClient();
   const { settings } = useUserSettingsStore();
   const baseCurrency = settings?.baseCurrency || "TRY";
@@ -423,9 +427,10 @@ export default function FinanceScreen() {
     return (
       <ScrollView
         style={styles.content}
-        contentContainerStyle={styles.budgetContent}
+        contentContainerStyle={[styles.budgetContent, { paddingBottom: contentBottomPadding }]}
         showsVerticalScrollIndicator={false}
       >
+
         <View style={styles.budgetSection}>
           {renderExportActions()}
 
@@ -462,14 +467,24 @@ export default function FinanceScreen() {
   };
 
   // Render expenses tab content
-  const renderExpensesContent = () => (
-    <View style={styles.content}>
-      {renderPetSelector()}
-      <View style={styles.expensesSection}>
-        {renderExpensesList()}
+  const renderExpensesContent = () => {
+    if (pets.length === 0) {
+      return (
+        <View style={styles.content}>
+          {renderPetSelector()}
+        </View>
+      );
+    }
+
+    return (
+      <View style={styles.content}>
+        {renderPetSelector()}
+        <View style={styles.expensesSection}>
+          {renderExpensesList()}
+        </View>
       </View>
-    </View>
-  );
+    );
+  };
 
   // Render expenses list with responsive grid
   const renderExpensesList = () => {
@@ -485,20 +500,22 @@ export default function FinanceScreen() {
 
     if (hasNoExpenses && !isLoadingFirstPage) {
       return (
-        <EmptyState
-          title={t("expenses.noExpenses")}
-          description={t("expenses.noExpensesMessage")}
-          icon="cash"
-          buttonText={t("expenses.addExpense")}
-          onButtonPress={handleAddExpense}
-        />
+        <View style={styles.emptyStateContainer}>
+          <EmptyState
+            title={t("expenses.noExpenses")}
+            description={t("expenses.noExpensesMessage")}
+            icon="cash"
+            buttonText={t("expenses.addExpense")}
+            onButtonPress={handleAddExpense}
+          />
+        </View>
       );
     }
 
     return (
       <ScrollView
         style={styles.expensesScroll}
-        contentContainerStyle={styles.listContainer}
+        contentContainerStyle={[styles.listContainer, { paddingBottom: contentBottomPadding }]}
         refreshControl={
           <RefreshControl
             refreshing={refreshing || expensesFetching}
@@ -569,10 +586,12 @@ export default function FinanceScreen() {
     );
   };
 
+
   return (
     <ProtectedRoute featureName={t("subscription.features.expenses")}>
       <SafeAreaView
         style={[styles.container, { backgroundColor: theme.colors.background }]}
+        edges={['top', 'left', 'right']} // Remove bottom to handle manually
       >
         <View style={styles.tabsContainer}>
           <SegmentedButtons
@@ -604,14 +623,14 @@ export default function FinanceScreen() {
         {activeTab === 'budget' && budget && (typeof budget === 'object' && Object.keys(budget).length > 0) && (
           <FAB
             icon="pencil"
-            style={{ ...styles.fab, backgroundColor: theme.colors.primary }}
+            style={{ ...styles.fab, backgroundColor: theme.colors.primary, bottom: TAB_BAR_HEIGHT }}
             onPress={handleSetBudget}
           />
         )}
-        {activeTab === 'expenses' && (
+        {activeTab === 'expenses' && pets.length > 0 && (
           <FAB
             icon="add"
-            style={{ ...styles.fab, backgroundColor: theme.colors.primary }}
+            style={{ ...styles.fab, backgroundColor: theme.colors.primary, bottom: TAB_BAR_HEIGHT }}
             onPress={handleAddExpense}
           />
         )}
@@ -693,7 +712,6 @@ const styles = StyleSheet.create({
   },
   budgetContent: {
     flexGrow: 1,
-    paddingBottom: LAYOUT.TAB_BAR_HEIGHT,
   },
   expensesSection: {
     flex: 1,
@@ -714,7 +732,6 @@ const styles = StyleSheet.create({
     marginTop: 8,
   },
   listContainer: {
-    paddingBottom: LAYOUT.TAB_BAR_HEIGHT,
     paddingTop: 12,
   },
   statsCard: {
@@ -730,7 +747,6 @@ const styles = StyleSheet.create({
     position: "absolute",
     margin: 16,
     right: 0,
-    bottom: 0,
   },
   exportSection: {
     marginBottom: 16,
@@ -760,5 +776,10 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingBottom: 12,
     fontWeight: "700",
+  },
+  emptyStateContainer: {
+    flex: 1,
+    justifyContent: "center",
+    paddingBottom: 80,
   },
 });
