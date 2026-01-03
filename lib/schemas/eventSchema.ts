@@ -108,8 +108,29 @@ export const eventFormSchema = () =>
 
       // Validate end time is after start time
       if (data.endDate && data.endTime && data.startDate && data.startTime) {
-        const startDateTime = combineDateTimeToISO(data.startDate, data.startTime);
-        const endDateTime = combineDateTimeToISO(data.endDate, data.endTime);
+        let startDateTime: string;
+        try {
+          startDateTime = combineDateTimeToISO(data.startDate, data.startTime);
+        } catch {
+          ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            message: t('forms.validation.event.endAfterStart'),
+            path: ['startDate', 'startTime'],
+          });
+          return;
+        }
+
+        let endDateTime: string;
+        try {
+          endDateTime = combineDateTimeToISO(data.endDate, data.endTime);
+        } catch {
+          ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            message: t('forms.validation.event.endAfterStart'),
+            path: ['endDate', 'endTime'],
+          });
+          return;
+        }
 
         const start = new Date(startDateTime);
         const end = new Date(endDateTime);
@@ -127,7 +148,17 @@ export const eventFormSchema = () =>
 
       // Validate start time is in the future
       if (data.startDate && data.startTime) {
-        const startDateTime = combineDateTimeToISO(data.startDate, data.startTime);
+        let startDateTime: string;
+        try {
+          startDateTime = combineDateTimeToISO(data.startDate, data.startTime);
+        } catch {
+          ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            message: t('forms.validation.event.startInFuture'),
+            path: ['startDate', 'startTime'],
+          });
+          return;
+        }
         const selectedDate = new Date(startDateTime);
         const now = new Date();
 
@@ -144,7 +175,17 @@ export const eventFormSchema = () =>
 
       // Additional validation: reminder time should be reasonable if reminder is enabled
       if (data.reminder && data.startDate && data.startTime) {
-        const startDateTime = combineDateTimeToISO(data.startDate, data.startTime);
+        let startDateTime: string;
+        try {
+          startDateTime = combineDateTimeToISO(data.startDate, data.startTime);
+        } catch {
+          ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            message: t('forms.validation.event.reminderTooFar'),
+            path: ['startDate', 'startTime'],
+          });
+          return;
+        }
         const eventTime = new Date(startDateTime);
         const now = new Date();
 
@@ -321,11 +362,6 @@ export type CreateEventInput = EventData;
 export type UpdateEventInput = z.infer<ReturnType<typeof updateEventSchema>>;
 
 // Helper function to validate date strings
-export const isValidDateTimeString = (dateString: string): boolean => {
-  const date = new Date(dateString);
-  return !isNaN(date.getTime()) && dateString.match(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$/) !== null;
-};
-
 // Helper function to get current datetime string in ISO format
 export const getCurrentDateTimeString = (): string => {
   const now = new Date();
@@ -422,5 +458,11 @@ export const transformFormDataToAPI = (formData: EventFormData): EventData => {
     reminder: formData.reminder || undefined,
     reminderPreset: formData.reminder ? formData.reminderPreset : undefined,
     notes: formData.notes || undefined,
+    vaccineName: formData.vaccineName || undefined,
+    vaccineManufacturer: formData.vaccineManufacturer || undefined,
+    batchNumber: formData.batchNumber || undefined,
+    medicationName: formData.medicationName || undefined,
+    dosage: formData.dosage || undefined,
+    frequency: formData.frequency || undefined,
   };
 };
