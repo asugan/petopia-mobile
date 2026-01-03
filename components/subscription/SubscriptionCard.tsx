@@ -10,7 +10,7 @@ import { REVENUECAT_CONFIG } from '@/lib/revenuecat/config';
 interface SubscriptionCardProps {
   showManageButton?: boolean;
   compact?: boolean;
-  onUpgrade?: () => void;
+  onUpgrade?: () => void | Promise<void>;
 }
 
 /**
@@ -32,7 +32,6 @@ export function SubscriptionCard({ showManageButton = true, compact = false, onU
     expirationDate,
     willRenew,
     isLoading,
-    presentPaywall,
     presentCustomerCenter,
   } = useSubscription();
 
@@ -87,9 +86,9 @@ export function SubscriptionCard({ showManageButton = true, compact = false, onU
 
   const handleUpgrade = async () => {
     if (onUpgrade) {
-      onUpgrade();
+      await onUpgrade();
     } else {
-      await presentPaywall();
+      router.push('/subscription');
     }
   };
 
