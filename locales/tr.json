@@ -479,6 +479,8 @@
     "loading": "Yükleniyor...",
     "error": "Hata",
     "today": "Bugün",
+    "yesterday": "Dün",
+    "tomorrow": "Yarın",
     "retry": "Tekrar Dene",
     "save": "Kaydet",
     "add": "Ekle",
@@ -1329,6 +1331,7 @@
       "title": "Abonelik Başarılı!",
       "message": "Artık Pro üyesiniz. Tüm premium özelliklerin keyfini çıkarın.",
       "button": "Anasayfaya Dön"
-    }
+    },
+    "note": "Ödeme App Store / Google Play hesabınızdan tahsil edilecektir. Abonelikler, mevcut dönemin sonundan en az 24 saat önce iptal edilmediği sürece otomatik olarak yenilenir. Aboneliğinizi App Store / Google Play hesap ayarlarınızdan yönetebilir veya iptal edebilirsiniz."
   }
 }

@@ -503,6 +503,8 @@
     "loading": "Loading...",
     "error": "Error",
     "today": "Today",
+    "yesterday": "Yesterday",
+    "tomorrow": "Tomorrow",
     "retry": "Retry",
     "save": "Save",
     "add": "Add",
@@ -1353,6 +1355,7 @@
       "title": "Subscription Successful!",
       "message": "You are now a Pro member. Enjoy all premium features.",
       "button": "Go to Homepage"
-    }
+    },
+    "note": "Payment will be charged to your App Store / Google Play account. Subscriptions automatically renew unless cancelled at least 24 hours before the end of the current period. You can manage or cancel your subscription in your App Store / Google Play account settings."
   }
 }

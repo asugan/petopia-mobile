@@ -299,6 +299,17 @@ export default function SettingsScreen() {
 
         {/* Subscription Status */}
         <SubscriptionCard />
+        
+        {/* Subscription Note */}
+        <Text 
+          variant="bodySmall" 
+          style={[
+            styles.subscriptionNote, 
+            { color: theme.colors.onSurfaceVariant }
+          ]}
+        >
+          {t('subscription.note')}
+        </Text>
 
         {/* Theme Settings */}
         <Card
@@ -927,5 +938,12 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     letterSpacing: 6,
     backgroundColor: 'transparent',
+  },
+  subscriptionNote: {
+    marginTop: 4,
+    marginBottom: 16,
+    lineHeight: 16,
+    textAlign: 'center',
+    opacity: 0.8,
   },
 });

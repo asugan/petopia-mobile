@@ -98,6 +98,17 @@ export default function SubscriptionScreen() {
         {/* Current Status Card */}
         <SubscriptionCard onUpgrade={handlePresentPaywall} />
 
+        {/* Subscription Note */}
+        <Text 
+          variant="bodySmall" 
+          style={[
+            styles.subscriptionNote, 
+            { color: theme.colors.onSurfaceVariant }
+          ]}
+        >
+          {t('subscription.note')}
+        </Text>
+
         {/* Features List - Show if not subscribed */}
         {!isSubscribed && (
           <Card style={[styles.featuresCard, { backgroundColor: theme.colors.surface }]}>
@@ -216,5 +227,12 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: 8,
     marginTop: 8,
+  },
+  subscriptionNote: {
+    marginTop: 4,
+    marginBottom: 16,
+    lineHeight: 16,
+    textAlign: 'center',
+    opacity: 0.8,
   },
 });
