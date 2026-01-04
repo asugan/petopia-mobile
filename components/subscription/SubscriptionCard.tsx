@@ -85,10 +85,14 @@ export function SubscriptionCard({ showManageButton = true, compact = false, onU
     : 0;
 
   const handleUpgrade = async () => {
-    if (onUpgrade) {
-      await onUpgrade();
-    } else {
-      router.push('/subscription');
+    try {
+      if (onUpgrade) {
+        await onUpgrade();
+      } else {
+        router.push('/subscription');
+      }
+    } catch (error) {
+      console.error('Upgrade error:', error);
     }
   };
 
@@ -112,10 +116,14 @@ export function SubscriptionCard({ showManageButton = true, compact = false, onU
   };
 
   const handleNavigateToSubscription = async () => {
-    if (onUpgrade) {
-      await onUpgrade();
-    } else {
-      router.push('/subscription');
+    try {
+      if (onUpgrade) {
+        await onUpgrade();
+      } else {
+        router.push('/subscription');
+      }
+    } catch (error) {
+      console.error('Navigation error:', error);
     }
   };
 

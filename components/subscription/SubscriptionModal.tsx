@@ -53,7 +53,6 @@ export function SubscriptionModal({ visible, onClose, featureName }: Subscriptio
             }]}>
               <ScrollView
                 showsVerticalScrollIndicator={false}
-                bounces={false}
               >
                 <View style={styles.cardContent}>
                   {/* Header */}

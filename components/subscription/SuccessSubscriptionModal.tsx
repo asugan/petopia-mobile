@@ -40,7 +40,7 @@ export function SuccessSubscriptionModal({ visible, onClose }: SuccessSubscripti
               backgroundColor: theme.colors.surface, 
               maxHeight: height - insets.top - insets.bottom - MODAL_VERTICAL_MARGIN
             }]}>
-              <ScrollView showsVerticalScrollIndicator={false} bounces={false}>
+              <ScrollView showsVerticalScrollIndicator={false}>
                 <View style={styles.cardContent}>
                   {/* Success Icon */}
                 <View style={styles.iconContainer}>
