@@ -111,9 +111,9 @@ export function SubscriptionCard({ showManageButton = true, compact = false, onU
     );
   };
 
-  const handleNavigateToSubscription = () => {
+  const handleNavigateToSubscription = async () => {
     if (onUpgrade) {
-      onUpgrade();
+      await onUpgrade();
     } else {
       router.push('/subscription');
     }

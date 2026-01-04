@@ -14,6 +14,8 @@ interface SuccessSubscriptionModalProps {
  * SuccessSubscriptionModal - Shows a success modal after subscription completion
  * with navigation to homepage option
  */
+const MODAL_VERTICAL_MARGIN = 48;
+
 export function SuccessSubscriptionModal({ visible, onClose }: SuccessSubscriptionModalProps) {
   const { t } = useTranslation();
   const { theme } = useTheme();
@@ -36,7 +38,7 @@ export function SuccessSubscriptionModal({ visible, onClose }: SuccessSubscripti
           <Pressable style={styles.modalContainer} onPress={(e) => e.stopPropagation()}>
             <Card style={[styles.modalCard, { 
               backgroundColor: theme.colors.surface, 
-              maxHeight: height - insets.top - insets.bottom - 48 
+              maxHeight: height - insets.top - insets.bottom - MODAL_VERTICAL_MARGIN
             }]}>
               <ScrollView showsVerticalScrollIndicator={false} bounces={false}>
                 <View style={styles.cardContent}>

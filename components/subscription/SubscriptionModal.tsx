@@ -18,6 +18,8 @@ interface SubscriptionModalProps {
  * SubscriptionModal - Shows a modal for users without subscription
  * when they try to access premium features
  */
+const MODAL_VERTICAL_MARGIN = 48;
+
 export function SubscriptionModal({ visible, onClose, featureName }: SubscriptionModalProps) {
   const { t } = useTranslation();
   const { theme } = useTheme();
@@ -47,7 +49,7 @@ export function SubscriptionModal({ visible, onClose, featureName }: Subscriptio
           <Pressable style={styles.modalContainer} onPress={(e) => e.stopPropagation()}>
             <Card style={[styles.modalCard, { 
               backgroundColor: theme.colors.surface, 
-              maxHeight: height - insets.top - insets.bottom - 48 
+              maxHeight: height - insets.top - insets.bottom - MODAL_VERTICAL_MARGIN
             }]}>
               <ScrollView
                 showsVerticalScrollIndicator={false}
