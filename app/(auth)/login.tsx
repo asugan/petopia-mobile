@@ -114,7 +114,7 @@ export default function LoginScreen() {
           borderBottomRightRadius: 32,
           overflow: 'hidden',
           alignItems: 'center',
-          justifyContent: 'center',
+          justifyContent: 'flex-start',
           position: 'relative',
         },
         heroImage: {
@@ -123,24 +123,28 @@ export default function LoginScreen() {
         brandingContainer: {
           alignItems: 'center',
           zIndex: 10,
-          marginTop: 48,
           paddingHorizontal: 24,
         },
         logoCircle: {
           width: 96,
           height: 96,
           borderRadius: 48,
-          backgroundColor: theme.colors.surface + 'CC',
-          borderColor: theme.colors.primary + '33',
+          backgroundColor: theme.colors.surface + 'F0',
+          borderColor: theme.colors.surface,
+          borderWidth: 4,
           justifyContent: 'center',
           alignItems: 'center',
-          marginBottom: 20,
-          elevation: 10,
+          marginBottom: 16,
+          elevation: 12,
+          shadowColor: '#000',
+          shadowOffset: { width: 0, height: 4 },
+          shadowOpacity: 0.2,
+          shadowRadius: 8,
         },
         logoMask: {
           width: '100%',
           height: '100%',
-          borderRadius: 46,
+          borderRadius: 44,
           overflow: 'hidden',
           backgroundColor: '#2B1E5A',
           justifyContent: 'center',
@@ -153,29 +157,46 @@ export default function LoginScreen() {
         },
         appName: {
           color: theme.colors.onBackground,
-          fontSize: 36,
-          lineHeight: 44,
-          fontWeight: '700',
+          fontSize: 32,
+          lineHeight: 40,
+          fontWeight: '800',
           letterSpacing: -0.5,
-          marginBottom: 8,
-          textShadowColor: theme.colors.inverseOnSurface + '80',
-          textShadowOffset: { width: 0, height: 2 },
-          textShadowRadius: 4,
-          paddingVertical: 2,
+          marginBottom: 4,
+          textShadowColor: theme.colors.surface,
+          textShadowOffset: { width: 0, height: 1 },
+          textShadowRadius: 8,
         },
-        appSubtitle: {
-          color: theme.colors.onSurfaceVariant,
-          fontSize: 18,
-          fontWeight: '500',
+        trialNotice: {
+          flexDirection: 'row',
+          alignItems: 'center',
+          backgroundColor: theme.colors.surface + 'F5',
+          borderRadius: 24,
+          paddingVertical: 8,
+          paddingHorizontal: 20,
+          marginTop: 12,
+          elevation: 4,
+          shadowColor: '#000',
+          shadowOffset: { width: 0, height: 2 },
+          shadowOpacity: 0.1,
+          shadowRadius: 4,
+          borderWidth: 1,
+          borderColor: theme.colors.outlineVariant + '40',
+        },
+        trialNoticeText: {
+          color: theme.colors.primary,
+          fontSize: 14,
+          fontWeight: '700',
           textAlign: 'center',
-          lineHeight: 28,
+          letterSpacing: 0.2,
+          marginLeft: 8,
         },
         actionsContainer: {
           flex: 1,
           paddingHorizontal: 24,
           justifyContent: 'flex-end',
           paddingBottom: 40,
-          marginTop: -40,
+          marginTop: -32,
+          paddingTop: 32,
           zIndex: 20,
         },
         buttonsContainer: {
@@ -183,25 +204,6 @@ export default function LoginScreen() {
           width: '100%',
           maxWidth: 480,
           alignSelf: 'center',
-        },
-        trialBadge: {
-          flexDirection: 'row',
-          alignItems: 'center',
-          justifyContent: 'center',
-          backgroundColor: theme.colors.primary + '15',
-          borderWidth: 1,
-          borderColor: theme.colors.primary + '30',
-          borderRadius: theme.roundness,
-          paddingVertical: 12,
-          paddingHorizontal: 16,
-          marginBottom: 20,
-          gap: 8,
-        },
-        trialBadgeText: {
-          color: theme.colors.primary,
-          fontSize: 14,
-          fontWeight: '600',
-          textAlign: 'center',
         },
         socialButton: {
           flexDirection: 'row',
@@ -272,7 +274,7 @@ export default function LoginScreen() {
         translucent
       />
       
-      <View style={styles.heroContainer}>
+      <View style={[styles.heroContainer, { paddingTop: insets.top + 32 }]}>
         <Image
           source={require('../../assets/images/login-hero.jpg')}
           style={styles.heroImage}
@@ -302,9 +304,10 @@ export default function LoginScreen() {
               </View>
             </View>
             <Text style={styles.appName}>{t('auth.brandName')}</Text>
-          <Text style={styles.appSubtitle}>
-            {t('auth.smartCareSubtitle')}
-          </Text>
+            <View style={styles.trialNotice}>
+              <MaterialCommunityIcons name="star" size={16} color={theme.colors.primary} />
+              <Text style={styles.trialNoticeText}>{t('auth.freeTrialNotice')}</Text>
+            </View>
         </View>
       </View>
 
@@ -317,11 +320,6 @@ export default function LoginScreen() {
         )}
 
         <View style={styles.buttonsContainer}>
-          <View style={styles.trialBadge}>
-            <MaterialCommunityIcons name="star-circle" size={20} color={theme.colors.primary} />
-            <Text style={styles.trialBadgeText}>{t('auth.freeTrialNotice')}</Text>
-          </View>
-
           {Platform.OS === 'ios' && (
             <TouchableOpacity
               style={styles.socialButton}

@@ -29,6 +29,11 @@ export const SegmentedButtons: React.FC<SegmentedButtonsProps> = ({
 }) => {
   const { theme } = useTheme();
 
+  const flatStyle = StyleSheet.flatten(style);
+  const borderRadius = typeof flatStyle?.borderRadius === 'number'
+    ? flatStyle.borderRadius
+    : theme.roundness;
+
   const getPadding = () => {
     switch (density) {
       case "small":
@@ -72,10 +77,10 @@ export const SegmentedButtons: React.FC<SegmentedButtonsProps> = ({
                   : theme.colors.surface,
                 borderLeftWidth: isFirst ? 0 : 1,
                 borderLeftColor: theme.colors.onSurfaceVariant,
-                borderTopLeftRadius: isFirst ? theme.roundness : 0,
-                borderBottomLeftRadius: isFirst ? theme.roundness : 0,
-                borderTopRightRadius: isLast ? theme.roundness : 0,
-                borderBottomRightRadius: isLast ? theme.roundness : 0,
+                borderTopLeftRadius: isFirst ? borderRadius : 0,
+                borderBottomLeftRadius: isFirst ? borderRadius : 0,
+                borderTopRightRadius: isLast ? borderRadius : 0,
+                borderBottomRightRadius: isLast ? borderRadius : 0,
                 paddingVertical: padding,
                 paddingHorizontal: padding * 1.5,
               },

@@ -1,4 +1,5 @@
-import { Modal, View, StyleSheet, Pressable } from 'react-native';
+import { Modal, View, StyleSheet, Pressable, ScrollView, useWindowDimensions } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTranslation } from 'react-i18next';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { Text, Button, Card } from '@/components/ui';
@@ -13,9 +14,13 @@ interface SuccessSubscriptionModalProps {
  * SuccessSubscriptionModal - Shows a success modal after subscription completion
  * with navigation to homepage option
  */
+const MODAL_VERTICAL_MARGIN = 48;
+
 export function SuccessSubscriptionModal({ visible, onClose }: SuccessSubscriptionModalProps) {
   const { t } = useTranslation();
   const { theme } = useTheme();
+  const { height } = useWindowDimensions();
+  const insets = useSafeAreaInsets();
 
   const handleClose = () => {
     onClose();
@@ -31,9 +36,13 @@ export function SuccessSubscriptionModal({ visible, onClose }: SuccessSubscripti
       <Pressable style={styles.overlay} onPress={handleClose}>
         <View style={styles.centeredView}>
           <Pressable style={styles.modalContainer} onPress={(e) => e.stopPropagation()}>
-            <Card style={[styles.modalCard, { backgroundColor: theme.colors.surface }]}>
-              <View style={styles.cardContent}>
-                {/* Success Icon */}
+            <Card style={[styles.modalCard, { 
+              backgroundColor: theme.colors.surface, 
+              maxHeight: height - insets.top - insets.bottom - MODAL_VERTICAL_MARGIN
+            }]}>
+              <ScrollView showsVerticalScrollIndicator={false}>
+                <View style={styles.cardContent}>
+                  {/* Success Icon */}
                 <View style={styles.iconContainer}>
                   <MaterialCommunityIcons
                     name="check-circle"
@@ -60,7 +69,8 @@ export function SuccessSubscriptionModal({ visible, onClose }: SuccessSubscripti
                 >
                   {t('subscription.success.button')}
                 </Button>
-              </View>
+                </View>
+              </ScrollView>
             </Card>
           </Pressable>
         </View>

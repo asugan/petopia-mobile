@@ -30,7 +30,7 @@ export const HomeEmptyPets: React.FC<HomeEmptyPetsProps> = ({
   const router = useRouter();
 
   // Use provided source or fall back to local asset
-  const imageSource = placeholderImageSource ?? require("@/assets/emptypet.png");
+  const imageSource = placeholderImageSource ?? require("@/assets/images/emptypet.png");
 
   // Ripple effect colors - subtle concentric circles behind pet
   const renderRipple = (index: number, size: number) => (
@@ -73,12 +73,15 @@ export const HomeEmptyPets: React.FC<HomeEmptyPetsProps> = ({
           <TouchableOpacity
             style={[
               styles.addBadge,
-              { backgroundColor: theme.colors.secondary },
+              {
+                backgroundColor: theme.colors.secondary,
+                borderColor: theme.colors.onSecondary,
+              },
             ]}
             onPress={handlePress}
             activeOpacity={0.8}
           >
-            <Ionicons name="add" size={20} color="#000000" />
+            <Ionicons name="add" size={20} color={theme.colors.onSecondary} />
           </TouchableOpacity>
         </View>
       </View>
@@ -107,11 +110,11 @@ export const HomeEmptyPets: React.FC<HomeEmptyPetsProps> = ({
         activeOpacity={0.8}
       >
         <View style={styles.buttonIconContainer}>
-          <Ionicons name="add" size={24} color="#000000" />
+          <Ionicons name="add" size={24} color={theme.colors.onSecondary} />
         </View>
         <Text
           variant="labelLarge"
-          style={[styles.ctaButtonText, { color: "#000000" }]}
+          style={[styles.ctaButtonText, { color: theme.colors.onSecondary }]}
         >
           {t("home.emptyPetsCta")}
         </Text>
@@ -157,7 +160,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     borderWidth: 3,
-    borderColor: "#121212",
   },
   content: {
     alignItems: "center",

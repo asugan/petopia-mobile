@@ -138,8 +138,8 @@ export function NotificationPermissionCard() {
   if (isEnabled) {
     return (
       <Card style={[styles.card, { backgroundColor: theme.colors.primaryContainer }]}>
-        <View style={styles.cardContent}>
-          <View style={styles.cardContent}>
+        <View style={styles.cardContainer}>
+          <View style={styles.cardHeaderRow}>
             <MaterialCommunityIcons
               name="check-circle"
               size={32}
@@ -162,8 +162,8 @@ export function NotificationPermissionCard() {
   if (permissionStatus === Notifications.PermissionStatus.DENIED && !isEnabled) {
     return (
       <Card style={[styles.card, { backgroundColor: theme.colors.errorContainer }]}>
-        <View style={styles.cardContent}>
-          <View style={styles.cardContent}>
+        <View style={styles.cardContainer}>
+          <View style={styles.cardHeaderRow}>
             <MaterialCommunityIcons
               name="bell-off"
               size={32}
@@ -193,8 +193,8 @@ export function NotificationPermissionCard() {
 
   return (
     <Card style={[styles.card, { backgroundColor: theme.colors.secondaryContainer }]}>
-      <View style={styles.cardContent}>
-        <View style={styles.cardContent}>
+      <View style={styles.cardContainer}>
+        <View style={styles.cardHeaderRow}>
           <MaterialCommunityIcons
             name="bell-ring"
             size={32}
@@ -251,16 +251,18 @@ const styles = StyleSheet.create({
     marginVertical: 8,
     elevation: 2,
   },
-  cardContent: {
+  cardContainer: {
+    padding: 16,
+  },
+  cardHeaderRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 16,
   },
   cardText: {
     flex: 1,
     marginLeft: 16,
   },
   settingsButton: {
-    marginTop: 8,
+    marginTop: 12,
   },
 });

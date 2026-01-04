@@ -10,7 +10,7 @@ import { REVENUECAT_CONFIG } from '@/lib/revenuecat/config';
 interface SubscriptionCardProps {
   showManageButton?: boolean;
   compact?: boolean;
-  onUpgrade?: () => void;
+  onUpgrade?: () => void | Promise<void>;
 }
 
 /**
@@ -32,7 +32,6 @@ export function SubscriptionCard({ showManageButton = true, compact = false, onU
     expirationDate,
     willRenew,
     isLoading,
-    presentPaywall,
     presentCustomerCenter,
   } = useSubscription();
 
@@ -86,10 +85,14 @@ export function SubscriptionCard({ showManageButton = true, compact = false, onU
     : 0;
 
   const handleUpgrade = async () => {
-    if (onUpgrade) {
-      onUpgrade();
-    } else {
-      await presentPaywall();
+    try {
+      if (onUpgrade) {
+        await onUpgrade();
+      } else {
+        router.push('/subscription');
+      }
+    } catch (error) {
+      console.error('Upgrade error:', error);
     }
   };
 
@@ -112,11 +115,15 @@ export function SubscriptionCard({ showManageButton = true, compact = false, onU
     );
   };
 
-  const handleNavigateToSubscription = () => {
-    if (onUpgrade) {
-      onUpgrade();
-    } else {
-      router.push('/subscription');
+  const handleNavigateToSubscription = async () => {
+    try {
+      if (onUpgrade) {
+        await onUpgrade();
+      } else {
+        router.push('/subscription');
+      }
+    } catch (error) {
+      console.error('Navigation error:', error);
     }
   };
 

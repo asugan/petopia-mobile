@@ -123,7 +123,7 @@ export function useSubscription(): UseSubscriptionReturn {
         switch (result) {
           case PAYWALL_RESULT.PURCHASED:
           case PAYWALL_RESULT.RESTORED:
-            refetchStatusMutation.mutate();
+            await refetchStatusMutation.mutateAsync();
             return true;
 
           case PAYWALL_RESULT.CANCELLED:
@@ -159,7 +159,7 @@ export function useSubscription(): UseSubscriptionReturn {
         result === PAYWALL_RESULT.PURCHASED ||
         result === PAYWALL_RESULT.RESTORED
       ) {
-        refetchStatusMutation.mutate();
+        await refetchStatusMutation.mutateAsync();
         return true;
       }
 

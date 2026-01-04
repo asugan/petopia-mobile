@@ -40,7 +40,7 @@ export default function SubscriptionScreen() {
 
   const handleModalClose = () => {
     setModalVisible(false);
-    router.push('/(tabs)');
+    router.replace('/(tabs)');
   };
 
   const handleTerms = () => {

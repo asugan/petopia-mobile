@@ -1,4 +1,5 @@
-import { Modal, View, StyleSheet, Pressable } from 'react-native';
+import { Modal, View, StyleSheet, Pressable, ScrollView, useWindowDimensions } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTranslation } from 'react-i18next';
 import { useRouter } from 'expo-router';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
@@ -17,10 +18,14 @@ interface SubscriptionModalProps {
  * SubscriptionModal - Shows a modal for users without subscription
  * when they try to access premium features
  */
+const MODAL_VERTICAL_MARGIN = 48;
+
 export function SubscriptionModal({ visible, onClose, featureName }: SubscriptionModalProps) {
   const { t } = useTranslation();
   const { theme } = useTheme();
   const router = useRouter();
+  const { height } = useWindowDimensions();
+  const insets = useSafeAreaInsets();
   const { isLoading, canStartTrial } = useSubscription();
 
   const handleUpgrade = () => {
@@ -42,9 +47,17 @@ export function SubscriptionModal({ visible, onClose, featureName }: Subscriptio
       <Pressable style={styles.overlay} onPress={handleClose}>
         <View style={styles.centeredView}>
           <Pressable style={styles.modalContainer} onPress={(e) => e.stopPropagation()}>
-            <Card style={[styles.modalCard, { backgroundColor: theme.colors.surface }]}>
-              <View style={styles.cardContent}>
-                {/* Header */}
+            <Card style={[styles.modalCard, { 
+              backgroundColor: theme.colors.surface, 
+              maxHeight: height - insets.top - insets.bottom - MODAL_VERTICAL_MARGIN
+            }]}>
+              <ScrollView
+                showsVerticalScrollIndicator={false}
+                bounces={false}
+                keyboardShouldPersistTaps="handled"
+              >
+                <View style={styles.cardContent}>
+                  {/* Header */}
                 <View style={styles.header}>
                   <View style={styles.iconContainer}>
                     <MaterialCommunityIcons
@@ -133,8 +146,9 @@ export function SubscriptionModal({ visible, onClose, featureName }: Subscriptio
                       </Text>
                     </View>
                   </View>
+                  </View>
                 </View>
-              </View>
+              </ScrollView>
             </Card>
           </Pressable>
         </View>
