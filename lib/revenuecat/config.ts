@@ -5,6 +5,9 @@ type RevenueCatExtra = {
     iosApiKey?: string;
     androidApiKey?: string;
     entitlementId?: string;
+    weeklyProductId?: string;
+    monthlyProductId?: string;
+    yearlyProductId?: string;
   };
 };
 
@@ -21,6 +24,18 @@ const entitlementId =
   process.env.EXPO_PUBLIC_REVENUECAT_ENTITLEMENT_ID ??
   extraConfig?.revenuecat?.entitlementId ??
   'Petopia Pro';
+const weeklyProductId =
+  process.env.EXPO_PUBLIC_REVENUECAT_WEEKLY_PRODUCT_ID ??
+  extraConfig?.revenuecat?.weeklyProductId ??
+  '';
+const monthlyProductId =
+  process.env.EXPO_PUBLIC_REVENUECAT_MONTHLY_PRODUCT_ID ??
+  extraConfig?.revenuecat?.monthlyProductId ??
+  '';
+const yearlyProductId =
+  process.env.EXPO_PUBLIC_REVENUECAT_YEARLY_PRODUCT_ID ??
+  extraConfig?.revenuecat?.yearlyProductId ??
+  '';
 
 /**
  * RevenueCat configuration constants
@@ -46,9 +61,9 @@ export const REVENUECAT_CONFIG = {
    * Must match the product IDs configured in App Store Connect / Google Play Console
    */
   PRODUCTS: {
-    WEEKLY: 'weekly',
-    MONTHLY: 'monthly',
-    YEARLY: 'yearly',
+    WEEKLY: weeklyProductId,
+    MONTHLY: monthlyProductId,
+    YEARLY: yearlyProductId,
   },
 
   /**
