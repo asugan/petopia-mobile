@@ -24,18 +24,20 @@ const entitlementId =
   process.env.EXPO_PUBLIC_REVENUECAT_ENTITLEMENT_ID ??
   extraConfig?.revenuecat?.entitlementId ??
   'Petopia Pro';
-const weeklyProductId =
-  process.env.EXPO_PUBLIC_REVENUECAT_WEEKLY_PRODUCT_ID ??
-  extraConfig?.revenuecat?.weeklyProductId ??
-  '';
-const monthlyProductId =
-  process.env.EXPO_PUBLIC_REVENUECAT_MONTHLY_PRODUCT_ID ??
-  extraConfig?.revenuecat?.monthlyProductId ??
-  '';
-const yearlyProductId =
-  process.env.EXPO_PUBLIC_REVENUECAT_YEARLY_PRODUCT_ID ??
-  extraConfig?.revenuecat?.yearlyProductId ??
-  '';
+// Product IDs are resolved via RevenueCat offerings by default.
+// Uncomment these if you switch to a custom paywall flow that needs manual product IDs.
+// const weeklyProductId =
+//   process.env.EXPO_PUBLIC_REVENUECAT_WEEKLY_PRODUCT_ID ??
+//   extraConfig?.revenuecat?.weeklyProductId ??
+//   '';
+// const monthlyProductId =
+//   process.env.EXPO_PUBLIC_REVENUECAT_MONTHLY_PRODUCT_ID ??
+//   extraConfig?.revenuecat?.monthlyProductId ??
+//   '';
+// const yearlyProductId =
+//   process.env.EXPO_PUBLIC_REVENUECAT_YEARLY_PRODUCT_ID ??
+//   extraConfig?.revenuecat?.yearlyProductId ??
+//   '';
 
 /**
  * RevenueCat configuration constants
@@ -56,15 +58,12 @@ export const REVENUECAT_CONFIG = {
    */
   ENTITLEMENT_ID: entitlementId,
 
-  /**
-   * Product identifiers
-   * Must match the product IDs configured in App Store Connect / Google Play Console
-   */
-  PRODUCTS: {
-    WEEKLY: weeklyProductId,
-    MONTHLY: monthlyProductId,
-    YEARLY: yearlyProductId,
-  },
+  // Product identifiers are optional unless you build a custom paywall flow.
+  // PRODUCTS: {
+  //   WEEKLY: weeklyProductId,
+  //   MONTHLY: monthlyProductId,
+  //   YEARLY: yearlyProductId,
+  // },
 
   /**
    * Free trial duration in days (custom trial without credit card)
@@ -84,4 +83,4 @@ export function getRevenueCatApiKey(platform: RevenueCatPlatform): string {
 /**
  * Type for product identifiers
  */
-export type ProductId = (typeof REVENUECAT_CONFIG.PRODUCTS)[keyof typeof REVENUECAT_CONFIG.PRODUCTS];
+// export type ProductId = (typeof REVENUECAT_CONFIG.PRODUCTS)[keyof typeof REVENUECAT_CONFIG.PRODUCTS];
