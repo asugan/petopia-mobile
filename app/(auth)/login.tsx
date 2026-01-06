@@ -66,7 +66,7 @@ export default function LoginScreen() {
     };
   }, [waitForAuth, isAuthenticated, router, t, setLoading, setError]);
 
-  const handleSocialLogin = async (provider: 'google' | 'apple' | 'facebook') => {
+  const handleSocialLogin = async (provider: 'google' | 'apple') => {
     clearError();
     setLoading(true);
 
@@ -76,8 +76,6 @@ export default function LoginScreen() {
         result = await signIn.google('/');
       } else if (provider === 'apple') {
         result = await signIn.apple('/');
-      } else if (provider === 'facebook') {
-        result = await signIn.facebook('/');
       }
 
       if (result?.error) {
@@ -347,21 +345,6 @@ export default function LoginScreen() {
                <MaterialCommunityIcons name="google" size={24} color={theme.colors.onSurface} />
             </View>
             <Text style={styles.socialButtonText}>{t('auth.continueWithGoogle')}</Text>
-            {isLoading && (
-              <ActivityIndicator size="small" color={theme.colors.onSurface} style={styles.loader} />
-            )}
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            style={styles.socialButton}
-            onPress={() => handleSocialLogin('facebook')}
-            disabled={isLoading}
-            activeOpacity={0.9}
-          >
-            <View style={styles.iconContainer}>
-              <MaterialCommunityIcons name="facebook" size={24} color={theme.colors.info} />
-            </View>
-            <Text style={styles.socialButtonText}>{t('auth.continueWithFacebook')}</Text>
             {isLoading && (
               <ActivityIndicator size="small" color={theme.colors.onSurface} style={styles.loader} />
             )}
