@@ -49,13 +49,6 @@ export function useAuth() {
         callbackURL,
       });
     },
-
-    facebook: async (callbackURL?: string) => {
-      return authClient.signIn.social({
-        provider: 'facebook',
-        callbackURL,
-      });
-    },
   };
 
   /**

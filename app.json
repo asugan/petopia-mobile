@@ -12,11 +12,12 @@
       "supportsTablet": true,
       "bundleIdentifier": "com.petopia.petcare",
       "infoPlist": {
-        "ITSAppUsesNonExemptEncryption": false
+        "ITSAppUsesNonExemptEncryption": false,
+        "NSUserNotificationUsageDescription": "We use notifications to remind you about pet care activities."
       }
     },
     "android": {
-      "package": "com.petopia.app",
+      "package": "com.petopia.petcare",
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/foreground.png",
         "backgroundImage": "./assets/images/background.png",
