@@ -313,7 +313,7 @@ export default function EventDetailScreen() {
           accessibilityLabel={t('common.back')}
           accessibilityRole="button"
         >
-          <MaterialIcons name="arrow-back" size={24} color="#FFF" />
+          <MaterialIcons name="arrow-back" size={24} color={theme.colors.onBackground} />
         </TouchableOpacity>
 
         <View style={styles.headerActions}>
@@ -324,7 +324,7 @@ export default function EventDetailScreen() {
             accessibilityHint={t('events.shareEventHint')}
             accessibilityRole="button"
           >
-            <MaterialIcons name="share" size={20} color="#FFF" />
+            <MaterialIcons name="share" size={20} color={theme.colors.onBackground} />
           </TouchableOpacity>
         </View>
       </View>

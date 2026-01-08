@@ -577,11 +577,11 @@ ${healthRecord.notes ? `${t('common.notes')}: ${healthRecord.notes}` : ''}
                 style={styles.navButton} 
                 onPress={() => router.back()}
               >
-                <MaterialCommunityIcons name="arrow-left" size={24} color="#FFF" />
+                <MaterialCommunityIcons name="arrow-left" size={24} color={theme.colors.onBackground} />
               </TouchableOpacity>
               <View style={styles.navActions}>
                 <TouchableOpacity style={styles.navButton} onPress={handleShare}>
-                  <MaterialCommunityIcons name="share-variant" size={20} color="#FFF" />
+                  <MaterialCommunityIcons name="share-variant" size={20} color={theme.colors.onBackground} />
                 </TouchableOpacity>
               </View>
             </View>

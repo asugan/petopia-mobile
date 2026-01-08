@@ -314,7 +314,7 @@ export default function PetDetailScreen() {
             accessibilityLabel={t('common.back')}
             accessibilityRole="button"
           >
-            <Ionicons name="arrow-back" size={24} color={theme.colors.inverseOnSurface} />
+            <Ionicons name="arrow-back" size={24} color={theme.colors.onBackground} />
           </TouchableOpacity>
           <TouchableOpacity
             onPress={handleShare}
@@ -323,7 +323,7 @@ export default function PetDetailScreen() {
             accessibilityHint={t('pets.sharePetHint')}
             accessibilityRole="button"
           >
-            <MaterialCommunityIcons name="share-variant" size={24} color={theme.colors.inverseOnSurface} />
+            <MaterialCommunityIcons name="share-variant" size={24} color={theme.colors.onBackground} />
           </TouchableOpacity>
         </View>
 
