@@ -57,7 +57,6 @@ export const filterUpcomingEvents = (
 export const groupEventsByTime = (events: Event[]): EventGroups => {
   const now = new Date();
   const inOneHour = dateUtils.addHours(now, 1);
-  const tomorrow = dateUtils.startOfDay(dateUtils.addDays(now, 1));
 
   const groups: EventGroups = {
     now: [],

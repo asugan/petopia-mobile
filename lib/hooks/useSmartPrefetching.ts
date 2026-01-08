@@ -1,4 +1,4 @@
-import { useCallback } from 'react';
+import { useCallback, useMemo } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 import { usePrefetchData } from './usePrefetchData';
 import { eventKeys } from './useEvents';
@@ -16,8 +16,7 @@ export function useSmartPrefetching() {
   const queryClient = useQueryClient();
   const { prefetchRelatedData } = usePrefetchData();
 
-  // Prefetching strategies based on user behavior
-  const prefetchStrategies: Record<string, PrefetchStrategy> = {
+  const prefetchStrategies = useMemo<Record<string, PrefetchStrategy>>(() => ({
     // When user spends time on pet list, prefetch details
     petListHover: {
       priority: 'medium',
@@ -45,7 +44,7 @@ export function useSmartPrefetching() {
       timeout: 5000, // 5 seconds
       conditions: ['app-in-background'],
     },
-  };
+  }), []);
 
   // Prefetch based on user interaction
   const prefetchOnInteraction = useCallback((
@@ -144,7 +143,7 @@ export function useSmartPrefetching() {
     } else {
       setTimeout(executePrefetch, config.timeout);
     }
-  }, [queryClient, prefetchRelatedData]);
+  }, [queryClient, prefetchRelatedData, prefetchStrategies]);
 
   // Prefetch based on user navigation patterns
   const prefetchOnNavigation = useCallback((

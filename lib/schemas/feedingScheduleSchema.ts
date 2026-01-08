@@ -157,9 +157,9 @@ export const transformAPIDataToForm = (
   apiData: FeedingScheduleData
 ): FeedingScheduleFormData => {
   // Convert comma-separated days string to array
-  const daysArray = apiData.days.split(',').map((d) => d.trim()) as Array<
+  const daysArray = apiData.days.split(',').map((d) => d.trim()) as (
     (typeof DAYS_OF_WEEK)[keyof typeof DAYS_OF_WEEK]
-  >;
+  )[];
 
   return {
     petId: apiData.petId,
@@ -201,7 +201,7 @@ export const formatTimeForDisplay = (time: string): string => {
 
 // Helper function to get next feeding time
 export const getNextFeedingTime = (
-  schedules: Array<{ time: string; days: string; isActive: boolean }>
+  schedules: { time: string; days: string; isActive: boolean }[]
 ): Date | null => {
   const now = new Date();
   const currentDay = now.getDay(); // 0 = Sunday, 1 = Monday, etc.
@@ -251,7 +251,7 @@ export const getNextFeedingTime = (
 };
 
 export const getPreviousFeedingTime = (
-  schedules: Array<{ time: string; days: string; isActive: boolean }>
+  schedules: { time: string; days: string; isActive: boolean }[]
 ): Date | null => {
   const now = new Date();
   const currentDay = now.getDay();

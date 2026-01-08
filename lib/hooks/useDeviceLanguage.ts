@@ -34,7 +34,7 @@ export function useDeviceLanguage() {
         }
 
         return "en";
-      } catch (error) {
+      } catch {
         return "en";
       }
     };

@@ -1,29 +1,27 @@
 import { useEffect, useRef } from 'react';
-import axios, { CancelTokenSource } from 'axios';
-
 interface CancellableRequest {
-  cancelTokenSource: CancelTokenSource;
+  signal: AbortSignal;
   cancel: () => void;
 }
 
 export function useRequestCancellation() {
-  const activeRequests = useRef<Map<string, CancelTokenSource>>(new Map());
+  const activeRequests = useRef<Map<string, AbortController>>(new Map());
 
   // Cancel a specific request
   const cancelRequest = (queryKey: string[]) => {
     const key = JSON.stringify(queryKey);
-    const source = activeRequests.current.get(key);
+    const controller = activeRequests.current.get(key);
 
-    if (source) {
-      source.cancel('Request cancelled');
+    if (controller) {
+      controller.abort();
       activeRequests.current.delete(key);
     }
   };
 
   // Cancel all active requests
   const cancelAllRequests = () => {
-    activeRequests.current.forEach((source) => {
-      source.cancel('Request cancelled');
+    activeRequests.current.forEach((controller) => {
+      controller.abort();
     });
     activeRequests.current.clear();
   };
@@ -35,16 +33,16 @@ export function useRequestCancellation() {
     // Cancel existing request for same query
     cancelRequest(queryKey);
 
-    // Create new cancel token source
-    const cancelTokenSource = axios.CancelToken.source();
-    activeRequests.current.set(key, cancelTokenSource);
+    // Create new abort controller
+    const controller = new AbortController();
+    activeRequests.current.set(key, controller);
 
     return {
-      cancelTokenSource,
+      signal: controller.signal,
       cancel: () => {
-        const source = activeRequests.current.get(key);
-        if (source) {
-          source.cancel('Request cancelled');
+        const activeController = activeRequests.current.get(key);
+        if (activeController) {
+          activeController.abort();
           activeRequests.current.delete(key);
         }
       },

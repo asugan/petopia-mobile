@@ -146,7 +146,7 @@ export function useResourcesSafe<TData, TError = Error>(
 
         // Apply client-side transformation if provided
         return select ? select(data) : data;
-      } catch (error) {
+      } catch {
         // Catch any errors and return default value
         return defaultValue;
       }

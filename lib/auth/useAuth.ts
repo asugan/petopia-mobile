@@ -1,4 +1,4 @@
-import { authClient, type Session, type User } from './client';
+import { authClient } from './client';
 
 /**
  * Re-export useSession from authClient for direct access

@@ -1,5 +1,4 @@
 import { useQuery } from '@tanstack/react-query';
-import { useMemo } from 'react';
 import { usePets } from './usePets';
 import { expenseService } from '../services/expenseService';
 import { Expense } from '../types';

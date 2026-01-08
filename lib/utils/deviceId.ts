@@ -52,7 +52,7 @@ export async function getDeviceId(): Promise<string> {
     await SecureStore.setItemAsync(DEVICE_ID_KEY, deviceId);
 
     return deviceId;
-  } catch (error) {
+  } catch {
 
     // Last resort: try to get stored ID or generate new one
     try {
@@ -64,7 +64,7 @@ export async function getDeviceId(): Promise<string> {
       const newId = generateUUID();
       await SecureStore.setItemAsync(DEVICE_ID_KEY, newId);
       return newId;
-    } catch (fallbackError) {
+    } catch {
       // If all else fails, return a temporary ID (not ideal but prevents crashes)
       return `temp_${generateUUID()}`;
     }

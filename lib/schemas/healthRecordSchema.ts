@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { objectIdSchema, currencyValidator, optionalUrlValidator } from './core/validators';
+import { objectIdSchema, currencyValidator } from './core/validators';
 import {
   utcDateStringSchema,
   futureDateSchema,

@@ -1,7 +1,7 @@
 import { z } from 'zod';
 import { EVENT_TYPES } from '@/constants';
 import { combineDateTimeToISO } from '@/lib/utils/dateConversion';
-import { utcDateStringSchema, futureDateSchema } from '@/lib/schemas/core/dateSchemas';
+import { utcDateStringSchema } from '@/lib/schemas/core/dateSchemas';
 import { t } from '@/lib/schemas/core/i18n';
 import { objectIdSchema } from '@/lib/schemas/core/validators';
 

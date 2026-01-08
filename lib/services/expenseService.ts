@@ -634,7 +634,7 @@ export class ExpenseService {
 
       await Sharing.shareAsync(uri, { dialogTitle });
       return { success: true, message: 'serviceResponse.expense.sharePDFSuccess' };
-    } catch (error) {
+    } catch {
       return {
         success: false,
         error: {

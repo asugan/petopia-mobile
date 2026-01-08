@@ -1,5 +1,6 @@
 import { QueryKey, UseQueryOptions } from '@tanstack/react-query';
 import { ApiResponse } from '@/lib/api/client';
+import { ApiServiceFn as BaseApiServiceFn } from '@/lib/types';
 
 /**
  * Base options for resource queries
@@ -116,8 +117,6 @@ export interface ConditionalQueryOptions<TData, TError = Error> extends BaseReso
 /**
  * Helper type for service functions that return ApiResponse
  */
-import { ApiServiceFn as BaseApiServiceFn } from '@/lib/types';
-
 export type ApiServiceFn<T> = BaseApiServiceFn<T>;
 
 /**

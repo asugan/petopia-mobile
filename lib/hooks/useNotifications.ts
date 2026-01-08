@@ -12,22 +12,22 @@ export const useNotifications = () => {
   const [isLoading, setIsLoading] = useState(false);
   const quietHours = useEventReminderStore((state) => state.quietHours);
 
-  // Check initial permission status
-  useEffect(() => {
-    checkPermissionStatus();
-  }, []);
-
-  useEffect(() => {
-    notificationService.setQuietHours(quietHours);
-  }, [quietHours]);
-
-  const checkPermissionStatus = async () => {
+  const checkPermissionStatus = useCallback(async () => {
     try {
       const nextPermissions = await Notifications.getPermissionsAsync();
       setPermissions(nextPermissions);
     } catch {
     }
-  };
+  }, []);
+
+  // Check initial permission status
+  useEffect(() => {
+    checkPermissionStatus();
+  }, [checkPermissionStatus]);
+
+  useEffect(() => {
+    notificationService.setQuietHours(quietHours);
+  }, [quietHours]);
 
   const requestPermission = useCallback(async () => {
     setIsLoading(true);
@@ -36,7 +36,7 @@ export const useNotifications = () => {
       const nextPermissions = await Notifications.getPermissionsAsync();
       setPermissions(nextPermissions);
       return granted;
-    } catch (error) {
+    } catch {
       return false;
     } finally {
       setIsLoading(false);
@@ -63,13 +63,7 @@ export const useEventReminders = (eventId?: string) => {
   const quietHoursEnabled = useEventReminderStore((state) => state.quietHoursEnabled);
   const quietHours = useEventReminderStore((state) => state.quietHours);
 
-  useEffect(() => {
-    if (eventId) {
-      loadScheduledReminders();
-    }
-  }, [eventId]);
-
-  const loadScheduledReminders = async () => {
+  const loadScheduledReminders = useCallback(async () => {
     if (!eventId) return;
 
     try {
@@ -77,7 +71,13 @@ export const useEventReminders = (eventId?: string) => {
       setScheduledReminders(reminders);
     } catch {
     }
-  };
+  }, [eventId]);
+
+  useEffect(() => {
+    if (eventId) {
+      loadScheduledReminders();
+    }
+  }, [eventId, loadScheduledReminders]);
 
   const scheduleReminder = useCallback(async (event: Event, reminderMinutes?: number) => {
     setIsLoading(true);
@@ -91,12 +91,12 @@ export const useEventReminders = (eventId?: string) => {
         return notificationId;
       }
       return null;
-    } catch (error) {
+    } catch {
       return null;
     } finally {
       setIsLoading(false);
     }
-  }, [quietHours, quietHoursEnabled]);
+  }, [quietHours, quietHoursEnabled, loadScheduledReminders]);
 
   const scheduleMultipleReminders = useCallback(async (event: Event, reminderTimes: number[]) => {
     setIsLoading(true);
@@ -107,12 +107,12 @@ export const useEventReminders = (eventId?: string) => {
       });
       await loadScheduledReminders();
       return notificationIds;
-    } catch (error) {
+    } catch {
       return [];
     } finally {
       setIsLoading(false);
     }
-  }, [quietHours, quietHoursEnabled]);
+  }, [quietHours, quietHoursEnabled, loadScheduledReminders]);
 
   const cancelReminder = useCallback(async (notificationId: string) => {
     setIsLoading(true);
@@ -123,7 +123,7 @@ export const useEventReminders = (eventId?: string) => {
     } finally {
       setIsLoading(false);
     }
-  }, []);
+  }, [loadScheduledReminders]);
 
   const cancelAllReminders = useCallback(async () => {
     if (!eventId) return;
@@ -136,7 +136,7 @@ export const useEventReminders = (eventId?: string) => {
     } finally {
       setIsLoading(false);
     }
-  }, [eventId]);
+  }, [eventId, loadScheduledReminders]);
 
   return {
     scheduledReminders,
@@ -172,7 +172,7 @@ export const useNotificationStats = () => {
 
   useEffect(() => {
     loadStats();
-  }, []);
+  }, [loadStats]);
 
   return {
     stats,

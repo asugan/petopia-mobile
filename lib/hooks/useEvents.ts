@@ -9,7 +9,7 @@ import { useResources } from './core/useResources';
 import { useConditionalQuery } from './core/useConditionalQuery';
 import { useAuthQueryEnabled } from './useAuthQueryEnabled';
 import { useMemo } from 'react';
-import { filterUpcomingEvents, groupEventsByTime, EventGroups } from '@/lib/utils/events';
+import { filterUpcomingEvents, groupEventsByTime } from '@/lib/utils/events';
 import { toISODateString } from '@/lib/utils/dateConversion';
 import { useReminderScheduler } from '@/hooks/useReminderScheduler';
 import { ReminderPresetKey } from '@/constants/reminders';
@@ -232,7 +232,7 @@ export const useDeleteEvent = () => {
     {
       listQueryKey: eventKeys.lists(),
       detailQueryKey: eventKeys.detail,
-      onSuccess: (data, id) => {
+      onSuccess: (_data, id) => {
          void cancelRemindersForEvent(id);
          clearReminderState(id);
          // Remove from calendar and today events

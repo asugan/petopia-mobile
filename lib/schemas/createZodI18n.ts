@@ -1,6 +1,5 @@
 import i18n from '../i18n';
 import { z } from 'zod';
-import { TranslationFunction } from '../types';
 
 /**
  * Gets the translation function dynamically
