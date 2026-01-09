@@ -39,20 +39,6 @@ const PetCard: React.FC<PetCardProps> = ({
     return t('petTypes.' + typeKey, type); // Fallback to original type if translation not found
   };
 
-  const getPetTypeColor = (type: string): string => {
-    const typeColors = {
-      cat: theme.colors.secondary,
-      dog: theme.colors.tertiary,
-      bird: theme.colors.primary,
-      fish: theme.colors.inversePrimary,
-      rabbit: theme.colors.secondaryContainer,
-      hamster: theme.colors.tertiaryContainer,
-      reptile: theme.colors.surfaceVariant,
-      default: theme.colors.primary,
-    };
-    return typeColors[type.toLowerCase() as keyof typeof typeColors] || typeColors.default;
-  };
-
   // Determine ring color based on next activity priority or type
   const getRingColor = () => {
     if (nextActivity) {
