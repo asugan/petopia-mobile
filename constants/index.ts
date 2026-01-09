@@ -165,3 +165,6 @@ export const createFoodTypeOptions = (t: (key: string, defaultValue?: string) =>
     value: type,
     label: t(`foodTypes.${type}`, type),
   }));
+
+// Fallback images
+export * from './images';

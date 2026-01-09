@@ -28,6 +28,7 @@ import { HealthRecordForm } from '@/components/forms/HealthRecordForm';
 import LoadingSpinner from '@/components/LoadingSpinner';
 import EmptyState from '@/components/EmptyState';
 import { TURKCE_LABELS } from '@/constants';
+import { FALLBACK_IMAGES } from '@/constants/images';
 import MoneyDisplay from '@/components/ui/MoneyDisplay';
 
 const { width } = Dimensions.get('window');
@@ -543,7 +544,7 @@ ${healthRecord.notes ? `${t('common.notes')}: ${healthRecord.notes}` : ''}
 
   const heroSource = pet?.profilePhoto
     ? { uri: pet.profilePhoto }
-    : require('@/assets/images/background.png');
+    : FALLBACK_IMAGES.petHero;
 
   return (
     <View style={styles.container}>
@@ -609,11 +610,10 @@ ${healthRecord.notes ? `${t('common.notes')}: ${healthRecord.notes}` : ''}
                 <MaterialCommunityIcons name="paw" size={40} color={theme.colors.primary} />
               </View>
               <View style={styles.petImageContainer}>
-                {pet?.profilePhoto ? (
-                   <Image source={{ uri: pet.profilePhoto }} style={styles.petImage} />
-                ) : (
-                  <MaterialCommunityIcons name="paw" size={20} color={theme.colors.onSurface} />
-                )}
+                <Image 
+                  source={pet?.profilePhoto ? { uri: pet.profilePhoto } : FALLBACK_IMAGES.petAvatar} 
+                  style={styles.petImage} 
+                />
               </View>
               <View>
                 <Text style={styles.cardLabel}>{t('pets.pet')}</Text>

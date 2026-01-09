@@ -1,4 +1,5 @@
 import { Avatar, Surface, Text } from '@/components/ui';
+import { FALLBACK_IMAGES } from '@/constants/images';
 import { useTheme } from '@/lib/theme';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
@@ -83,20 +84,11 @@ const PetCard: React.FC<PetCardProps> = ({
           <View style={styles.horizontalLayout}>
             {/* Avatar */}
             <View style={[styles.avatarRing, { borderColor: getRingColor(), borderWidth: 2 }]}>
-              {pet.profilePhoto ? (
-                <Avatar.Image
-                  size={56}
-                  source={{ uri: pet.profilePhoto }}
-                  style={styles.avatar}
-                />
-              ) : (
-                <Avatar.Text
-                  label={pet.name.charAt(0).toUpperCase()}
-                  size={56}
-                  style={[styles.avatar, { backgroundColor: getPetTypeColor(pet.type) }]}
-                  labelStyle={{ color: theme.colors.onPrimary, fontSize: 24, fontWeight: 'bold' }}
-                />
-              )}
+              <Avatar.Image
+                size={56}
+                source={pet.profilePhoto ? { uri: pet.profilePhoto } : FALLBACK_IMAGES.petAvatar}
+                style={styles.avatar}
+              />
             </View>
 
             {/* Info */}

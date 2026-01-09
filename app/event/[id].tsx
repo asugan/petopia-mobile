@@ -23,6 +23,7 @@ import {
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { getEventTypeLabel } from '@/constants/eventIcons';
+import { FALLBACK_IMAGES } from '@/constants/images';
 import { useReminderScheduler } from '@/hooks/useReminderScheduler';
 import { useDeleteEvent, useEvent, useUpdateEvent } from '@/lib/hooks/useEvents';
 import { usePet } from '@/lib/hooks/usePets';
@@ -299,7 +300,9 @@ export default function EventDetailScreen() {
   const dateStr = format(new Date(event.startTime), 'MMM dd, yyyy', { locale });
   const timeStr = format(new Date(event.startTime), 'hh:mm a', { locale });
   const eventTypeLabel = getEventTypeLabel(event.type, t);
-  const heroImage = pet?.profilePhoto || "https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?ixlib=rb-4.0.3&auto=format&fit=crop&w=1327&q=80";
+  const heroImage = pet?.profilePhoto 
+    ? { uri: pet.profilePhoto } 
+    : FALLBACK_IMAGES.petHero;
 
   return (
     <View style={[styles.container, { backgroundColor: COLORS.backgroundDark }]}>
@@ -332,7 +335,7 @@ export default function EventDetailScreen() {
       <ScrollView style={styles.scrollView} contentContainerStyle={{ paddingBottom: FOOTER_HEIGHT + insets.bottom }}>
         <View style={styles.heroContainer}>
           <Image
-            source={{ uri: heroImage }}
+            source={heroImage}
             style={styles.heroImage}
             contentFit="cover"
             transition={500}
@@ -377,7 +380,10 @@ export default function EventDetailScreen() {
             {pet && (
               <View style={[styles.card, { backgroundColor: COLORS.surfaceDark, width: (width - 32 - 12) / 2 }]}>
                 <View style={[styles.cardIconContainer, styles.petAvatarContainer, { borderColor: COLORS.primary }]}>
-                  <Image source={{ uri: pet.profilePhoto }} style={styles.petAvatar} />
+                  <Image 
+                    source={pet.profilePhoto ? { uri: pet.profilePhoto } : FALLBACK_IMAGES.petAvatar} 
+                    style={styles.petAvatar} 
+                  />
                 </View>
                 <View>
                   <Text style={[styles.cardLabel, { color: COLORS.gray400 }]}>{t('events.pet')}</Text>
