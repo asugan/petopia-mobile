@@ -1,5 +1,5 @@
 import { feedingScheduleService } from '@/lib/services/feedingScheduleService';
-import { CreateFeedingScheduleInput, FeedingSchedule, Pet, UpdateFeedingScheduleInput } from '@/lib/types';
+import { CreateFeedingScheduleInput, FeedingSchedule, UpdateFeedingScheduleInput } from '@/lib/types';
 import { ApiResponse } from '@/lib/api/client';
 import { CACHE_TIMES } from '@/lib/config/queryConfig';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
@@ -201,7 +201,7 @@ export const useDeleteFeedingSchedule = () => {
     {
       listQueryKey: feedingScheduleKeys.lists(),
       detailQueryKey: feedingScheduleKeys.detail,
-      onSuccess: (data, id) => {
+      onSuccess: (_data, id) => {
         // Remove from active schedules
         queryClient.setQueryData(feedingScheduleKeys.active(), (old: FeedingSchedule[] | undefined) =>
           old?.filter(schedule => schedule._id !== id)

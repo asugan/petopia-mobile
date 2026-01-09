@@ -26,7 +26,7 @@ export const BasePetSchema = () =>
       .optional()
       .transform((val) => val?.trim() || undefined),
 
-    birthDate: birthDateSchema(),
+    birthDate: birthDateSchema().optional(),
 
     weight: weightValidator().optional(),
 

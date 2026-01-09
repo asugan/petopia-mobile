@@ -36,10 +36,6 @@ export const processPhoto = async (
   } = options;
 
   try {
-    // Başlangıç boyut bilgisini al
-    const fileInfo = await FileSystem.getInfoAsync(uri) as FileInfo;
-    const initialSize = fileInfo.size || 0;
-
     // Fotoğrafı manipüle et (resize ve compress)
     const manipulatedImage = await ImageManipulator.manipulateAsync(
       uri,
@@ -92,7 +88,7 @@ export const processPhoto = async (
       width,
       height,
     };
-  } catch (error) {
+  } catch {
     throw new Error('Fotoğraf işlenemedi');
   }
 };
@@ -106,7 +102,7 @@ export const photoToBase64 = async (uri: string): Promise<string> => {
       encoding: EncodingType.Base64,
     });
     return base64;
-  } catch (error) {
+  } catch {
     throw new Error('Fotoğraf base64\'e çevrilemedi');
   }
 };
@@ -167,7 +163,7 @@ export const savePhotoToLocalStorage = async (
     });
 
     return filePath;
-  } catch (error) {
+  } catch {
     throw new Error('Fotoğraf kaydedilemedi');
   }
 };
@@ -181,7 +177,7 @@ export const deletePhotoFromLocalStorage = async (uri: string): Promise<void> =>
     if (fileInfo.exists) {
       await FileSystem.deleteAsync(uri);
     }
-  } catch (error) {
+  } catch {
     throw new Error('Fotoğraf silinemedi');
   }
 };
@@ -200,7 +196,7 @@ export const validatePhotoUri = async (uri: string): Promise<boolean> => {
   try {
     const fileInfo = await FileSystem.getInfoAsync(uri);
     return fileInfo.exists && !!(fileInfo.size && fileInfo.size > 0);
-  } catch (error) {
+  } catch {
     return false;
   }
 };
@@ -212,7 +208,7 @@ export const checkCameraPermissions = async (): Promise<boolean> => {
   try {
     const { status } = await ImagePicker.getCameraPermissionsAsync();
     return status === 'granted';
-  } catch (error) {
+  } catch {
     return false;
   }
 };
@@ -224,7 +220,7 @@ export const checkMediaLibraryPermissions = async (): Promise<boolean> => {
   try {
     const { status } = await ImagePicker.getMediaLibraryPermissionsAsync();
     return status === 'granted';
-  } catch (error) {
+  } catch {
     return false;
   }
 };
@@ -243,7 +239,7 @@ export const requestPhotoPermissions = async (): Promise<boolean> => {
       cameraPermission.status === 'granted' &&
       mediaLibraryPermission.status === 'granted'
     );
-  } catch (error) {
+  } catch {
     return false;
   }
 };
@@ -259,7 +255,7 @@ export const isPhotoOptimized = async (
     const fileInfo = await FileSystem.getInfoAsync(uri) as FileInfo;
     const sizeKB = (fileInfo.size || 0) / 1024;
     return sizeKB <= maxSizeKB;
-  } catch (error) {
+  } catch {
     return false;
   }
 };

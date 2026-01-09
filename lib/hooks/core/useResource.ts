@@ -118,7 +118,7 @@ export function useResourceSafe<TData, TError = Error>(
         }
 
         return (result.data ?? defaultValue) as TData;
-      } catch (error) {
+      } catch {
         // Catch any errors and return default value
         return defaultValue;
       }

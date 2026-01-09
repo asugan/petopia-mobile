@@ -61,7 +61,7 @@ export const formatActivityTime = (time: Date, locale: string = 'en'): string =>
         addSuffix: true,
         locale: dateLocale
       });
-    } catch (error) {
+    } catch {
       return time.toLocaleTimeString(dateLocale === enUS ? 'en-US' : 'tr-TR', {
         hour: '2-digit',
         minute: '2-digit'
@@ -74,7 +74,7 @@ export const formatActivityTime = (time: Date, locale: string = 'en'): string =>
     return format(time, 'MMM d, HH:mm', {
       locale: dateLocale
     });
-  } catch (error) {
+  } catch {
     // Fallback to native date formatting
     return time.toLocaleDateString(dateLocale === enUS ? 'en-US' : 'tr-TR', {
       month: 'short',

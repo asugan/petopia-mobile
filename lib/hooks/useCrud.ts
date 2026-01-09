@@ -13,7 +13,7 @@ interface CrudOptions<T, Variables = unknown, Context = unknown> {
   onSettled?: (data: T | undefined, error: Error | null, variables: Variables, context: Context | undefined) => void;
 }
 
-interface DeleteCrudOptions<T, Context = unknown> {
+interface DeleteCrudOptions<Context = unknown> {
   listQueryKey: QueryKey;
   detailQueryKey?: (id: string) => QueryKey;
   onSuccess?: (data: void | string, variables: string, context: Context) => void;
@@ -50,7 +50,7 @@ export function useCreateResource<T extends BaseResource, Input>(
 
       return { previousList };
     },
-    onError: (err, newData, context) => {
+    onError: (_err, _newData, context) => {
       if (context?.previousList) {
         queryClient.setQueryData(options.listQueryKey, context.previousList);
       }
@@ -105,7 +105,7 @@ export function useUpdateResource<T extends BaseResource, Input>(
 
       return { previousList, previousDetail };
     },
-    onError: (err, { _id }, context) => {
+    onError: (_err, { _id }, context) => {
       if (context?.previousList) {
         queryClient.setQueryData(options.listQueryKey, context.previousList);
       }
@@ -128,7 +128,7 @@ export function useUpdateResource<T extends BaseResource, Input>(
 
 export function useDeleteResource<T extends BaseResource>(
   mutationFn: (_id: string) => Promise<void | string>,
-  options: DeleteCrudOptions<T, { previousList: T[] | undefined }>
+  options: DeleteCrudOptions<{ previousList: T[] | undefined }>
 ) {
   const queryClient = useQueryClient();
 
@@ -145,7 +145,7 @@ export function useDeleteResource<T extends BaseResource>(
 
       return { previousList };
     },
-    onError: (err, _id, context) => {
+    onError: (_err, _id, context) => {
       if (context?.previousList) {
         queryClient.setQueryData(options.listQueryKey, context.previousList);
       }

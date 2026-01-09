@@ -9,6 +9,7 @@ import { tr, enUS } from 'date-fns/locale';
 import { Ionicons, MaterialCommunityIcons, MaterialIcons } from '@expo/vector-icons';
 
 import { Text, ActivityIndicator } from '@/components/ui';
+import { FALLBACK_IMAGES } from '@/constants/images';
 import { useTheme } from '@/lib/theme';
 import { usePet, useDeletePet } from '@/lib/hooks/usePets';
 import { useEvents } from '@/lib/hooks/useEvents';
@@ -274,7 +275,7 @@ export default function PetDetailScreen() {
 
   const heroSource = pet.profilePhoto
     ? { uri: pet.profilePhoto }
-    : require('@/assets/images/background.png');
+    : FALLBACK_IMAGES.petHero;
 
   return (
     <View style={[styles.container, { backgroundColor: theme.colors.background }]}>
@@ -314,7 +315,7 @@ export default function PetDetailScreen() {
             accessibilityLabel={t('common.back')}
             accessibilityRole="button"
           >
-            <Ionicons name="arrow-back" size={24} color={theme.colors.inverseOnSurface} />
+            <Ionicons name="arrow-back" size={24} color={theme.colors.onBackground} />
           </TouchableOpacity>
           <TouchableOpacity
             onPress={handleShare}
@@ -323,7 +324,7 @@ export default function PetDetailScreen() {
             accessibilityHint={t('pets.sharePetHint')}
             accessibilityRole="button"
           >
-            <MaterialCommunityIcons name="share-variant" size={24} color={theme.colors.inverseOnSurface} />
+            <MaterialCommunityIcons name="share-variant" size={24} color={theme.colors.onBackground} />
           </TouchableOpacity>
         </View>
 

@@ -251,7 +251,7 @@ export class UserBudgetService {
         data: statusResponse.data.petBreakdown,
         message: "serviceResponse.budget.fetchBreakdownSuccess",
       };
-    } catch (error) {
+    } catch {
       return {
         success: false,
         error: {
@@ -287,7 +287,7 @@ export class UserBudgetService {
           ? "serviceResponse.budget.hasActiveBudgetTrue"
           : "serviceResponse.budget.hasActiveBudgetFalse",
       };
-    } catch (error) {
+    } catch {
       return {
         success: false,
         error: {
@@ -343,7 +343,7 @@ export class UserBudgetService {
         },
         message: "serviceResponse.budget.fetchSummarySuccess",
       };
-    } catch (error) {
+    } catch {
       return {
         success: false,
         error: {

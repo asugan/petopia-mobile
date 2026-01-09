@@ -31,14 +31,3 @@ export * from "./useDeviceLanguage";
 // Responsive design hooks
 export * from "./useResponsiveSize";
 
-// Re-export commonly used query keys for external use
-export { petKeys } from "./usePets";
-export { healthRecordKeys } from "./useHealthRecords";
-export { eventKeys } from "./useEvents";
-export { feedingScheduleKeys } from "./useFeedingSchedules";
-export { expenseKeys } from "./useExpenses";
-export { userBudgetKeys } from "./useUserBudget";
-
-// Re-export types
-export type { PetFilters } from "./usePets";
-export type { HealthRecordFilters } from "./useHealthRecords";

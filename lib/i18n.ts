@@ -1,4 +1,4 @@
-import i18n from 'i18next';
+import { default as i18n } from 'i18next';
 import { initReactI18next } from 'react-i18next';
 import * as Localization from 'expo-localization';
 
@@ -22,7 +22,7 @@ const getDeviceLanguage = () => {
     const locales = Localization.getLocales();
     const languageCode = locales[0]?.languageCode?.toLowerCase() || 'en';
     return languageCode === 'tr' ? 'tr' : 'en';
-  } catch (error) {
+  } catch {
     return 'en';
   }
 };

@@ -2,7 +2,6 @@ import { z } from 'zod';
 import { BasePetSchema, PetFormSchema } from './common/basePetSchema';
 import { objectIdSchema } from './core/validators';
 import { dateStringSchema } from './core/dateSchemas';
-import { t } from './core/i18n';
 
 // Re-export common base schemas for convenience
 export { BasePetSchema, PetFormSchema };

@@ -15,56 +15,6 @@ export * from './common/baseEntitySchema';
 export * from './common/basePetSchema';
 
 // Domain schemas (these re-export some types/constants for convenience)
-export {
-  PetSchema,
-  PetCreateSchema,
-  PetUpdateSchema,
-  PetCreateFormSchema,
-  PetUpdateFormSchema,
-  BasePetSchema,
-  PetFormSchema,
-  type Pet,
-  type PetCreateInput,
-  type PetUpdateInput,
-  TurkishPetValidations,
-} from './petSchema';
-
-export {
-  ExpenseSchema,
-  ExpenseCreateSchema,
-  ExpenseUpdateSchema,
-  ExpenseQuerySchema,
-  EXPENSE_CATEGORIES,
-  PAYMENT_METHODS,
-  type Expense,
-  type ExpenseCreateInput,
-  type ExpenseUpdateInput,
-  type ExpenseQueryParams,
-  type ExpenseCategory,
-  type PaymentMethod,
-  formatExpenseValidationErrors,
-  isValidExpenseCategory,
-  isValidPaymentMethod,
-  isValidCurrency,
-} from './expenseSchema';
-
-export {
-  HealthRecordSchema,
-  HealthRecordCreateSchema,
-  HealthRecordUpdateSchema,
-  HealthRecordCreateFormSchema,
-  HealthRecordUpdateFormSchema,
-  HEALTH_RECORD_TYPES,
-  type HealthRecord,
-  type HealthRecordCreateInput,
-  type HealthRecordUpdateInput,
-  type HealthRecordCreateFormInput,
-  type HealthRecordUpdateFormInput,
-  type HealthRecordType,
-  TurkishHealthValidations,
-  getHealthRecordSchema,
-  validateHealthRecord,
-} from './healthRecordSchema';
 
 export {
   EventSchema,
