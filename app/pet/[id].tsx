@@ -743,6 +743,7 @@ const styles = StyleSheet.create({
   timeText: {
     fontSize: 24,
     fontWeight: '700',
+    lineHeight: 32,
   },
   progressBarBg: {
     height: 6,
