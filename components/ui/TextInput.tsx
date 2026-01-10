@@ -1,7 +1,12 @@
 import { useTheme } from "@/lib/theme";
 import { Ionicons } from "@expo/vector-icons";
 import React, { useState } from "react";
+import { useTranslation } from "react-i18next";
 import {
+    InputAccessoryView,
+    Keyboard,
+    Platform,
+    Pressable,
     TextInput as RNTextInput,
     TextInputProps as RNTextInputProps,
     StyleProp,
@@ -53,7 +58,29 @@ const TextInputBase: React.FC<TextInputProps> = ({
   ...rest
 }) => {
   const { theme } = useTheme();
+  const { t } = useTranslation();
   const [isFocused, setIsFocused] = useState(false);
+
+  const {
+    multiline,
+    returnKeyType,
+    blurOnSubmit,
+    inputAccessoryViewID,
+    ...inputProps
+  } = rest;
+
+  const showDoneAccessory = Platform.OS === "ios" && !multiline;
+  const fallbackAccessoryViewID = React.useMemo(
+    () => `textinput-done-${Math.random().toString(36).slice(2)}`,
+    []
+  );
+  const resolvedAccessoryViewID =
+    inputAccessoryViewID ?? (showDoneAccessory ? fallbackAccessoryViewID : undefined);
+  const resolvedReturnKeyType = returnKeyType ?? (multiline ? undefined : "done");
+  const resolvedBlurOnSubmit = blurOnSubmit ?? !multiline;
+  const dismissKeyboard = React.useCallback(() => {
+    Keyboard.dismiss();
+  }, []);
 
   const getBorderColor = () => {
     if (error) return theme.colors.error;
@@ -106,10 +133,41 @@ const TextInputBase: React.FC<TextInputProps> = ({
           editable={!disabled}
           onFocus={() => setIsFocused(true)}
           onBlur={() => setIsFocused(false)}
-          {...rest}
+          multiline={multiline}
+          returnKeyType={resolvedReturnKeyType}
+          blurOnSubmit={resolvedBlurOnSubmit}
+          inputAccessoryViewID={resolvedAccessoryViewID}
+          {...inputProps}
         />
         {right && <View style={styles.rightElement}>{right}</View>}
       </View>
+      {showDoneAccessory && resolvedAccessoryViewID ? (
+        <InputAccessoryView nativeID={resolvedAccessoryViewID}>
+          <View
+            style={[
+              styles.inputAccessory,
+              {
+                backgroundColor: theme.colors.surfaceVariant,
+                borderTopColor: theme.colors.outline,
+              },
+            ]}
+          >
+            <View style={styles.inputAccessorySpacer} />
+            <Pressable
+              onPress={dismissKeyboard}
+              accessibilityRole="button"
+              style={styles.doneButton}
+            >
+              <Text
+                variant="bodyMedium"
+                style={[styles.doneButtonText, { color: theme.colors.primary }]}
+              >
+                {t("common.done", "Done")}
+              </Text>
+            </Pressable>
+          </View>
+        </InputAccessoryView>
+      ) : null}
     </View>
   );
 };
@@ -162,5 +220,23 @@ const styles = StyleSheet.create({
   },
   rightElement: {
     marginLeft: 8,
+  },
+  inputAccessory: {
+    flexDirection: "row",
+    alignItems: "center",
+    paddingHorizontal: 12,
+    paddingVertical: 10,
+    borderTopWidth: StyleSheet.hairlineWidth,
+  },
+  inputAccessorySpacer: {
+    flex: 1,
+  },
+  doneButton: {
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+  },
+  doneButtonText: {
+    fontSize: 16,
+    fontWeight: "600",
   },
 });

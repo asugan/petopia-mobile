@@ -129,7 +129,7 @@ export function PetForm({
       <ScrollView
         style={[styles.container, { backgroundColor: theme.colors.background }]}
         contentContainerStyle={styles.contentContainer}
-        keyboardShouldPersistTaps="always"
+        keyboardShouldPersistTaps="handled"
         testID={testID}
       >
         <StepHeader
