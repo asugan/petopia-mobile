@@ -114,10 +114,21 @@ export default function NotificationPermissionPrompt({
 /**
  * Inline notification permission card (for settings page)
  */
-export function NotificationPermissionCard() {
+interface NotificationPermissionCardProps {
+  refreshKey?: number;
+}
+
+export function NotificationPermissionCard({ refreshKey }: NotificationPermissionCardProps) {
   const { theme } = useTheme();
   const { t } = useTranslation();
-  const { permissions, permissionStatus, requestPermission, isLoading } = useNotifications();
+  const { permissions, permissionStatus, requestPermission, isLoading: hookLoading, checkPermissionStatus } = useNotifications();
+
+  // Re-check permissions when refreshKey changes
+  React.useEffect(() => {
+    if (refreshKey !== undefined) {
+      checkPermissionStatus();
+    }
+  }, [refreshKey, checkPermissionStatus]);
 
   const iosStatus = permissions?.ios?.status;
   const isEnabled =
@@ -134,6 +145,10 @@ export function NotificationPermissionCard() {
       Linking.openSettings();
     }
   };
+
+  if (permissions === null || hookLoading) {
+    return null;
+  }
 
   if (isEnabled) {
     return (
@@ -212,7 +227,7 @@ export function NotificationPermissionCard() {
         <Button
           mode="contained"
           onPress={requestPermission}
-          disabled={isLoading}
+          disabled={hookLoading}
           style={styles.settingsButton}
         >
           {t('notifications.enable')}

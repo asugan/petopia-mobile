@@ -109,7 +109,7 @@ const UserBudgetForm: React.FC<UserBudgetFormProps> = ({
       <ScrollView
         style={styles.container}
         contentContainerStyle={styles.contentContainer}
-        keyboardShouldPersistTaps="always"
+        keyboardShouldPersistTaps="handled"
       >
         <StepHeader
           title={steps[currentStep].title}

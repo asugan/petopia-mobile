@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, StyleSheet, StyleProp, ViewStyle } from 'react-native';
+import { View, StyleSheet, StyleProp, ViewStyle, useWindowDimensions } from 'react-native';
 import { Card, Text, Button } from '@/components/ui';
 import { useTheme } from '@/lib/theme';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
@@ -28,20 +28,21 @@ const EmptyState: React.FC<EmptyStateProps> = ({
   onAction,
 }) => {
   const { theme } = useTheme();
+  const isSmallScreen = useWindowDimensions().height < 700;
 
   return (
-    <View style={[styles.container, style]}>
+    <View style={[styles.container, isSmallScreen && styles.containerSmall, style]}>
       <Card style={[styles.card, { backgroundColor: theme.colors.surfaceVariant }]}>
-        <View style={styles.content}>
+        <View style={[styles.content, isSmallScreen && styles.contentSmall]}>
           <MaterialCommunityIcons
             name={icon}
-            size={64}
+            size={isSmallScreen ? 48 : 64}
             color={theme.colors.onSurfaceVariant}
             style={styles.icon}
           />
 
           <Text
-            variant="headlineSmall"
+            variant={isSmallScreen ? "titleLarge" : "headlineSmall"}
             style={[styles.title, { color: theme.colors.onSurfaceVariant }]}
           >
             {title}
@@ -63,6 +64,7 @@ const EmptyState: React.FC<EmptyStateProps> = ({
               textColor={theme.colors.onPrimary}
               onPress={onButtonPress || onAction}
               style={styles.button}
+              labelStyle={isSmallScreen ? { fontSize: 14 } : undefined}
             >
               {buttonText || actionLabel}
             </Button>
@@ -75,10 +77,12 @@ const EmptyState: React.FC<EmptyStateProps> = ({
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
     padding: 32,
+  },
+  containerSmall: {
+    padding: 16,
   },
   card: {
     width: '100%',
@@ -88,6 +92,9 @@ const styles = StyleSheet.create({
   content: {
     padding: 32,
     alignItems: 'center',
+  },
+  contentSmall: {
+    padding: 20,
   },
   icon: {
     marginBottom: 16,

@@ -97,3 +97,13 @@ export function useComputedSubscriptionStatus() {
     subscriptionStatus,
   };
 }
+
+export function useSubscriptionQueryEnabled() {
+  const { enabled: authEnabled, userId } = useAuthQueryEnabled();
+  const { data, isLoading, isError } = useSubscriptionStatus();
+
+  const hasActiveSubscription = data?.hasActiveSubscription ?? false;
+  const enabled = authEnabled && hasActiveSubscription;
+
+  return { enabled, userId, hasActiveSubscription, isLoading, isError };
+}

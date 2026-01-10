@@ -2,8 +2,10 @@ import { useQuery } from '@tanstack/react-query';
 import { usePets } from './usePets';
 import { expenseService } from '../services/expenseService';
 import { Expense } from '../types';
+import { useSubscriptionQueryEnabled } from './useSubscriptionQueries';
 
 export const useRecentExpenses = () => {
+  const { enabled } = useSubscriptionQueryEnabled();
   const { data: pets } = usePets();
 
   // Fetch expenses for all pets at once
@@ -31,7 +33,7 @@ export const useRecentExpenses = () => {
         .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
         .slice(0, 3);
     },
-    enabled: !!pets && pets.length > 0,
+    enabled: enabled && !!pets && pets.length > 0,
   });
 
   return {

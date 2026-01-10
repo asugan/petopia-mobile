@@ -5,11 +5,15 @@ import { eventKeys } from './useEvents';
 import { feedingScheduleKeys } from './useFeedingSchedules';
 import { unwrapApiResponse } from './core/unwrapApiResponse';
 import { toISODateStringWithFallback } from '@/lib/utils/dateConversion';
+import { useSubscriptionQueryEnabled } from './useSubscriptionQueries';
 
 export function usePrefetchData() {
   const queryClient = useQueryClient();
+  const { enabled } = useSubscriptionQueryEnabled();
 
   const prefetchPetDetails = (petId: string) => {
+    if (!enabled) return;
+
     queryClient.prefetchQuery({
       queryKey: petKeys.detail(petId),
       queryFn: () =>
@@ -21,6 +25,8 @@ export function usePrefetchData() {
   };
 
   const prefetchPetHealthRecords = (petId: string) => {
+    if (!enabled) return;
+
     queryClient.prefetchQuery({
       queryKey: healthRecordKeys.list(petId),
       queryFn: () =>
@@ -35,6 +41,8 @@ export function usePrefetchData() {
   };
 
   const prefetchPetEvents = (petId: string) => {
+    if (!enabled) return;
+
     queryClient.prefetchQuery({
       queryKey: eventKeys.list({ petId }),
       queryFn: () =>
@@ -49,6 +57,8 @@ export function usePrefetchData() {
   };
 
   const prefetchPetFeedingSchedules = (petId: string) => {
+    if (!enabled) return;
+
     queryClient.prefetchQuery({
       queryKey: feedingScheduleKeys.list({ petId }),
       queryFn: () =>
@@ -70,6 +80,8 @@ export function usePrefetchData() {
   };
 
   const prefetchUpcomingEvents = () => {
+    if (!enabled) return;
+
     queryClient.prefetchQuery({
       queryKey: eventKeys.upcoming(),
       queryFn: () =>
@@ -84,6 +96,8 @@ export function usePrefetchData() {
   };
 
   const prefetchTodayEvents = () => {
+    if (!enabled) return;
+
     queryClient.prefetchQuery({
       queryKey: eventKeys.today(),
       queryFn: () =>
@@ -96,6 +110,8 @@ export function usePrefetchData() {
   };
 
   const prefetchActiveFeedingSchedules = () => {
+    if (!enabled) return;
+
     queryClient.prefetchQuery({
       queryKey: feedingScheduleKeys.active(),
       queryFn: () =>
@@ -121,6 +137,8 @@ export function usePrefetchData() {
   };
 
   const prefetchForCalendarTab = (date?: string) => {
+    if (!enabled) return;
+
     prefetchTodayEvents();
 
     const todayKey = toISODateStringWithFallback(new Date());

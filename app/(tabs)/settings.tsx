@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { SubscriptionCard } from "@/components/subscription";
 import { Button, Card, ListItem, Switch, Text } from "@/components/ui";
@@ -53,39 +53,55 @@ export default function SettingsScreen() {
   const [activeModal, setActiveModal] = useState<ModalState>("none");
   const [deleteConfirmText, setDeleteConfirmText] = useState("");
   const [deletingAccount, setDeletingAccount] = useState(false);
+  const [permissionRefreshKey, setPermissionRefreshKey] = useState(0);
+  const hasSyncedPermission = useRef(false);
 
   useEffect(() => {
     const fetchPermissionStatus = async () => {
       try {
         const enabled = await notificationService.areNotificationsEnabled();
         setNotificationPermissionEnabled(enabled);
+        
+        // Sync backend with system permission if they differ
+        // Only auto-disable backend if system is disabled (one-time sync)
+        if (!hasSyncedPermission.current && !enabled && settings?.notificationsEnabled === true) {
+          hasSyncedPermission.current = true;
+          await updateSettings({ notificationsEnabled: false });
+        }
       } catch {
       } finally {
         setNotificationLoading(false);
       }
     };
 
-    fetchPermissionStatus();
-  }, []);
+    if (settings !== null) {
+      fetchPermissionStatus();
+    }
+  }, [settings, updateSettings]);
 
 
   const handleNotificationToggle = async (value: boolean) => {
     setNotificationLoading(true);
     try {
       if (value) {
+        // If user wants to enable, check system permissions first
         const granted = await requestNotificationPermissions();
+        setNotificationPermissionEnabled(granted);
+        setPermissionRefreshKey((prev) => prev + 1);
+        
         if (!granted) {
           Alert.alert(
             t("settings.notifications"),
             t("settings.notificationPermissionDenied", "Notifications are blocked at the system level. Please enable them from settings.")
           );
+          // Ensure backend stays disabled if permission denied
           await updateSettings({ notificationsEnabled: false });
-        }
-        setNotificationPermissionEnabled(granted);
-        if (granted) {
+        } else {
+          // Permission granted, update backend
           await updateSettings({ notificationsEnabled: true });
         }
       } else {
+        // If user wants to disable, update backend and cancel existing
         Alert.alert(
           t("settings.notifications"),
           t(
@@ -439,7 +455,7 @@ export default function SettingsScreen() {
                 />
               </View>
             )}
-            <NotificationPermissionCard />
+            <NotificationPermissionCard refreshKey={permissionRefreshKey} />
             <LanguageSettings variant="embedded" />
 
             <View style={styles.currencyPickerContainer}>

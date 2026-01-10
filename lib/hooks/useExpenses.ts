@@ -10,6 +10,7 @@ import { createQueryKeys } from './core/createQueryKeys';
 import { useResource } from './core/useResource';
 import { useResources } from './core/useResources';
 import { useConditionalQuery } from './core/useConditionalQuery';
+import { useSubscriptionQueryEnabled } from './useSubscriptionQueries';
 
 // Type-safe filters for expenses
 interface ExpenseFilters {
@@ -65,6 +66,8 @@ export const expenseKeys = {
 
 // Hook for fetching expenses by pet ID with filters
 export function useExpenses(petId?: string, filters: Omit<ExpenseFilters, 'petId'> = {}) {
+  const { enabled } = useSubscriptionQueryEnabled();
+
   return useQuery({
     queryKey: expenseKeys.list({ petId, ...filters }),
     queryFn: async () => {
@@ -112,16 +115,19 @@ export function useExpenses(petId?: string, filters: Omit<ExpenseFilters, 'petId
     },
     staleTime: CACHE_TIMES.SHORT,
     placeholderData: (previousData) => previousData ?? { expenses: [], total: 0 }, // Keep previous page data for pagination
+    enabled,
   });
 }
 
 // Hook for fetching a single expense
 export function useExpense(id?: string) {
+  const { enabled } = useSubscriptionQueryEnabled();
+
   return useResource<Expense>({
     queryKey: expenseKeys.detail(id!),
     queryFn: () => expenseService.getExpenseById(id!),
     staleTime: CACHE_TIMES.MEDIUM,
-    enabled: !!id,
+    enabled: enabled && !!id,
     errorMessage: 'Failed to load expense',
   });
 }
@@ -129,6 +135,7 @@ export function useExpense(id?: string) {
 // Hook for infinite scrolling expenses (single pet only - requires petId)
 export function useInfiniteExpenses(petId: string | undefined, filters?: Omit<ExpenseFilters, 'petId' | 'page'>) {
   const defaultLimit = ENV.DEFAULT_LIMIT || 20;
+  const { enabled } = useSubscriptionQueryEnabled();
 
   return useInfiniteQuery({
     queryKey: expenseKeys.infinite(petId, filters),
@@ -163,16 +170,19 @@ export function useInfiniteExpenses(petId: string | undefined, filters?: Omit<Ex
     },
     staleTime: CACHE_TIMES.MEDIUM,
     gcTime: CACHE_TIMES.LONG,
-    enabled: !!petId,
+    enabled: enabled && !!petId,
   });
 }
 
 // Hook for expense statistics
 export function useExpenseStats(params?: StatsParams) {
+  const { enabled } = useSubscriptionQueryEnabled();
+
   return useConditionalQuery<ExpenseStats | null>({
     queryKey: expenseKeys.stats(params),
     queryFn: () => expenseService.getExpenseStats(params),
     staleTime: CACHE_TIMES.MEDIUM,
+    enabled,
     defaultValue: null,
     errorMessage: 'Failed to load expense statistics',
   });
@@ -180,29 +190,37 @@ export function useExpenseStats(params?: StatsParams) {
 
 // Hook for monthly expenses
 export function useMonthlyExpenses(params?: PeriodParams) {
+  const { enabled } = useSubscriptionQueryEnabled();
+
   return useResources<MonthlyExpense>({
     queryKey: expenseKeys.monthly(params),
     queryFn: () => expenseService.getMonthlyExpenses(params),
     staleTime: CACHE_TIMES.MEDIUM,
+    enabled,
   });
 }
 
 // Hook for yearly expenses
 export function useYearlyExpenses(params?: Omit<PeriodParams, 'month'>) {
+  const { enabled } = useSubscriptionQueryEnabled();
+
   return useResources<YearlyExpense>({
     queryKey: expenseKeys.yearly(params),
     queryFn: () => expenseService.getYearlyExpenses(params),
     staleTime: CACHE_TIMES.MEDIUM,
+    enabled,
   });
 }
 
 // Hook for expenses by category
 export function useExpensesByCategory(category: string, petId?: string) {
+  const { enabled } = useSubscriptionQueryEnabled();
+
   return useConditionalQuery<Expense[]>({
     queryKey: expenseKeys.byCategory(category, petId),
     queryFn: () => expenseService.getExpensesByCategory(category, petId),
     staleTime: CACHE_TIMES.MEDIUM,
-    enabled: !!category,
+    enabled: enabled && !!category,
     defaultValue: [],
     errorMessage: 'Failed to load expenses by category',
   });
@@ -214,11 +232,13 @@ export function useExpensesByDateRange(params: {
   startDate: string;
   endDate: string;
 }) {
+  const { enabled } = useSubscriptionQueryEnabled();
+
   return useConditionalQuery<Expense[]>({
     queryKey: expenseKeys.dateRange(params),
     queryFn: () => expenseService.getExpensesByDateRange(params),
     staleTime: CACHE_TIMES.MEDIUM,
-    enabled: !!params.startDate && !!params.endDate,
+    enabled: enabled && !!params.startDate && !!params.endDate,
     defaultValue: [],
     errorMessage: 'Failed to load expenses by date range',
   });

@@ -7,7 +7,7 @@ import { useCreateResource, useDeleteResource, useUpdateResource } from './useCr
 import { createQueryKeys } from './core/createQueryKeys';
 import { useResource } from './core/useResource';
 import { useConditionalQuery } from './core/useConditionalQuery';
-import { useAuthQueryEnabled } from './useAuthQueryEnabled';
+import { useSubscriptionQueryEnabled } from './useSubscriptionQueries';
 
 interface PetFilters extends QueryFilters {
   search?: string;
@@ -28,7 +28,7 @@ export const petKeys = {
 };
 
 export function usePets(filters: PetFilters = {}) {
-  const { enabled } = useAuthQueryEnabled();
+  const { enabled } = useSubscriptionQueryEnabled();
 
   return useConditionalQuery<Pet[]>({
     queryKey: petKeys.list(filters),
@@ -52,43 +52,52 @@ export function usePets(filters: PetFilters = {}) {
 }
 
 export function useSearchPets(query: string) {
+  const { enabled } = useSubscriptionQueryEnabled();
+
   return useConditionalQuery<Pet[]>({
     queryKey: petKeys.search(query),
     queryFn: () => petService.searchPets(query),
     staleTime: CACHE_TIMES.SHORT,
-    enabled: !!query && query.trim().length > 0,
+    enabled: enabled && !!query && query.trim().length > 0,
     defaultValue: [],
     errorMessage: 'Arama yapılamadı',
   });
 }
 
 export function usePetsByType(type: string) {
+  const { enabled } = useSubscriptionQueryEnabled();
+
   return useConditionalQuery<Pet[]>({
     queryKey: petKeys.byType(type),
     queryFn: () => petService.getPetsByType(type),
     staleTime: CACHE_TIMES.MEDIUM,
-    enabled: !!type,
+    enabled: enabled && !!type,
     defaultValue: [],
     errorMessage: 'Evcil hayvanlar yüklenemedi',
   });
 }
 
 export function usePet(id: string) {
+  const { enabled } = useSubscriptionQueryEnabled();
+
   return useResource<Pet>({
     queryKey: petKeys.detail(id),
     queryFn: () => petService.getPetById(id),
     staleTime: CACHE_TIMES.LONG,
-    enabled: !!id,
+    enabled: enabled && !!id,
     errorMessage: 'Pet yüklenemedi',
   });
 }
 
 export function usePetStats() {
+  const { enabled } = useSubscriptionQueryEnabled();
+
   return useQuery({
     queryKey: petKeys.stats(),
     queryFn: () => petService.getPetStats(),
     staleTime: CACHE_TIMES.LONG,
     refetchInterval: CACHE_TIMES.MEDIUM,
+    enabled,
   });
 }
 
@@ -153,7 +162,7 @@ export function useUploadPetPhoto() {
 
 export function useInfinitePets(filters?: Omit<PetFilters, 'page'>) {
   const defaultLimit = ENV.DEFAULT_LIMIT || 20;
-  const { enabled } = useAuthQueryEnabled();
+  const { enabled } = useSubscriptionQueryEnabled();
 
   return useInfiniteQuery({
     queryKey: petKeys.infinite(filters),
@@ -185,7 +194,7 @@ export function useInfinitePets(filters?: Omit<PetFilters, 'page'>) {
       return result.data!;
     },
     initialPageParam: 1,
-    getNextPageParam: (lastPage, allPages, lastPageParam) => {
+    getNextPageParam: (lastPage, _allPages, lastPageParam) => {
       if (lastPage.length < defaultLimit) {
         return undefined;
       }
