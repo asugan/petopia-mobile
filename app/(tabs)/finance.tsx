@@ -479,9 +479,49 @@ export default function FinanceScreen() {
     return (
       <View style={styles.content}>
         {renderPetSelector()}
-        <View style={styles.expensesSection}>
+        <ScrollView 
+          style={styles.expensesSection}
+          contentContainerStyle={[
+            { flexGrow: 1, paddingBottom: contentBottomPadding }
+          ]}
+          showsVerticalScrollIndicator={false}
+          refreshControl={
+            <RefreshControl
+              refreshing={refreshing || expensesFetching}
+              onRefresh={async () => {
+                setRefreshing(true);
+                setPage(1);
+  
+                if (useInfinite) {
+                  await refetchInfinite();
+                } else {
+                  const queryKey = expenseKeys.list({
+                    petId: selectedPetId,
+                    page: 1,
+                    limit: ENV.DEFAULT_LIMIT
+                  });
+                  await queryClient.invalidateQueries({ queryKey });
+                  await queryClient.refetchQueries({ queryKey });
+                }
+                setRefreshing(false);
+              }}
+              colors={[theme.colors.primary]}
+              tintColor={theme.colors.primary}
+            />
+          }
+          onScroll={({ nativeEvent }) => {
+            const { layoutMeasurement, contentOffset, contentSize } = nativeEvent;
+            const isCloseToBottom =
+              layoutMeasurement.height + contentOffset.y >=
+              contentSize.height - 100;
+            if (isCloseToBottom) {
+              handleLoadMoreExpenses();
+            }
+          }}
+          scrollEventThrottle={400}
+        >
           {renderExpensesList()}
-        </View>
+        </ScrollView>
       </View>
     );
   };
@@ -513,44 +553,7 @@ export default function FinanceScreen() {
     }
 
     return (
-      <ScrollView
-        style={styles.expensesScroll}
-        contentContainerStyle={[styles.listContainer, { paddingBottom: contentBottomPadding }]}
-        refreshControl={
-          <RefreshControl
-            refreshing={refreshing || expensesFetching}
-            onRefresh={async () => {
-              setRefreshing(true);
-              setPage(1);
-
-              if (useInfinite) {
-                await refetchInfinite();
-              } else {
-                const queryKey = expenseKeys.list({
-                  petId: selectedPetId,
-                  page: 1,
-                  limit: ENV.DEFAULT_LIMIT
-                });
-                await queryClient.invalidateQueries({ queryKey });
-                await queryClient.refetchQueries({ queryKey });
-              }
-              setRefreshing(false);
-            }}
-            colors={[theme.colors.primary]}
-            tintColor={theme.colors.primary}
-          />
-        }
-        onScroll={({ nativeEvent }) => {
-          const { layoutMeasurement, contentOffset, contentSize } = nativeEvent;
-          const isCloseToBottom =
-            layoutMeasurement.height + contentOffset.y >=
-            contentSize.height - 100;
-          if (isCloseToBottom) {
-            handleLoadMoreExpenses();
-          }
-        }}
-        scrollEventThrottle={400}
-      >
+      <View style={styles.expensesScrollContainer}>
         {expenseStats && (
           <Card style={[styles.statsCard, { backgroundColor: theme.colors.surface }]}>
             <View style={styles.statsContent}>
@@ -582,7 +585,7 @@ export default function FinanceScreen() {
         </View>
 
         {expensesFetching && !useInfinite && page > 1 && <LoadingSpinner />}
-      </ScrollView>
+      </View>
     );
   };
 
@@ -719,6 +722,9 @@ const styles = StyleSheet.create({
   expensesScroll: {
     flex: 1,
   },
+  expensesScrollContainer: {
+    paddingBottom: 12,
+  },
   expensesGrid: {
     paddingHorizontal: 16,
     paddingBottom: 12,
@@ -780,6 +786,7 @@ const styles = StyleSheet.create({
   emptyStateContainer: {
     flex: 1,
     justifyContent: "center",
+    alignItems: "center",
     paddingBottom: 80,
   },
 });
