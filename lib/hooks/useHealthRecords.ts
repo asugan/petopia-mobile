@@ -8,6 +8,7 @@ import { createQueryKeys } from './core/createQueryKeys';
 import { useResource } from './core/useResource';
 import { useConditionalQuery } from './core/useConditionalQuery';
 import { useSubscriptionQueryEnabled } from './useSubscriptionQueries';
+import { expenseKeys } from './useExpenses';
 
 // Type-safe filters for health records
 interface HealthRecordFilters {
@@ -185,6 +186,7 @@ export function useCreateHealthRecord() {
           queryClient.invalidateQueries({ queryKey: healthRecordKeys.list(newRecord.petId) });
           queryClient.invalidateQueries({ queryKey: healthRecordKeys.lists() });
         }
+        queryClient.invalidateQueries({ queryKey: expenseKeys.all });
       },
     }
   );
@@ -204,6 +206,7 @@ export function useUpdateHealthRecord() {
         if (data) {
             queryClient.invalidateQueries({ queryKey: healthRecordKeys.detail(data._id) });
         }
+        queryClient.invalidateQueries({ queryKey: expenseKeys.all });
       },
     }
   );
@@ -222,6 +225,7 @@ export function useDeleteHealthRecord() {
       },
       onSettled: () => {
         queryClient.invalidateQueries({ queryKey: healthRecordKeys.lists() });
+        queryClient.invalidateQueries({ queryKey: expenseKeys.all });
       },
     }
   );

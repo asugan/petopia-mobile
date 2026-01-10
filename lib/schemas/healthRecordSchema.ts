@@ -218,6 +218,7 @@ export const HealthRecordUpdateFormSchema = () => BaseHealthRecordFormSchema().p
 export const HealthRecordSchema = () =>
   BaseHealthRecordSchema().extend({
     _id: objectIdSchema(),
+    expenseId: objectIdSchema().optional(),
     createdAt: z.string().datetime(),
     updatedAt: z.string().datetime(),
   });
