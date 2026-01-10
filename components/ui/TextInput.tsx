@@ -69,7 +69,7 @@ const TextInputBase: React.FC<TextInputProps> = ({
     ...inputProps
   } = rest;
 
-  const showDoneAccessory = Platform.OS === "ios" && !multiline;
+  const showDoneAccessory = Platform.OS === "ios";
   const fallbackAccessoryViewID = React.useMemo(
     () => `textinput-done-${Math.random().toString(36).slice(2)}`,
     []
