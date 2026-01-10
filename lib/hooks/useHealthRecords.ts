@@ -7,6 +7,7 @@ import { useCreateResource, useDeleteResource, useUpdateResource } from './useCr
 import { createQueryKeys } from './core/createQueryKeys';
 import { useResource } from './core/useResource';
 import { useConditionalQuery } from './core/useConditionalQuery';
+import { useSubscriptionQueryEnabled } from './useSubscriptionQueries';
 
 // Type-safe filters for health records
 interface HealthRecordFilters {
@@ -33,6 +34,8 @@ export const healthRecordKeys = {
 // Note: This hook has complex client-side sorting logic,
 // so it uses useQuery directly instead of generic hooks
 export function useHealthRecords(petId?: string, filters: HealthRecordFilters = {}) {
+  const { enabled } = useSubscriptionQueryEnabled();
+
   return useQuery({
     queryKey: healthRecordKeys.list(petId || 'all', filters),
     queryFn: async () => {
@@ -64,6 +67,7 @@ export function useHealthRecords(petId?: string, filters: HealthRecordFilters = 
       }
     },
     staleTime: CACHE_TIMES.MEDIUM,
+    enabled,
     select: (data) => {
       // Apply client-side sorting if specified
       if (filters.sortBy) {
@@ -84,19 +88,24 @@ export function useHealthRecords(petId?: string, filters: HealthRecordFilters = 
   });
 }
 
+
 // Get a single health record by ID
 export function useHealthRecord(id: string) {
+  const { enabled } = useSubscriptionQueryEnabled();
+
   return useResource<HealthRecord>({
     queryKey: healthRecordKeys.detail(id),
     queryFn: () => healthRecordService.getHealthRecordById(id),
     staleTime: CACHE_TIMES.LONG,
-    enabled: !!id,
+    enabled: enabled && !!id,
     errorMessage: 'Sağlık kaydı yüklenemedi',
   });
 }
 
 // Get all health records for all pets (for homepage overview)
 export function useAllPetsHealthRecords(petIds: string[]) {
+  const { enabled } = useSubscriptionQueryEnabled();
+
   const queries = useQueries({
     queries: petIds.map(petId => ({
       queryKey: healthRecordKeys.list(petId),
@@ -108,7 +117,7 @@ export function useAllPetsHealthRecords(petIds: string[]) {
         return result.data || [];
       },
       staleTime: CACHE_TIMES.MEDIUM,
-      enabled: !!petId,
+      enabled: enabled && !!petId,
     })),
   });
 
@@ -128,11 +137,13 @@ export function useAllPetsHealthRecords(petIds: string[]) {
 
 // Get health records by type
 export function useHealthRecordsByType(petId: string, type: string) {
+  const { enabled } = useSubscriptionQueryEnabled();
+
   return useConditionalQuery<HealthRecord[]>({
     queryKey: healthRecordKeys.byType(petId, type),
     queryFn: () => healthRecordService.getHealthRecordsByType(petId, type),
     staleTime: CACHE_TIMES.MEDIUM,
-    enabled: !!petId && !!type,
+    enabled: enabled && !!petId && !!type,
     defaultValue: [],
     errorMessage: 'Sağlık kayıtları yüklenemedi',
   });
@@ -140,11 +151,13 @@ export function useHealthRecordsByType(petId: string, type: string) {
 
 // Get health records by date range (using existing service method)
 export function useHealthRecordsByDateRange(petId: string, dateFrom: string, dateTo: string) {
+  const { enabled } = useSubscriptionQueryEnabled();
+
   return useConditionalQuery<HealthRecord[]>({
     queryKey: healthRecordKeys.byDateRange(petId, dateFrom, dateTo),
     queryFn: () => healthRecordService.getHealthRecordsByPetId(petId),
     staleTime: CACHE_TIMES.MEDIUM,
-    enabled: !!petId && !!dateFrom && !!dateTo,
+    enabled: enabled && !!petId && !!dateFrom && !!dateTo,
     defaultValue: [],
     errorMessage: 'Sağlık kayıtları yüklenemedi',
     select: (allRecords) => {

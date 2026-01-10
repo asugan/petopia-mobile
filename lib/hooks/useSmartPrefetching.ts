@@ -5,6 +5,7 @@ import { eventKeys } from './useEvents';
 import { feedingScheduleKeys } from './useFeedingSchedules';
 import { unwrapApiResponse } from './core/unwrapApiResponse';
 import { toISODateStringWithFallback } from '@/lib/utils/dateConversion';
+import { useSubscriptionQueryEnabled } from './useSubscriptionQueries';
 
 interface PrefetchStrategy {
   priority: 'high' | 'medium' | 'low';
@@ -15,6 +16,7 @@ interface PrefetchStrategy {
 export function useSmartPrefetching() {
   const queryClient = useQueryClient();
   const { prefetchRelatedData } = usePrefetchData();
+  const { enabled } = useSubscriptionQueryEnabled();
 
   const prefetchStrategies = useMemo<Record<string, PrefetchStrategy>>(() => ({
     // When user spends time on pet list, prefetch details
@@ -51,6 +53,8 @@ export function useSmartPrefetching() {
     strategy: keyof typeof prefetchStrategies,
     context: { petId?: string; userId?: string }
   ) => {
+    if (!enabled) return;
+
     const config = prefetchStrategies[strategy];
 
     if (!config) return;
@@ -143,7 +147,7 @@ export function useSmartPrefetching() {
     } else {
       setTimeout(executePrefetch, config.timeout);
     }
-  }, [queryClient, prefetchRelatedData, prefetchStrategies]);
+  }, [enabled, queryClient, prefetchRelatedData, prefetchStrategies]);
 
   // Prefetch based on user navigation patterns
   const prefetchOnNavigation = useCallback((
@@ -151,6 +155,8 @@ export function useSmartPrefetching() {
     to: string,
     context?: { petId?: string; userId?: string; [key: string]: unknown }
   ) => {
+    if (!enabled) return;
+
     // Define navigation patterns and their prefetching logic
     const navigationPatterns: Record<string, () => void> = {
       'pets -> pet-details': () => {
@@ -173,10 +179,12 @@ export function useSmartPrefetching() {
     if (prefetchFn) {
       prefetchFn();
     }
-  }, [prefetchOnInteraction]);
+  }, [enabled, prefetchOnInteraction]);
 
   // Intelligent prefetching based on time of day
   const prefetchBasedOnTime = useCallback(() => {
+    if (!enabled) return;
+
     const hour = new Date().getHours();
 
     // Morning: prefetch today's events and feeding schedules
@@ -225,7 +233,7 @@ export function useSmartPrefetching() {
         staleTime: 2 * 60 * 1000,
       });
     }
-  }, [queryClient]);
+  }, [enabled, queryClient]);
 
   return {
     prefetchOnInteraction,

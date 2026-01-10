@@ -7,7 +7,7 @@ import { createQueryKeys } from './core/createQueryKeys';
 import { useResource } from './core/useResource';
 import { useResources } from './core/useResources';
 import { useConditionalQuery } from './core/useConditionalQuery';
-import { useAuthQueryEnabled } from './useAuthQueryEnabled';
+import { useSubscriptionQueryEnabled } from './useSubscriptionQueries';
 import { useMemo } from 'react';
 import { filterUpcomingEvents, groupEventsByTime } from '@/lib/utils/events';
 import { toISODateString } from '@/lib/utils/dateConversion';
@@ -28,39 +28,46 @@ export const eventKeys = {
 
 // Hooks
 export const useEvents = (petId: string) => {
+  const { enabled } = useSubscriptionQueryEnabled();
+
   return useResources<Event>({
     queryKey: eventKeys.list({ petId }),
     queryFn: () => eventService.getEventsByPetId(petId),
     staleTime: CACHE_TIMES.MEDIUM,
-    enabled: !!petId,
+    enabled: enabled && !!petId,
   });
 };
 
 const MISSING_ID_PLACEHOLDER = '__missing__';
 
 export const useEvent = (id?: string, options?: { enabled?: boolean }) => {
+  const { enabled } = useSubscriptionQueryEnabled();
   const safeId = id ?? MISSING_ID_PLACEHOLDER;
+  const isEnabled = options?.enabled !== undefined ? (options.enabled && !!id) : !!id;
 
   return useResource<Event>({
     queryKey: eventKeys.detail(safeId),
     queryFn: () => eventService.getEventById(safeId),
     staleTime: CACHE_TIMES.LONG,
-    enabled: options?.enabled !== undefined ? (options.enabled && !!id) : !!id,
+    enabled: enabled && isEnabled,
   });
 };
 
 export const useCalendarEvents = (date: string, options?: { enabled?: boolean }) => {
+  const { enabled } = useSubscriptionQueryEnabled();
+  const isEnabled = options?.enabled !== undefined ? (options.enabled && !!date) : !!date;
+
   return useConditionalQuery<Event[]>({
     queryKey: eventKeys.calendar(date),
     queryFn: () => eventService.getEventsByDate(date),
     staleTime: CACHE_TIMES.MEDIUM,
-    enabled: options?.enabled !== undefined ? (options.enabled && !!date) : !!date,
+    enabled: enabled && isEnabled,
     defaultValue: [],
   });
 };
 
 export const useUpcomingEvents = () => {
-  const { enabled } = useAuthQueryEnabled();
+  const { enabled } = useSubscriptionQueryEnabled();
 
   return useResources<Event>({
     queryKey: eventKeys.upcoming(),
@@ -72,7 +79,7 @@ export const useUpcomingEvents = () => {
 };
 
 export const useTodayEvents = () => {
-  const { enabled } = useAuthQueryEnabled();
+  const { enabled } = useSubscriptionQueryEnabled();
 
   return useResources<Event>({
     queryKey: eventKeys.today(),
@@ -115,20 +122,25 @@ export const useGroupedUpcomingEvents = (daysToShow: number = 7, maxEvents: numb
 };
 
 export const useEventsByType = (petId: string, type: string) => {
+  const { enabled } = useSubscriptionQueryEnabled();
+
   return useResources<Event>({
     queryKey: eventKeys.type(petId, type),
     queryFn: () => eventService.getEventsByPetId(petId),
     staleTime: CACHE_TIMES.MEDIUM,
-    enabled: !!petId && !!type,
+    enabled: enabled && !!petId && !!type,
     select: (events) => events.filter((event: Event) => event.type === type),
   });
 };
 
 export const useAllEvents = () => {
+  const { enabled } = useSubscriptionQueryEnabled();
+
   return useResources<Event>({
     queryKey: eventKeys.list({ petId: 'all' }),
     queryFn: () => eventService.getEvents(),
     staleTime: CACHE_TIMES.MEDIUM,
+    enabled,
   });
 };
 

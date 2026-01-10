@@ -14,6 +14,7 @@ import { notificationService } from "../services/notificationService";
 import { useUserSettingsStore } from "@/stores/userSettingsStore";
 import { createQueryKeys } from "./core/createQueryKeys";
 import { useConditionalQuery } from "./core/useConditionalQuery";
+import { useSubscriptionQueryEnabled } from "./useSubscriptionQueries";
 
 // Query keys factory for user budget
 const baseUserBudgetKeys = createQueryKeys("budget");
@@ -33,11 +34,14 @@ export const userBudgetKeys = {
  * Returns the user's single budget with proper caching
  */
 export function useUserBudget() {
+  const { enabled } = useSubscriptionQueryEnabled();
+
   return useConditionalQuery<UserBudget | null>({
     queryKey: userBudgetKeys.all,
     queryFn: () => userBudgetService.getBudget(),
     staleTime: CACHE_TIMES.MEDIUM,
     gcTime: CACHE_TIMES.LONG,
+    enabled,
     defaultValue: null,
     errorMessage: "User budget could not be loaded",
   });
@@ -48,6 +52,7 @@ export function useUserBudget() {
  * Depends on budget data and provides comprehensive spending analysis
  */
 export function useUserBudgetStatus() {
+  const { enabled } = useSubscriptionQueryEnabled();
   const { data: budget } = useUserBudget();
 
   return useConditionalQuery<UserBudgetStatus | null>({
@@ -55,7 +60,7 @@ export function useUserBudgetStatus() {
     queryFn: () => userBudgetService.getBudgetStatus(),
     staleTime: CACHE_TIMES.SHORT,
     gcTime: CACHE_TIMES.MEDIUM,
-    enabled: !!budget && budget.isActive,
+    enabled: enabled && !!budget && budget.isActive,
     defaultValue: null,
     errorMessage: "Budget status could not be loaded",
   });
@@ -196,6 +201,7 @@ export function useDeleteUserBudget() {
  * Returns alert information with short cache time for real-time monitoring
  */
 export function useBudgetAlerts() {
+  const { enabled } = useSubscriptionQueryEnabled();
   const { data: budget } = useUserBudget();
   const notificationsEnabled = useUserSettingsStore(
     (state) => state.settings?.notificationsEnabled ?? true
@@ -209,7 +215,7 @@ export function useBudgetAlerts() {
     queryFn: () => userBudgetService.checkBudgetAlerts(),
     staleTime: CACHE_TIMES.VERY_SHORT,
     gcTime: CACHE_TIMES.SHORT,
-    enabled: !!budget && budget.isActive && notificationsEnabled && budgetNotificationsEnabled,
+    enabled: enabled && !!budget && budget.isActive && notificationsEnabled && budgetNotificationsEnabled,
     refetchInterval: CACHE_TIMES.VERY_SHORT, // Refetch every 30 seconds for real-time alerts
     defaultValue: null,
     errorMessage: "Budget alerts could not be checked",
@@ -221,6 +227,7 @@ export function useBudgetAlerts() {
  * Extracted from budget status for focused pet-specific spending analysis
  */
 export function usePetSpendingBreakdown() {
+  const { enabled } = useSubscriptionQueryEnabled();
   const { data: budget } = useUserBudget();
 
   return useConditionalQuery<PetBreakdown[]>({
@@ -228,7 +235,7 @@ export function usePetSpendingBreakdown() {
     queryFn: () => userBudgetService.getPetSpendingBreakdown(),
     staleTime: CACHE_TIMES.SHORT,
     gcTime: CACHE_TIMES.MEDIUM,
-    enabled: !!budget && budget.isActive,
+    enabled: enabled && !!budget && budget.isActive,
     defaultValue: [],
     errorMessage: "Pet spending breakdown could not be loaded",
   });
@@ -239,11 +246,14 @@ export function usePetSpendingBreakdown() {
  * Quick boolean check for conditional rendering and feature access
  */
 export function useHasActiveBudget() {
+  const { enabled } = useSubscriptionQueryEnabled();
+
   return useConditionalQuery<boolean>({
     queryKey: userBudgetKeys.isActive(),
     queryFn: () => userBudgetService.hasActiveBudget(),
     staleTime: CACHE_TIMES.MEDIUM,
     gcTime: CACHE_TIMES.LONG,
+    enabled,
     defaultValue: false,
     errorMessage: "Active budget status could not be checked",
   });
@@ -254,6 +264,8 @@ export function useHasActiveBudget() {
  * Combines budget info, status, and alerts for dashboard views
  */
 export function useBudgetSummary() {
+  const { enabled } = useSubscriptionQueryEnabled();
+
   return useConditionalQuery<{
     budget: UserBudget | null;
     status: UserBudgetStatus | null;
@@ -264,6 +276,7 @@ export function useBudgetSummary() {
     queryFn: () => userBudgetService.getBudgetSummary(),
     staleTime: CACHE_TIMES.SHORT,
     gcTime: CACHE_TIMES.MEDIUM,
+    enabled,
     defaultValue: null,
     errorMessage: "Budget summary could not be loaded",
   });

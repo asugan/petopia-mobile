@@ -8,7 +8,7 @@ import { createQueryKeys } from './core/createQueryKeys';
 import { useResource } from './core/useResource';
 import { useResources } from './core/useResources';
 import { useConditionalQuery } from './core/useConditionalQuery';
-import { useAuthQueryEnabled } from './useAuthQueryEnabled';
+import { useSubscriptionQueryEnabled } from './useSubscriptionQueries';
 import { useMemo } from 'react';
 import { getNextFeedingTime } from '@/lib/schemas/feedingScheduleSchema';
 import { usePets } from './usePets';
@@ -29,52 +29,65 @@ export const feedingScheduleKeys = {
 
 // Hooks
 export const useFeedingSchedules = (petId: string) => {
+  const { enabled } = useSubscriptionQueryEnabled();
+
   return useConditionalQuery<FeedingSchedule[]>({
     queryKey: feedingScheduleKeys.list({ petId }),
     queryFn: () => feedingScheduleService.getFeedingSchedulesByPetId(petId),
     staleTime: CACHE_TIMES.MEDIUM,
-    enabled: !!petId,
+    enabled: enabled && !!petId,
     defaultValue: [],
   });
 };
 
 export const useFeedingSchedule = (id: string) => {
+  const { enabled } = useSubscriptionQueryEnabled();
+
   return useResource<FeedingSchedule>({
     queryKey: feedingScheduleKeys.detail(id),
     queryFn: () => feedingScheduleService.getFeedingScheduleById(id),
     staleTime: CACHE_TIMES.LONG,
-    enabled: !!id,
+    enabled: enabled && !!id,
   });
 };
 
 export const useActiveFeedingSchedules = () => {
+  const { enabled } = useSubscriptionQueryEnabled();
+
   return useResources<FeedingSchedule>({
     queryKey: feedingScheduleKeys.active(),
     queryFn: () => feedingScheduleService.getActiveFeedingSchedules(),
     staleTime: CACHE_TIMES.SHORT,
     refetchInterval: CACHE_TIMES.MEDIUM,
+    enabled,
   });
 };
 
 export const useTodayFeedingSchedules = () => {
+  const { enabled } = useSubscriptionQueryEnabled();
+
   return useResources<FeedingSchedule>({
     queryKey: feedingScheduleKeys.today(),
     queryFn: () => feedingScheduleService.getTodayFeedingSchedules(),
     staleTime: CACHE_TIMES.VERY_SHORT,
     refetchInterval: CACHE_TIMES.VERY_SHORT,
+    enabled,
   });
 };
 
 export const useAllFeedingSchedules = () => {
+  const { enabled } = useSubscriptionQueryEnabled();
+
   return useResources<FeedingSchedule>({
     queryKey: feedingScheduleKeys.lists(),
     queryFn: () => feedingScheduleService.getFeedingSchedules(),
     staleTime: CACHE_TIMES.SHORT,
+    enabled,
   });
 };
 
 export const useNextFeeding = () => {
-  const { enabled } = useAuthQueryEnabled();
+  const { enabled } = useSubscriptionQueryEnabled();
 
   return useConditionalQuery<FeedingSchedule | null>({
     queryKey: feedingScheduleKeys.next(),
@@ -87,11 +100,13 @@ export const useNextFeeding = () => {
 };
 
 export const useActiveFeedingSchedulesByPet = (petId: string) => {
+  const { enabled } = useSubscriptionQueryEnabled();
+
   return useConditionalQuery<FeedingSchedule[]>({
     queryKey: feedingScheduleKeys.activeByPet(petId),
     queryFn: () => feedingScheduleService.getActiveFeedingSchedulesByPet(petId),
     staleTime: CACHE_TIMES.SHORT,
-    enabled: !!petId,
+    enabled: enabled && !!petId,
     defaultValue: [],
   });
 };
