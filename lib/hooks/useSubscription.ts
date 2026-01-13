@@ -8,7 +8,7 @@ import RevenueCatUI, { PAYWALL_RESULT } from 'react-native-purchases-ui';
 import { useTranslation } from 'react-i18next';
 import { useSubscriptionStore } from '@/stores/subscriptionStore';
 import { useComputedSubscriptionStatus, useRefetchSubscriptionStatus, useStartTrial } from './useSubscriptionQueries';
-import { REVENUECAT_CONFIG } from '@/lib/revenuecat/config';
+import { getRevenueCatEntitlementIdOptional } from '@/lib/revenuecat/config';
 import { showAlert } from '@/lib/utils/alert';
 
 export type SubscriptionStatusType = 'pro' | 'trial' | 'free';
@@ -91,9 +91,12 @@ export function useSubscription(): UseSubscriptionReturn {
     ? Object.keys(customerInfo.entitlements.active)
     : [];
 
+  const entitlementId = getRevenueCatEntitlementIdOptional();
+
   const productIdentifier =
-    customerInfo?.entitlements.active[REVENUECAT_CONFIG.ENTITLEMENT_ID]
-      ?.productIdentifier ?? null;
+    entitlementId && customerInfo?.entitlements.active[entitlementId]
+      ? customerInfo.entitlements.active[entitlementId].productIdentifier ?? null
+      : null;
 
   const ensureRevenueCatReady = useCallback(async (): Promise<boolean> => {
     if (isInitialized) return true;
@@ -151,8 +154,13 @@ export function useSubscription(): UseSubscriptionReturn {
     try {
       if (!(await ensureRevenueCatReady())) return false;
 
+      if (!entitlementId) {
+        showAlert(t('common.error'), t('subscription.notInitialized', 'Subscription system is not ready yet.'));
+        return false;
+      }
+
       const result = await RevenueCatUI.presentPaywallIfNeeded({
-        requiredEntitlementIdentifier: REVENUECAT_CONFIG.ENTITLEMENT_ID,
+        requiredEntitlementIdentifier: entitlementId,
       });
 
       if (
@@ -168,7 +176,7 @@ export function useSubscription(): UseSubscriptionReturn {
       showAlert(t('common.error'), (error as Error).message);
       return false;
     }
-  }, [ensureRevenueCatReady, refetchStatusMutation, t]);
+  }, [ensureRevenueCatReady, refetchStatusMutation, t, entitlementId]);
 
   const presentCustomerCenter = useCallback(async (): Promise<void> => {
     try {

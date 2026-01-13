@@ -62,6 +62,7 @@ const reportMutationError = (error: unknown) => {
 // Cache time constants
 export const CACHE_TIMES = {
   IMMUTABLE: 24 * 60 * 60 * 1000, // 24 hours
+  ONE_HOUR: 60 * 60 * 1000, // 1 hour
   LONG: 15 * 60 * 1000, // 15 minutes
   MEDIUM: 5 * 60 * 1000,  // 5 minutes
   SHORT: 2 * 60 * 1000,   // 2 minutes

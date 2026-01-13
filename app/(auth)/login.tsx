@@ -17,6 +17,7 @@ import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useTheme } from '@/lib/theme';
 import { useAuth } from '@/lib/auth';
 import { useAuthStore } from '@/stores/authStore';
+import { usePublicConfig } from '@/lib/hooks/usePublicConfig';
 import { Text, ActivityIndicator } from '@/components/ui';
 
 const { height } = Dimensions.get('window');
@@ -29,6 +30,9 @@ export default function LoginScreen() {
   const insets = useSafeAreaInsets();
   const { signIn, isAuthenticated } = useAuth();
   const { isLoading, setLoading, setError, authError, clearError } = useAuthStore();
+  const { data: publicConfig } = usePublicConfig();
+  const legalTermsUrl = publicConfig?.legal.termsUrl ?? null;
+  const legalPrivacyUrl = publicConfig?.legal.privacyUrl ?? null;
 
   const [waitForAuth, setWaitForAuth] = useState(false);
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -95,6 +99,24 @@ export default function LoginScreen() {
     Linking.openURL(url).catch(() => {
       setError(t('auth.linkOpenError'));
     });
+  };
+
+  const handleTermsLink = () => {
+    if (!legalTermsUrl) {
+      setError(t('auth.linkOpenError'));
+      return;
+    }
+
+    openLink(legalTermsUrl);
+  };
+
+  const handlePrivacyLink = () => {
+    if (!legalPrivacyUrl) {
+      setError(t('auth.linkOpenError'));
+      return;
+    }
+
+    openLink(legalPrivacyUrl);
   };
 
   const styles = useMemo(
@@ -356,14 +378,14 @@ export default function LoginScreen() {
             {t('auth.agreementPrefix')}
             <Text 
               style={styles.linkText} 
-              onPress={() => openLink('https://asugan.github.io/petopia-legal/terms.html')}
+              onPress={handleTermsLink}
             >
               {t('auth.termsOfUse')}
             </Text>
             {t('auth.agreementMiddle')}
             <Text 
               style={styles.linkText} 
-              onPress={() => openLink('https://asugan.github.io/petopia-legal/privacy.html')}
+              onPress={handlePrivacyLink}
             >
               {t('auth.privacyPolicy')}
             </Text>

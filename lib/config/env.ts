@@ -1,13 +1,7 @@
-import Constants from 'expo-constants';
-
 // Environment configuration for Petopia Petcare app
 export const ENV = {
-  // API Base URL - reads from EXPO_PUBLIC_API_URL or falls back to defaults
-  // Priority: EXPO_PUBLIC_API_URL env var > Constants.expoConfig.extra > hardcoded fallback
-  API_BASE_URL:
-    process.env.EXPO_PUBLIC_API_URL ??
-    Constants.expoConfig?.extra?.apiBaseUrl ??
-    (__DEV__ ? 'https://petopiaapi.dekadans.net' : 'https://your-production-api.com'),
+  // API Base URL - required for all API calls
+  API_BASE_URL: process.env.EXPO_PUBLIC_API_URL ?? '',
 
   // Auth configuration
   AUTH: {
