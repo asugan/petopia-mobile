@@ -1,6 +1,6 @@
 import Purchases, { LOG_LEVEL, CustomerInfo } from 'react-native-purchases';
 import { Platform } from 'react-native';
-import { getRevenueCatApiKey, REVENUECAT_CONFIG } from './config';
+import { getRevenueCatApiKey, getRevenueCatEntitlementId } from './config';
 
 /**
  * Initialize the RevenueCat SDK
@@ -24,7 +24,7 @@ export async function initializeRevenueCat(userId: string | null): Promise<void>
     // Configure the SDK
     const apiKey = getRevenueCatApiKey(Platform.OS === 'ios' ? 'ios' : 'android');
     if (!apiKey) {
-      throw new Error('[RevenueCat] Missing API key. Set EXPO_PUBLIC_REVENUECAT_IOS_API_KEY and EXPO_PUBLIC_REVENUECAT_ANDROID_API_KEY.');
+      throw new Error('[RevenueCat] Missing API key. Ensure public config is loaded.');
     }
 
     await Purchases.configure({
@@ -138,7 +138,7 @@ export async function restorePurchases(): Promise<CustomerInfo> {
  */
 export function hasEntitlement(
   customerInfo: CustomerInfo,
-  entitlementId: string = REVENUECAT_CONFIG.ENTITLEMENT_ID
+  entitlementId: string = getRevenueCatEntitlementId()
 ): boolean {
   return typeof customerInfo.entitlements.active[entitlementId] !== 'undefined';
 }
@@ -150,5 +150,5 @@ export function hasEntitlement(
  * @returns The entitlement info or null if not active
  */
 export function getProEntitlement(customerInfo: CustomerInfo) {
-  return customerInfo.entitlements.active[REVENUECAT_CONFIG.ENTITLEMENT_ID] ?? null;
+  return customerInfo.entitlements.active[getRevenueCatEntitlementId()] ?? null;
 }

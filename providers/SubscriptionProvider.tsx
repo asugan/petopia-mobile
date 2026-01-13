@@ -4,12 +4,14 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useAuth } from '@/lib/auth';
 import { useSubscriptionStore } from '@/stores/subscriptionStore';
 import { useSubscriptionStatus, useStartTrial, useRefetchSubscriptionStatus } from '@/lib/hooks/useSubscriptionQueries';
+import { usePublicConfig } from '@/lib/hooks/usePublicConfig';
 import {
   initializeRevenueCat,
   syncUserIdentity,
   resetUserIdentity,
   getCustomerInfo,
 } from '@/lib/revenuecat';
+import { setRevenueCatConfig } from '@/lib/revenuecat/config';
 
 interface SubscriptionProviderProps {
   children: React.ReactNode;
@@ -32,6 +34,11 @@ export function SubscriptionProvider({ children }: SubscriptionProviderProps) {
   const { data: subscriptionStatus, isLoading: isStatusLoading } = useSubscriptionStatus();
   const startTrialMutation = useStartTrial();
   const refetchStatusMutation = useRefetchSubscriptionStatus();
+  const {
+    data: publicConfig,
+    isLoading: isPublicConfigLoading,
+    error: publicConfigError,
+  } = usePublicConfig();
 
   const trialInitRef = useRef(false);
   const isActivatingTrialRef = useRef(false);
@@ -175,7 +182,19 @@ export function SubscriptionProvider({ children }: SubscriptionProviderProps) {
   }, [initializeSubscriptionStatus, handleUserLogin, handleUserLogout]);
 
   useEffect(() => {
-    if (isPending) {
+    if (publicConfig?.revenuecat) {
+      setRevenueCatConfig(publicConfig.revenuecat);
+    }
+  }, [publicConfig]);
+
+  useEffect(() => {
+    if (publicConfigError) {
+      setError((publicConfigError as Error).message);
+    }
+  }, [publicConfigError, setError]);
+
+  useEffect(() => {
+    if (isPending || isPublicConfigLoading || !publicConfig) {
       return;
     }
 
@@ -184,7 +203,14 @@ export function SubscriptionProvider({ children }: SubscriptionProviderProps) {
     }
 
     initializeSDK();
-  }, [isPending, isAuthenticated, isInitialized, initializeSDK]);
+  }, [
+    isPending,
+    isPublicConfigLoading,
+    publicConfig,
+    isAuthenticated,
+    isInitialized,
+    initializeSDK,
+  ]);
 
   useEffect(() => {
     if (isPending || !isInitialized) {

@@ -7,6 +7,7 @@ import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { Text, Button, Card, IconButton } from '@/components/ui';
 import { useTheme } from '@/lib/theme';
 import { useSubscription } from '@/lib/hooks/useSubscription';
+import { usePublicConfig } from '@/lib/hooks/usePublicConfig';
 import { SubscriptionCard } from '@/components/subscription';
 import { SuccessSubscriptionModal } from '@/components/subscription/SuccessSubscriptionModal';
 import { subscriptionStyles } from '@/lib/styles/subscription';
@@ -26,6 +27,10 @@ export default function SubscriptionScreen() {
     restorePurchases,
     presentPaywall,
   } = useSubscription();
+  const { data: publicConfig } = usePublicConfig();
+  const legalTermsUrl = publicConfig?.legal.termsUrl ?? null;
+  const legalPrivacyUrl = publicConfig?.legal.privacyUrl ?? null;
+  const showLegalLinks = Boolean(legalTermsUrl || legalPrivacyUrl);
 
   const handleRestore = async () => {
     await restorePurchases();
@@ -44,11 +49,19 @@ export default function SubscriptionScreen() {
   };
 
   const handleTerms = () => {
-    Linking.openURL('https://asugan.github.io/petopia-legal/terms.html');
+    if (!legalTermsUrl) {
+      return;
+    }
+
+    void Linking.openURL(legalTermsUrl);
   };
 
   const handlePrivacy = () => {
-    Linking.openURL('https://asugan.github.io/petopia-legal/privacy.html');
+    if (!legalPrivacyUrl) {
+      return;
+    }
+
+    void Linking.openURL(legalPrivacyUrl);
   };
 
   const handleBack = () => {
@@ -153,15 +166,23 @@ export default function SubscriptionScreen() {
         </View>
 
         {/* Legal Links */}
-        <View style={styles.legalContainer}>
-          <Button mode="text" onPress={handleTerms} textColor={theme.colors.onSurfaceVariant}>
-            {t('subscription.terms')}
-          </Button>
-          <Text style={{ color: theme.colors.onSurfaceVariant }}>•</Text>
-          <Button mode="text" onPress={handlePrivacy} textColor={theme.colors.onSurfaceVariant}>
-            {t('subscription.privacy')}
-          </Button>
-        </View>
+        {showLegalLinks && (
+          <View style={styles.legalContainer}>
+            {legalTermsUrl && (
+              <Button mode="text" onPress={handleTerms} textColor={theme.colors.onSurfaceVariant}>
+                {t('subscription.terms')}
+              </Button>
+            )}
+            {legalTermsUrl && legalPrivacyUrl && (
+              <Text style={{ color: theme.colors.onSurfaceVariant }}>•</Text>
+            )}
+            {legalPrivacyUrl && (
+              <Button mode="text" onPress={handlePrivacy} textColor={theme.colors.onSurfaceVariant}>
+                {t('subscription.privacy')}
+              </Button>
+            )}
+          </View>
+        )}
 
         {/* Spacer for bottom */}
         <View style={{ height: 40 }} />

@@ -2,7 +2,7 @@ import { create } from 'zustand';
 import type { CustomerInfo, PurchasesOfferings, PurchasesPackage } from 'react-native-purchases';
 import Purchases from 'react-native-purchases';
 import { restorePurchases as restorePurchasesApi } from '@/lib/revenuecat/initialize';
-import { REVENUECAT_CONFIG } from '@/lib/revenuecat/config';
+import { getRevenueCatEntitlementIdOptional } from '@/lib/revenuecat/config';
 
 type EntitlementInfo = CustomerInfo['entitlements']['active'][string];
 
@@ -61,9 +61,9 @@ export const useSubscriptionStore = create<SubscriptionState & SubscriptionActio
       return firstKey ? entitlements[firstKey] : null;
     },
 
-    checkEntitlement: (entitlementId = REVENUECAT_CONFIG.ENTITLEMENT_ID): boolean => {
+    checkEntitlement: (entitlementId = getRevenueCatEntitlementIdOptional() ?? undefined): boolean => {
       const { customerInfo } = get();
-      if (!customerInfo) return false;
+      if (!customerInfo || !entitlementId) return false;
       return typeof customerInfo.entitlements.active[entitlementId] !== 'undefined';
     },
 
