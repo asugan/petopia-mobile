@@ -2,6 +2,7 @@ import React, { useEffect, useMemo, useRef, useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { SubscriptionCard } from "@/components/subscription";
 import { Button, Card, ListItem, Switch, Text } from "@/components/ui";
+import { LargeTitle } from "@/components/LargeTitle";
 import { DateTimePicker } from "@/components/DateTimePicker";
 import { useAuth } from "@/lib/auth";
 import { accountService } from "@/lib/services/accountService";
@@ -255,6 +256,7 @@ export default function SettingsScreen() {
         style={styles.scrollView}
         showsVerticalScrollIndicator={false}
       >
+        <LargeTitle title={t("settings.settings")} style={styles.largeTitle} />
         {settingsLoading && (
           <View style={styles.loadingContainer}>
             <LoadingSpinner />
@@ -807,6 +809,9 @@ const styles = StyleSheet.create({
   scrollView: {
     flex: 1,
     padding: 16,
+  },
+  largeTitle: {
+    marginBottom: 16,
   },
   sectionCard: {
     marginBottom: 16,

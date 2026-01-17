@@ -3,7 +3,6 @@ import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useTheme } from '@/lib/theme';
 import { useTranslation } from 'react-i18next';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import CustomTabHeader from '@/components/CustomTabHeader';
 import { useEffect } from 'react';
 import { authClient } from '@/lib/auth/client';
 import { useOnboardingStore } from '@/stores/onboardingStore';
@@ -56,15 +55,7 @@ export default function TabLayout() {
           fontSize: 12,
           fontWeight: '600',
         },
-        headerStyle: {
-          backgroundColor: theme.colors.surface,
-        },
-        headerTintColor: theme.colors.onSurface,
-        headerTitleContainerStyle: {
-          left: 0,
-          right: 0,
-          width: '100%',
-        },
+        headerShown: false,
         sceneStyle: {
           backgroundColor: theme.colors.background,
         },
@@ -77,7 +68,6 @@ export default function TabLayout() {
           tabBarIcon: ({ color, size }) => (
             <MaterialCommunityIcons name="home" size={size} color={color} />
           ),
-          headerTitle: () => <CustomTabHeader pageTitle="Home" />,
         }}
       />
       <Tabs.Screen
@@ -87,7 +77,6 @@ export default function TabLayout() {
           tabBarIcon: ({ color, size }) => (
             <MaterialCommunityIcons name="paw" size={size} color={color} />
           ),
-          headerTitle: () => <CustomTabHeader pageTitle={t('pets.myPets')} />,
         }}
       />
       <Tabs.Screen
@@ -97,7 +86,6 @@ export default function TabLayout() {
           tabBarIcon: ({ color, size }) => (
             <MaterialCommunityIcons name="heart-pulse" size={size} color={color} />
           ),
-          headerTitle: () => <CustomTabHeader pageTitle={t('care.title')} />,
         }}
       />
       <Tabs.Screen
@@ -107,7 +95,6 @@ export default function TabLayout() {
           tabBarIcon: ({ color, size }) => (
             <MaterialCommunityIcons name="calendar" size={size} color={color} />
           ),
-          headerTitle: () => <CustomTabHeader pageTitle={t('calendar.calendar')} />,
         }}
       />
       <Tabs.Screen
@@ -117,7 +104,6 @@ export default function TabLayout() {
           tabBarIcon: ({ color, size }) => (
             <MaterialCommunityIcons name="wallet" size={size} color={color} />
           ),
-          headerTitle: () => <CustomTabHeader pageTitle={t('finance.title')} />,
         }}
       />
       <Tabs.Screen
@@ -127,7 +113,6 @@ export default function TabLayout() {
           tabBarIcon: ({ color, size }) => (
             <MaterialCommunityIcons name="cog" size={size} color={color} />
           ),
-          headerTitle: () => <CustomTabHeader pageTitle={t('settings.settings')} />,
         }}
       />
     </Tabs>

@@ -5,6 +5,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useTranslation } from 'react-i18next';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { FAB, SegmentedButtons, Text } from '@/components/ui';
+import { LargeTitle } from '@/components/LargeTitle';
 import { PetPickerBase } from '@/components/PetPicker';
 import { FeedingScheduleCard } from '@/components/feeding/FeedingScheduleCard';
 import { useTheme } from '@/lib/theme';
@@ -325,6 +326,9 @@ export default function CareScreen() {
 
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: theme.colors.background }]}>
+      <View style={styles.header}>
+        <LargeTitle title={t('care.title')} />
+      </View>
       <View style={styles.segmentedContainer}>
         <SegmentedButtons
           value={activeTab}
@@ -415,12 +419,12 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   header: {
-    padding: 16,
-    paddingBottom: 8,
+    paddingHorizontal: 16,
+    paddingTop: 8,
   },
   segmentedContainer: {
     paddingHorizontal: 16,
-    paddingTop: 12,
+    paddingTop: 8,
   },
   segmentedButtons: {
     marginBottom: 0,

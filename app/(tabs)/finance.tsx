@@ -10,6 +10,7 @@ import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context"
 import { useTranslation } from "react-i18next";
 import { useQueryClient } from "@tanstack/react-query";
 import { Button, Card, FAB, SegmentedButtons, Snackbar, Text } from "@/components/ui";
+import { LargeTitle } from "@/components/LargeTitle";
 import { PetPickerBase } from "@/components/PetPicker";
 import { BudgetInsights } from "@/components/BudgetInsights";
 import { useTheme } from "@/lib/theme";
@@ -628,6 +629,9 @@ export default function FinanceScreen() {
       style={[styles.container, { backgroundColor: theme.colors.background }]}
       edges={['top', 'left', 'right']} // Remove bottom to handle manually
     >
+      <View style={styles.header}>
+        <LargeTitle title={t('finance.title')} />
+      </View>
       <View style={styles.tabsContainer}>
         <SegmentedButtons
           value={activeTab}
@@ -720,12 +724,12 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   header: {
-    padding: 16,
-    paddingBottom: 8,
+    paddingHorizontal: 16,
+    paddingTop: 8,
   },
   tabsContainer: {
     paddingHorizontal: 16,
-    paddingTop: 12,
+    paddingTop: 8,
     paddingBottom: 16,
   },
   segmentedButtons: {

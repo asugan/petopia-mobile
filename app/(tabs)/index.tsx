@@ -13,7 +13,7 @@ import { UpcomingEventsSection } from "@/components/UpcomingEventsSection";
 import { NextFeedingWidget } from "@/components/feeding/NextFeedingWidget";
 import { FinancialOverview } from "@/components/home/FinancialOverview";
 import { HomeEmptyPets } from "@/components/home/HomeEmptyPets";
-import { HomeHeader } from "@/components/home/HomeHeader";
+import { LargeTitle } from "@/components/LargeTitle";
 import { Text } from "@/components/ui";
 import { useHomeData } from "@/lib/hooks/useHomeData";
 import { useTheme } from "@/lib/theme";
@@ -29,7 +29,7 @@ function HomeScreenContent() {
   const router = useRouter();
 
   // Tüm mantık useHomeData hook'unda toplandı
-  const { user, layout, data, status, financial } = useHomeData();
+  const { layout, data, status, financial } = useHomeData();
 
   if (status.isLoading) {
     return (
@@ -66,7 +66,7 @@ function HomeScreenContent() {
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
       >
-        <HomeHeader user={user} />
+        <LargeTitle title={t("navigation.home")} />
 
         {/* My Pets Section */}
         <View style={styles.section}>

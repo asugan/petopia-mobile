@@ -6,6 +6,7 @@ import { useTranslation } from 'react-i18next';
 import { useRouter } from 'expo-router';
 import { useSubscription } from '@/lib/hooks/useSubscription';
 import { Button, FAB, Portal, Snackbar, Text } from '@/components/ui';
+import { LargeTitle } from '@/components/LargeTitle';
 import PetListCard from '@/components/PetListCard';
 import { useTheme } from '@/lib/theme';
 import { PetCardSkeleton } from '@/components/PetCardSkeleton';
@@ -182,6 +183,7 @@ export default function PetsScreen() {
           />
         }
       >
+        <LargeTitle title={t('navigation.pets')} style={styles.largeTitle} />
         <View style={styles.searchWrapper}>
           <View
             style={[
@@ -361,6 +363,9 @@ const styles = StyleSheet.create({
     padding: 16,
     paddingTop: 8,
     paddingBottom: LAYOUT.TAB_BAR_HEIGHT + 80,
+  },
+  largeTitle: {
+    marginBottom: 16,
   },
   searchWrapper: {
     marginBottom: 12,

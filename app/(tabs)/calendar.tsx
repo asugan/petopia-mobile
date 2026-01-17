@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { View, StyleSheet, ActivityIndicator, FlatList } from 'react-native';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import { Text, FAB } from '@/components/ui';
+import { LargeTitle } from '@/components/LargeTitle';
 import { useTheme } from '@/lib/theme';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useTranslation } from 'react-i18next';
@@ -155,6 +156,9 @@ export default function CalendarScreen() {
     <SafeAreaView
       style={[styles.container, { backgroundColor: theme.colors.background }]}
     >
+      <View style={styles.header}>
+        <LargeTitle title={t('calendar.calendar')} />
+      </View>
       <View style={styles.calendarContainer}>
         {renderCalendarView()}
         <View
@@ -244,6 +248,11 @@ export default function CalendarScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+  },
+  header: {
+    paddingHorizontal: 16,
+    paddingTop: 8,
+    paddingBottom: 8,
   },
   calendarContainer: {
     flex: 1,
