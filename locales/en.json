@@ -268,6 +268,10 @@
     "today": "Today",
     "addEvent": "Add Event",
     "noEventsToday": "No events scheduled for today",
+    "reminderLimitTitle": "Reminder limit reached",
+    "reminderLimitMessage": "You have reached the reminder limit. Upgrade to add more reminders.",
+    "reminderOn": "Reminder On",
+    "reminderOff": "Reminder Off",
     "views": {
       "month": "Month",
       "week": "Week",

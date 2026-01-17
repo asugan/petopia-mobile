@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { View, StyleSheet, ActivityIndicator, FlatList, Pressable } from 'react-native';
 import { useRouter, useLocalSearchParams } from 'expo-router';
+import Toast from 'react-native-toast-message';
 import { Text, FAB } from '@/components/ui';
 import { LargeTitle } from '@/components/LargeTitle';
 import { useTheme } from '@/lib/theme';
@@ -11,11 +12,12 @@ import { MonthView } from '@/components/calendar/MonthView';
 import { toISODateString } from '@/lib/utils/dateConversion';
 import { WeekView } from '@/components/calendar/WeekView';
 import { EventModal } from '@/components/EventModal';
-import { useUpcomingEvents, useCalendarEvents, useEvent, useAllEvents } from '@/lib/hooks/useEvents';
+import { eventKeys, useUpcomingEvents, useCalendarEvents, useEvent, useAllEvents, useUpdateEvent } from '@/lib/hooks/useEvents';
 import { useSubscription } from '@/lib/hooks/useSubscription';
 import { Event } from '@/lib/types';
 import { LAYOUT } from '@/constants';
 import { CalendarEventCard } from '@/components/calendar/CalendarEventCard';
+import { useQueryClient } from '@tanstack/react-query';
 
 type CalendarViewType = 'month' | 'week';
 
@@ -23,6 +25,7 @@ export default function CalendarScreen() {
   const { theme } = useTheme();
   const { t } = useTranslation();
   const router = useRouter();
+  const queryClient = useQueryClient();
   const { isProUser, presentPaywall } = useSubscription();
   const { petId, action, editEventId } = useLocalSearchParams<{ petId?: string; action?: string; editEventId?: string }>();
 
@@ -33,6 +36,7 @@ export default function CalendarScreen() {
   const [selectedEvent, setSelectedEvent] = useState<Event | undefined>(undefined);
 
   const { data: eventToEdit } = useEvent(editEventId);
+  const updateEventMutation = useUpdateEvent();
 
   useEffect(() => {
     if (action === 'create') {
@@ -87,6 +91,53 @@ export default function CalendarScreen() {
 
   const handleEventPress = (event: Event) => {
     router.push(`/event/${event._id}`);
+  };
+
+  const handleReminderLimitReached = () => {
+    Toast.show({
+      type: 'info',
+      text1: t('calendar.reminderLimitTitle'),
+      text2: t('calendar.reminderLimitMessage'),
+    });
+  };
+
+  const handleToggleReminder = async (event: Event, nextValue: boolean) => {
+    if (nextValue && !event.reminder && !isProUser && activeReminderCount >= 2) {
+      handleReminderLimitReached();
+      return;
+    }
+
+    const eventDate =
+      toISODateString(new Date(event.startTime)) ??
+      event.startTime.split('T')[0];
+
+    queryClient.setQueryData<Event[]>(eventKeys.calendar(eventDate), (old) =>
+      old?.map((item) =>
+        item._id === event._id ? { ...item, reminder: nextValue } : item
+      )
+    );
+
+    queryClient.setQueryData<Event[]>(eventKeys.list({ petId: 'all' }), (old) =>
+      old?.map((item) =>
+        item._id === event._id ? { ...item, reminder: nextValue } : item
+      )
+    );
+
+    try {
+      await updateEventMutation.mutateAsync({
+        _id: event._id,
+        data: {
+          reminder: nextValue,
+          reminderPreset: event.reminderPreset,
+          startTime: event.startTime,
+        },
+      });
+      queryClient.invalidateQueries({ queryKey: eventKeys.calendar(eventDate) });
+      queryClient.invalidateQueries({ queryKey: eventKeys.list({ petId: 'all' }) });
+    } catch {
+      queryClient.invalidateQueries({ queryKey: eventKeys.calendar(eventDate) });
+      queryClient.invalidateQueries({ queryKey: eventKeys.list({ petId: 'all' }) });
+    }
   };
 
   const handleAddEvent = async () => {
@@ -203,6 +254,7 @@ export default function CalendarScreen() {
               <CalendarEventCard
                 event={item}
                 onPress={handleEventPress}
+                onToggleReminder={handleToggleReminder}
                 testID={`calendar-event-${item._id}`}
               />
             )}

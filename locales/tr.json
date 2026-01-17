@@ -164,7 +164,7 @@
       "subtitle": "Pro ile aylık bütçe ve uyarıları tek yerden yönetin.",
       "cta": "Pro'ya Geç"
     }
-  }
+  },
   "health": {
     "healthRecords": "Sağlık Kayıtları",
     "view": "Görüntüle",
@@ -253,6 +253,10 @@
     "today": "Bugün",
     "addEvent": "Etkinlik Ekle",
     "noEventsToday": "Bugün için planlanmış etkinlik yok",
+    "reminderLimitTitle": "Hatırlatıcı limiti dolu",
+    "reminderLimitMessage": "Hatırlatıcı limiti dolu. Daha fazla hatırlatıcı için Premium'a geçebilirsin.",
+    "reminderOn": "Hatırlatıcı Açık",
+    "reminderOff": "Hatırlatıcı Kapalı",
     "views": {
       "month": "Ay",
       "week": "Hafta",

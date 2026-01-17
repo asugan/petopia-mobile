@@ -7,6 +7,7 @@ import * as Notifications from 'expo-notifications';
 import { Stack, useRouter } from "expo-router";
 import { QueryClient, QueryClientProvider, focusManager } from '@tanstack/react-query';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import Toast from 'react-native-toast-message';
 import { ApiErrorBoundary } from "@/lib/components/ApiErrorBoundary";
 import { MOBILE_QUERY_CONFIG } from "@/lib/config/queryConfig";
 import { useAuth } from '@/lib/auth';
@@ -22,6 +23,8 @@ import { useUserSettingsStore } from '@/stores/userSettingsStore';
 import { useEventReminderStore } from '@/stores/eventReminderStore';
 import { useUpcomingEvents } from '@/lib/hooks/useEvents';
 import { useReminderScheduler } from '@/hooks/useReminderScheduler';
+import { createToastConfig } from '@/lib/toast/toastConfig';
+import { LAYOUT } from '@/constants';
 import "../lib/i18n";
 
 // Enhanced QueryClient with better configuration
@@ -225,6 +228,11 @@ function RootLayoutContent() {
           }}
         />
       </Stack>
+      <Toast
+        position="bottom"
+        bottomOffset={LAYOUT.TAB_BAR_HEIGHT + 12}
+        config={createToastConfig(theme)}
+      />
     </>
   );
 }
