@@ -467,6 +467,7 @@ export default function PetDetailScreen() {
             <View style={styles.sectionHeader}>
               <Text style={[styles.sectionTitle, { color: theme.colors.onSurface }]}>{t('pets.healthStatus')}</Text>
               <TouchableOpacity
+                onPress={() => router.push('/(tabs)/care')}
                 accessibilityLabel={t('pets.viewHealthDetails')}
                 accessibilityRole="button"
               >

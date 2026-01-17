@@ -332,7 +332,7 @@ export default function EventDetailScreen() {
         </View>
       </View>
 
-      <ScrollView style={styles.scrollView} contentContainerStyle={{ paddingBottom: FOOTER_HEIGHT + insets.bottom }}>
+      <ScrollView style={styles.scrollView} contentContainerStyle={{ paddingBottom: FOOTER_HEIGHT + insets.bottom + 24 }}>
         <View style={styles.heroContainer}>
           <Image
             source={heroImage}

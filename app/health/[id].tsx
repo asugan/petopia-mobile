@@ -550,7 +550,7 @@ ${healthRecord.notes ? `${t('common.notes')}: ${healthRecord.notes}` : ''}
     <View style={styles.container}>
       <Stack.Screen options={{ headerShown: false }} />
       <ScrollView
-        contentContainerStyle={{ paddingBottom: FOOTER_HEIGHT + insets.bottom }}
+        contentContainerStyle={{ paddingBottom: FOOTER_HEIGHT + insets.bottom + 24 }}
         showsVerticalScrollIndicator={false}
         bounces={false}
       >
