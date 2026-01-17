@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, StyleSheet, Pressable } from 'react-native';
-import { Text, Card } from '@/components/ui';
+import { Button, Text, Card } from '@/components/ui';
 import { useTheme } from '@/lib/theme';
 import { useTranslation } from 'react-i18next';
 import { useRouter } from 'expo-router';
@@ -49,20 +49,35 @@ export function NextFeedingWidget() {
   // No feeding schedules
   if (!nextSchedule || !nextFeedingTime) {
     return (
-      <Card style={[styles.card, { backgroundColor: theme.colors.surface, borderColor: '#4B5563' }]}>
-        <Pressable onPress={handlePress} style={styles.content}>
-          <View style={[styles.iconContainer, { backgroundColor: theme.colors.primary + '33' }]}>
-            <Ionicons name="restaurant" size={28} color={theme.colors.primary} />
+      <Card
+        style={[
+          styles.card,
+          { backgroundColor: theme.colors.surface, borderColor: theme.colors.outlineVariant },
+        ]}
+      >
+        <View style={styles.emptyContent}>
+          <View style={[styles.emptyIconWrap, { backgroundColor: theme.colors.primaryContainer }]}>
+            <Ionicons name="restaurant" size={26} color={theme.colors.primary} />
           </View>
-          <View style={styles.textContainer}>
-            <Text variant="bodySmall" style={{ color: theme.colors.onSurfaceVariant }}>
-              {t('feedingSchedule.nextFeeding')}
-            </Text>
-            <Text variant="bodyMedium" style={{ color: theme.colors.onSurfaceVariant }}>
-              {t('feedingSchedule.noNextFeeding')}
-            </Text>
-          </View>
-        </Pressable>
+          <Text variant="titleMedium" style={[styles.emptyTitle, { color: theme.colors.onSurface }]}>
+            {t('home.nextFeedingEmptyTitle')}
+          </Text>
+          <Text
+            variant="bodySmall"
+            style={[styles.emptyDescription, { color: theme.colors.onSurfaceVariant }]}
+          >
+            {t('home.nextFeedingEmptyDescription')}
+          </Text>
+          <Button
+            mode="contained"
+            onPress={handlePress}
+            buttonColor={theme.colors.primary}
+            textColor={theme.colors.onPrimary}
+            style={styles.emptyCta}
+          >
+            {t('home.nextFeedingEmptyCta')}
+          </Button>
+        </View>
       </Card>
     );
   }
@@ -108,6 +123,32 @@ const styles = StyleSheet.create({
   textContainer: {
     flex: 1,
     gap: 2,
+  },
+  emptyContent: {
+    alignItems: 'center',
+    paddingVertical: 20,
+    paddingHorizontal: 16,
+  },
+  emptyIconWrap: {
+    width: 52,
+    height: 52,
+    borderRadius: 26,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 12,
+  },
+  emptyTitle: {
+    textAlign: 'center',
+    fontWeight: '700',
+    marginBottom: 6,
+  },
+  emptyDescription: {
+    textAlign: 'center',
+    lineHeight: 20,
+    marginBottom: 14,
+  },
+  emptyCta: {
+    alignSelf: 'center',
   },
 });
 

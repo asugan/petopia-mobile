@@ -22,7 +22,7 @@ export default function SubscriptionScreen() {
   const router = useRouter();
   const [modalVisible, setModalVisible] = useState(false);
   const {
-    isSubscribed,
+    isPaidSubscription,
     isLoading,
     restorePurchases,
     presentPaywall,
@@ -123,8 +123,8 @@ export default function SubscriptionScreen() {
           {t('subscription.note')}
         </Text>
 
-        {/* Features List - Show if not subscribed */}
-        {!isSubscribed && (
+        {/* Features List - Show if not paid */}
+        {!isPaidSubscription && (
           <Card style={[styles.featuresCard, { backgroundColor: theme.colors.surface }]}>
             <View style={styles.cardContent}>
               <Text variant="titleMedium" style={[styles.featuresTitle, { color: theme.colors.onSurface }]}>

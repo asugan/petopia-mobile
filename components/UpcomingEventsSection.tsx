@@ -1,11 +1,12 @@
 import React from 'react';
 import { View, StyleSheet } from 'react-native';
-import { Card, Text } from '@/components/ui';
+import { Button, Card, Text } from '@/components/ui';
 import { useTheme } from '@/lib/theme';
 import { useTranslation } from 'react-i18next';
 import { Ionicons } from '@expo/vector-icons';
 import { useUpcomingEvents } from '@/lib/hooks/useEvents';
 import { usePets } from '@/lib/hooks/usePets';
+import { useRouter } from 'expo-router';
 
 // Event type to icon mapping
 const getEventIcon = (type: string): keyof typeof Ionicons.glyphMap => {
@@ -58,6 +59,7 @@ const getEventColor = (type: string): string => {
 export function UpcomingEventsSection() {
   const { theme } = useTheme();
   const { t } = useTranslation();
+  const router = useRouter();
   const { data: events, isLoading } = useUpcomingEvents();
   const { data: pets } = usePets();
 
@@ -96,14 +98,34 @@ export function UpcomingEventsSection() {
 
   if (upcomingEvents.length === 0) {
     return (
-      <Card style={[styles.card, { backgroundColor: theme.colors.surface, borderColor: '#4B5563' }]}>
-        <View style={styles.content}>
-          <Text variant="titleMedium" style={[styles.title, { color: theme.colors.onSurface }]}>
-            {t('events.upcoming')}
+      <Card
+        style={[
+          styles.card,
+          { backgroundColor: theme.colors.surface, borderColor: theme.colors.outlineVariant },
+        ]}
+      >
+        <View style={styles.emptyContent}>
+          <View style={[styles.emptyIconWrap, { backgroundColor: theme.colors.secondaryContainer }]}>
+            <Ionicons name="calendar" size={24} color={theme.colors.secondary} />
+          </View>
+          <Text variant="titleMedium" style={[styles.emptyTitle, { color: theme.colors.onSurface }]}>
+            {t('home.upcomingEventsEmptyTitle')}
           </Text>
-          <Text variant="bodyMedium" style={{ color: theme.colors.onSurfaceVariant }}>
-            {t('events.noUpcomingEvents')}
+          <Text
+            variant="bodySmall"
+            style={[styles.emptyDescription, { color: theme.colors.onSurfaceVariant }]}
+          >
+            {t('home.upcomingEventsEmptyDescription')}
           </Text>
+          <Button
+            mode="contained"
+            onPress={() => router.push('/(tabs)/calendar')}
+            buttonColor={theme.colors.secondary}
+            textColor={theme.colors.onSecondary}
+            style={styles.emptyCta}
+          >
+            {t('home.upcomingEventsEmptyCta')}
+          </Button>
         </View>
       </Card>
     );
@@ -153,7 +175,6 @@ const styles = StyleSheet.create({
   card: {
     borderRadius: 12,
     borderWidth: 1,
-    marginBottom: 16,
   },
   content: {
     padding: 16,
@@ -185,6 +206,32 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 8,
+  },
+  emptyContent: {
+    alignItems: 'center',
+    paddingVertical: 20,
+    paddingHorizontal: 16,
+  },
+  emptyIconWrap: {
+    width: 52,
+    height: 52,
+    borderRadius: 26,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 12,
+  },
+  emptyTitle: {
+    textAlign: 'center',
+    fontWeight: '700',
+    marginBottom: 6,
+  },
+  emptyDescription: {
+    textAlign: 'center',
+    lineHeight: 20,
+    marginBottom: 14,
+  },
+  emptyCta: {
+    alignSelf: 'center',
   },
 });
 

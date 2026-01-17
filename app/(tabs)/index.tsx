@@ -143,14 +143,20 @@ function HomeScreenContent() {
               <NextFeedingWidget />
             </View>
 
-            <UpcomingEventsSection />
+            <View style={styles.section}>
+              <UpcomingEventsSection />
+            </View>
 
-            <FinancialOverview
-              budgetStatus={financial.budgetStatus || undefined}
-              recentExpenses={data.recentExpenses}
-            />
+            <View style={styles.section}>
+              <FinancialOverview
+                budgetStatus={financial.budgetStatus || undefined}
+                recentExpenses={data.recentExpenses}
+              />
+            </View>
 
-            <HealthOverview healthRecords={data.allHealthRecords || []} />
+            <View style={styles.section}>
+              <HealthOverview healthRecords={data.allHealthRecords || []} />
+            </View>
           </>
         )}
       </ScrollView>
@@ -165,7 +171,7 @@ const styles = StyleSheet.create({
   statsScrollView: { marginBottom: 24 },
   statsContainer: { gap: 12, paddingHorizontal: 0 },
   statsGrid: { flexDirection: "row", gap: 12, marginBottom: 24 },
-  section: { marginBottom: 24 },
+  section: { marginBottom: 16 },
   sectionTitle: { fontWeight: "600", marginBottom: 16 },
   petList: { gap: 12 },
   petCardWrapper: { width: "100%" },

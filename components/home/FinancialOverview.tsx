@@ -1,6 +1,7 @@
 import React from "react";
 import { View, StyleSheet, Pressable } from "react-native";
-import { Text, Card, ProgressBar, Button } from "@/components/ui";
+import { Ionicons } from "@expo/vector-icons";
+import { Button, Card, ProgressBar, Text } from "@/components/ui";
 import { useTheme } from "@/lib/theme";
 import { useTranslation } from "react-i18next";
 import { useRouter } from "expo-router";
@@ -61,15 +62,25 @@ export const FinancialOverview: React.FC<FinancialOverviewProps> = ({
   if (!hasBudget && !hasExpenses) {
     return (
       <Card
-        style={[styles.card, { backgroundColor: theme.colors.surface }]}
+        style={[
+          styles.card,
+          {
+            backgroundColor: theme.colors.surface,
+            borderColor: theme.colors.outlineVariant,
+            borderWidth: 1,
+          },
+        ]}
         elevation={2}
       >
         <View style={styles.emptyContent}>
-          <Text variant="titleMedium" style={styles.title}>
+          <View style={[styles.emptyIconWrap, { backgroundColor: theme.colors.primaryContainer }]}>
+            <Ionicons name="wallet" size={24} color={theme.colors.primary} />
+          </View>
+          <Text variant="titleMedium" style={[styles.emptyTitle, { color: theme.colors.onSurface }]}>
             {t("home.financialOverviewEmptyTitle", "Start tracking finances")}
           </Text>
           <Text
-            variant="bodyMedium"
+            variant="bodySmall"
             style={[
               styles.emptyDescription,
               { color: theme.colors.onSurfaceVariant },
@@ -176,25 +187,40 @@ export const FinancialOverview: React.FC<FinancialOverviewProps> = ({
 
 const styles = StyleSheet.create({
   card: {
-    marginBottom: 24,
     borderRadius: 12,
   },
   content: {
     padding: 16,
   },
   emptyContent: {
-    padding: 20,
+    paddingVertical: 22,
+    paddingHorizontal: 20,
+    alignItems: "center",
+  },
+  emptyIconWrap: {
+    width: 52,
+    height: 52,
+    borderRadius: 26,
+    alignItems: "center",
+    justifyContent: "center",
+    marginBottom: 12,
+  },
+  emptyTitle: {
+    textAlign: "center",
+    fontWeight: "700",
+    marginBottom: 6,
   },
   title: {
     fontWeight: "bold",
     marginBottom: 12,
   },
   emptyDescription: {
+    textAlign: "center",
     lineHeight: 20,
   },
   emptyButton: {
     marginTop: 16,
-    alignSelf: "flex-start",
+    alignSelf: "center",
   },
   budgetSection: {
     gap: 8,
