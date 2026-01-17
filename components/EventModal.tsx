@@ -7,10 +7,9 @@ import { useTheme } from '@/lib/theme';
 import { Event } from '../lib/types';
 import { EventFormData, transformFormDataToAPI } from '../lib/schemas/eventSchema';
 import { EventForm } from './forms/EventForm';
-import { useCreateEvent, useUpdateEvent, useAllEvents } from '../lib/hooks/useEvents';
+import { useCreateEvent, useUpdateEvent } from '../lib/hooks/useEvents';
 import { usePets } from '../lib/hooks/usePets';
 import { ReminderPresetKey } from '@/constants/reminders';
-import { useSubscription } from '@/lib/hooks/useSubscription';
 
 interface EventModalProps {
   visible: boolean;
@@ -36,17 +35,10 @@ export function EventModal({
   const [snackbarMessage, setSnackbarMessage] = React.useState('');
   const [snackbarType, setSnackbarType] = React.useState<'success' | 'error'>('success');
 
-  const { isProUser, presentPaywall, refreshSubscriptionStatus } = useSubscription();
-
   // React Query hooks for server state
   const createEventMutation = useCreateEvent();
   const updateEventMutation = useUpdateEvent();
   const { data: pets = [] } = usePets();
-
-  const { data: allEvents = [] } = useAllEvents();
-  const activeReminderCount = allEvents.filter((eventItem) => eventItem.reminder).length;
-  const isEditingWithReminder = !!event?.reminder;
-  const canUseReminder = isProUser || isEditingWithReminder || activeReminderCount < 2;
 
   const showSnackbar = React.useCallback((message: string, type: 'success' | 'error' = 'success') => {
     setSnackbarMessage(message);
@@ -59,27 +51,14 @@ export function EventModal({
       // Transform form data to API format (combines date+time into ISO datetime)
       const apiData = transformFormDataToAPI(data);
       const reminderPresetKey: ReminderPresetKey = data.reminderPreset || 'standard';
-
       const reminderEnabled = data.reminder === true;
-      let canUseReminderNow = canUseReminder;
-      if (reminderEnabled && !canUseReminder) {
-        const didPurchase = await presentPaywall();
-        if (didPurchase) {
-          refreshSubscriptionStatus();
-        }
-        canUseReminderNow = isProUser || didPurchase || isEditingWithReminder;
-        if (!canUseReminderNow) {
-          return;
-        }
-      }
 
       setLoading(true);
-      const nextReminderEnabled = reminderEnabled && canUseReminderNow;
       if (event) {
         // Event güncelleme
         await updateEventMutation.mutateAsync({
           _id: event._id,
-          data: { ...apiData, reminderPresetKey, reminder: nextReminderEnabled }
+          data: { ...apiData, reminderPresetKey, reminder: reminderEnabled }
         });
         showSnackbar(t('serviceResponse.event.updateSuccess'), 'success');
       } else {
@@ -87,7 +66,7 @@ export function EventModal({
         await createEventMutation.mutateAsync({
           ...apiData,
           reminderPresetKey,
-          reminder: nextReminderEnabled,
+          reminder: reminderEnabled,
         });
         showSnackbar(t('serviceResponse.event.createSuccess'), 'success');
       }
@@ -101,7 +80,7 @@ export function EventModal({
     } finally {
       setLoading(false);
     }
-  }, [event, createEventMutation, updateEventMutation, onSuccess, onClose, showSnackbar, t, canUseReminder, presentPaywall, refreshSubscriptionStatus, isProUser, isEditingWithReminder]);
+  }, [event, createEventMutation, updateEventMutation, onSuccess, onClose, showSnackbar, t]);
 
   const handleClose = React.useCallback(() => {
     if (!loading) {

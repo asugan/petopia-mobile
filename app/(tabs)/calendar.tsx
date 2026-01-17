@@ -10,7 +10,8 @@ import { MonthView } from '@/components/calendar/MonthView';
 import { toISODateString } from '@/lib/utils/dateConversion';
 import { WeekView } from '@/components/calendar/WeekView';
 import { EventModal } from '@/components/EventModal';
-import { useUpcomingEvents, useCalendarEvents, useEvent } from '@/lib/hooks/useEvents';
+import { useUpcomingEvents, useCalendarEvents, useEvent, useAllEvents } from '@/lib/hooks/useEvents';
+import { useSubscription } from '@/lib/hooks/useSubscription';
 import { Event } from '@/lib/types';
 import { LAYOUT } from '@/constants';
 import { CalendarEventCard } from '@/components/calendar/CalendarEventCard';
@@ -21,6 +22,7 @@ export default function CalendarScreen() {
   const { theme } = useTheme();
   const { t } = useTranslation();
   const router = useRouter();
+  const { isProUser, presentPaywall } = useSubscription();
   const { petId, action, editEventId } = useLocalSearchParams<{ petId?: string; action?: string; editEventId?: string }>();
 
   const [viewType, setViewType] = useState<CalendarViewType>('week');
@@ -43,6 +45,8 @@ export default function CalendarScreen() {
   }, [action, petId, editEventId, eventToEdit]);
 
   const { data: upcomingEvents = [] } = useUpcomingEvents();
+  const { data: allEvents = [] } = useAllEvents();
+  const activeReminderCount = allEvents.filter((event) => event.reminder).length;
   const formattedDate = toISODateString(currentDate) ?? '';
   const {
     data: selectedDateEvents = [],
@@ -84,7 +88,13 @@ export default function CalendarScreen() {
     router.push(`/event/${event._id}`);
   };
 
-  const handleAddEvent = () => {
+  const handleAddEvent = async () => {
+    if (!isProUser && activeReminderCount >= 2) {
+      const didPurchase = await presentPaywall();
+      if (!didPurchase) {
+        return;
+      }
+    }
     setInitialPetId(undefined);
     setSelectedEvent(undefined);
     setModalVisible(true);

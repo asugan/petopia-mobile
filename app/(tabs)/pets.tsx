@@ -4,6 +4,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
 import { useRouter } from 'expo-router';
+import { useSubscription } from '@/lib/hooks/useSubscription';
 import { Button, FAB, Portal, Snackbar, Text } from '@/components/ui';
 import PetListCard from '@/components/PetListCard';
 import { useTheme } from '@/lib/theme';
@@ -17,6 +18,7 @@ export default function PetsScreen() {
   const { theme } = useTheme();
   const { t } = useTranslation();
   const router = useRouter();
+  const { isProUser, presentPaywall } = useSubscription();
 
   // React Query infinite query for pets
   const {
@@ -56,7 +58,13 @@ export default function PetsScreen() {
     setSnackbarVisible(true);
   }, []);
 
-  const handleAddPet = () => {
+  const handleAddPet = async () => {
+    if (!isProUser && allPets.length >= 1) {
+      const didPurchase = await presentPaywall();
+      if (!didPurchase) {
+        return;
+      }
+    }
     setSelectedPetState(undefined);
     setModalVisible(true);
   };
