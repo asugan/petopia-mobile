@@ -2,9 +2,13 @@ import React from "react";
 import { Pressable, StyleSheet, View, ViewStyle } from "react-native";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
+import { useTranslation } from "react-i18next";
 import { Text } from "@/components/ui";
 import { useTheme } from "@/lib/theme";
 import { useSubscription } from "@/lib/hooks/useSubscription";
+import { notificationService, requestNotificationPermissions } from "@/lib/services/notificationService";
+import { showToast } from "@/lib/toast/showToast";
+import { useEventReminderStore } from "@/stores/eventReminderStore";
 import { useUserSettingsStore } from "@/stores/userSettingsStore";
 
 interface LargeTitleProps {
@@ -32,14 +36,50 @@ export const LargeTitle = ({ title, style, actions }: LargeTitleProps) => {
 
 export const HeaderActions = () => {
   const { theme } = useTheme();
+  const { t } = useTranslation();
   const router = useRouter();
   const { subscriptionStatus } = useSubscription();
   const { settings, updateSettings, isLoading } = useUserSettingsStore();
+  const clearAllReminderState = useEventReminderStore((state) => state.clearAllReminderState);
   const isDarkMode = settings?.theme === "dark";
+  const notificationsEnabled = settings?.notificationsEnabled ?? true;
+  const [notificationLoading, setNotificationLoading] = React.useState(false);
 
   const handleToggleTheme = async () => {
     if (!settings || isLoading) return;
     await updateSettings({ theme: isDarkMode ? "light" : "dark" });
+  };
+
+  const handleNotificationToggle = async () => {
+    if (!settings || isLoading || notificationLoading) return;
+    setNotificationLoading(true);
+    try {
+      if (notificationsEnabled) {
+        showToast({
+          type: "info",
+          title: t("settings.notifications"),
+          message: t("settings.notificationDisableInfo"),
+        });
+        await notificationService.cancelAllNotifications();
+        clearAllReminderState();
+        await updateSettings({ notificationsEnabled: false });
+      } else {
+        const granted = await requestNotificationPermissions();
+        if (!granted) {
+          showToast({
+            type: "warning",
+            title: t("settings.notifications"),
+            message: t("settings.notificationPermissionDenied"),
+          });
+          await updateSettings({ notificationsEnabled: false });
+          return;
+        }
+        await updateSettings({ notificationsEnabled: true });
+      }
+    } catch {
+    } finally {
+      setNotificationLoading(false);
+    }
   };
 
   const statusLabel = subscriptionStatus === "pro" ? "Pro" : subscriptionStatus === "trial" ? "Trial" : "Free";
@@ -74,6 +114,21 @@ export const HeaderActions = () => {
           {statusLabel}
         </Text>
       </View>
+      <Pressable
+        onPress={handleNotificationToggle}
+        disabled={notificationLoading || !settings}
+        style={({ pressed }) => [
+          styles.iconButton,
+          { backgroundColor: theme.colors.surfaceVariant, borderColor: theme.colors.outlineVariant },
+          pressed && styles.iconPressed,
+        ]}
+      >
+        <MaterialCommunityIcons
+          name={notificationsEnabled ? "bell" : "bell-outline"}
+          size={18}
+          color={notificationsEnabled ? theme.colors.warning : theme.colors.onSurface}
+        />
+      </Pressable>
       <Pressable
         onPress={handleToggleTheme}
         style={({ pressed }) => [

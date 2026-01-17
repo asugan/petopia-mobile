@@ -254,6 +254,27 @@ export default function PetsScreen() {
         <View style={styles.listSection}>
           {isLoading && allPets.length === 0 ? (
             renderLoadingSkeleton()
+          ) : allPets.length === 0 ? (
+            <View
+              style={[
+                styles.emptyStateCard,
+                { borderColor: theme.colors.outlineVariant, backgroundColor: theme.colors.surface },
+              ]}
+            >
+              <View style={[styles.emptyStateIcon, { backgroundColor: theme.colors.primaryContainer }]}
+              >
+                <Ionicons name="paw" size={24} color={theme.colors.primary} />
+              </View>
+              <Text variant="titleMedium" style={[styles.emptyStateTitle, { color: theme.colors.onSurface }]}>
+                {t('pets.emptyTitle')}
+              </Text>
+              <Text variant="bodySmall" style={[styles.emptyStateDescription, { color: theme.colors.onSurfaceVariant }]}>
+                {t('pets.emptyDescription')}
+              </Text>
+              <Button mode="contained" onPress={handleAddPet} style={styles.emptyStateCta}>
+                {t('pets.emptyCta')}
+              </Button>
+            </View>
           ) : (
             filteredPets.map((pet) => (
               <PetListCard
@@ -460,6 +481,33 @@ const styles = StyleSheet.create({
   addCta: {
     marginTop: 6,
     fontWeight: '700',
+  },
+  emptyStateCard: {
+    borderWidth: 1,
+    borderStyle: 'dashed',
+    borderRadius: 22,
+    paddingVertical: 28,
+    paddingHorizontal: 20,
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 8,
+    marginBottom: 16,
+  },
+  emptyStateIcon: {
+    width: 52,
+    height: 52,
+    borderRadius: 26,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  emptyStateTitle: {
+    textAlign: 'center',
+  },
+  emptyStateDescription: {
+    textAlign: 'center',
+  },
+  emptyStateCta: {
+    marginTop: 6,
   },
   upgradeCard: {
     borderWidth: 1,
