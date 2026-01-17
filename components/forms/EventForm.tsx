@@ -1,5 +1,5 @@
 import React from 'react';
-import { Alert, Linking, ScrollView, StyleSheet, TouchableOpacity, View } from 'react-native';
+import { Alert, ScrollView, StyleSheet, TouchableOpacity, View } from 'react-native';
 import { FormProvider, useWatch } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import { Button, Text } from '@/components/ui';
@@ -20,6 +20,7 @@ import { SmartInput } from './SmartInput';
 import { SmartPetPicker } from './SmartPetPicker';
 import { SmartSwitch } from './SmartSwitch';
 import { StepHeader } from './StepHeader';
+import { showToast } from '@/lib/toast/showToast';
 
 interface EventFormProps {
   event?: Event;
@@ -47,7 +48,6 @@ export function EventForm({
   );
   const [isSubmitting, setIsSubmitting] = React.useState(false);
   const [currentStep, setCurrentStep] = React.useState(0);
-  const [showStepError, setShowStepError] = React.useState(false);
   const { isProUser, presentPaywall } = useSubscription();
 
   // Use the custom hook for form management
@@ -85,31 +85,22 @@ export function EventForm({
 
       if (!notificationsEnabled) {
         form.setValue('reminder', false);
-        Alert.alert(
-          t('settings.notifications'),
-          t('settings.notificationDisabled', 'Notifications are turned off in settings.')
-        );
+        showToast({
+          type: 'warning',
+          title: t('settings.notifications'),
+          message: t('settings.notificationDisabled'),
+        });
         return;
       }
 
       const granted = await requestNotificationPermissions();
       if (!granted) {
         form.setValue('reminder', false);
-        Alert.alert(
-          t('settings.notifications'),
-          t(
-            'settings.notificationPermissionDenied',
-            'Notifications are blocked at the system level. Please enable them from settings.'
-          ),
-          [
-            { text: t('common.cancel'), style: 'cancel' },
-            {
-              text: t('notifications.openSettings', 'Open Settings'),
-              onPress: () => Linking.openSettings(),
-            },
-          ]
-        );
-      }
+        showToast({
+          type: 'warning',
+          title: t('settings.notifications'),
+          message: t('settings.notificationPermissionDenied'),
+        });      }
     };
 
     void ensureNotificationAccess();
@@ -123,7 +114,11 @@ export function EventForm({
 
         await onSubmit(data);
       } catch {
-        Alert.alert(t('common.error'), t('events.saveError'));
+        showToast({
+          type: 'error',
+          title: t('common.error'),
+          message: t('events.saveError'),
+        });
       } finally {
         setIsSubmitting(false);
       }
@@ -198,27 +193,32 @@ export function EventForm({
   const handleNextStep = React.useCallback(async () => {
     const isStepValid = await form.trigger(steps[currentStep].fields);
     if (!isStepValid) {
-      setShowStepError(true);
+      showToast({
+        type: 'error',
+        title: t('common.error'),
+        message: t('pets.pleaseFillRequiredFields'),
+      });
       return;
     }
-    setShowStepError(false);
     setCurrentStep((prev) => Math.min(prev + 1, totalSteps - 1));
-  }, [form, steps, currentStep, totalSteps]);
+  }, [form, steps, currentStep, totalSteps, t]);
 
   const handleBackStep = React.useCallback(() => {
-    setShowStepError(false);
     setCurrentStep((prev) => Math.max(prev - 1, 0));
   }, []);
 
   const handleFinalSubmit = React.useCallback(async () => {
     const isFormValid = await form.trigger();
     if (!isFormValid) {
-      setShowStepError(true);
+      showToast({
+        type: 'error',
+        title: t('common.error'),
+        message: t('pets.pleaseFillRequiredFields'),
+      });
       return;
     }
-    setShowStepError(false);
     handleSubmit(onFormSubmit)();
-  }, [form, handleSubmit, onFormSubmit]);
+  }, [form, handleSubmit, onFormSubmit, t]);
 
   return (
     <FormProvider {...form}>
@@ -478,13 +478,6 @@ export function EventForm({
           )}
         </View>
 
-        {!showStepError ? null : (
-          <View style={[styles.statusContainer, { backgroundColor: theme.colors.errorContainer }]}>
-            <Text style={[styles.statusText, { color: theme.colors.onErrorContainer }]}>
-              {t('pets.pleaseFillRequiredFields')}
-            </Text>
-          </View>
-        )}
       </ScrollView>
     </FormProvider>
   );
@@ -529,16 +522,6 @@ const styles = StyleSheet.create({
   },
   actionButton: {
     flex: 1,
-  },
-  statusContainer: {
-    padding: 12,
-    borderRadius: 8,
-    marginTop: 16,
-  },
-  statusText: {
-    fontSize: 14,
-    textAlign: 'center',
-    fontFamily: 'System',
   },
 });
 

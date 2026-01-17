@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { View, StyleSheet, ActivityIndicator, FlatList, Pressable } from 'react-native';
 import { useRouter, useLocalSearchParams } from 'expo-router';
-import Toast from 'react-native-toast-message';
+
 import { Text, FAB } from '@/components/ui';
 import { HeaderActions, LargeTitle } from '@/components/LargeTitle';
 import { useTheme } from '@/lib/theme';
@@ -18,6 +18,7 @@ import { Event } from '@/lib/types';
 import { LAYOUT } from '@/constants';
 import { CalendarEventCard } from '@/components/calendar/CalendarEventCard';
 import { useQueryClient } from '@tanstack/react-query';
+import { showToast } from '@/lib/toast/showToast';
 
 type CalendarViewType = 'month' | 'week';
 
@@ -59,6 +60,16 @@ export default function CalendarScreen() {
     error: errorSelected,
   } = useCalendarEvents(formattedDate);
 
+  useEffect(() => {
+    if (errorSelected) {
+      showToast({
+        type: 'error',
+        title: t('errors.loadingFailed'),
+        message: errorSelected.message,
+      });
+    }
+  }, [errorSelected, t]);
+
   const handlePrevious = () => {
     switch (viewType) {
       case 'month':
@@ -94,10 +105,10 @@ export default function CalendarScreen() {
   };
 
   const handleReminderLimitReached = () => {
-    Toast.show({
+    showToast({
       type: 'info',
-      text1: t('calendar.reminderLimitTitle'),
-      text2: t('calendar.reminderLimitMessage'),
+      title: t('calendar.reminderLimitTitle'),
+      message: t('calendar.reminderLimitMessage'),
     });
   };
 
@@ -271,18 +282,12 @@ export default function CalendarScreen() {
                   </Text>
                 </View>
               ) : errorSelected ? (
-                <View style={styles.errorContainer}>
+                <View style={styles.emptyContainer}>
                   <Text
-                    variant="bodyLarge"
-                    style={[styles.errorText, { color: theme.colors.error }]}
+                    variant="bodyMedium"
+                    style={[styles.emptyText, { color: theme.colors.onSurfaceVariant }]}
                   >
-                    {t('errors.loadingFailed')}
-                  </Text>
-                  <Text
-                    variant="bodySmall"
-                    style={[styles.errorMessage, { color: theme.colors.onSurfaceVariant }]}
-                  >
-                    {errorSelected.message}
+                    {t('calendar.noEvents')}
                   </Text>
                 </View>
               ) : (
@@ -355,18 +360,6 @@ const styles = StyleSheet.create({
   },
   loadingText: {
     marginTop: 12,
-  },
-  errorContainer: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    padding: 32,
-  },
-  errorText: {
-    textAlign: 'center',
-    marginBottom: 8,
-  },
-  errorMessage: {
-    textAlign: 'center',
   },
   emptyContainer: {
     alignItems: 'center',

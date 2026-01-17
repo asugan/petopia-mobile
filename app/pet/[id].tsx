@@ -17,6 +17,7 @@ import { useHealthRecords } from '@/lib/hooks/useHealthRecords';
 import { useActiveFeedingSchedulesByPet } from '@/lib/hooks/useFeedingSchedules';
 import { formatTimeForDisplay, getNextFeedingTime, getPreviousFeedingTime } from '@/lib/schemas/feedingScheduleSchema';
 import { PetModal } from '@/components/PetModal';
+import { showToast } from '@/lib/toast/showToast';
 
 const { width } = Dimensions.get('window');
 
@@ -203,20 +204,11 @@ export default function PetDetailScreen() {
         await deletePetMutation.mutateAsync(pet._id);
         router.back();
       } catch {
-        Alert.alert(
-          t('common.error'),
-          t('pets.deleteError'),
-          [
-            {
-              text: t('common.cancel'),
-              style: 'cancel',
-            },
-            {
-              text: t('common.retry'),
-              onPress: performDelete,
-            },
-          ]
-        );
+        showToast({
+          type: 'error',
+          title: t('common.error'),
+          message: t('pets.deleteError'),
+        });
       }
     };
 

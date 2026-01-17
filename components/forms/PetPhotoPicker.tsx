@@ -4,13 +4,13 @@ import {
   StyleSheet,
   TouchableOpacity,
   Image,
-  Alert,
   ActivityIndicator,
 } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import * as ImagePicker from 'expo-image-picker';
 import { useTranslation } from 'react-i18next';
 import { Avatar, Button, Surface, Text, Modal, ListItem } from '@/components/ui';
+import { showToast } from '@/lib/toast/showToast';
 import { useTheme } from '@/lib/theme';
 import { getPetTypeColor, getPetTypeIcon } from '@/lib/utils/petTypeVisuals';
 import { Pet } from '../../lib/types';
@@ -42,14 +42,11 @@ export const PetPhotoPicker: React.FC<PetPhotoPickerProps> = ({
         cameraPermission.status !== 'granted' ||
         mediaLibraryPermission.status !== 'granted'
       ) {
-        Alert.alert(
-          t('forms.photoPicker.permissionsRequired'),
-          t('forms.photoPicker.permissionsMessage'),
-          [
-            { text: t('forms.photoPicker.cancel'), style: 'cancel' },
-            { text: t('forms.photoPicker.settings'), onPress: () => {/* Settings'e yönlendirme eklenebilir */} },
-          ]
-        );
+        showToast({
+          type: 'warning',
+          title: t('forms.photoPicker.permissionsRequired'),
+          message: t('forms.photoPicker.permissionsMessage'),
+        });
         return false;
       }
       return true;
@@ -80,7 +77,11 @@ export const PetPhotoPicker: React.FC<PetPhotoPickerProps> = ({
         onChange(photoUri);
       }
     } catch {
-      Alert.alert(t('common.error'), t('forms.photoPicker.errorSelectingPhoto'));
+      showToast({
+        type: 'error',
+        title: t('common.error'),
+        message: t('forms.photoPicker.errorSelectingPhoto'),
+      });
     } finally {
       setLoading(false);
     }
@@ -108,7 +109,11 @@ export const PetPhotoPicker: React.FC<PetPhotoPickerProps> = ({
         onChange(photoUri);
       }
     } catch {
-      Alert.alert(t('common.error'), t('forms.photoPicker.errorTakingPhoto'));
+      showToast({
+        type: 'error',
+        title: t('common.error'),
+        message: t('forms.photoPicker.errorTakingPhoto'),
+      });
     } finally {
       setLoading(false);
     }

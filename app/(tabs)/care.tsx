@@ -25,6 +25,7 @@ import { TURKCE_LABELS, HEALTH_RECORD_COLORS, HEALTH_RECORD_ICONS, LAYOUT } from
 import { useUserSettingsStore } from '@/stores/userSettingsStore';
 import type { HealthRecord, FeedingSchedule } from '@/lib/types';
 import MoneyDisplay from '@/components/ui/MoneyDisplay';
+import { showToast } from '@/lib/toast/showToast';
 
 
 type CareTabValue = 'health' | 'feeding';
@@ -64,6 +65,16 @@ export default function CareScreen() {
     error: healthError,
     refetch: refetchHealth
   } = useHealthRecords(selectedPetId);
+
+  React.useEffect(() => {
+    if (healthError) {
+      showToast({
+        type: 'error',
+        title: t('common.error'),
+        message: t('health.loadingError'),
+      });
+    }
+  }, [healthError, t]);
 
   // Feeding data
   const { data: feedingSchedulesAll = [], isLoading: feedingLoading } = useAllFeedingSchedules();
@@ -172,17 +183,6 @@ export default function CareScreen() {
       return <LoadingSpinner />;
     }
 
-    if (healthError) {
-      return (
-        <EmptyState
-          title={t('common.error')}
-          description={t('health.loadingError')}
-          icon="alert-circle"
-          buttonText={t('common.retry')}
-          onButtonPress={() => refetchHealth()}
-        />
-      );
-    }
 
     if (filteredHealthRecords.length === 0) {
       return (

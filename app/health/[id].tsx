@@ -24,6 +24,7 @@ import { usePet } from '@/lib/hooks/usePets';
 import { useEvent } from '@/lib/hooks/useEvents';
 import { formatCurrency } from '@/lib/utils/currency';
 import { useUserSettingsStore } from '@/stores/userSettingsStore';
+import { showToast } from '@/lib/toast/showToast';
 import { HealthRecordForm } from '@/components/forms/HealthRecordForm';
 import LoadingSpinner from '@/components/LoadingSpinner';
 import EmptyState from '@/components/EmptyState';
@@ -348,18 +349,6 @@ export default function HealthRecordDetailScreen() {
       color: theme.colors.outline,
       fontSize: 14,
     },
-    nextVisitErrorRow: {
-      marginTop: 8,
-      flexDirection: 'row',
-      alignItems: 'center',
-      gap: 8,
-      flexWrap: 'wrap',
-    },
-    nextVisitErrorText: {
-      flexShrink: 1,
-      color: theme.colors.error,
-      fontSize: 12,
-    },
     nextVisitRetryText: {
       color: theme.colors.primary,
       fontSize: 12,
@@ -469,9 +458,23 @@ export default function HealthRecordDetailScreen() {
       await deleteMutation.mutateAsync(id as string);
       router.back();
     } catch (error) {
-      Alert.alert(t('common.error'), error instanceof Error ? error.message : t('healthRecords.deleteError'));
+      showToast({
+        type: 'error',
+        title: t('common.error'),
+        message: error instanceof Error ? error.message : t('healthRecords.deleteError'),
+      });
     }
   };
+
+  React.useEffect(() => {
+    if (isEventError) {
+      showToast({
+        type: 'error',
+        title: t('common.error'),
+        message: t('events.fetchError'),
+      });
+    }
+  }, [isEventError, t]);
 
   const handleShare = async () => {
     if (!healthRecord) return;
@@ -759,21 +762,9 @@ ${healthRecord.notes ? `${t('common.notes')}: ${healthRecord.notes}` : ''}
                    {nextVisitDate && <Text style={styles.nextVisitTime}>{nextVisitTime}</Text>}
 
                    {isEventError && (
-                     <View style={styles.nextVisitErrorRow}>
-                       <MaterialCommunityIcons
-                         name="alert-circle-outline"
-                         size={16}
-                         color={theme.colors.error}
-                       />
-                       <Text style={styles.nextVisitErrorText}>{t('events.fetchError')}</Text>
-                       <TouchableOpacity
-                         onPress={() => {
-                           void refetchNextVisitEvent();
-                         }}
-                       >
-                         <Text style={styles.nextVisitRetryText}>{t('common.retry')}</Text>
-                       </TouchableOpacity>
-                     </View>
+                     <Text style={styles.nextVisitRetryText} onPress={() => void refetchNextVisitEvent()}>
+                       {t('common.retry')}
+                     </Text>
                    )}
                  </View>
                  <View style={styles.alarmButton}>

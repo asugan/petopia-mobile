@@ -2,7 +2,7 @@ import React from 'react';
 import { View, StyleSheet, Modal as RNModal } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useTranslation } from 'react-i18next';
-import { Portal, Snackbar, Text, Button } from '@/components/ui';
+import { Text, Button } from '@/components/ui';
 import { useTheme } from '@/lib/theme';
 import { Event } from '../lib/types';
 import { EventFormData, transformFormDataToAPI } from '../lib/schemas/eventSchema';
@@ -10,6 +10,7 @@ import { EventForm } from './forms/EventForm';
 import { useCreateEvent, useUpdateEvent } from '../lib/hooks/useEvents';
 import { usePets } from '../lib/hooks/usePets';
 import { ReminderPresetKey } from '@/constants/reminders';
+import { showToast } from '@/lib/toast/showToast';
 
 interface EventModalProps {
   visible: boolean;
@@ -31,20 +32,12 @@ export function EventModal({
   const { t } = useTranslation();
   const { theme } = useTheme();
   const [loading, setLoading] = React.useState(false);
-  const [snackbarVisible, setSnackbarVisible] = React.useState(false);
-  const [snackbarMessage, setSnackbarMessage] = React.useState('');
-  const [snackbarType, setSnackbarType] = React.useState<'success' | 'error'>('success');
 
   // React Query hooks for server state
   const createEventMutation = useCreateEvent();
   const updateEventMutation = useUpdateEvent();
   const { data: pets = [] } = usePets();
 
-  const showSnackbar = React.useCallback((message: string, type: 'success' | 'error' = 'success') => {
-    setSnackbarMessage(message);
-    setSnackbarType(type);
-    setSnackbarVisible(true);
-  }, []);
 
   const handleSubmit = React.useCallback(async (data: EventFormData) => {
     try {
@@ -60,7 +53,7 @@ export function EventModal({
           _id: event._id,
           data: { ...apiData, reminderPresetKey, reminder: reminderEnabled }
         });
-        showSnackbar(t('serviceResponse.event.updateSuccess'), 'success');
+        showToast({ type: 'success', title: t('serviceResponse.event.updateSuccess') });
       } else {
         // Yeni event oluşturma
         await createEventMutation.mutateAsync({
@@ -68,7 +61,7 @@ export function EventModal({
           reminderPresetKey,
           reminder: reminderEnabled,
         });
-        showSnackbar(t('serviceResponse.event.createSuccess'), 'success');
+        showToast({ type: 'success', title: t('serviceResponse.event.createSuccess') });
       }
 
       onSuccess();
@@ -76,11 +69,11 @@ export function EventModal({
     } catch (error) {
       const fallbackMessage = event ? t('serviceResponse.event.updateError') : t('serviceResponse.event.createError');
       const errorMessage = error instanceof Error ? error.message : fallbackMessage;
-      showSnackbar(errorMessage, 'error');
+      showToast({ type: 'error', title: fallbackMessage, message: errorMessage });
     } finally {
       setLoading(false);
     }
-  }, [event, createEventMutation, updateEventMutation, onSuccess, onClose, showSnackbar, t]);
+  }, [event, createEventMutation, updateEventMutation, onSuccess, onClose, t]);
 
   const handleClose = React.useCallback(() => {
     if (!loading) {
@@ -88,9 +81,6 @@ export function EventModal({
     }
   }, [onClose, loading]);
 
-  const handleSnackbarDismiss = React.useCallback(() => {
-    setSnackbarVisible(false);
-  }, []);
 
   return (
     <>
@@ -128,18 +118,6 @@ export function EventModal({
         </SafeAreaView>
       </RNModal>
 
-      <Portal>
-        <Snackbar
-          visible={snackbarVisible}
-          onDismiss={handleSnackbarDismiss}
-          duration={3000}
-          message={snackbarMessage}
-          style={{
-            ...styles.snackbar,
-            backgroundColor: snackbarType === 'success' ? theme.colors.primary : theme.colors.error
-          }}
-        />
-      </Portal>
     </>
   );
 }
@@ -160,9 +138,6 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 18,
     fontWeight: '600',
-  },
-  snackbar: {
-    marginBottom: 16,
   },
 });
 

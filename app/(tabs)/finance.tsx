@@ -11,7 +11,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
 import { useTranslation } from "react-i18next";
 import { useQueryClient } from "@tanstack/react-query";
-import { Button, Card, FAB, SegmentedButtons, Snackbar, Text } from "@/components/ui";
+import { Button, Card, FAB, SegmentedButtons, Text } from "@/components/ui";
 import { HeaderActions, LargeTitle } from "@/components/LargeTitle";
 import { PetPickerBase } from "@/components/PetPicker";
 import { BudgetInsights } from "@/components/BudgetInsights";
@@ -54,6 +54,7 @@ import {
 } from "@/lib/types";
 import { LAYOUT } from "@/constants";
 import { ENV } from "@/lib/config/env";
+import { showToast } from "@/lib/toast/showToast";
 
 type FinanceTabValue = 'budget' | 'expenses';
 
@@ -74,8 +75,6 @@ export default function FinanceScreen() {
 
   // Shared state - default to undefined to show all pets
   const [selectedPetId, setSelectedPetId] = useState<string | undefined>();
-  const [snackbarVisible, setSnackbarVisible] = useState(false);
-  const [snackbarMessage, setSnackbarMessage] = useState("");
 
   // Expenses state
   const [expenseModalVisible, setExpenseModalVisible] = useState(false);
@@ -188,11 +187,9 @@ export default function FinanceScreen() {
         onPress: async () => {
           try {
             await deleteExpenseMutation.mutateAsync(expense._id);
-            setSnackbarMessage(t("expenses.deleteSuccess"));
-            setSnackbarVisible(true);
+            showToast({ type: 'success', title: t("expenses.deleteSuccess") });
           } catch {
-            setSnackbarMessage(t("expenses.deleteError"));
-            setSnackbarVisible(true);
+            showToast({ type: 'error', title: t("expenses.deleteError") });
           }
         },
       },
@@ -206,19 +203,18 @@ export default function FinanceScreen() {
           _id: editingExpense._id,
           data,
         });
-        setSnackbarMessage(t("expenses.updateSuccess"));
+        showToast({ type: 'success', title: t("expenses.updateSuccess") });
       } else {
         await createExpenseMutation.mutateAsync(data);
-        setSnackbarMessage(t("expenses.createSuccess"));
+        showToast({ type: 'success', title: t("expenses.createSuccess") });
       }
       setExpenseModalVisible(false);
       setEditingExpense(undefined);
-      setSnackbarVisible(true);
     } catch {
-      setSnackbarMessage(
-        editingExpense ? t("expenses.updateError") : t("expenses.createError")
-      );
-      setSnackbarVisible(true);
+      showToast({
+        type: 'error',
+        title: editingExpense ? t("expenses.updateError") : t("expenses.createError"),
+      });
     }
   };
 
@@ -257,11 +253,9 @@ export default function FinanceScreen() {
         onPress: async () => {
           try {
             await deleteBudgetMutation.mutateAsync();
-            setSnackbarMessage(t("budgets.deleteSuccess"));
-            setSnackbarVisible(true);
+            showToast({ type: 'success', title: t("budgets.deleteSuccess") });
           } catch {
-            setSnackbarMessage(t("budgets.deleteError"));
-            setSnackbarVisible(true);
+            showToast({ type: 'error', title: t("budgets.deleteError") });
           }
         },
       },
@@ -278,11 +272,9 @@ export default function FinanceScreen() {
       await setBudgetMutation.mutateAsync(data);
       setBudgetModalVisible(false);
       setEditingBudget(undefined);
-      setSnackbarMessage(t("budgets.budgetSetSuccess"));
-      setSnackbarVisible(true);
+      showToast({ type: 'success', title: t("budgets.budgetSetSuccess") });
     } catch {
-      setSnackbarMessage(t("budgets.budgetSetError"));
-      setSnackbarVisible(true);
+      showToast({ type: 'error', title: t("budgets.budgetSetError") });
     }
   };
 
@@ -296,13 +288,13 @@ export default function FinanceScreen() {
       await exportCsvMutation.mutateAsync({
         petId: selectedPetId,
       });
-      setSnackbarMessage(t("expenses.exportSuccess", "Export completed"));
-      setSnackbarVisible(true);
+      showToast({ type: 'success', title: t("expenses.exportSuccess") });
     } catch (error) {
-      setSnackbarMessage(
-        error instanceof Error ? error.message : t("expenses.exportError", "Export failed")
-      );
-      setSnackbarVisible(true);
+      showToast({
+        type: 'error',
+        title: t("expenses.exportError"),
+        message: error instanceof Error ? error.message : undefined,
+      });
     }
   };
 
@@ -316,29 +308,31 @@ export default function FinanceScreen() {
       const uri = await exportPdfMutation.mutateAsync({
         petId: selectedPetId,
       });
-      const shareResult = await expenseService.sharePdf(uri, t("expenses.exportTitle", "Expenses PDF"));
+      const shareResult = await expenseService.sharePdf(uri, t("expenses.exportTitle"));
       if (!shareResult.success) {
-        setSnackbarMessage(
-          typeof shareResult.error === "string"
-            ? shareResult.error
-            : t("expenses.exportError", "Export failed")
-        );
+        showToast({
+          type: 'error',
+          title: t("expenses.exportError"),
+          message: typeof shareResult.error === "string" ? shareResult.error : undefined,
+        });
       } else {
-        setSnackbarMessage(t("expenses.exportSuccess", "Export completed"));
+        showToast({ type: 'success', title: t("expenses.exportSuccess") });
       }
-      setSnackbarVisible(true);
     } catch (error) {
-      setSnackbarMessage(
-        error instanceof Error ? error.message : t("expenses.exportError", "Export failed")
-      );
-      setSnackbarVisible(true);
+      showToast({
+        type: 'error',
+        title: t("expenses.exportError"),
+        message: error instanceof Error ? error.message : undefined,
+      });
     }
   };
 
   const handleVetSummary = async () => {
     if (!selectedPetId) {
-      setSnackbarMessage(t("expenses.selectPetForSummary", "Select a pet to export summary"));
-      setSnackbarVisible(true);
+      showToast({
+        type: 'warning',
+        title: t("expenses.selectPetForSummary"),
+      });
       return;
     }
 
@@ -349,22 +343,22 @@ export default function FinanceScreen() {
 
     try {
       const uri = await exportVetSummaryMutation.mutateAsync(selectedPetId);
-      const shareResult = await expenseService.sharePdf(uri, t("expenses.vetSummaryTitle", "Vet Summary PDF"));
+      const shareResult = await expenseService.sharePdf(uri, t("expenses.vetSummaryTitle"));
       if (!shareResult.success) {
-        setSnackbarMessage(
-          typeof shareResult.error === "string"
-            ? shareResult.error
-            : t("expenses.exportError", "Export failed")
-        );
+        showToast({
+          type: 'error',
+          title: t("expenses.exportError"),
+          message: typeof shareResult.error === "string" ? shareResult.error : undefined,
+        });
       } else {
-        setSnackbarMessage(t("expenses.exportSuccess", "Export completed"));
+        showToast({ type: 'success', title: t("expenses.exportSuccess") });
       }
-      setSnackbarVisible(true);
     } catch (error) {
-      setSnackbarMessage(
-        error instanceof Error ? error.message : t("expenses.exportError", "Export failed")
-      );
-      setSnackbarVisible(true);
+      showToast({
+        type: 'error',
+        title: t("expenses.exportError"),
+        message: error instanceof Error ? error.message : undefined,
+      });
     }
   };
 
@@ -743,17 +737,6 @@ export default function FinanceScreen() {
         isSubmitting={setBudgetMutation.isPending}
       />
 
-      {/* Snackbar */}
-      <Snackbar
-        visible={snackbarVisible}
-        message={snackbarMessage}
-        onDismiss={() => setSnackbarVisible(false)}
-        duration={3000}
-        action={{
-          label: t("common.close"),
-          onPress: () => setSnackbarVisible(false),
-        }}
-      />
     </SafeAreaView>
   );
 }

@@ -1,4 +1,4 @@
-import { Portal, Snackbar } from '@/components/ui';
+
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { useTheme } from '@/lib/theme';
@@ -8,6 +8,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { PetCreateInput, PetCreateFormInput, PetCreateSchema } from '../lib/schemas/petSchema';
 import { Pet } from '../lib/types';
 import { PetForm } from './forms/PetForm';
+import { showToast } from '@/lib/toast/showToast';
 
 interface PetModalProps {
   visible: boolean;
@@ -27,19 +28,11 @@ export function PetModal({
   const { t } = useTranslation();
   const { theme } = useTheme();
   const [loading, setLoading] = React.useState(false);
-  const [snackbarVisible, setSnackbarVisible] = React.useState(false);
-  const [snackbarMessage, setSnackbarMessage] = React.useState('');
-  const [snackbarType, setSnackbarType] = React.useState<'success' | 'error'>('success');
 
   // ✅ React Query hooks for server state
   const createPetMutation = useCreatePet();
   const updatePetMutation = useUpdatePet();
 
-  const showSnackbar = React.useCallback((message: string, type: 'success' | 'error' = 'success') => {
-    setSnackbarMessage(message);
-    setSnackbarType(type);
-    setSnackbarVisible(true);
-  }, []);
 
   const handleSubmit = React.useCallback(async (data: PetCreateFormInput) => {
     try {
@@ -50,11 +43,11 @@ export function PetModal({
       if (pet) {
         // Pet güncelleme
         await updatePetMutation.mutateAsync({ _id: pet._id, data: apiData });
-        showSnackbar(t('pets.updateSuccess'), 'success');
+        showToast({ type: 'success', title: t('pets.updateSuccess') });
       } else {
         // Yeni pet oluşturma
         await createPetMutation.mutateAsync(apiData);
-        showSnackbar(t('pets.saveSuccess'), 'success');
+        showToast({ type: 'success', title: t('pets.saveSuccess') });
       }
 
       onSuccess();
@@ -62,11 +55,11 @@ export function PetModal({
     } catch (error) {
       const fallbackMessage = pet ? t('pets.updateError') : t('pets.createError');
       const errorMessage = error instanceof Error ? error.message : fallbackMessage;
-      showSnackbar(errorMessage, 'error');
+      showToast({ type: 'error', title: fallbackMessage, message: errorMessage });
     } finally {
       setLoading(false);
     }
-  }, [pet, createPetMutation, updatePetMutation, onSuccess, onClose, showSnackbar, t]);
+  }, [pet, createPetMutation, updatePetMutation, onSuccess, onClose, t]);
 
   const handleClose = React.useCallback(() => {
     if (!loading) {
@@ -74,9 +67,6 @@ export function PetModal({
     }
   }, [onClose, loading]);
 
-  const handleSnackbarDismiss = React.useCallback(() => {
-    setSnackbarVisible(false);
-  }, []);
 
   return (
     <>
@@ -104,18 +94,6 @@ export function PetModal({
         </SafeAreaView>
       </RNModal>
 
-      <Portal>
-        <Snackbar
-          visible={snackbarVisible}
-          onDismiss={handleSnackbarDismiss}
-          duration={3000}
-          message={snackbarMessage}
-          style={{
-            ...styles.snackbar,
-            backgroundColor: snackbarType === 'success' ? theme.colors.primary : theme.colors.error
-          }}
-        />
-      </Portal>
     </>
   );
 }
@@ -133,9 +111,6 @@ const styles = StyleSheet.create({
   title: {
     textAlign: 'center',
     fontWeight: '600',
-  },
-  snackbar: {
-    marginBottom: 16,
   },
 });
 

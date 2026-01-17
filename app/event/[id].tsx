@@ -8,17 +8,17 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import {
-    ActivityIndicator,
-    Alert,
-    ScrollView,
-    Share,
-    StatusBar,
-    StyleSheet,
-    Switch,
-    Text,
-    TouchableOpacity,
-    useWindowDimensions,
-    View,
+  ActivityIndicator,
+  Alert,
+  ScrollView,
+  Share,
+  StatusBar,
+  StyleSheet,
+  Switch,
+  Text,
+  TouchableOpacity,
+  useWindowDimensions,
+  View,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
@@ -29,6 +29,7 @@ import { useDeleteEvent, useEvent, useUpdateEvent } from '@/lib/hooks/useEvents'
 import { usePet } from '@/lib/hooks/usePets';
 import { useTheme } from '@/lib/theme';
 import { useEventReminderStore } from '@/stores/eventReminderStore';
+import { showToast } from '@/lib/toast/showToast';
 
 export default function EventDetailScreen() {
   const { width } = useWindowDimensions();
@@ -94,7 +95,7 @@ export default function EventDetailScreen() {
               router.back();
             } catch (error) {
               console.error('Failed to delete event', error);
-              Alert.alert(t('common.error'), t('serviceResponse.event.deleteError'));
+              showToast({ type: 'error', title: t('common.error'), message: t('serviceResponse.event.deleteError') });
               return;
             }
           },
@@ -112,7 +113,7 @@ export default function EventDetailScreen() {
       await Share.share({ message: shareMessage, title: event.title });
     } catch (error) {
       console.error('Failed to share event', error);
-      Alert.alert(t('common.error'), t('errors.generalError'));
+      showToast({ type: 'error', title: t('common.error'), message: t('errors.generalError') });
       return;
     }
   };
@@ -154,7 +155,7 @@ export default function EventDetailScreen() {
           await cancelRemindersForEvent(event._id);
         } catch (error) {
           console.error('Failed to mark event as missed', error);
-          Alert.alert(t('common.error'), t('serviceResponse.event.updateError'));
+          showToast({ type: 'error', title: t('common.error'), message: t('serviceResponse.event.updateError') });
         }
       };
 
@@ -175,7 +176,7 @@ export default function EventDetailScreen() {
       setEventStatus('completed');
     } catch (error) {
       console.error('Failed to mark event as completed', error);
-      Alert.alert(t('common.error'), t('serviceResponse.event.updateError'));
+      showToast({ type: 'error', title: t('common.error'), message: t('serviceResponse.event.updateError') });
     }
   };
 
@@ -191,7 +192,7 @@ export default function EventDetailScreen() {
       setEventStatus('missed');
     } catch (error) {
       console.error('Failed to mark event as missed', error);
-      Alert.alert(t('common.error'), t('serviceResponse.event.updateError'));
+      showToast({ type: 'error', title: t('common.error'), message: t('serviceResponse.event.updateError') });
     }
   };
 
@@ -207,7 +208,7 @@ export default function EventDetailScreen() {
       setEventStatus('cancelled');
     } catch (error) {
       console.error('Failed to cancel event', error);
-      Alert.alert(t('common.error'), t('serviceResponse.event.updateError'));
+      showToast({ type: 'error', title: t('common.error'), message: t('serviceResponse.event.updateError') });
     }
   };
 
@@ -223,7 +224,7 @@ export default function EventDetailScreen() {
       setEventStatus('upcoming');
     } catch (error) {
       console.error('Failed to resume event reminders', error);
-      Alert.alert(t('common.error'), t('serviceResponse.event.updateError'));
+      showToast({ type: 'error', title: t('common.error'), message: t('serviceResponse.event.updateError') });
     }
   };
 

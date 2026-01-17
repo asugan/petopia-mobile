@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, StyleSheet, Modal as RNModal } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Portal, Snackbar, Text, Button } from '@/components/ui';
+import { Text, Button } from '@/components/ui';
 import { useTheme } from '@/lib/theme';
 import { useTranslation } from 'react-i18next';
 import { FeedingSchedule, Pet } from '../lib/types';
@@ -13,6 +13,7 @@ import {
   useAllFeedingSchedules,
 } from '../lib/hooks/useFeedingSchedules';
 import { useSubscription } from '@/lib/hooks/useSubscription';
+import { showToast } from '@/lib/toast/showToast';
 
 interface FeedingScheduleModalProps {
   visible: boolean;
@@ -36,9 +37,6 @@ export function FeedingScheduleModal({
   const { theme } = useTheme();
   const { t } = useTranslation();
   const [loading, setLoading] = React.useState(false);
-  const [snackbarVisible, setSnackbarVisible] = React.useState(false);
-  const [snackbarMessage, setSnackbarMessage] = React.useState('');
-  const [snackbarType, setSnackbarType] = React.useState<'success' | 'error'>('success');
 
   const { isProUser, presentPaywall } = useSubscription();
   const { data: feedingSchedulesAll = [] } = useAllFeedingSchedules();
@@ -48,11 +46,6 @@ export function FeedingScheduleModal({
   const createMutation = useCreateFeedingSchedule();
   const updateMutation = useUpdateFeedingSchedule();
 
-  const showSnackbar = React.useCallback((message: string, type: 'success' | 'error' = 'success') => {
-    setSnackbarMessage(message);
-    setSnackbarType(type);
-    setSnackbarVisible(true);
-  }, []);
 
   const handleSubmit = React.useCallback(async (data: FeedingScheduleFormData) => {
     try {
@@ -83,21 +76,21 @@ export function FeedingScheduleModal({
           _id: schedule._id,
           data: apiData,
         });
-        showSnackbar(t('feedingSchedule.updateSuccess'), 'success');
+        showToast({ type: 'success', title: t('feedingSchedule.updateSuccess') });
       } else {
         await createMutation.mutateAsync(apiData);
-        showSnackbar(t('feedingSchedule.createSuccess'), 'success');
+        showToast({ type: 'success', title: t('feedingSchedule.createSuccess') });
       }
 
       onSuccess();
       onClose();
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : t('feedingSchedule.errors.submitFailed');
-      showSnackbar(errorMessage, 'error');
+      showToast({ type: 'error', title: t('feedingSchedule.errors.submitFailed'), message: errorMessage });
     } finally {
       setLoading(false);
     }
-  }, [schedule, createMutation, updateMutation, onSuccess, onClose, showSnackbar, t, activeFeedingSchedules.length, isProUser, presentPaywall]);
+  }, [schedule, createMutation, updateMutation, onSuccess, onClose, t, activeFeedingSchedules.length, isProUser, presentPaywall]);
 
   const handleClose = React.useCallback(() => {
     if (!loading) {
@@ -105,9 +98,6 @@ export function FeedingScheduleModal({
     }
   }, [onClose, loading]);
 
-  const handleSnackbarDismiss = React.useCallback(() => {
-    setSnackbarVisible(false);
-  }, []);
 
   return (
     <>
@@ -145,18 +135,6 @@ export function FeedingScheduleModal({
         </SafeAreaView>
       </RNModal>
 
-      <Portal>
-        <Snackbar
-          visible={snackbarVisible}
-          onDismiss={handleSnackbarDismiss}
-          duration={3000}
-          message={snackbarMessage}
-          style={{
-            ...styles.snackbar,
-            backgroundColor: snackbarType === 'success' ? theme.colors.primary : theme.colors.error
-          }}
-        />
-      </Portal>
     </>
   );
 }
@@ -177,9 +155,6 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 18,
     fontWeight: '600',
-  },
-  snackbar: {
-    marginBottom: 16,
   },
 });
 

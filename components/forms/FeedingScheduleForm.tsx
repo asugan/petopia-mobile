@@ -16,6 +16,7 @@ import { SmartInput } from './SmartInput';
 import { SmartPetPicker } from './SmartPetPicker';
 import { SmartSwitch } from './SmartSwitch';
 import { StepHeader } from './StepHeader';
+import { showToast } from '@/lib/toast/showToast';
 
 interface FeedingScheduleFormProps {
   schedule?: FeedingSchedule;
@@ -40,7 +41,6 @@ export function FeedingScheduleForm({
   const { theme } = useTheme();
   const [isSubmitting, setIsSubmitting] = React.useState(false);
   const [currentStep, setCurrentStep] = React.useState(0);
-  const [showStepError, setShowStepError] = React.useState(false);
 
   // Use the custom hook for form management
   const { form, control, handleSubmit, isDirty } = useFeedingScheduleForm(schedule, initialPetId);
@@ -83,7 +83,11 @@ export function FeedingScheduleForm({
 
         await onSubmit(data);
       } catch {
-        Alert.alert(t('common.error'), t('feedingSchedule.errors.submitFailed'));
+        showToast({
+          type: 'error',
+          title: t('common.error'),
+          message: t('feedingSchedule.errors.submitFailed'),
+        });
       } finally {
         setIsSubmitting(false);
       }
@@ -144,27 +148,32 @@ export function FeedingScheduleForm({
   const handleNextStep = React.useCallback(async () => {
     const isStepValid = await form.trigger(steps[currentStep].fields);
     if (!isStepValid) {
-      setShowStepError(true);
+      showToast({
+        type: 'error',
+        title: t('common.error'),
+        message: t('pets.pleaseFillRequiredFields'),
+      });
       return;
     }
-    setShowStepError(false);
     setCurrentStep((prev) => Math.min(prev + 1, totalSteps - 1));
-  }, [form, steps, currentStep, totalSteps]);
+  }, [form, steps, currentStep, totalSteps, t]);
 
   const handleBackStep = React.useCallback(() => {
-    setShowStepError(false);
     setCurrentStep((prev) => Math.max(prev - 1, 0));
   }, []);
 
   const handleFinalSubmit = React.useCallback(async () => {
     const isFormValid = await form.trigger();
     if (!isFormValid) {
-      setShowStepError(true);
+      showToast({
+        type: 'error',
+        title: t('common.error'),
+        message: t('pets.pleaseFillRequiredFields'),
+      });
       return;
     }
-    setShowStepError(false);
     handleSubmit(onFormSubmit)();
-  }, [form, handleSubmit, onFormSubmit]);
+  }, [form, handleSubmit, onFormSubmit, t]);
 
   return (
     <FormProvider {...form}>
@@ -309,13 +318,6 @@ export function FeedingScheduleForm({
           )}
         </View>
 
-        {!showStepError ? null : (
-          <View style={[styles.statusContainer, { backgroundColor: theme.colors.errorContainer }]}>
-            <Text style={[styles.statusText, { color: theme.colors.onErrorContainer }]}>
-              {t('pets.pleaseFillRequiredFields')}
-            </Text>
-          </View>
-        )}
       </ScrollView>
     </FormProvider>
   );
@@ -351,16 +353,6 @@ const styles = StyleSheet.create({
   },
   actionButton: {
     flex: 1,
-  },
-  statusContainer: {
-    padding: 12,
-    borderRadius: 8,
-    marginTop: 16,
-  },
-  statusText: {
-    fontSize: 14,
-    textAlign: 'center',
-    fontFamily: 'System',
   },
 });
 

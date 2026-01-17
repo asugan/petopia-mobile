@@ -14,6 +14,7 @@ import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import { useTranslation } from "react-i18next";
 import { Alert, Image, Keyboard, KeyboardAvoidingView, Platform, Pressable, ScrollView, StyleSheet, TextInput, View } from "react-native";
+import { showToast } from "@/lib/toast/showToast";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { LAYOUT } from "@/constants";
 import { useOnboardingStore } from "@/stores/onboardingStore";
@@ -81,6 +82,16 @@ export default function SettingsScreen() {
   }, [settings, updateSettings]);
 
 
+  React.useEffect(() => {
+    if (error) {
+      showToast({
+        type: 'error',
+        title: t("common.error"),
+        message: error,
+      });
+    }
+  }, [error, t]);
+
   const handleNotificationToggle = async (value: boolean) => {
     setNotificationLoading(true);
     try {
@@ -91,10 +102,11 @@ export default function SettingsScreen() {
         setPermissionRefreshKey((prev) => prev + 1);
         
         if (!granted) {
-          Alert.alert(
-            t("settings.notifications"),
-            t("settings.notificationPermissionDenied", "Notifications are blocked at the system level. Please enable them from settings.")
-          );
+          showToast({
+            type: 'warning',
+            title: t("settings.notifications"),
+            message: t("settings.notificationPermissionDenied"),
+          });
           // Ensure backend stays disabled if permission denied
           await updateSettings({ notificationsEnabled: false });
         } else {
@@ -103,13 +115,11 @@ export default function SettingsScreen() {
         }
       } else {
         // If user wants to disable, update backend and cancel existing
-        Alert.alert(
-          t("settings.notifications"),
-          t(
-            "settings.notificationDisableInfo",
-            "You can disable notifications from your device settings. We'll stop scheduling new reminders from here."
-          )
-        );
+        showToast({
+          type: 'info',
+          title: t("settings.notifications"),
+          message: t("settings.notificationDisableInfo"),
+        });
         await notificationService.cancelAllNotifications();
         clearAllReminderState();
         await updateSettings({ notificationsEnabled: false });
@@ -183,36 +193,32 @@ export default function SettingsScreen() {
     try {
       const result = await accountService.deleteAccount(deleteConfirmText);
       if (result.success) {
-        Alert.alert(
-          t("settings.accountDeletedTitle"),
-          t("settings.accountDeletedMessage"),
-          [
-            {
-              text: t("common.ok"),
-              onPress: async () => {
-                setLoading(true);
-                try {
-                  await signOut();
-                  router.replace("/(auth)/login");
-                } catch {
-                } finally {
-                  setLoading(false);
-                }
-              },
-            },
-          ]
-        );
+        showToast({
+          type: 'success',
+          title: t("settings.accountDeletedTitle"),
+          message: t("settings.accountDeletedMessage"),
+        });
+        setLoading(true);
+        try {
+          await signOut();
+          router.replace("/(auth)/login");
+        } catch {
+        } finally {
+          setLoading(false);
+        }
       } else {
-        Alert.alert(
-          t("common.error"),
-          t("settings.accountDeleteError", "Failed to delete account")
-        );
+        showToast({
+          type: 'error',
+          title: t("common.error"),
+          message: t("settings.accountDeleteError"),
+        });
       }
     } catch {
-      Alert.alert(
-        t("common.error"),
-        t("settings.accountDeleteError", "Failed to delete account")
-      );
+      showToast({
+        type: 'error',
+        title: t("common.error"),
+        message: t("settings.accountDeleteError"),
+      });
     } finally {
       setDeletingAccount(false);
       setActiveModal("none");
@@ -260,14 +266,6 @@ export default function SettingsScreen() {
         {settingsLoading && (
           <View style={styles.loadingContainer}>
             <LoadingSpinner />
-          </View>
-        )}
-
-        {error && (
-          <View style={[styles.errorContainer, { backgroundColor: theme.colors.errorContainer }]}>
-            <Text variant="bodyMedium" style={{ color: theme.colors.onErrorContainer }}>
-              {error}
-            </Text>
           </View>
         )}
 
@@ -865,11 +863,7 @@ const styles = StyleSheet.create({
     padding: 20,
     alignItems: 'center',
   },
-  errorContainer: {
-    padding: 16,
-    marginTop: 16,
-    borderRadius: 8,
-  },
+
   modalOverlay: {
     position: 'absolute',
     top: 0,

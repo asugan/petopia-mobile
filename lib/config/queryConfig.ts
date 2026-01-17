@@ -2,7 +2,7 @@ import { QueryClient, QueryClientConfig } from '@tanstack/react-query';
 import { AxiosError } from 'axios';
 import { QueryFilters } from '../types';
 import i18n from '@/lib/i18n';
-import { showAlert } from '@/lib/utils/alert';
+import { showToast } from '@/lib/toast/showToast';
 
 const getMutationErrorDetails = (error: unknown) => {
   if (error instanceof Error) {
@@ -44,7 +44,11 @@ const reportMutationError = (error: unknown) => {
 
   if (__DEV__) {
     console.error('Mutation error', { error, ...details, responsePayload });
-    showAlert(i18n.t('common.error'), message);
+    showToast({
+      type: 'error',
+      title: i18n.t('common.error'),
+      message,
+    });
     return;
   }
 
@@ -56,7 +60,11 @@ const reportMutationError = (error: unknown) => {
     sentry.captureException(error, { extra: { ...details, responsePayload } });
   }
 
-  showAlert(i18n.t('common.error'), i18n.t('errors.generalError'));
+  showToast({
+    type: 'error',
+    title: i18n.t('common.error'),
+    message: i18n.t('errors.generalError'),
+  });
 };
 
 // Cache time constants

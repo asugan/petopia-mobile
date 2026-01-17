@@ -5,7 +5,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
 import { useRouter } from 'expo-router';
 import { useSubscription } from '@/lib/hooks/useSubscription';
-import { Button, FAB, Portal, Snackbar, Text } from '@/components/ui';
+import { Button, FAB, Text } from '@/components/ui';
 import { HeaderActions, LargeTitle } from '@/components/LargeTitle';
 import PetListCard from '@/components/PetListCard';
 import { useTheme } from '@/lib/theme';
@@ -14,6 +14,7 @@ import { PetModal } from '@/components/PetModal';
 import { LAYOUT } from '@/constants';
 import { Pet } from '@/lib/types';
 import { useInfinitePets } from '@/lib/hooks/usePets';
+import { showToast } from '@/lib/toast/showToast';
 
 export default function PetsScreen() {
   const { theme } = useTheme();
@@ -41,23 +42,19 @@ export default function PetsScreen() {
 
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedPet, setSelectedPetState] = useState<Pet | undefined>();
-  const [snackbarVisible, setSnackbarVisible] = useState(false);
-  const [snackbarMessage, setSnackbarMessage] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
   const [activeFilter, setActiveFilter] = useState<'all' | 'dog' | 'cat' | 'urgent'>('all');
   const [urgentStatus, setUrgentStatus] = useState<Record<string, { urgent: boolean; loading: boolean }>>({});
 
   useEffect(() => {
     if (error) {
-      setSnackbarMessage(error.message || t('common.error'));
-      setSnackbarVisible(true);
+      showToast({
+        type: 'error',
+        title: t('common.error'),
+        message: error.message || t('common.error'),
+      });
     }
   }, [error, t]);
-
-  const showSnackbar = React.useCallback((message: string) => {
-    setSnackbarMessage(message);
-    setSnackbarVisible(true);
-  }, []);
 
   const handleAddPet = async () => {
     if (!isProUser && allPets.length >= 1) {
@@ -76,11 +73,10 @@ export default function PetsScreen() {
 
   const handleModalSuccess = () => {
     // React Query handles cache invalidation automatically
-    showSnackbar(t('pets.saveSuccess'));
-  };
-
-  const handleSnackbarDismiss = () => {
-    setSnackbarVisible(false);
+    showToast({
+      type: 'success',
+      title: t('pets.saveSuccess'),
+    });
   };
 
   const handleViewPet = (pet: Pet) => {
@@ -361,20 +357,6 @@ export default function PetsScreen() {
         testID="pet-modal"
       />
 
-      <Portal>
-        <Snackbar
-          visible={snackbarVisible}
-          onDismiss={handleSnackbarDismiss}
-          duration={3000}
-          message={snackbarMessage}
-          style={{
-            ...styles.snackbar,
-            backgroundColor: snackbarMessage.includes(t('pets.saveSuccess')) || snackbarMessage.includes(t('pets.deleteSuccess'))
-              ? theme.colors.primary
-              : theme.colors.error
-          }}
-        />
-      </Portal>
     </SafeAreaView>
   );
 }
@@ -522,8 +504,5 @@ const styles = StyleSheet.create({
     margin: 16,
     right: 0,
     bottom: 0,
-  },
-  snackbar: {
-    marginBottom: 16,
   },
 });

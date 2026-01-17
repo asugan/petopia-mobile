@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Alert, Modal as RNModal, ScrollView, StyleSheet, View, TouchableOpacity } from 'react-native';
+import { Modal as RNModal, ScrollView, StyleSheet, View, TouchableOpacity } from 'react-native';
 import { FormProvider, useFieldArray } from 'react-hook-form';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useTranslation } from 'react-i18next';
@@ -10,6 +10,7 @@ import { useEvent } from '@/lib/hooks/useEvents';
 import { useTheme } from '@/lib/theme';
 import { useCreateHealthRecord, useUpdateHealthRecord } from '../../lib/hooks/useHealthRecords';
 import { useUserSettingsStore } from '@/stores/userSettingsStore';
+import { showToast } from '@/lib/toast/showToast';
 import {
   formatValidationErrors,
   HealthRecordCreateSchema,
@@ -134,7 +135,11 @@ export function HealthRecordForm({
           if (!validationResult.success) {
             const formattedErrors = formatValidationErrors(validationResult.error);
             const errorMessage = formattedErrors.map((err) => err.message).join('\n');
-            Alert.alert(t('forms.validation.error'), errorMessage);
+            showToast({
+              type: 'error',
+              title: t('forms.validation.error'),
+              message: errorMessage,
+            });
             return;
           }
 
@@ -148,7 +153,11 @@ export function HealthRecordForm({
           if (!validationResult.success) {
             const formattedErrors = formatValidationErrors(validationResult.error);
             const errorMessage = formattedErrors.map((err) => err.message).join('\n');
-            Alert.alert(t('forms.validation.error'), errorMessage);
+            showToast({
+              type: 'error',
+              title: t('forms.validation.error'),
+              message: errorMessage,
+            });
             return;
           }
 
@@ -158,7 +167,11 @@ export function HealthRecordForm({
 
         onSuccess?.();
       } catch {
-        Alert.alert(t('common.error'), t('healthRecords.saveError'));
+        showToast({
+          type: 'error',
+          title: t('common.error'),
+          message: t('healthRecords.saveError'),
+        });
       } finally {
         setIsLoading(false);
       }

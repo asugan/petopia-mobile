@@ -1,6 +1,6 @@
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
-import React from "react";
+import React, { useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { ScrollView, StyleSheet, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -19,6 +19,7 @@ import { useHomeData } from "@/lib/hooks/useHomeData";
 import { useSubscription } from "@/lib/hooks/useSubscription";
 import { useTheme } from "@/lib/theme";
 import { LAYOUT } from "@/constants";
+import { showToast } from "@/lib/toast/showToast";
 
 export default function HomeScreen() {
   return <HomeScreenContent />;
@@ -36,6 +37,17 @@ function HomeScreenContent() {
   const handleUpgradePress = async () => {
     await presentPaywall();
   };
+
+  // Hook must be called unconditionally before any early returns
+  useEffect(() => {
+    if (status.error) {
+      showToast({
+        type: 'error',
+        title: t("common.error"),
+        message: t("common.loadingError"),
+      });
+    }
+  }, [status.error, t]);
 
   if (status.isLoading) {
     return (
