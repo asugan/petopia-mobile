@@ -45,7 +45,7 @@ const USER_SETTINGS_STORAGE_KEY = 'user-settings-storage';
 const defaultSettings: UserSettings = {
   id: '',
   userId: '',
-  baseCurrency: 'TRY',
+  baseCurrency: 'USD',
   timezone: 'Europe/Istanbul',
   language: 'en',
   theme: 'dark',
