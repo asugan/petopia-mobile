@@ -3,7 +3,7 @@ import { View, StyleSheet, ActivityIndicator, FlatList, Pressable } from 'react-
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import Toast from 'react-native-toast-message';
 import { Text, FAB } from '@/components/ui';
-import { LargeTitle } from '@/components/LargeTitle';
+import { HeaderActions, LargeTitle } from '@/components/LargeTitle';
 import { useTheme } from '@/lib/theme';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useTranslation } from 'react-i18next';
@@ -212,7 +212,7 @@ export default function CalendarScreen() {
       style={[styles.container, { backgroundColor: theme.colors.background }]}
     >
       <View style={styles.header}>
-        <LargeTitle title={t('calendar.calendar')} />
+        <LargeTitle title={t('calendar.calendar')} actions={<HeaderActions />} />
       </View>
       <View style={styles.calendarContainer}>
         {renderCalendarView()}

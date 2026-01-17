@@ -13,7 +13,7 @@ import { UpcomingEventsSection } from "@/components/UpcomingEventsSection";
 import { NextFeedingWidget } from "@/components/feeding/NextFeedingWidget";
 import { FinancialOverview } from "@/components/home/FinancialOverview";
 import { HomeEmptyPets } from "@/components/home/HomeEmptyPets";
-import { LargeTitle } from "@/components/LargeTitle";
+import { HeaderActions, LargeTitle } from "@/components/LargeTitle";
 import { Text } from "@/components/ui";
 import { useHomeData } from "@/lib/hooks/useHomeData";
 import { useSubscription } from "@/lib/hooks/useSubscription";
@@ -72,7 +72,7 @@ function HomeScreenContent() {
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
       >
-        <LargeTitle title={t("navigation.home")} />
+        <LargeTitle title={t("navigation.home")} actions={<HeaderActions />} />
 
         {/* My Pets Section */}
         <View style={styles.section}>

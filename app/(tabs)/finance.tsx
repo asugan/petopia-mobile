@@ -12,7 +12,7 @@ import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context"
 import { useTranslation } from "react-i18next";
 import { useQueryClient } from "@tanstack/react-query";
 import { Button, Card, FAB, SegmentedButtons, Snackbar, Text } from "@/components/ui";
-import { LargeTitle } from "@/components/LargeTitle";
+import { HeaderActions, LargeTitle } from "@/components/LargeTitle";
 import { PetPickerBase } from "@/components/PetPicker";
 import { BudgetInsights } from "@/components/BudgetInsights";
 import { useTheme } from "@/lib/theme";
@@ -664,7 +664,7 @@ export default function FinanceScreen() {
       edges={['top', 'left', 'right']} // Remove bottom to handle manually
     >
       <View style={styles.header}>
-        <LargeTitle title={t('finance.title')} />
+        <LargeTitle title={t('finance.title')} actions={<HeaderActions />} />
       </View>
       <View style={styles.tabsContainer}>
         <SegmentedButtons

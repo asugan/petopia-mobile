@@ -6,7 +6,7 @@ import { useTranslation } from 'react-i18next';
 import { useRouter } from 'expo-router';
 import { useSubscription } from '@/lib/hooks/useSubscription';
 import { Button, FAB, Portal, Snackbar, Text } from '@/components/ui';
-import { LargeTitle } from '@/components/LargeTitle';
+import { HeaderActions, LargeTitle } from '@/components/LargeTitle';
 import PetListCard from '@/components/PetListCard';
 import { useTheme } from '@/lib/theme';
 import { PetCardSkeleton } from '@/components/PetCardSkeleton';
@@ -187,7 +187,7 @@ export default function PetsScreen() {
           />
         }
       >
-        <LargeTitle title={t('navigation.pets')} />
+        <LargeTitle title={t('navigation.pets')} actions={<HeaderActions />} />
         <View style={styles.searchWrapper}>
           <View
             style={[
