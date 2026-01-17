@@ -5,7 +5,6 @@ import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
 import { useRouter } from 'expo-router';
 import { Button, FAB, Portal, Snackbar, Text } from '@/components/ui';
-import { ProtectedRoute } from '@/components/subscription';
 import PetListCard from '@/components/PetListCard';
 import { useTheme } from '@/lib/theme';
 import { PetCardSkeleton } from '@/components/PetCardSkeleton';
@@ -160,178 +159,179 @@ export default function PetsScreen() {
   };
 
   return (
-    <ProtectedRoute featureName={t('subscription.features.petManagement')}>
-      <SafeAreaView style={[styles.container, { backgroundColor: theme.colors.background }]}>
-        <ScrollView
-          style={styles.scrollView}
-          contentContainerStyle={styles.scrollContent}
-          showsVerticalScrollIndicator={false}
-          keyboardShouldPersistTaps="handled"
-          refreshControl={
-            <RefreshControl
-              refreshing={isRefetching}
-              onRefresh={handleRefresh}
-              colors={[theme.colors.primary]}
-              tintColor={theme.colors.primary}
-            />
-          }
-        >
-          <View style={styles.searchWrapper}>
-            <View
-              style={[
-                styles.searchBar,
-                {
-                  backgroundColor: theme.colors.surface,
-                  borderColor: theme.colors.outlineVariant,
-                },
-              ]}
-            >
-              <Ionicons name="search" size={18} color={theme.colors.onSurfaceVariant} style={styles.searchIcon} />
-              <TextInput
-                value={searchQuery}
-                onChangeText={setSearchQuery}
-                placeholder={t('pets.searchPlaceholder')}
-                placeholderTextColor={theme.colors.onSurfaceVariant}
-                selectionColor={theme.colors.primary}
-                style={[styles.searchInput, { color: theme.colors.onSurface }]}
-                autoCapitalize="none"
-                autoCorrect={false}
-              />
-            </View>
-          </View>
-
-          <ScrollView
-            horizontal
-            showsHorizontalScrollIndicator={false}
-            contentContainerStyle={styles.chipsContainer}
+    <SafeAreaView style={[styles.container, { backgroundColor: theme.colors.background }]}>
+      <ScrollView
+        style={styles.scrollView}
+        contentContainerStyle={styles.scrollContent}
+        showsVerticalScrollIndicator={false}
+        keyboardShouldPersistTaps="handled"
+        refreshControl={
+          <RefreshControl
+            refreshing={isRefetching}
+            onRefresh={handleRefresh}
+            colors={[theme.colors.primary]}
+            tintColor={theme.colors.primary}
+          />
+        }
+      >
+        <View style={styles.searchWrapper}>
+          <View
+            style={[
+              styles.searchBar,
+              {
+                backgroundColor: theme.colors.surface,
+                borderColor: theme.colors.outlineVariant,
+              },
+            ]}
           >
-            {chipItems.map((chip) => {
-              const isSelected = activeFilter === chip.key;
-              const chipBackground = isSelected ? theme.colors.primary : theme.colors.surface;
-              const chipBorder = isSelected ? theme.colors.primary : theme.colors.outlineVariant;
-              const chipTextColor = isSelected ? theme.colors.onPrimary : theme.colors.onSurfaceVariant;
-              const iconColor = isSelected ? theme.colors.onPrimary : theme.colors.error;
-
-              return (
-                <Pressable
-                  key={chip.key}
-                  onPress={() => setActiveFilter(chip.key)}
-                  style={({ pressed }) => [
-                    styles.chip,
-                    {
-                      backgroundColor: chipBackground,
-                      borderColor: chipBorder,
-                    },
-                    pressed && styles.chipPressed,
-                  ]}
-                >
-                  <View style={styles.chipContent}>
-                    {chip.icon && (
-                      <Ionicons
-                        name={chip.icon}
-                        size={14}
-                        color={iconColor}
-                        style={styles.chipIcon}
-                      />
-                    )}
-                    <Text variant="labelMedium" style={[styles.chipLabel, { color: chipTextColor }]}>
-                      {chip.label}
-                    </Text>
-                  </View>
-                </Pressable>
-              );
-            })}
-          </ScrollView>
-
-          <View style={styles.listSection}>
-            {isLoading && allPets.length === 0 ? (
-              renderLoadingSkeleton()
-            ) : (
-              filteredPets.map((pet) => (
-                <PetListCard
-                  key={pet._id}
-                  pet={pet}
-                  petId={pet._id}
-                  onPress={() => handleViewPet(pet)}
-                  filterMode={activeFilter === 'urgent' ? 'urgent' : 'all'}
-                  onUrgencyChange={handleUrgencyChange}
-                />
-              ))
-            )}
-
-            {activeFilter === 'urgent' && allPets.length > 0 && !hasNextPage && !urgentSummary.isLoading && !urgentSummary.hasUrgent && (
-              <View style={styles.emptyUrgent}>
-                <Ionicons name="alert-circle-outline" size={16} color={theme.colors.onSurfaceVariant} />
-                <Text variant="bodySmall" style={[styles.emptyUrgentText, { color: theme.colors.onSurfaceVariant }]}>
-                  {t('pets.filters.emptyUrgent')}
-                </Text>
-              </View>
-            )}
-
-            {hasNextPage && allPets.length > 0 && (
-              <View style={styles.loadMoreContainer}>
-                <Button
-                  mode="outlined"
-                  onPress={handleLoadMore}
-                  disabled={isFetchingNextPage}
-                  style={styles.loadMoreButton}
-                >
-                  {isFetchingNextPage ? t('common.loading') : t('common.loadMore')}
-                </Button>
-              </View>
-            )}
-
-            <Pressable
-              onPress={handleAddPet}
-              style={({ pressed }) => [
-                styles.addCard,
-                { borderColor: theme.colors.outlineVariant },
-                pressed && styles.chipPressed,
-              ]}
-            >
-              <View style={[styles.addIconWrap, { backgroundColor: theme.colors.primaryContainer }]}>
-                <Ionicons name="paw" size={20} color={theme.colors.primary} />
-              </View>
-              <Text variant="bodySmall" style={[styles.addPrompt, { color: theme.colors.onSurfaceVariant }]}>
-                {t('pets.addAnotherPrompt')}
-              </Text>
-              <Text variant="labelLarge" style={[styles.addCta, { color: theme.colors.primary }]}>
-                {t('pets.addAnotherCta')}
-              </Text>
-            </Pressable>
+            <Ionicons name="search" size={18} color={theme.colors.onSurfaceVariant} style={styles.searchIcon} />
+            <TextInput
+              value={searchQuery}
+              onChangeText={setSearchQuery}
+              placeholder={t('pets.searchPlaceholder')}
+              placeholderTextColor={theme.colors.onSurfaceVariant}
+              selectionColor={theme.colors.primary}
+              style={[styles.searchInput, { color: theme.colors.onSurface }]}
+              autoCapitalize="none"
+              autoCorrect={false}
+            />
           </View>
+        </View>
+
+        <ScrollView
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          contentContainerStyle={styles.chipsContainer}
+        >
+          {chipItems.map((chip) => {
+            const isSelected = activeFilter === chip.key;
+            const chipBackground = isSelected ? theme.colors.primary : theme.colors.surface;
+            const chipBorder = isSelected ? theme.colors.primary : theme.colors.outlineVariant;
+            const chipTextColor = isSelected ? theme.colors.onPrimary : theme.colors.onSurfaceVariant;
+            const iconColor = isSelected ? theme.colors.onPrimary : theme.colors.error;
+
+            return (
+              <Pressable
+                key={chip.key}
+                onPress={() => setActiveFilter(chip.key)}
+                style={({ pressed }) => [
+                  styles.chip,
+                  {
+                    backgroundColor: chipBackground,
+                    borderColor: chipBorder,
+                  },
+                  pressed && styles.chipPressed,
+                ]}
+              >
+                <View style={styles.chipContent}>
+                  {chip.icon && (
+                    <Ionicons
+                      name={chip.icon}
+                      size={14}
+                      color={iconColor}
+                      style={styles.chipIcon}
+                    />
+                  )}
+                  <Text variant="labelMedium" style={[styles.chipLabel, { color: chipTextColor }]}>
+                    {chip.label}
+                  </Text>
+                </View>
+              </Pressable>
+            );
+          })}
         </ScrollView>
 
-        <FAB
-          icon="add"
-          style={{ ...styles.fab, backgroundColor: theme.colors.primary }}
-          onPress={handleAddPet}
-        />
+        <View style={styles.listSection}>
+          {isLoading && allPets.length === 0 ? (
+            renderLoadingSkeleton()
+          ) : (
+            filteredPets.map((pet) => (
+              <PetListCard
+                key={pet._id}
+                pet={pet}
+                petId={pet._id}
+                onPress={() => handleViewPet(pet)}
+                filterMode={activeFilter === 'urgent' ? 'urgent' : 'all'}
+                onUrgencyChange={handleUrgencyChange}
+              />
+            ))
+          )}
 
-        <PetModal
-          visible={modalVisible}
-          pet={selectedPet}
-          onClose={() => setModalVisible(false)}
-          onSuccess={handleModalSuccess}
-          testID="pet-modal"
-        />
+          {activeFilter === 'urgent' && allPets.length > 0 && !hasNextPage && !urgentSummary.isLoading && !urgentSummary.hasUrgent && (
+            <View style={styles.emptyUrgent}>
+              <Ionicons name="alert-circle-outline" size={16} color={theme.colors.onSurfaceVariant} />
+              <Text variant="bodySmall" style={[styles.emptyUrgentText, { color: theme.colors.onSurfaceVariant }]}>
+                {t('pets.filters.emptyUrgent')}
+              </Text>
+            </View>
+          )}
 
-        <Portal>
-          <Snackbar
-            visible={snackbarVisible}
-            onDismiss={handleSnackbarDismiss}
-            duration={3000}
-            message={snackbarMessage}
-            style={{
-              ...styles.snackbar,
-              backgroundColor: snackbarMessage.includes(t('pets.saveSuccess')) || snackbarMessage.includes(t('pets.deleteSuccess'))
-                ? theme.colors.primary
-                : theme.colors.error
-            }}
-          />
-        </Portal>
-      </SafeAreaView>
-    </ProtectedRoute>
+          {hasNextPage && allPets.length > 0 && (
+            <View style={styles.loadMoreContainer}>
+              <Button
+                mode="outlined"
+                onPress={handleLoadMore}
+                disabled={isFetchingNextPage}
+                style={styles.loadMoreButton}
+              >
+                {isFetchingNextPage ? t('common.loading') : t('common.loadMore')}
+              </Button>
+            </View>
+          )}
+
+          <Pressable
+            onPress={handleAddPet}
+            style={({ pressed }) => [
+              styles.addCard,
+              { borderColor: theme.colors.outlineVariant },
+              pressed && styles.chipPressed,
+            ]}
+          >
+            <View style={[styles.addIconWrap, { backgroundColor: theme.colors.primaryContainer }]}
+            >
+              <Ionicons name="paw" size={20} color={theme.colors.primary} />
+            </View>
+            <Text variant="bodySmall" style={[styles.addPrompt, { color: theme.colors.onSurfaceVariant }]}
+            >
+              {t('pets.addAnotherPrompt')}
+            </Text>
+            <Text variant="labelLarge" style={[styles.addCta, { color: theme.colors.primary }]}
+            >
+              {t('pets.addAnotherCta')}
+            </Text>
+          </Pressable>
+        </View>
+      </ScrollView>
+
+      <FAB
+        icon="add"
+        style={{ ...styles.fab, backgroundColor: theme.colors.primary }}
+        onPress={handleAddPet}
+      />
+
+      <PetModal
+        visible={modalVisible}
+        pet={selectedPet}
+        onClose={() => setModalVisible(false)}
+        onSuccess={handleModalSuccess}
+        testID="pet-modal"
+      />
+
+      <Portal>
+        <Snackbar
+          visible={snackbarVisible}
+          onDismiss={handleSnackbarDismiss}
+          duration={3000}
+          message={snackbarMessage}
+          style={{
+            ...styles.snackbar,
+            backgroundColor: snackbarMessage.includes(t('pets.saveSuccess')) || snackbarMessage.includes(t('pets.deleteSuccess'))
+              ? theme.colors.primary
+              : theme.colors.error
+          }}
+        />
+      </Portal>
+    </SafeAreaView>
   );
 }
 

@@ -7,7 +7,7 @@ import { createQueryKeys } from './core/createQueryKeys';
 import { useResource } from './core/useResource';
 import { useResources } from './core/useResources';
 import { useConditionalQuery } from './core/useConditionalQuery';
-import { useSubscriptionQueryEnabled } from './useSubscriptionQueries';
+import { useAuthQueryEnabled } from './useAuthQueryEnabled';
 import { useMemo } from 'react';
 import { filterUpcomingEvents, groupEventsByTime } from '@/lib/utils/events';
 import { toISODateString } from '@/lib/utils/dateConversion';
@@ -28,7 +28,7 @@ export const eventKeys = {
 
 // Hooks
 export const useEvents = (petId: string) => {
-  const { enabled } = useSubscriptionQueryEnabled();
+  const { enabled } = useAuthQueryEnabled();
 
   return useResources<Event>({
     queryKey: eventKeys.list({ petId }),
@@ -41,7 +41,7 @@ export const useEvents = (petId: string) => {
 const MISSING_ID_PLACEHOLDER = '__missing__';
 
 export const useEvent = (id?: string, options?: { enabled?: boolean }) => {
-  const { enabled } = useSubscriptionQueryEnabled();
+  const { enabled } = useAuthQueryEnabled();
   const safeId = id ?? MISSING_ID_PLACEHOLDER;
   const isEnabled = options?.enabled !== undefined ? (options.enabled && !!id) : !!id;
 
@@ -54,7 +54,7 @@ export const useEvent = (id?: string, options?: { enabled?: boolean }) => {
 };
 
 export const useCalendarEvents = (date: string, options?: { enabled?: boolean }) => {
-  const { enabled } = useSubscriptionQueryEnabled();
+  const { enabled } = useAuthQueryEnabled();
   const isEnabled = options?.enabled !== undefined ? (options.enabled && !!date) : !!date;
 
   return useConditionalQuery<Event[]>({
@@ -67,7 +67,7 @@ export const useCalendarEvents = (date: string, options?: { enabled?: boolean })
 };
 
 export const useUpcomingEvents = () => {
-  const { enabled } = useSubscriptionQueryEnabled();
+  const { enabled } = useAuthQueryEnabled();
 
   return useResources<Event>({
     queryKey: eventKeys.upcoming(),
@@ -79,7 +79,7 @@ export const useUpcomingEvents = () => {
 };
 
 export const useTodayEvents = () => {
-  const { enabled } = useSubscriptionQueryEnabled();
+  const { enabled } = useAuthQueryEnabled();
 
   return useResources<Event>({
     queryKey: eventKeys.today(),
@@ -122,7 +122,7 @@ export const useGroupedUpcomingEvents = (daysToShow: number = 7, maxEvents: numb
 };
 
 export const useEventsByType = (petId: string, type: string) => {
-  const { enabled } = useSubscriptionQueryEnabled();
+  const { enabled } = useAuthQueryEnabled();
 
   return useResources<Event>({
     queryKey: eventKeys.type(petId, type),
@@ -134,7 +134,7 @@ export const useEventsByType = (petId: string, type: string) => {
 };
 
 export const useAllEvents = () => {
-  const { enabled } = useSubscriptionQueryEnabled();
+  const { enabled } = useAuthQueryEnabled();
 
   return useResources<Event>({
     queryKey: eventKeys.list({ petId: 'all' }),

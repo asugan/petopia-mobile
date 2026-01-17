@@ -107,3 +107,12 @@ export function useSubscriptionQueryEnabled() {
 
   return { enabled, userId, hasActiveSubscription, isLoading, isError };
 }
+
+export function useProQueryEnabled() {
+  const { enabled: authEnabled, userId } = useAuthQueryEnabled();
+  const { isPaidSubscription, isLoading, isError } = useComputedSubscriptionStatus();
+
+  const enabled = authEnabled && isPaidSubscription;
+
+  return { enabled, userId, isPaidSubscription, isLoading, isError };
+}

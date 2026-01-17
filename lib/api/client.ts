@@ -4,9 +4,14 @@ import { ErrorDetails } from '../types';
 import { authClient } from '../auth/client';
 
 let onUnauthorized: (() => void) | undefined;
+let onProRequired: (() => void) | undefined;
 
 export const setOnUnauthorized = (callback: () => void) => {
   onUnauthorized = callback;
+};
+
+export const setOnProRequired = (callback: () => void) => {
+  onProRequired = callback;
 };
 
 // API Response interface
@@ -82,7 +87,13 @@ const errorInterceptor = (error: AxiosError) => {
   };
 
   const apiData = isApiErrorResponse(data) ? data : { success: false, message: 'Bilinmeyen hata' };
-  const errorInfo = typeof apiData.error === 'object' ? apiData.error : { code: 'UNKNOWN_ERROR', message: apiData.error || apiData.message || 'Bilinmeyen hata' };
+  const errorInfo = typeof apiData.error === 'object'
+    ? apiData.error
+    : { code: 'UNKNOWN_ERROR', message: apiData.error || apiData.message || 'Bilinmeyen hata' };
+
+  if (status === 402 && errorInfo.code === 'PRO_REQUIRED') {
+    onProRequired?.();
+  }
 
   throw new ApiError(
     errorInfo.message,

@@ -10,7 +10,9 @@ import { type FeedingScheduleFormData, transformFormDataToAPI } from '../lib/sch
 import {
   useCreateFeedingSchedule,
   useUpdateFeedingSchedule,
+  useAllFeedingSchedules,
 } from '../lib/hooks/useFeedingSchedules';
+import { useSubscription } from '@/lib/hooks/useSubscription';
 
 interface FeedingScheduleModalProps {
   visible: boolean;
@@ -38,6 +40,10 @@ export function FeedingScheduleModal({
   const [snackbarMessage, setSnackbarMessage] = React.useState('');
   const [snackbarType, setSnackbarType] = React.useState<'success' | 'error'>('success');
 
+  const { isProUser, presentPaywall } = useSubscription();
+  const { data: feedingSchedulesAll = [] } = useAllFeedingSchedules();
+  const activeFeedingSchedules = feedingSchedulesAll.filter((schedule) => schedule.isActive);
+
   // React Query hooks for server state
   const createMutation = useCreateFeedingSchedule();
   const updateMutation = useUpdateFeedingSchedule();
@@ -49,18 +55,36 @@ export function FeedingScheduleModal({
   }, []);
 
   const handleSubmit = React.useCallback(async (data: FeedingScheduleFormData) => {
-    setLoading(true);
     try {
       const apiData = transformFormDataToAPI(data);
+      const willBeActive = apiData.isActive !== false;
+
       if (schedule) {
         // Update existing schedule
+        if (willBeActive && !schedule.isActive && !isProUser && activeFeedingSchedules.length >= 1) {
+          const didPurchase = await presentPaywall();
+          if (!didPurchase) {
+            return;
+          }
+        }
+      } else {
+        // Create new schedule
+        if (willBeActive && !isProUser && activeFeedingSchedules.length >= 1) {
+          const didPurchase = await presentPaywall();
+          if (!didPurchase) {
+            return;
+          }
+        }
+      }
+
+      setLoading(true);
+      if (schedule) {
         await updateMutation.mutateAsync({
           _id: schedule._id,
           data: apiData,
         });
         showSnackbar(t('feedingSchedule.updateSuccess'), 'success');
       } else {
-        // Create new schedule
         await createMutation.mutateAsync(apiData);
         showSnackbar(t('feedingSchedule.createSuccess'), 'success');
       }
@@ -73,7 +97,7 @@ export function FeedingScheduleModal({
     } finally {
       setLoading(false);
     }
-  }, [schedule, createMutation, updateMutation, onSuccess, onClose, showSnackbar, t]);
+  }, [schedule, createMutation, updateMutation, onSuccess, onClose, showSnackbar, t, activeFeedingSchedules.length, isProUser, presentPaywall]);
 
   const handleClose = React.useCallback(() => {
     if (!loading) {

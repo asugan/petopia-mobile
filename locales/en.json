@@ -1295,6 +1295,8 @@
     "trialDaysRemaining": "{{days}} days remaining",
     "trialExpired": "Trial Expired",
     "trialPrompt": "Your trial ends in {{days}} days",
+    "reminderLimitReached": "You have reached the free reminder limit (2).",
+    "upgradeToPro": "Upgrade to Pro",
     "upgrade": "Upgrade to Pro",
     "upgradePrompt": "Unlock all features with Pro",
     "upgradeBeforeTrialEnds": "Upgrade Before Trial Ends",

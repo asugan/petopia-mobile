@@ -1,5 +1,5 @@
 import React from 'react';
-import { Alert, Linking, ScrollView, StyleSheet, View } from 'react-native';
+import { Alert, Linking, ScrollView, StyleSheet, TouchableOpacity, View } from 'react-native';
 import { FormProvider, useWatch } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import { Button, Text } from '@/components/ui';
@@ -8,6 +8,8 @@ import { useTheme } from '@/lib/theme';
 import { REMINDER_PRESETS, ReminderPresetKey } from '@/constants/reminders';
 import { requestNotificationPermissions } from '@/lib/services/notificationService';
 import { useUserSettingsStore } from '@/stores/userSettingsStore';
+import { useSubscription } from '@/lib/hooks/useSubscription';
+import { useAllEvents } from '@/lib/hooks/useEvents';
 import { type EventFormData } from '../../lib/schemas/eventSchema';
 import { Event, Pet } from '../../lib/types';
 import { FormSection } from './FormSection';
@@ -46,6 +48,7 @@ export function EventForm({
   const [isSubmitting, setIsSubmitting] = React.useState(false);
   const [currentStep, setCurrentStep] = React.useState(0);
   const [showStepError, setShowStepError] = React.useState(false);
+  const { isProUser, presentPaywall } = useSubscription();
 
   // Use the custom hook for form management
   const { form, control, handleSubmit, isDirty } = useEventForm(event, initialPetId);
@@ -53,6 +56,12 @@ export function EventForm({
   // Watch form values for dynamic behavior
   const eventType = useWatch({ control, name: 'type' });
   const reminderEnabled = useWatch({ control, name: 'reminder' });
+  const { data: allEvents = [] } = useAllEvents();
+
+  // Reminder limit check for free users
+  const activeReminderCount = allEvents.filter((eventItem) => eventItem.reminder).length;
+  const isEditingWithReminder = !!event?.reminder;
+  const reminderLimitReached = !isProUser && activeReminderCount >= 2 && !isEditingWithReminder;
 
   const reminderPresetOptions = React.useMemo(
     () =>
@@ -368,9 +377,29 @@ export function EventForm({
               name="reminder"
               label={t('events.enableReminder')}
               description={t('events.reminderDescription')}
-              disabled={loading || isSubmitting || !notificationsEnabled}
+              disabled={loading || isSubmitting || !notificationsEnabled || reminderLimitReached}
               testID={`${testID}-reminder`}
             />
+
+            {/* Pro upgrade hint when limit reached */}
+            {reminderLimitReached && (
+              <View style={[styles.proHintContainer, { backgroundColor: theme.colors.secondaryContainer }]}>
+                <Text
+                  variant="bodySmall"
+                  style={{ color: theme.colors.onSecondaryContainer }}
+                >
+                  {t('subscription.reminderLimitReached', 'You have reached the free reminder limit (2).')}{' '}
+                  <TouchableOpacity onPress={() => void presentPaywall()}>
+                    <Text
+                      variant="bodySmall"
+                      style={[styles.upgradeLink, { color: theme.colors.primary }]}
+                    >
+                      {t('subscription.upgradeToPro', 'Upgrade to Pro')}
+                    </Text>
+                  </TouchableOpacity>
+                </Text>
+              </View>
+            )}
 
             {reminderEnabled && (
               <View style={styles.reminderPresetContainer}>
@@ -483,6 +512,15 @@ const styles = StyleSheet.create({
   },
   reminderHelper: {
     lineHeight: 16,
+  },
+  proHintContainer: {
+    padding: 12,
+    borderRadius: 8,
+    marginTop: 8,
+  },
+  upgradeLink: {
+    fontWeight: '600',
+    textDecorationLine: 'underline',
   },
   actions: {
     flexDirection: 'row',

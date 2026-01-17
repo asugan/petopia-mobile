@@ -7,7 +7,7 @@ import { useCreateResource, useDeleteResource, useUpdateResource } from './useCr
 import { createQueryKeys } from './core/createQueryKeys';
 import { useResource } from './core/useResource';
 import { useConditionalQuery } from './core/useConditionalQuery';
-import { useSubscriptionQueryEnabled } from './useSubscriptionQueries';
+import { useAuthQueryEnabled } from './useAuthQueryEnabled';
 import { expenseKeys } from './useExpenses';
 
 // Type-safe filters for health records
@@ -35,7 +35,7 @@ export const healthRecordKeys = {
 // Note: This hook has complex client-side sorting logic,
 // so it uses useQuery directly instead of generic hooks
 export function useHealthRecords(petId?: string, filters: HealthRecordFilters = {}) {
-  const { enabled } = useSubscriptionQueryEnabled();
+  const { enabled } = useAuthQueryEnabled();
 
   return useQuery({
     queryKey: healthRecordKeys.list(petId || 'all', filters),
@@ -92,7 +92,7 @@ export function useHealthRecords(petId?: string, filters: HealthRecordFilters = 
 
 // Get a single health record by ID
 export function useHealthRecord(id: string) {
-  const { enabled } = useSubscriptionQueryEnabled();
+  const { enabled } = useAuthQueryEnabled();
 
   return useResource<HealthRecord>({
     queryKey: healthRecordKeys.detail(id),
@@ -105,7 +105,7 @@ export function useHealthRecord(id: string) {
 
 // Get all health records for all pets (for homepage overview)
 export function useAllPetsHealthRecords(petIds: string[]) {
-  const { enabled } = useSubscriptionQueryEnabled();
+  const { enabled } = useAuthQueryEnabled();
 
   const queries = useQueries({
     queries: petIds.map(petId => ({
@@ -138,7 +138,7 @@ export function useAllPetsHealthRecords(petIds: string[]) {
 
 // Get health records by type
 export function useHealthRecordsByType(petId: string, type: string) {
-  const { enabled } = useSubscriptionQueryEnabled();
+  const { enabled } = useAuthQueryEnabled();
 
   return useConditionalQuery<HealthRecord[]>({
     queryKey: healthRecordKeys.byType(petId, type),
@@ -152,7 +152,7 @@ export function useHealthRecordsByType(petId: string, type: string) {
 
 // Get health records by date range (using existing service method)
 export function useHealthRecordsByDateRange(petId: string, dateFrom: string, dateTo: string) {
-  const { enabled } = useSubscriptionQueryEnabled();
+  const { enabled } = useAuthQueryEnabled();
 
   return useConditionalQuery<HealthRecord[]>({
     queryKey: healthRecordKeys.byDateRange(petId, dateFrom, dateTo),

@@ -1,10 +1,11 @@
 import { Portal, Snackbar } from '@/components/ui';
-import { useTheme } from '@/lib/theme';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
+import { useTheme } from '@/lib/theme';
+import { useSubscription } from '@/lib/hooks/useSubscription';
+import { usePets, useCreatePet, useUpdatePet } from '@/lib/hooks/usePets';
 import { Modal as RNModal, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { useCreatePet, useUpdatePet } from '../lib/hooks/usePets';
 import { PetCreateInput, PetCreateFormInput, PetCreateSchema } from '../lib/schemas/petSchema';
 import { Pet } from '../lib/types';
 import { PetForm } from './forms/PetForm';
@@ -31,6 +32,9 @@ export function PetModal({
   const [snackbarMessage, setSnackbarMessage] = React.useState('');
   const [snackbarType, setSnackbarType] = React.useState<'success' | 'error'>('success');
 
+  const { isProUser, presentPaywall } = useSubscription();
+  const { data: pets = [] } = usePets();
+
   // ✅ React Query hooks for server state
   const createPetMutation = useCreatePet();
   const updatePetMutation = useUpdatePet();
@@ -42,11 +46,18 @@ export function PetModal({
   }, []);
 
   const handleSubmit = React.useCallback(async (data: PetCreateFormInput) => {
-    setLoading(true);
     try {
       // Transform form data to API format using the schema transformation
       const apiData: PetCreateInput = PetCreateSchema().parse(data);
 
+      if (!pet && !isProUser && pets.length >= 1) {
+        const didPurchase = await presentPaywall();
+        if (!didPurchase) {
+          return;
+        }
+      }
+
+      setLoading(true);
       if (pet) {
         // Pet güncelleme
         await updatePetMutation.mutateAsync({ _id: pet._id, data: apiData });
@@ -66,7 +77,7 @@ export function PetModal({
     } finally {
       setLoading(false);
     }
-  }, [pet, createPetMutation, updatePetMutation, onSuccess, onClose, showSnackbar, t]);
+  }, [pet, createPetMutation, updatePetMutation, onSuccess, onClose, showSnackbar, t, isProUser, pets.length, presentPaywall]);
 
   const handleClose = React.useCallback(() => {
     if (!loading) {

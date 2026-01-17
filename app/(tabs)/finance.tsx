@@ -12,8 +12,8 @@ import { useQueryClient } from "@tanstack/react-query";
 import { Button, Card, FAB, SegmentedButtons, Snackbar, Text } from "@/components/ui";
 import { PetPickerBase } from "@/components/PetPicker";
 import { BudgetInsights } from "@/components/BudgetInsights";
-import { ProtectedRoute } from "@/components/subscription";
 import { useTheme } from "@/lib/theme";
+import { useSubscription } from "@/lib/hooks/useSubscription";
 import { expenseService } from "@/lib/services/expenseService";
 import { usePets } from "@/lib/hooks/usePets";
 import { formatCurrency } from "@/lib/utils/currency";
@@ -57,6 +57,7 @@ type FinanceTabValue = 'budget' | 'expenses';
 export default function FinanceScreen() {
   const { theme } = useTheme();
   const { t } = useTranslation();
+  const { isProUser, presentPaywall } = useSubscription();
   const insets = useSafeAreaInsets();
   const TAB_BAR_HEIGHT = LAYOUT.TAB_BAR_HEIGHT + insets.bottom;
   const contentBottomPadding = TAB_BAR_HEIGHT + LAYOUT.FAB_OFFSET;
@@ -66,7 +67,7 @@ export default function FinanceScreen() {
   const baseCurrency = settings?.baseCurrency || "TRY";
 
   // Tab state
-  const [activeTab, setActiveTab] = useState<FinanceTabValue>('budget');
+  const [activeTab, setActiveTab] = useState<FinanceTabValue>('expenses');
 
   // Shared state - default to undefined to show all pets
   const [selectedPetId, setSelectedPetId] = useState<string | undefined>();
@@ -219,16 +220,27 @@ export default function FinanceScreen() {
   };
 
   // Budget handlers (new simplified system)
-  const handleSetBudget = () => {
+  const handleSetBudget = async () => {
+    if (!isProUser) {
+      await presentPaywall();
+      return;
+    }
     setEditingBudget(budget || undefined);
     setBudgetModalVisible(true);
   };
 
-  const handleEditBudget = () => {
-    if (budget) {
-      setEditingBudget(budget);
-      setBudgetModalVisible(true);
+  const handleEditBudget = async () => {
+    if (!budget) {
+      return;
     }
+
+    if (!isProUser) {
+      await presentPaywall();
+      return;
+    }
+
+    setEditingBudget(budget);
+    setBudgetModalVisible(true);
   };
 
   const handleDeleteBudget = () => {
@@ -254,6 +266,11 @@ export default function FinanceScreen() {
   };
 
   const handleBudgetFormSubmit = async (data: SetUserBudgetInput) => {
+    if (!isProUser) {
+      await presentPaywall();
+      return;
+    }
+
     try {
       await setBudgetMutation.mutateAsync(data);
       setBudgetModalVisible(false);
@@ -267,6 +284,11 @@ export default function FinanceScreen() {
   };
 
   const handleExportCsv = async () => {
+    if (!isProUser) {
+      await presentPaywall();
+      return;
+    }
+
     try {
       await exportCsvMutation.mutateAsync({
         petId: selectedPetId,
@@ -282,6 +304,11 @@ export default function FinanceScreen() {
   };
 
   const handleExportPdf = async () => {
+    if (!isProUser) {
+      await presentPaywall();
+      return;
+    }
+
     try {
       const uri = await exportPdfMutation.mutateAsync({
         petId: selectedPetId,
@@ -311,6 +338,12 @@ export default function FinanceScreen() {
       setSnackbarVisible(true);
       return;
     }
+
+    if (!isProUser) {
+      await presentPaywall();
+      return;
+    }
+
     try {
       const uri = await exportVetSummaryMutation.mutateAsync(selectedPetId);
       const shareResult = await expenseService.sharePdf(uri, t("expenses.vetSummaryTitle", "Vet Summary PDF"));
@@ -591,89 +624,94 @@ export default function FinanceScreen() {
 
 
   return (
-    <ProtectedRoute featureName={t("subscription.features.expenses")}>
-      <SafeAreaView
-        style={[styles.container, { backgroundColor: theme.colors.background }]}
-        edges={['top', 'left', 'right']} // Remove bottom to handle manually
-      >
-        <View style={styles.tabsContainer}>
-          <SegmentedButtons
-            value={activeTab}
-            onValueChange={(value) => setActiveTab(value as FinanceTabValue)}
-            buttons={[
-              {
-                value: 'budget',
-                label: t('finance.budget', 'Budget'),
-                icon: 'wallet'
-              },
-              {
-                value: 'expenses',
-                label: t('finance.expenses', 'Expenses'),
-                icon: 'cash'
-              }
-            ]}
-            density="small"
-            style={StyleSheet.flatten([
-              styles.segmentedButtons,
-              { backgroundColor: theme.colors.surface, borderColor: theme.colors.surfaceVariant },
-            ])}
-          />
-        </View>
-
-        {activeTab === 'budget' ? renderBudgetContent() : renderExpensesContent()}
-
-        {/* Conditional FABs */}
-        {activeTab === 'budget' && budget && (typeof budget === 'object' && Object.keys(budget).length > 0) && (
-          <FAB
-            icon="pencil"
-            style={{ ...styles.fab, backgroundColor: theme.colors.primary, bottom: TAB_BAR_HEIGHT }}
-            onPress={handleSetBudget}
-          />
-        )}
-        {activeTab === 'expenses' && pets.length > 0 && (
-          <FAB
-            icon="add"
-            style={{ ...styles.fab, backgroundColor: theme.colors.primary, bottom: TAB_BAR_HEIGHT }}
-            onPress={handleAddExpense}
-          />
-        )}
-
-        {/* Modals */}
-        <ExpenseFormModal
-          visible={expenseModalVisible}
-          expense={editingExpense}
-          petId={editingExpense?.petId}
-          onDismiss={() => {
-            setExpenseModalVisible(false);
-            setEditingExpense(undefined);
+    <SafeAreaView
+      style={[styles.container, { backgroundColor: theme.colors.background }]}
+      edges={['top', 'left', 'right']} // Remove bottom to handle manually
+    >
+      <View style={styles.tabsContainer}>
+        <SegmentedButtons
+          value={activeTab}
+          onValueChange={(value) => {
+            const nextTab = value as FinanceTabValue;
+            if (nextTab === 'budget' && !isProUser) {
+              void presentPaywall();
+              return;
+            }
+            setActiveTab(nextTab);
           }}
-          onSubmit={handleExpenseFormSubmit}
+          buttons={[
+            {
+              value: 'budget',
+              label: t('finance.budget', 'Budget'),
+              icon: 'wallet'
+            },
+            {
+              value: 'expenses',
+              label: t('finance.expenses', 'Expenses'),
+              icon: 'cash'
+            }
+          ]}
+          density="small"
+          style={StyleSheet.flatten([
+            styles.segmentedButtons,
+            { backgroundColor: theme.colors.surface, borderColor: theme.colors.surfaceVariant },
+          ])}
         />
+      </View>
 
-        <UserBudgetFormModal
-          visible={budgetModalVisible}
-          budget={editingBudget}
-          onDismiss={() => {
-            setBudgetModalVisible(false);
-            setEditingBudget(undefined);
-          }}
-          onSubmit={handleBudgetFormSubmit}
-          isSubmitting={setBudgetMutation.isPending}
-        />
+      {activeTab === 'budget' ? renderBudgetContent() : renderExpensesContent()}
 
-        {/* Snackbar */}
-        <Snackbar
-          visible={snackbarVisible}
-          message={snackbarMessage}
-          onDismiss={() => setSnackbarVisible(false)}
-          duration={3000}
-          action={{
-            label: t("common.close"),
-            onPress: () => setSnackbarVisible(false),
-          }}
+      {/* Conditional FABs */}
+      {activeTab === 'budget' && budget && (typeof budget === 'object' && Object.keys(budget).length > 0) && (
+        <FAB
+          icon="pencil"
+          style={{ ...styles.fab, backgroundColor: theme.colors.primary, bottom: TAB_BAR_HEIGHT }}
+          onPress={handleSetBudget}
         />
-      </SafeAreaView>
-    </ProtectedRoute>
+      )}
+      {activeTab === 'expenses' && pets.length > 0 && (
+        <FAB
+          icon="add"
+          style={{ ...styles.fab, backgroundColor: theme.colors.primary, bottom: TAB_BAR_HEIGHT }}
+          onPress={handleAddExpense}
+        />
+      )}
+
+      {/* Modals */}
+      <ExpenseFormModal
+        visible={expenseModalVisible}
+        expense={editingExpense}
+        petId={editingExpense?.petId}
+        onDismiss={() => {
+          setExpenseModalVisible(false);
+          setEditingExpense(undefined);
+        }}
+        onSubmit={handleExpenseFormSubmit}
+      />
+
+      <UserBudgetFormModal
+        visible={budgetModalVisible}
+        budget={editingBudget}
+        onDismiss={() => {
+          setBudgetModalVisible(false);
+          setEditingBudget(undefined);
+        }}
+        onSubmit={handleBudgetFormSubmit}
+        isSubmitting={setBudgetMutation.isPending}
+      />
+
+      {/* Snackbar */}
+      <Snackbar
+        visible={snackbarVisible}
+        message={snackbarMessage}
+        onDismiss={() => setSnackbarVisible(false)}
+        duration={3000}
+        action={{
+          label: t("common.close"),
+          onPress: () => setSnackbarVisible(false),
+        }}
+      />
+    </SafeAreaView>
   );
 }
 

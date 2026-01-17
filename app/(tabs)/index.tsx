@@ -5,7 +5,6 @@ import { useTranslation } from "react-i18next";
 import { ScrollView, StyleSheet, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-import { ProtectedRoute } from "@/components/subscription";
 import EmptyState from "@/components/EmptyState";
 import HealthOverview from "@/components/HealthOverview";
 import LoadingSpinner from "@/components/LoadingSpinner";
@@ -21,13 +20,7 @@ import { useTheme } from "@/lib/theme";
 import { LAYOUT } from "@/constants";
 
 export default function HomeScreen() {
-  const { t } = useTranslation();
-
-  return (
-    <ProtectedRoute featureName={t("navigation.home")}>
-      <HomeScreenContent />
-    </ProtectedRoute>
-  );
+  return <HomeScreenContent />;
 }
 
 function HomeScreenContent() {

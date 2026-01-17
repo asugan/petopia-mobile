@@ -8,7 +8,7 @@ import { createQueryKeys } from './core/createQueryKeys';
 import { useResource } from './core/useResource';
 import { useResources } from './core/useResources';
 import { useConditionalQuery } from './core/useConditionalQuery';
-import { useSubscriptionQueryEnabled } from './useSubscriptionQueries';
+import { useAuthQueryEnabled } from './useAuthQueryEnabled';
 import { useMemo } from 'react';
 import { getNextFeedingTime } from '@/lib/schemas/feedingScheduleSchema';
 import { usePets } from './usePets';
@@ -29,7 +29,7 @@ export const feedingScheduleKeys = {
 
 // Hooks
 export const useFeedingSchedules = (petId: string) => {
-  const { enabled } = useSubscriptionQueryEnabled();
+  const { enabled } = useAuthQueryEnabled();
 
   return useConditionalQuery<FeedingSchedule[]>({
     queryKey: feedingScheduleKeys.list({ petId }),
@@ -41,7 +41,7 @@ export const useFeedingSchedules = (petId: string) => {
 };
 
 export const useFeedingSchedule = (id: string) => {
-  const { enabled } = useSubscriptionQueryEnabled();
+  const { enabled } = useAuthQueryEnabled();
 
   return useResource<FeedingSchedule>({
     queryKey: feedingScheduleKeys.detail(id),
@@ -52,7 +52,7 @@ export const useFeedingSchedule = (id: string) => {
 };
 
 export const useActiveFeedingSchedules = () => {
-  const { enabled } = useSubscriptionQueryEnabled();
+  const { enabled } = useAuthQueryEnabled();
 
   return useResources<FeedingSchedule>({
     queryKey: feedingScheduleKeys.active(),
@@ -64,7 +64,7 @@ export const useActiveFeedingSchedules = () => {
 };
 
 export const useTodayFeedingSchedules = () => {
-  const { enabled } = useSubscriptionQueryEnabled();
+  const { enabled } = useAuthQueryEnabled();
 
   return useResources<FeedingSchedule>({
     queryKey: feedingScheduleKeys.today(),
@@ -76,7 +76,7 @@ export const useTodayFeedingSchedules = () => {
 };
 
 export const useAllFeedingSchedules = () => {
-  const { enabled } = useSubscriptionQueryEnabled();
+  const { enabled } = useAuthQueryEnabled();
 
   return useResources<FeedingSchedule>({
     queryKey: feedingScheduleKeys.lists(),
@@ -87,7 +87,7 @@ export const useAllFeedingSchedules = () => {
 };
 
 export const useNextFeeding = () => {
-  const { enabled } = useSubscriptionQueryEnabled();
+  const { enabled } = useAuthQueryEnabled();
 
   return useConditionalQuery<FeedingSchedule | null>({
     queryKey: feedingScheduleKeys.next(),
@@ -100,7 +100,7 @@ export const useNextFeeding = () => {
 };
 
 export const useActiveFeedingSchedulesByPet = (petId: string) => {
-  const { enabled } = useSubscriptionQueryEnabled();
+  const { enabled } = useAuthQueryEnabled();
 
   return useConditionalQuery<FeedingSchedule[]>({
     queryKey: feedingScheduleKeys.activeByPet(petId),

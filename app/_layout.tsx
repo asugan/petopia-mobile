@@ -10,9 +10,10 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { ApiErrorBoundary } from "@/lib/components/ApiErrorBoundary";
 import { MOBILE_QUERY_CONFIG } from "@/lib/config/queryConfig";
 import { useAuth } from '@/lib/auth';
-import { setOnUnauthorized } from '@/lib/api/client';
+import { setOnUnauthorized, setOnProRequired } from '@/lib/api/client';
 import { notificationService } from '@/lib/services/notificationService';
 import { useOnlineManager } from "@/lib/hooks/useOnlineManager";
+import { useSubscription } from '@/lib/hooks/useSubscription';
 import { NetworkStatus } from "@/lib/components/NetworkStatus";
 import { LanguageProvider } from "@/providers/LanguageProvider";
 import { AuthProvider } from "@/providers/AuthProvider";
@@ -36,6 +37,19 @@ function onAppStateChange(status: AppStateStatus) {
 }
 
 // Enhanced App Providers with better state management
+function SubscriptionGate({ children }: { children: React.ReactNode }) {
+  const { presentPaywall } = useSubscription();
+
+  useEffect(() => {
+    setOnProRequired(() => {
+      queryClient.invalidateQueries({ predicate: (query) => query.queryKey[0] === 'subscription' });
+      void presentPaywall();
+    });
+  }, [presentPaywall]);
+
+  return <>{children}</>;
+}
+
 function AppProviders({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     setOnUnauthorized(() => {
@@ -65,7 +79,7 @@ function AppProviders({ children }: { children: React.ReactNode }) {
             <ApiErrorBoundary>
               <AuthProvider>
                 <SubscriptionProvider>
-                  {children}
+                  <SubscriptionGate>{children}</SubscriptionGate>
                 </SubscriptionProvider>
               </AuthProvider>
             </ApiErrorBoundary>
@@ -75,6 +89,7 @@ function AppProviders({ children }: { children: React.ReactNode }) {
     </QueryClientProvider>
   );
 }
+
 
 // Separate component for online management to ensure QueryClient context is available
 function OnlineManagerProvider({ children }: { children: React.ReactNode }) {

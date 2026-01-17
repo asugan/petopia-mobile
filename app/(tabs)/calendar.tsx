@@ -13,7 +13,6 @@ import { EventModal } from '@/components/EventModal';
 import { useUpcomingEvents, useCalendarEvents, useEvent } from '@/lib/hooks/useEvents';
 import { Event } from '@/lib/types';
 import { LAYOUT } from '@/constants';
-import { ProtectedRoute } from '@/components/subscription';
 import { CalendarEventCard } from '@/components/calendar/CalendarEventCard';
 
 type CalendarViewType = 'month' | 'week';
@@ -143,94 +142,92 @@ export default function CalendarScreen() {
   };
 
   return (
-    <ProtectedRoute featureName={t('subscription.features.calendar')}>
-      <SafeAreaView
-        style={[styles.container, { backgroundColor: theme.colors.background }]}
-      >
-        <View style={styles.calendarContainer}>
-          {renderCalendarView()}
-          <View
-            style={[
-              styles.eventsWrapper,
-              { backgroundColor: theme.colors.surfaceVariant },
-            ]}
-          >
-            <FlatList
-              data={selectedDateEvents}
-              keyExtractor={(item) => item._id}
-              renderItem={({ item }) => (
-                <CalendarEventCard
-                  event={item}
-                  onPress={handleEventPress}
-                  testID={`calendar-event-${item._id}`}
-                />
-              )}
-              contentContainerStyle={styles.eventsContent}
-              ListEmptyComponent={
-                isLoadingSelected ? (
-                  <View style={styles.loadingContainer}>
-                    <ActivityIndicator size="small" color={theme.colors.primary} />
-                    <Text
-                      variant="bodyMedium"
-                      style={[styles.loadingText, { color: theme.colors.onSurface }]}
-                    >
-                      {t('common.loading')}
-                    </Text>
-                  </View>
-                ) : errorSelected ? (
-                  <View style={styles.errorContainer}>
-                    <Text
-                      variant="bodyLarge"
-                      style={[styles.errorText, { color: theme.colors.error }]}
-                    >
-                      {t('errors.loadingFailed')}
-                    </Text>
-                    <Text
-                      variant="bodySmall"
-                      style={[styles.errorMessage, { color: theme.colors.onSurfaceVariant }]}
-                    >
-                      {errorSelected.message}
-                    </Text>
-                  </View>
-                ) : (
-                  <View style={styles.emptyContainer}>
-                    <Text
-                      variant="bodyMedium"
-                      style={[styles.emptyText, { color: theme.colors.onSurfaceVariant }]}
-                    >
-                      {t('calendar.noEvents')}
-                    </Text>
-                  </View>
-                )
-              }
-              showsVerticalScrollIndicator={false}
-            />
-          </View>
+    <SafeAreaView
+      style={[styles.container, { backgroundColor: theme.colors.background }]}
+    >
+      <View style={styles.calendarContainer}>
+        {renderCalendarView()}
+        <View
+          style={[
+            styles.eventsWrapper,
+            { backgroundColor: theme.colors.surfaceVariant },
+          ]}
+        >
+          <FlatList
+            data={selectedDateEvents}
+            keyExtractor={(item) => item._id}
+            renderItem={({ item }) => (
+              <CalendarEventCard
+                event={item}
+                onPress={handleEventPress}
+                testID={`calendar-event-${item._id}`}
+              />
+            )}
+            contentContainerStyle={styles.eventsContent}
+            ListEmptyComponent={
+              isLoadingSelected ? (
+                <View style={styles.loadingContainer}>
+                  <ActivityIndicator size="small" color={theme.colors.primary} />
+                  <Text
+                    variant="bodyMedium"
+                    style={[styles.loadingText, { color: theme.colors.onSurface }]}
+                  >
+                    {t('common.loading')}
+                  </Text>
+                </View>
+              ) : errorSelected ? (
+                <View style={styles.errorContainer}>
+                  <Text
+                    variant="bodyLarge"
+                    style={[styles.errorText, { color: theme.colors.error }]}
+                  >
+                    {t('errors.loadingFailed')}
+                  </Text>
+                  <Text
+                    variant="bodySmall"
+                    style={[styles.errorMessage, { color: theme.colors.onSurfaceVariant }]}
+                  >
+                    {errorSelected.message}
+                  </Text>
+                </View>
+              ) : (
+                <View style={styles.emptyContainer}>
+                  <Text
+                    variant="bodyMedium"
+                    style={[styles.emptyText, { color: theme.colors.onSurfaceVariant }]}
+                  >
+                    {t('calendar.noEvents')}
+                  </Text>
+                </View>
+              )
+            }
+            showsVerticalScrollIndicator={false}
+          />
         </View>
+      </View>
 
-        <FAB
-          icon="add"
-          style={{
-            ...styles.fab,
-            backgroundColor: theme.colors.primary,
-            width: 56,
-            height: 56,
-            borderRadius: 28,
-          }}
-          onPress={handleAddEvent}
-          testID="calendar-add-event-fab"
-        />
+      <FAB
+        icon="add"
+        style={{
+          ...styles.fab,
+          backgroundColor: theme.colors.primary,
+          width: 56,
+          height: 56,
+          borderRadius: 28,
+        }}
+        onPress={handleAddEvent}
+        testID="calendar-add-event-fab"
+      />
 
-        <EventModal
-          visible={modalVisible}
-          event={selectedEvent}
-          initialPetId={initialPetId}
-          onClose={handleModalClose}
-          onSuccess={handleModalSuccess}
-          testID="calendar-event-modal"
-        />
-      </SafeAreaView>
-    </ProtectedRoute>
+      <EventModal
+        visible={modalVisible}
+        event={selectedEvent}
+        initialPetId={initialPetId}
+        onClose={handleModalClose}
+        onSuccess={handleModalSuccess}
+        testID="calendar-event-modal"
+      />
+    </SafeAreaView>
   );
 }
 

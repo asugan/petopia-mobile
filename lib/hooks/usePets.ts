@@ -7,7 +7,7 @@ import { useCreateResource, useDeleteResource, useUpdateResource } from './useCr
 import { createQueryKeys } from './core/createQueryKeys';
 import { useResource } from './core/useResource';
 import { useConditionalQuery } from './core/useConditionalQuery';
-import { useSubscriptionQueryEnabled } from './useSubscriptionQueries';
+import { useAuthQueryEnabled } from './useAuthQueryEnabled';
 
 interface PetFilters extends QueryFilters {
   search?: string;
@@ -28,7 +28,7 @@ export const petKeys = {
 };
 
 export function usePets(filters: PetFilters = {}) {
-  const { enabled } = useSubscriptionQueryEnabled();
+  const { enabled } = useAuthQueryEnabled();
 
   return useConditionalQuery<Pet[]>({
     queryKey: petKeys.list(filters),
@@ -52,7 +52,7 @@ export function usePets(filters: PetFilters = {}) {
 }
 
 export function useSearchPets(query: string) {
-  const { enabled } = useSubscriptionQueryEnabled();
+  const { enabled } = useAuthQueryEnabled();
 
   return useConditionalQuery<Pet[]>({
     queryKey: petKeys.search(query),
@@ -65,7 +65,7 @@ export function useSearchPets(query: string) {
 }
 
 export function usePetsByType(type: string) {
-  const { enabled } = useSubscriptionQueryEnabled();
+  const { enabled } = useAuthQueryEnabled();
 
   return useConditionalQuery<Pet[]>({
     queryKey: petKeys.byType(type),
@@ -78,7 +78,7 @@ export function usePetsByType(type: string) {
 }
 
 export function usePet(id: string) {
-  const { enabled } = useSubscriptionQueryEnabled();
+  const { enabled } = useAuthQueryEnabled();
 
   return useResource<Pet>({
     queryKey: petKeys.detail(id),
@@ -90,7 +90,7 @@ export function usePet(id: string) {
 }
 
 export function usePetStats() {
-  const { enabled } = useSubscriptionQueryEnabled();
+  const { enabled } = useAuthQueryEnabled();
 
   return useQuery({
     queryKey: petKeys.stats(),
@@ -162,7 +162,7 @@ export function useUploadPetPhoto() {
 
 export function useInfinitePets(filters?: Omit<PetFilters, 'page'>) {
   const defaultLimit = ENV.DEFAULT_LIMIT || 20;
-  const { enabled } = useSubscriptionQueryEnabled();
+  const { enabled } = useAuthQueryEnabled();
 
   return useInfiniteQuery({
     queryKey: petKeys.infinite(filters),
