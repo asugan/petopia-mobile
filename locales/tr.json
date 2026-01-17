@@ -146,6 +146,25 @@
     "editPetHint": "Evcil hayvan detaylarını düzenler",
     "sharePetHint": "Bu evcil hayvanın bilgilerini başkalarıyla paylaşır"
   },
+  "limits": {
+    "pets": {
+      "title": "Sınırsız Dost Ekle",
+      "subtitle": "Pro ile tüm ailenizi tek bir yerden yönetin.",
+      "cta": "Pro'ya Geç"
+    },
+    "care": {
+      "feedingFooter": "Free planda {{limit}} beslenme programı hakkınız var ({{used}}/{{limit}}). Sınırsız planlama için Pro'ya geçin."
+    },
+    "calendar": {
+      "counter": "Hatırlatıcılar: {{used}}/{{limit}}",
+      "cta": "Limiti Artır"
+    },
+    "budgets": {
+      "title": "Akıllı Bütçe Takibi",
+      "subtitle": "Pro ile aylık bütçe ve uyarıları tek yerden yönetin.",
+      "cta": "Pro'ya Geç"
+    }
+  }
   "health": {
     "healthRecords": "Sağlık Kayıtları",
     "view": "Görüntüle",

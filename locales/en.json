@@ -154,6 +154,25 @@
     "editPetHint": "Edits the pet details",
     "sharePetHint": "Shares this pet's information with others"
   },
+  "limits": {
+    "pets": {
+      "title": "Add Unlimited Pets",
+      "subtitle": "Manage your whole family in one place with Pro.",
+      "cta": "Upgrade to Pro"
+    },
+    "care": {
+      "feedingFooter": "Free plan allows {{limit}} feeding schedule ({{used}}/{{limit}}). Go Pro for unlimited planning."
+    },
+    "calendar": {
+      "counter": "Reminders: {{used}}/{{limit}}",
+      "cta": "Increase Limit"
+    },
+    "budgets": {
+      "title": "Smart Budget Tracking",
+      "subtitle": "Manage monthly budgets and alerts in one place with Pro.",
+      "cta": "Upgrade to Pro"
+    }
+  },
   "health": {
     "healthRecords": "Health Records",
     "view": "View",

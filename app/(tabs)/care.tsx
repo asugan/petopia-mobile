@@ -147,6 +147,10 @@ export default function CareScreen() {
     setSelectedSchedule(undefined);
   };
 
+  const handleFeedingUpgradePress = async () => {
+    await presentPaywall();
+  };
+
   const renderHealthContent = () => {
     if (petsLoading) {
       return <LoadingSpinner />;
@@ -320,6 +324,24 @@ export default function CareScreen() {
             petName={petNameById[schedule.petId]}
           />
         ))}
+        {!isProUser && activeFeedingSchedules.length >= 1 && (
+          <Pressable
+            onPress={handleFeedingUpgradePress}
+            style={({ pressed }) => [
+              styles.feedingLimitBanner,
+              {
+                backgroundColor: theme.colors.primaryContainer,
+                borderColor: theme.colors.primary,
+              },
+              pressed && styles.chipPressed,
+            ]}
+          >
+            <Text variant="bodySmall" style={[styles.feedingLimitText, { color: theme.colors.onPrimaryContainer }]}
+            >
+              {t('limits.care.feedingFooter', { used: activeFeedingSchedules.length, limit: 1 })}
+            </Text>
+          </Pressable>
+        )}
       </View>
     );
   };
@@ -501,6 +523,20 @@ const styles = StyleSheet.create({
     paddingVertical: 4,
     borderRadius: 10,
     alignSelf: 'flex-start',
+  },
+  feedingLimitBanner: {
+    marginTop: 8,
+    paddingVertical: 10,
+    paddingHorizontal: 12,
+    borderRadius: 12,
+    borderWidth: 1,
+  },
+  feedingLimitText: {
+    textAlign: 'center',
+    fontWeight: '600',
+  },
+  chipPressed: {
+    transform: [{ scale: 0.98 }],
   },
   fab: {
     position: 'absolute',

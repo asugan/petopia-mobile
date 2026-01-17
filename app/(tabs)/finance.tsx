@@ -5,7 +5,9 @@ import {
   ScrollView,
   RefreshControl,
   Alert,
+  Pressable,
 } from "react-native";
+import { Ionicons } from "@expo/vector-icons";
 import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
 import { useTranslation } from "react-i18next";
 import { useQueryClient } from "@tanstack/react-query";
@@ -221,12 +223,12 @@ export default function FinanceScreen() {
   };
 
   // Budget handlers (new simplified system)
-  const handleSetBudget = async () => {
+  const handleCreateBudget = async () => {
     if (!isProUser) {
       await presentPaywall();
       return;
     }
-    setEditingBudget(budget || undefined);
+    setEditingBudget(undefined);
     setBudgetModalVisible(true);
   };
 
@@ -466,34 +468,67 @@ export default function FinanceScreen() {
       >
 
         <View style={styles.budgetSection}>
-          {renderExportActions()}
+          {!isProUser ? (
+            <Pressable
+              style={({ pressed }) => [
+                styles.upgradeCard,
+                {
+                  borderColor: theme.colors.primary,
+                  backgroundColor: theme.colors.surface,
+                },
+                pressed && styles.chipPressed,
+              ]}
+              onPress={() => void presentPaywall()}
+            >
+              <View style={[styles.upgradeIconWrap, { backgroundColor: theme.colors.primaryContainer }]}
+              >
+                <Ionicons name="lock-closed" size={20} color={theme.colors.primary} />
+              </View>
+              <Text variant="titleMedium" style={[styles.upgradeTitle, { color: theme.colors.onSurface }]}
+              >
+                {t("limits.budgets.title")}
+              </Text>
+              <Text variant="bodySmall" style={[styles.upgradeSubtitle, { color: theme.colors.onSurfaceVariant }]}
+              >
+                {t("limits.budgets.subtitle")}
+              </Text>
+              <Text variant="labelLarge" style={[styles.upgradeCta, { color: theme.colors.primary }]}
+              >
+                {t("limits.budgets.cta")}
+              </Text>
+            </Pressable>
+          ) : (
+            <>
+              {renderExportActions()}
 
-          {/* EmptyState - shown when no budget exists */}
-          {(!budget || (typeof budget === 'object' && Object.keys(budget).length === 0)) && (
-            <EmptyState
-              title={t("budgets.noBudgetSet", "No Budget Set")}
-              description={t(
-                "budgets.setBudgetDescription",
-                "Set a monthly budget to track your pet expenses"
+              {/* EmptyState - shown when no budget exists */}
+              {(!budget || (typeof budget === 'object' && Object.keys(budget).length === 0)) && (
+                <EmptyState
+                  title={t("budgets.noBudgetSet", "No Budget Set")}
+                  description={t(
+                    "budgets.setBudgetDescription",
+                    "Set a monthly budget to track your pet expenses"
+                  )}
+                  icon="wallet"
+                  buttonText={t("budgets.setBudget", "Set Budget")}
+                  onButtonPress={handleCreateBudget}
+                />
               )}
-              icon="wallet"
-              buttonText={t("budgets.setBudget", "Set Budget")}
-              onButtonPress={handleSetBudget}
-            />
-          )}
 
-          {/* Budget Card with Actions - shown when budget exists */}
-          {budget && budgetStatus && (
-            <UserBudgetCard
-              budget={budget}
-              status={budgetStatus}
-              onEdit={handleEditBudget}
-              onDelete={handleDeleteBudget}
-            />
-          )}
+              {/* Budget Card with Actions - shown when budget exists */}
+              {budget && budgetStatus && (
+                <UserBudgetCard
+                  budget={budget}
+                  status={budgetStatus}
+                  onEdit={handleEditBudget}
+                  onDelete={handleDeleteBudget}
+                />
+              )}
 
-          {budgetStatus && (
-            <BudgetInsights status={budgetStatus} />
+              {budgetStatus && (
+                <BudgetInsights status={budgetStatus} />
+              )}
+            </>
           )}
         </View>
       </ScrollView>
@@ -601,7 +636,6 @@ export default function FinanceScreen() {
           </Card>
         )}
 
-        {renderExportActions(styles.exportSectionInset)}
 
         <Text variant="titleMedium" style={[styles.recentTitle, { color: theme.colors.onSurface }]}>
           {t("expenses.recent", "Recent Expenses")}
@@ -637,10 +671,6 @@ export default function FinanceScreen() {
           value={activeTab}
           onValueChange={(value) => {
             const nextTab = value as FinanceTabValue;
-            if (nextTab === 'budget' && !isProUser) {
-              void presentPaywall();
-              return;
-            }
             setActiveTab(nextTab);
           }}
           buttons={[
@@ -666,20 +696,29 @@ export default function FinanceScreen() {
       {activeTab === 'budget' ? renderBudgetContent() : renderExpensesContent()}
 
       {/* Conditional FABs */}
-      {activeTab === 'budget' && budget && (typeof budget === 'object' && Object.keys(budget).length > 0) && (
-        <FAB
-          icon="pencil"
-          style={{ ...styles.fab, backgroundColor: theme.colors.primary, bottom: TAB_BAR_HEIGHT }}
-          onPress={handleSetBudget}
-        />
+      {activeTab === 'budget' && (
+        budget && (typeof budget === 'object' && Object.keys(budget).length > 0) ? (
+          <FAB
+            icon="pencil"
+            style={{ ...styles.fab, backgroundColor: theme.colors.primary, bottom: 0 }}
+            onPress={handleEditBudget}
+          />
+        ) : (
+          <FAB
+            icon="add"
+            style={{ ...styles.fab, backgroundColor: theme.colors.primary, bottom: 0 }}
+            onPress={handleCreateBudget}
+          />
+        )
       )}
       {activeTab === 'expenses' && pets.length > 0 && (
         <FAB
           icon="add"
-          style={{ ...styles.fab, backgroundColor: theme.colors.primary, bottom: TAB_BAR_HEIGHT }}
+          style={{ ...styles.fab, backgroundColor: theme.colors.primary, bottom: 0 }}
           onPress={handleAddExpense}
         />
       )}
+
 
       {/* Modals */}
       <ExpenseFormModal
@@ -830,4 +869,35 @@ const styles = StyleSheet.create({
     alignItems: "center",
     paddingBottom: 80,
   },
+  upgradeCard: {
+    borderWidth: 1,
+    borderStyle: "dashed",
+    borderRadius: 16,
+    paddingVertical: 16,
+    paddingHorizontal: 16,
+    alignItems: "center",
+    gap: 6,
+    opacity: 0.9,
+    marginBottom: 16,
+  },
+  upgradeIconWrap: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  upgradeTitle: {
+    fontWeight: "700",
+    textAlign: "center",
+  },
+  upgradeSubtitle: {
+    textAlign: "center",
+  },
+  upgradeCta: {
+    fontWeight: "700",
+  },
+  chipPressed: {
+    transform: [{ scale: 0.98 }],
+  }
 });

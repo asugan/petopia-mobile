@@ -16,6 +16,7 @@ import { HomeEmptyPets } from "@/components/home/HomeEmptyPets";
 import { LargeTitle } from "@/components/LargeTitle";
 import { Text } from "@/components/ui";
 import { useHomeData } from "@/lib/hooks/useHomeData";
+import { useSubscription } from "@/lib/hooks/useSubscription";
 import { useTheme } from "@/lib/theme";
 import { LAYOUT } from "@/constants";
 
@@ -27,9 +28,14 @@ function HomeScreenContent() {
   const { theme } = useTheme();
   const { t } = useTranslation();
   const router = useRouter();
+  const { isProUser, presentPaywall } = useSubscription();
 
   // Tüm mantık useHomeData hook'unda toplandı
   const { layout, data, status, financial } = useHomeData();
+
+  const handleUpgradePress = async () => {
+    await presentPaywall();
+  };
 
   if (status.isLoading) {
     return (
@@ -83,36 +89,35 @@ function HomeScreenContent() {
                 </View>
               ))}
 
-              {/* Add Pet Button */}
-              <TouchableOpacity
-                onPress={() => router.push("/(tabs)/pets")}
-                style={[
-                  styles.addPetButton,
-                  {
-                    backgroundColor: theme.colors.surface,
-                    borderColor: theme.colors.outlineVariant,
-                  },
-                ]}
-              >
-                <View
+              {!isProUser && data.pets.length >= 1 && (
+                <TouchableOpacity
+                  onPress={handleUpgradePress}
                   style={[
-                    styles.addPetIconContainer,
-                    { backgroundColor: theme.colors.surfaceVariant },
+                    styles.upgradeCard,
+                    {
+                      borderColor: theme.colors.primary,
+                      backgroundColor: theme.colors.surface,
+                    },
                   ]}
+                  activeOpacity={0.85}
                 >
-                  <Ionicons
-                    name="add"
-                    size={24}
-                    color={theme.colors.onSurfaceVariant}
-                  />
-                </View>
-                <Text
-                  variant="titleMedium"
-                  style={{ color: theme.colors.onSurfaceVariant }}
-                >
-                  {t("pets.addNewPet")}
-                </Text>
-              </TouchableOpacity>
+                  <View style={[styles.upgradeIconWrap, { backgroundColor: theme.colors.primaryContainer }]}>
+                    <Ionicons name="lock-closed" size={20} color={theme.colors.primary} />
+                  </View>
+                  <Text variant="titleMedium" style={[styles.upgradeTitle, { color: theme.colors.onSurface }]}
+                  >
+                    {t("limits.pets.title")}
+                  </Text>
+                  <Text variant="bodySmall" style={[styles.upgradeSubtitle, { color: theme.colors.onSurfaceVariant }]}
+                  >
+                    {t("limits.pets.subtitle")}
+                  </Text>
+                  <Text variant="labelLarge" style={[styles.upgradeCta, { color: theme.colors.primary }]}
+                  >
+                    {t("limits.pets.cta")}
+                  </Text>
+                </TouchableOpacity>
+              )}
             </View>
           ) : (
             <HomeEmptyPets />
@@ -152,20 +157,31 @@ const styles = StyleSheet.create({
   sectionTitle: { fontWeight: "600", marginBottom: 16 },
   petList: { gap: 12 },
   petCardWrapper: { width: "100%" },
-  addPetButton: {
-    flexDirection: "row",
-    alignItems: "center",
-    padding: 12,
-    borderRadius: 12,
+  upgradeCard: {
     borderWidth: 1,
     borderStyle: "dashed",
-    gap: 16,
-  },
-  addPetIconContainer: {
-    width: 56,
-    height: 56,
-    borderRadius: 28,
-    justifyContent: "center",
+    borderRadius: 16,
+    paddingVertical: 16,
+    paddingHorizontal: 16,
     alignItems: "center",
+    gap: 6,
+    opacity: 0.85,
+  },
+  upgradeIconWrap: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  upgradeTitle: {
+    fontWeight: "700",
+    textAlign: "center",
+  },
+  upgradeSubtitle: {
+    textAlign: "center",
+  },
+  upgradeCta: {
+    fontWeight: "700",
   },
 });

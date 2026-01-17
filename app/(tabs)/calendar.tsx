@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, StyleSheet, ActivityIndicator, FlatList } from 'react-native';
+import { View, StyleSheet, ActivityIndicator, FlatList, Pressable } from 'react-native';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import { Text, FAB } from '@/components/ui';
 import { LargeTitle } from '@/components/LargeTitle';
@@ -119,6 +119,10 @@ export default function CalendarScreen() {
     }
   };
 
+  const handleReminderLimitPress = async () => {
+    await presentPaywall();
+  };
+
   const renderCalendarView = () => {
     switch (viewType) {
       case 'month':
@@ -167,6 +171,31 @@ export default function CalendarScreen() {
             { backgroundColor: theme.colors.surfaceVariant },
           ]}
         >
+          {!isProUser && (
+            <Pressable
+              onPress={handleReminderLimitPress}
+              style={({ pressed }) => [
+                styles.reminderCounter,
+                pressed && styles.chipPressed,
+              ]}
+            >
+              <Text
+                variant="labelSmall"
+                style={{
+                  color: activeReminderCount >= 2
+                    ? theme.colors.error
+                    : theme.colors.onSurfaceVariant,
+                }}
+              >
+                {t('limits.calendar.counter', { used: activeReminderCount, limit: 2 })}
+              </Text>
+              {activeReminderCount >= 2 && (
+                <Text variant="labelSmall" style={{ color: theme.colors.error }}>
+                  {t('limits.calendar.cta')}
+                </Text>
+              )}
+            </Pressable>
+          )}
           <FlatList
             data={selectedDateEvents}
             keyExtractor={(item) => item._id}
@@ -294,6 +323,16 @@ const styles = StyleSheet.create({
   },
   emptyText: {
     textAlign: 'center',
+  },
+  reminderCounter: {
+    alignSelf: 'flex-end',
+    alignItems: 'flex-end',
+    gap: 2,
+    marginBottom: 8,
+    marginRight: 16,
+  },
+  chipPressed: {
+    transform: [{ scale: 0.98 }],
   },
   fab: {
     position: 'absolute',
