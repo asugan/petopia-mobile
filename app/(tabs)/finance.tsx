@@ -28,11 +28,11 @@ import {
   useCreateExpense,
   useUpdateExpense,
   useDeleteExpense,
-  expenseKeys,
   useExportExpensesCSV,
   useExportExpensesPDF,
   useExportVetSummaryPDF,
 } from "@/lib/hooks/useExpenses";
+import { expenseKeys } from "@/lib/hooks/queryKeys";
 import {
   useUserBudget,
   useUserBudgetStatus,

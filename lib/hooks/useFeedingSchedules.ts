@@ -4,28 +4,19 @@ import { ApiResponse } from '@/lib/api/client';
 import { CACHE_TIMES } from '@/lib/config/queryConfig';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useCreateResource, useDeleteResource, useUpdateResource } from './useCrud';
-import { createQueryKeys } from './core/createQueryKeys';
 import { useResource } from './core/useResource';
 import { useResources } from './core/useResources';
 import { useConditionalQuery } from './core/useConditionalQuery';
 import { useAuthQueryEnabled } from './useAuthQueryEnabled';
+import { feedingScheduleKeys } from './queryKeys';
 import { useMemo } from 'react';
 import { getNextFeedingTime } from '@/lib/schemas/feedingScheduleSchema';
 import { usePets } from './usePets';
 import { formatDistanceToNow } from 'date-fns';
 import { tr, enUS } from 'date-fns/locale';
 
-// Query keys factory
-const baseFeedingScheduleKeys = createQueryKeys('feeding-schedules');
+export { feedingScheduleKeys } from './queryKeys';
 
-// Extended query keys with custom keys
-export const feedingScheduleKeys = {
-  ...baseFeedingScheduleKeys,
-  active: () => [...baseFeedingScheduleKeys.all, 'active'] as const,
-  today: () => [...baseFeedingScheduleKeys.all, 'today'] as const,
-  next: () => [...baseFeedingScheduleKeys.all, 'next'] as const,
-  activeByPet: (petId: string) => [...baseFeedingScheduleKeys.all, 'active', petId] as const,
-};
 
 // Hooks
 export const useFeedingSchedules = (petId: string) => {

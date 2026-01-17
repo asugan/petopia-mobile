@@ -3,28 +3,19 @@ import { CreateEventInput, Event, UpdateEventInput } from '@/lib/types';
 import { CACHE_TIMES } from '@/lib/config/queryConfig';
 import { useQueryClient } from '@tanstack/react-query';
 import { useCreateResource, useDeleteResource, useUpdateResource } from './useCrud';
-import { createQueryKeys } from './core/createQueryKeys';
 import { useResource } from './core/useResource';
 import { useResources } from './core/useResources';
 import { useConditionalQuery } from './core/useConditionalQuery';
 import { useAuthQueryEnabled } from './useAuthQueryEnabled';
+import { eventKeys } from './queryKeys';
 import { useMemo } from 'react';
 import { filterUpcomingEvents, groupEventsByTime } from '@/lib/utils/events';
 import { toISODateString } from '@/lib/utils/dateConversion';
 import { useReminderScheduler } from '@/hooks/useReminderScheduler';
 import { ReminderPresetKey } from '@/constants/reminders';
 
-// Query keys factory
-const baseEventKeys = createQueryKeys('events');
+export { eventKeys } from './queryKeys';
 
-// Extended query keys with custom keys
-export const eventKeys = {
-  ...baseEventKeys,
-  calendar: (date: string) => [...baseEventKeys.all, 'calendar', date] as const,
-  upcoming: () => [...baseEventKeys.all, 'upcoming'] as const,
-  today: () => [...baseEventKeys.all, 'today'] as const,
-  type: (petId: string, type: string) => [...baseEventKeys.all, 'type', petId, type] as const,
-};
 
 // Hooks
 export const useEvents = (petId: string) => {

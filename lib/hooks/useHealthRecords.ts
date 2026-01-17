@@ -4,11 +4,12 @@ import { petService } from '../services/petService';
 import type { CreateHealthRecordInput, HealthRecord, Pet, UpdateHealthRecordInput } from '../types';
 import { CACHE_TIMES } from '../config/queryConfig';
 import { useCreateResource, useDeleteResource, useUpdateResource } from './useCrud';
-import { createQueryKeys } from './core/createQueryKeys';
 import { useResource } from './core/useResource';
 import { useConditionalQuery } from './core/useConditionalQuery';
 import { useAuthQueryEnabled } from './useAuthQueryEnabled';
-import { expenseKeys } from './useExpenses';
+import { expenseKeys, healthRecordKeys } from './queryKeys';
+
+export { healthRecordKeys } from './queryKeys';
 
 // Type-safe filters for health records
 interface HealthRecordFilters {
@@ -18,18 +19,6 @@ interface HealthRecordFilters {
   sortOrder?: 'asc' | 'desc';
 }
 
-// Query keys factory
-const baseHealthRecordKeys = createQueryKeys('health-records');
-
-// Extended query keys with custom keys
-export const healthRecordKeys = {
-  ...baseHealthRecordKeys,
-  list: (petId: string, filters?: HealthRecordFilters) =>
-    [...baseHealthRecordKeys.lists(), petId, filters] as const,
-  byType: (petId: string, type: string) => [...baseHealthRecordKeys.all, 'type', petId, type] as const,
-  byDateRange: (petId: string, dateFrom: string, dateTo: string) =>
-    [...baseHealthRecordKeys.all, 'date-range', petId, dateFrom, dateTo] as const,
-};
 
 // Get all health records for a pet with type-safe filters
 // Note: This hook has complex client-side sorting logic,

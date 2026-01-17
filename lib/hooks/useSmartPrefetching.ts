@@ -1,8 +1,7 @@
 import { useCallback, useMemo } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 import { usePrefetchData } from './usePrefetchData';
-import { eventKeys } from './useEvents';
-import { feedingScheduleKeys } from './useFeedingSchedules';
+import { eventKeys, feedingScheduleKeys } from './queryKeys';
 import { unwrapApiResponse } from './core/unwrapApiResponse';
 import { toISODateStringWithFallback } from '@/lib/utils/dateConversion';
 import { useAuthQueryEnabled } from './useAuthQueryEnabled';

@@ -6,11 +6,13 @@ import { CACHE_TIMES } from '../config/queryConfig';
 import { ENV } from '../config/env';
 import { useCreateResource, useDeleteResource, useUpdateResource } from './useCrud';
 import { userBudgetKeys } from './useUserBudget';
-import { createQueryKeys } from './core/createQueryKeys';
 import { useResource } from './core/useResource';
 import { useResources } from './core/useResources';
 import { useConditionalQuery } from './core/useConditionalQuery';
 import { useAuthQueryEnabled } from './useAuthQueryEnabled';
+import { expenseKeys } from './queryKeys';
+
+export { expenseKeys } from './queryKeys';
 
 // Type-safe filters for expenses
 interface ExpenseFilters {
@@ -41,28 +43,6 @@ interface PeriodParams {
   month?: number;
 }
 
-// Date range params interface
-interface DateRangeParams {
-  petId?: string;
-  startDate?: string;
-  endDate?: string;
-}
-
-// Query keys factory
-const baseExpenseKeys = createQueryKeys('expenses');
-
-// Extended query keys with custom keys
-export const expenseKeys = {
-  ...baseExpenseKeys,
-  list: (filters: ExpenseFilters) => [...baseExpenseKeys.lists(), filters] as const,
-  stats: (params?: StatsParams) => [...baseExpenseKeys.all, 'stats', params] as const,
-  byPet: (petId: string) => [...baseExpenseKeys.all, 'by-pet', petId] as const,
-  byCategory: (category: string, petId?: string) => [...baseExpenseKeys.all, 'by-category', category, petId] as const,
-  monthly: (params?: PeriodParams) => [...baseExpenseKeys.all, 'monthly', params] as const,
-  yearly: (params?: Omit<PeriodParams, 'month'>) => [...baseExpenseKeys.all, 'yearly', params] as const,
-  dateRange: (params: DateRangeParams) => [...baseExpenseKeys.all, 'date-range', params] as const,
-  infinite: (petId: string | undefined, filters?: Omit<ExpenseFilters, 'petId' | 'page'>) => [...baseExpenseKeys.all, 'infinite', petId, filters] as const,
-};
 
 // Hook for fetching expenses by pet ID with filters
 export function useExpenses(petId?: string, filters: Omit<ExpenseFilters, 'petId'> = {}) {
