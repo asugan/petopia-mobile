@@ -183,7 +183,7 @@ export default function PetsScreen() {
           />
         }
       >
-        <LargeTitle title={t('navigation.pets')} style={styles.largeTitle} />
+        <LargeTitle title={t('navigation.pets')} />
         <View style={styles.searchWrapper}>
           <View
             style={[
@@ -363,9 +363,6 @@ const styles = StyleSheet.create({
     padding: 16,
     paddingTop: 8,
     paddingBottom: LAYOUT.TAB_BAR_HEIGHT + 80,
-  },
-  largeTitle: {
-    marginBottom: 16,
   },
   searchWrapper: {
     marginBottom: 12,

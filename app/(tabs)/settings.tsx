@@ -256,7 +256,7 @@ export default function SettingsScreen() {
         style={styles.scrollView}
         showsVerticalScrollIndicator={false}
       >
-        <LargeTitle title={t("settings.settings")} style={styles.largeTitle} />
+        <LargeTitle title={t("settings.settings")} />
         {settingsLoading && (
           <View style={styles.loadingContainer}>
             <LoadingSpinner />
@@ -808,10 +808,9 @@ const styles = StyleSheet.create({
   },
   scrollView: {
     flex: 1,
-    padding: 16,
-  },
-  largeTitle: {
-    marginBottom: 16,
+    paddingHorizontal: 16,
+    paddingTop: 8,
+    paddingBottom: 16,
   },
   sectionCard: {
     marginBottom: 16,

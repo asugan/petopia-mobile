@@ -424,7 +424,6 @@ const styles = StyleSheet.create({
   },
   segmentedContainer: {
     paddingHorizontal: 16,
-    paddingTop: 8,
   },
   segmentedButtons: {
     marginBottom: 0,

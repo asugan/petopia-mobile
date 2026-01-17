@@ -26,7 +26,8 @@ export const LargeTitle = ({ title, style }: LargeTitleProps) => {
 
 const styles = StyleSheet.create({
   container: {
-    marginBottom: 12,
+    marginTop: 8,
+    marginBottom: 16,
   },
   title: {
     fontWeight: "700",

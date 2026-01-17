@@ -252,7 +252,6 @@ const styles = StyleSheet.create({
   header: {
     paddingHorizontal: 16,
     paddingTop: 8,
-    paddingBottom: 8,
   },
   calendarContainer: {
     flex: 1,
