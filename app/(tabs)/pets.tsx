@@ -338,7 +338,7 @@ export default function PetsScreen() {
             </View>
           )}
 
-          {isProUser && (
+          {isProUser && allPets.length > 0 && (
             <Pressable
               onPress={handleAddPet}
               style={({ pressed }) => [
