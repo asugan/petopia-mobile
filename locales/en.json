@@ -328,6 +328,7 @@
     "dateAndTime": "Date & Time",
     "date": "Date",
     "time": "Time",
+    "atTime": "at {{time}}",
     "pet": "Pet",
     "location": "Location",
     "noLocation": "No location specified",
@@ -474,7 +475,11 @@
       "1w": "1 week before"
     },
     "testTitle": "Petopia reminder",
-    "testBody": "Notifications are set up. We'll remind you about pet care events."
+    "testBody": "Notifications are set up. We'll remind you about pet care events.",
+    "feedingReminderTitle": "{{emoji}} Feeding Time",
+    "feedingReminderBody": "Time to feed {{foodType}} ({{amount}}) at {{time}}",
+    "feedingReminderNowTitle": "{{emoji}} Feed Now",
+    "feedingReminderNowBody": "Time to feed your pet {{foodType}} ({{amount}})"
   },
   "network": {
     "noConnection": "No internet connection. Please check your connection."
@@ -717,6 +722,7 @@
     "everyday": "Everyday",
     "active": "Active",
     "inactive": "Inactive",
+    "reminderScheduled": "Reminder set",
     "selectedPet": "Selected Pet",
     "fields": {
       "pet": "Pet",
@@ -1328,7 +1334,13 @@
       "fetchTodayError": "Failed to load today's feeding schedules",
       "fetchNextError": "Failed to load next feeding schedule",
       "fetchActiveByPetError": "Failed to load active feeding schedules for this pet",
-      "toggleError": "Failed to update schedule status"
+      "toggleError": "Failed to update schedule status",
+      "fetchNotificationsSuccess": "Feeding notifications loaded successfully",
+      "fetchNotificationsError": "Failed to load feeding notifications",
+      "triggerReminderSuccess": "Feeding reminder scheduled successfully",
+      "triggerReminderError": "Failed to schedule feeding reminder",
+      "completeFeedingSuccess": "Feeding completed successfully",
+      "completeFeedingError": "Failed to complete feeding"
     },
     "healthRecord": {
       "createSuccess": "Health record created successfully",

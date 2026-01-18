@@ -304,6 +304,7 @@
     "dateAndTime": "Tarih ve Saat",
     "date": "Tarih",
     "time": "Saat",
+    "atTime": "{{time}}'de",
     "pet": "Evcil Dost",
     "location": "Konum",
     "noLocation": "Konum belirtilmemiş",
@@ -450,7 +451,11 @@
       "1w": "1 hafta önce"
     },
     "testTitle": "Petopia hatırlatması",
-    "testBody": "Bildirimler hazır. Pet bakım etkinliklerini sana hatırlatacağız."
+    "testBody": "Bildirimler hazır. Pet bakım etkinliklerini sana hatırlatacağız.",
+    "feedingReminderTitle": "{{emoji}} Besleme Zamanı",
+    "feedingReminderBody": "{{foodType}} ({{amount}}) besleme zamanı {{time}}",
+    "feedingReminderNowTitle": "{{emoji}} Şimdi Besle",
+    "feedingReminderNowBody": "Petını {{foodType}} ({{amount}}) besleme zamanı"
   },
   "network": {
     "noConnection": "İnternet bağlantısı yok. Lütfen bağlantınızı kontrol edin."
@@ -693,6 +698,7 @@
     "everyday": "Her Gün",
     "active": "Aktif",
     "inactive": "Pasif",
+    "reminderScheduled": "Hatırlatıcı ayarlandı",
     "selectedPet": "Seçili Evcil Dost",
     "fields": {
       "pet": "Evcil Dost",
@@ -1304,7 +1310,13 @@
       "fetchTodayError": "Bugünün besleme programları yüklenemedi",
       "fetchNextError": "Sıradaki besleme yüklenemedi",
       "fetchActiveByPetError": "Bu pet için aktif besleme programları yüklenemedi",
-      "toggleError": "Program durumu güncellenemedi"
+      "toggleError": "Program durumu güncellenemedi",
+      "fetchNotificationsSuccess": "Besleme bildirimleri başarıyla yüklendi",
+      "fetchNotificationsError": "Besleme bildirimleri yüklenemedi",
+      "triggerReminderSuccess": "Besleme hatırlatması başarıyla planlandı",
+      "triggerReminderError": "Besleme hatırlatması planlanamadı",
+      "completeFeedingSuccess": "Besleme başarıyla tamamlandı",
+      "completeFeedingError": "Besleme tamamlanamadı"
     },
     "healthRecord": {
       "createSuccess": "Sağlık kaydı başarıyla oluşturuldu",

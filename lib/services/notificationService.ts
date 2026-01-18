@@ -471,6 +471,141 @@ export class NotificationService {
   }
 
   /**
+   * Schedule a feeding reminder notification
+   * @param schedule Feeding schedule to create reminder for
+   * @param reminderMinutes Minutes before feeding time to send reminder
+   * @returns Notification identifier or null if failed
+   */
+  async scheduleFeedingReminder(
+    schedule: { _id: string; petId: string; time: string; foodType: string; amount: string },
+    reminderMinutes: number = 15
+  ): Promise<string | null> {
+    try {
+      const hasPermission = await this.areNotificationsEnabled();
+      if (!hasPermission) {
+        return null;
+      }
+
+      // Calculate trigger time
+      const feedingTime = new Date(schedule.time);
+      const triggerDate = new Date(feedingTime.getTime() - reminderMinutes * 60 * 1000);
+
+      // Don't schedule if trigger time is in the past
+      if (triggerDate <= new Date()) {
+        return null;
+      }
+
+      // Get food type emoji
+      const foodTypeEmoji = this.getFoodTypeEmoji(schedule.foodType);
+      const foodTypeLabel = i18n.t(`foodTypes.${schedule.foodType}`, schedule.foodType);
+
+      const notificationTitle = i18n.t('notifications.feedingReminderTitle', {
+        emoji: foodTypeEmoji,
+      });
+      const notificationBody = i18n.t('notifications.feedingReminderBody', {
+        foodType: foodTypeLabel,
+        amount: schedule.amount,
+        time: i18n.t('time.atTime', { time: feedingTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) }),
+      });
+
+      await this.ensureNotificationChannel();
+      const notificationId = await Notifications.scheduleNotificationAsync({
+        content: {
+          title: notificationTitle,
+          body: notificationBody,
+          data: {
+            scheduleId: schedule._id,
+            petId: schedule.petId,
+            scheduleTime: schedule.time,
+            screen: 'feeding',
+          },
+          sound: 'default',
+          priority: Notifications.AndroidNotificationPriority.HIGH,
+          categoryIdentifier: 'feeding-reminder',
+        },
+        trigger: {
+          date: triggerDate,
+          channelId: this.eventChannelId,
+        },
+      });
+
+      return notificationId;
+    } catch {
+      return null;
+    }
+  }
+
+  /**
+   * Cancel a scheduled feeding reminder notification
+   * @param notificationId Notification identifier to cancel
+   */
+  async cancelFeedingReminder(notificationId: string): Promise<void> {
+    try {
+      await Notifications.cancelScheduledNotificationAsync(notificationId);
+    } catch {
+    }
+  }
+
+  /**
+   * Send immediate feeding reminder notification
+   * @param schedule Feeding schedule for immediate reminder
+   */
+  async sendImmediateFeedingReminder(
+    schedule: { _id: string; petId: string; time: string; foodType: string; amount: string }
+  ): Promise<void> {
+    try {
+      const hasPermission = await this.areNotificationsEnabled();
+      if (!hasPermission) {
+        return;
+      }
+
+      const foodTypeEmoji = this.getFoodTypeEmoji(schedule.foodType);
+      const foodTypeLabel = i18n.t(`foodTypes.${schedule.foodType}`, schedule.foodType);
+
+      await this.ensureNotificationChannel();
+      await Notifications.scheduleNotificationAsync({
+        content: {
+          title: i18n.t('notifications.feedingReminderNowTitle', { emoji: foodTypeEmoji }),
+          body: i18n.t('notifications.feedingReminderNowBody', {
+            foodType: foodTypeLabel,
+            amount: schedule.amount,
+          }),
+          data: {
+            scheduleId: schedule._id,
+            petId: schedule.petId,
+            screen: 'feeding',
+            immediate: true,
+          },
+          sound: 'default',
+          priority: Notifications.AndroidNotificationPriority.HIGH,
+          categoryIdentifier: 'feeding-reminder',
+        },
+        trigger: Platform.OS === 'android' ? { channelId: this.eventChannelId } : null,
+      });
+    } catch {
+    }
+  }
+
+  /**
+   * Get food type emoji for feeding notifications
+   * @param foodType Food type
+   * @returns Emoji string
+   */
+  private getFoodTypeEmoji(foodType: string): string {
+    const emojiMap: Record<string, string> = {
+      dry_food: '🍖',
+      wet_food: '🥫',
+      raw_food: '🥩',
+      homemade: '🍲',
+      treats: '🦴',
+      supplements: '💊',
+      other: '🍽️',
+    };
+
+    return emojiMap[foodType] || '🍽️';
+  }
+
+  /**
    * Get event type emoji for notifications
    * @param eventType Event type
    * @returns Emoji string
@@ -728,3 +863,16 @@ export const isPushTokenRegistered = () =>
 
 export const sendTestNotification = () =>
   notificationService.sendTestNotification();
+
+// Feeding reminder exports
+export const scheduleFeedingReminder = (
+  schedule: { _id: string; petId: string; time: string; foodType: string; amount: string },
+  reminderMinutes?: number
+) => notificationService.scheduleFeedingReminder(schedule, reminderMinutes);
+
+export const cancelFeedingReminder = (notificationId: string) =>
+  notificationService.cancelFeedingReminder(notificationId);
+
+export const sendImmediateFeedingReminder = (
+  schedule: { _id: string; petId: string; time: string; foodType: string; amount: string }
+) => notificationService.sendImmediateFeedingReminder(schedule);

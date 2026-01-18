@@ -1,7 +1,8 @@
 import { feedingScheduleService } from '@/lib/services/feedingScheduleService';
 import { CreateFeedingScheduleInput, FeedingSchedule, UpdateFeedingScheduleInput } from '@/lib/types';
-import { ApiResponse } from '@/lib/api/client';
+import { ApiResponse, api } from '@/lib/api/client';
 import { CACHE_TIMES } from '@/lib/config/queryConfig';
+import { ENV } from '@/lib/config/env';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useCreateResource, useDeleteResource, useUpdateResource } from './useCrud';
 import { useResource } from './core/useResource';
@@ -282,6 +283,70 @@ export const useToggleFeedingSchedule = () => {
       queryClient.invalidateQueries({ queryKey: feedingScheduleKeys.active() });
       queryClient.invalidateQueries({ queryKey: feedingScheduleKeys.today() });
       queryClient.invalidateQueries({ queryKey: feedingScheduleKeys.next() });
+    },
+  });
+};
+
+interface ReminderToggleResponse {
+  remindersEnabled: boolean;
+  reminderMinutesBefore: number;
+  nextNotificationTime?: string;
+}
+
+/**
+ * Hook for toggling feeding schedule reminder settings
+ * Calls PUT /api/feeding-schedules/:id/reminder endpoint
+ */
+export const useToggleFeedingScheduleReminder = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({ id, enabled, minutesBefore }: { id: string; enabled: boolean; minutesBefore?: number }) => {
+      const response = await api.put<ReminderToggleResponse>(
+        `${ENV.ENDPOINTS.FEEDING_SCHEDULES}/${id}/reminder`,
+        { enabled, minutesBefore }
+      );
+      return response.data;
+    },
+    onMutate: async ({ id, enabled, minutesBefore }) => {
+      await queryClient.cancelQueries({ queryKey: feedingScheduleKeys.detail(id) });
+      await queryClient.cancelQueries({ queryKey: feedingScheduleKeys.lists() });
+
+      const previousSchedule = queryClient.getQueryData(feedingScheduleKeys.detail(id));
+
+      // Optimistically update the schedule
+      queryClient.setQueryData(feedingScheduleKeys.detail(id), (old: FeedingSchedule | undefined) =>
+        old ? {
+          ...old,
+          remindersEnabled: enabled,
+          reminderMinutesBefore: minutesBefore ?? old.reminderMinutesBefore ?? 15,
+          updatedAt: new Date().toISOString(),
+        } : undefined
+      );
+
+      // Update in lists
+      queryClient.setQueriesData({ queryKey: feedingScheduleKeys.lists() }, (old: FeedingSchedule[] | undefined) => {
+        if (!old) return old;
+        return old.map(schedule =>
+          schedule._id === id ? {
+            ...schedule,
+            remindersEnabled: enabled,
+            reminderMinutesBefore: minutesBefore ?? schedule.reminderMinutesBefore ?? 15,
+            updatedAt: new Date().toISOString(),
+          } : schedule
+        );
+      });
+
+      return { previousSchedule };
+    },
+    onError: (err, variables, context) => {
+      if (context?.previousSchedule) {
+        queryClient.setQueryData(feedingScheduleKeys.detail(variables.id), context.previousSchedule);
+      }
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: feedingScheduleKeys.lists() });
+      queryClient.invalidateQueries({ queryKey: feedingScheduleKeys.active() });
     },
   });
 };

@@ -199,6 +199,7 @@ export interface UserSettings {
   theme: ThemeMode;
   notificationsEnabled: boolean;
   budgetNotificationsEnabled: boolean;
+  feedingRemindersEnabled: boolean;
   quietHoursEnabled: boolean;
   quietHours: {
     startHour: number;

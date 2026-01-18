@@ -16,6 +16,7 @@ import {
   useAllFeedingSchedules,
   useDeleteFeedingSchedule,
   useToggleFeedingSchedule,
+  useToggleFeedingScheduleReminder,
 } from '@/lib/hooks/useFeedingSchedules';
 import LoadingSpinner from '@/components/LoadingSpinner';
 import EmptyState from '@/components/EmptyState';
@@ -82,6 +83,7 @@ export default function CareScreen() {
   // Mutations
   const deleteScheduleMutation = useDeleteFeedingSchedule();
   const toggleScheduleMutation = useToggleFeedingSchedule();
+  const toggleReminderMutation = useToggleFeedingScheduleReminder();
 
   // Filter health records by type (all records since we removed type filter)
   const filteredHealthRecords = healthRecords;
@@ -149,6 +151,16 @@ export default function CareScreen() {
 
     try {
       await toggleScheduleMutation.mutateAsync({ id: schedule._id, isActive });
+    } catch {
+    }
+  };
+
+  const handleToggleReminder = async (schedule: FeedingSchedule, reminderEnabled: boolean) => {
+    try {
+      await toggleReminderMutation.mutateAsync({
+        id: schedule._id,
+        enabled: reminderEnabled,
+      });
     } catch {
     }
   };
@@ -319,6 +331,8 @@ export default function CareScreen() {
             onEdit={handleEditSchedule}
             onDelete={handleDeleteSchedule}
             onToggleActive={handleToggleActive}
+            onToggleReminder={handleToggleReminder}
+            reminderEnabled={schedule.remindersEnabled ?? false}
             showPetInfo={true}
             showActions
             petName={petNameById[schedule.petId]}

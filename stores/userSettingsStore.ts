@@ -51,6 +51,7 @@ const defaultSettings: UserSettings = {
   theme: 'dark',
   notificationsEnabled: true,
   budgetNotificationsEnabled: true,
+  feedingRemindersEnabled: true,
   quietHoursEnabled: true,
   quietHours: {
     startHour: 22,

@@ -38,11 +38,18 @@ export const ENV = {
     ACTIVE_FEEDING_SCHEDULES: "/api/feeding-schedules/active",
     TODAY_FEEDING_SCHEDULES: "/api/feeding-schedules/today",
     NEXT_FEEDING: "/api/feeding-schedules/next",
+    FEEDING_SCHEDULE_NOTIFICATIONS: (id: string) => `/api/feeding-schedules/${id}/notifications`,
+    FEEDING_SCHEDULE_REMINDER: (id: string) => `/api/feeding-schedules/${id}/reminder`,
+    FEEDING_SCHEDULE_COMPLETE: (id: string) => `/api/feeding-schedules/${id}/complete`,
 
     // User Budget endpoints (NEW SIMPLIFIED SYSTEM)
     BUDGET: "/api/budget",
     BUDGET_STATUS: "/api/budget/status",
     BUDGET_ALERTS: "/api/budget/alerts",
+    BUDGET_ALERTS_CHECK: "/api/budget/alerts/check",
+    BUDGET_ALERTS_NOTIFY: "/api/budget/alerts/notify",
+    BUDGET_ALERTS_STATUS: "/api/budget/alerts/status",
+    BUDGET_ALERTS_HISTORY: "/api/budget/alerts/history",
 
     // User settings endpoints
     USER_SETTINGS: "/api/settings",

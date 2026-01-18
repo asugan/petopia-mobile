@@ -2,6 +2,45 @@ import { api, ApiError, ApiResponse } from '@/lib/api/client';
 import { ENV } from '@/lib/config/env';
 import type { FeedingSchedule, CreateFeedingScheduleInput, UpdateFeedingScheduleInput } from '@/lib/types';
 
+// ============================================================================
+// FEEDING NOTIFICATION TYPES
+// ============================================================================
+
+export interface FeedingNotification {
+  _id: string;
+  userId: string;
+  scheduleId: string;
+  petId: string;
+  scheduledFor: string;
+  sentAt?: string;
+  status: 'pending' | 'sent' | 'failed';
+  expoPushToken: string;
+}
+
+export interface FeedingReminderInput {
+  reminderMinutes: number; // Minutes before feeding time to send reminder
+}
+
+export interface FeedingReminderResponse {
+  success: boolean;
+  notificationId?: string;
+  scheduledFor: string;
+}
+
+export interface FeedingCompletionResponse {
+  success: boolean;
+  nextFeedingTime?: string;
+}
+
+export interface FeedingScheduleNotificationsResponse {
+  success: boolean;
+  notifications: FeedingNotification[];
+}
+
+// ============================================================================
+// FEEDING SCHEDULE SERVICE
+// ============================================================================
+
 /**
  * Feeding Schedule Service - Tüm feeding schedule API operasyonlarını yönetir
  */
@@ -352,6 +391,112 @@ export class FeedingScheduleService {
     const response = await this.updateFeedingSchedule(id, { isActive });
 
     return response;
+  }
+
+  /**
+   * Besleme takvimi için notification durumunu getirir
+   */
+  async getFeedingScheduleNotifications(id: string): Promise<ApiResponse<FeedingScheduleNotificationsResponse>> {
+    try {
+      const response = await api.get<FeedingScheduleNotificationsResponse>(
+        ENV.ENDPOINTS.FEEDING_SCHEDULE_NOTIFICATIONS(id)
+      );
+
+      return {
+        success: true,
+        data: response.data!,
+        message: 'serviceResponse.feedingSchedule.fetchNotificationsSuccess',
+      };
+    } catch (error) {
+      if (error instanceof ApiError) {
+        return {
+          success: false,
+          error: {
+            code: error.code || 'FETCH_NOTIFICATIONS_ERROR',
+            message: 'serviceResponse.feedingSchedule.fetchNotificationsError',
+            details: { rawMessage: error.message },
+          },
+        };
+      }
+      return {
+        success: false,
+        error: {
+          code: 'FETCH_NOTIFICATIONS_ERROR',
+          message: 'serviceResponse.feedingSchedule.fetchNotificationsError',
+        },
+      };
+    }
+  }
+
+  /**
+   * Besleme takvimi için manuel reminder tetikler
+   */
+  async triggerFeedingReminder(id: string, input: FeedingReminderInput): Promise<ApiResponse<FeedingReminderResponse>> {
+    try {
+      const response = await api.post<FeedingReminderResponse>(
+        ENV.ENDPOINTS.FEEDING_SCHEDULE_REMINDER(id),
+        input
+      );
+
+      return {
+        success: true,
+        data: response.data!,
+        message: 'serviceResponse.feedingSchedule.triggerReminderSuccess',
+      };
+    } catch (error) {
+      if (error instanceof ApiError) {
+        return {
+          success: false,
+          error: {
+            code: error.code || 'TRIGGER_REMINDER_ERROR',
+            message: 'serviceResponse.feedingSchedule.triggerReminderError',
+            details: { rawMessage: error.message },
+          },
+        };
+      }
+      return {
+        success: false,
+        error: {
+          code: 'TRIGGER_REMINDER_ERROR',
+          message: 'serviceResponse.feedingSchedule.triggerReminderError',
+        },
+      };
+    }
+  }
+
+  /**
+   * Besleme tamamlandığında bildirir ve sonraki besleme zamanını alır
+   */
+  async completeFeeding(id: string): Promise<ApiResponse<FeedingCompletionResponse>> {
+    try {
+      const response = await api.post<FeedingCompletionResponse>(
+        ENV.ENDPOINTS.FEEDING_SCHEDULE_COMPLETE(id)
+      );
+
+      return {
+        success: true,
+        data: response.data!,
+        message: 'serviceResponse.feedingSchedule.completeFeedingSuccess',
+      };
+    } catch (error) {
+      if (error instanceof ApiError) {
+        return {
+          success: false,
+          error: {
+            code: error.code || 'COMPLETE_FEEDING_ERROR',
+            message: 'serviceResponse.feedingSchedule.completeFeedingError',
+            details: { rawMessage: error.message },
+          },
+        };
+      }
+      return {
+        success: false,
+        error: {
+          code: 'COMPLETE_FEEDING_ERROR',
+          message: 'serviceResponse.feedingSchedule.completeFeedingError',
+        },
+      };
+    }
   }
 }
 
