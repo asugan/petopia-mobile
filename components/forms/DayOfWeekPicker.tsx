@@ -46,6 +46,9 @@ export function DayOfWeekPicker({
               key={day.value}
               onPress={() => toggleDay(day.value)}
               disabled={disabled}
+              accessibilityLabel={day.label}
+              accessibilityRole="button"
+              accessibilityState={{ selected: isSelected }}
               style={[
                 styles.dayButton,
                 {

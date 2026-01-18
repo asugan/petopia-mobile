@@ -278,6 +278,38 @@ export class RecurrenceService {
       };
     }
   }
+
+  /**
+   * Add an exception (exclude a specific date)
+   */
+  async addException(id: string, date: string): Promise<ApiResponse<{ message: string }>> {
+    try {
+      const response = await api.post<{ message: string }>(`${this.baseUrl}/${id}/exceptions`, { date });
+
+      return {
+        success: true,
+        data: response.data,
+        message: 'serviceResponse.recurrence.exceptionSuccess',
+      };
+    } catch (error) {
+      if (error instanceof ApiError) {
+        return {
+          success: false,
+          error: {
+            code: error.code || 'EXCEPTION_ERROR',
+            message: error.message,
+          },
+        };
+      }
+      return {
+        success: false,
+        error: {
+          code: 'EXCEPTION_ERROR',
+          message: 'serviceResponse.recurrence.exceptionError',
+        },
+      };
+    }
+  }
 }
 
 // Singleton instance

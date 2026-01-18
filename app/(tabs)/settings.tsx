@@ -581,6 +581,42 @@ export default function SettingsScreen() {
           </View>
         </Card>
 
+        {/* Recurrence Management */}
+        <Card
+          style={[
+            styles.sectionCard,
+            { backgroundColor: theme.colors.surface },
+          ]}
+        >
+          <View style={styles.cardContent}>
+            <Text
+              variant="titleMedium"
+              style={[styles.sectionTitle, { color: theme.colors.onSurface }]}
+            >
+              {t("recurrence.settings")}
+            </Text>
+            <ListItem
+              title={t("recurrence.manageTitle", "Manage Recurring Rules")}
+              description={t("recurrence.manageDescription", "View and edit your automated routines")}
+              left={
+                <MaterialCommunityIcons
+                  name="repeat"
+                  size={24}
+                  color={theme.colors.onSurfaceVariant}
+                />
+              }
+              onPress={() => router.push("/settings/recurrence")}
+              right={
+                <MaterialCommunityIcons
+                  name="chevron-right"
+                  size={24}
+                  color={theme.colors.onSurfaceVariant}
+                />
+              }
+            />
+          </View>
+        </Card>
+
         {/* Debug / Development */}
         {__DEV__ && (
         <Card

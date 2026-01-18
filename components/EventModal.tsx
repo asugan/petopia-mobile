@@ -8,7 +8,7 @@ import { Event } from '../lib/types';
 import { EventFormData, transformFormDataToAPI, transformFormDataToRecurrenceRule } from '../lib/schemas/eventSchema';
 import { EventForm } from './forms/EventForm';
 import { useCreateEvent, useUpdateEvent } from '../lib/hooks/useEvents';
-import { useCreateRecurrenceRule } from '../lib/hooks/useRecurrence';
+import { useCreateRecurrenceRule, useUpdateRecurrenceRule } from '../lib/hooks/useRecurrence';
 import { usePets } from '../lib/hooks/usePets';
 import { ReminderPresetKey } from '@/constants/reminders';
 import { showToast } from '@/lib/toast/showToast';
@@ -16,6 +16,7 @@ import { showToast } from '@/lib/toast/showToast';
 interface EventModalProps {
   visible: boolean;
   event?: Event;
+  editType?: 'single' | 'series';
   initialPetId?: string;
   onClose: () => void;
   onSuccess: () => void;
@@ -25,6 +26,7 @@ interface EventModalProps {
 export function EventModal({
   visible,
   event,
+  editType,
   initialPetId,
   onClose,
   onSuccess,
@@ -38,6 +40,7 @@ export function EventModal({
   const createEventMutation = useCreateEvent();
   const updateEventMutation = useUpdateEvent();
   const createRecurrenceRuleMutation = useCreateRecurrenceRule();
+  const updateRecurrenceRuleMutation = useUpdateRecurrenceRule();
   const { data: pets = [] } = usePets();
 
 
@@ -55,13 +58,24 @@ export function EventModal({
         await createRecurrenceRuleMutation.mutateAsync(ruleData);
         showToast({ type: 'success', title: t('serviceResponse.recurrence.createSuccess') });
       } else if (event) {
-        // Event güncelleme (existing event - recurrence edit not supported yet)
-        const apiData = transformFormDataToAPI(data);
-        await updateEventMutation.mutateAsync({
-          _id: event._id,
-          data: { ...apiData, reminderPresetKey, reminder: reminderEnabled }
-        });
-        showToast({ type: 'success', title: t('serviceResponse.event.updateSuccess') });
+        // Event güncelleme
+        if (editType === 'series' && event.recurrenceRuleId) {
+          // Edit the whole recurrence rule
+          const ruleData = transformFormDataToRecurrenceRule(data, reminderEnabled, reminderPresetKey);
+          await updateRecurrenceRuleMutation.mutateAsync({
+            id: event.recurrenceRuleId,
+            data: ruleData
+          });
+          showToast({ type: 'success', title: t('serviceResponse.recurrence.updateSuccess') });
+        } else {
+          // Edit single event (normal behavior or editType === 'single')
+          const apiData = transformFormDataToAPI(data);
+          await updateEventMutation.mutateAsync({
+            _id: event._id,
+            data: { ...apiData, reminderPresetKey, reminder: reminderEnabled }
+          });
+          showToast({ type: 'success', title: t('serviceResponse.event.updateSuccess') });
+        }
       } else {
         // Yeni tek seferlik event oluşturma
         const apiData = transformFormDataToAPI(data);
@@ -86,7 +100,7 @@ export function EventModal({
     } finally {
       setLoading(false);
     }
-  }, [event, createEventMutation, updateEventMutation, createRecurrenceRuleMutation, onSuccess, onClose, t]);
+  }, [event, editType, createEventMutation, updateEventMutation, createRecurrenceRuleMutation, updateRecurrenceRuleMutation, onSuccess, onClose, t]);
 
   const handleClose = React.useCallback(() => {
     if (!loading) {
@@ -122,6 +136,7 @@ export function EventModal({
 
           <EventForm
             event={event}
+            editType={editType}
             onSubmit={handleSubmit}
             onCancel={handleClose}
             initialPetId={initialPetId}

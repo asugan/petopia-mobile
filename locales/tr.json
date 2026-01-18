@@ -275,8 +275,19 @@
       "day": "Gün"
     }
   },
-  "events": {
-    "status": "Durum",
+    "events": {
+      "recurrence": {
+        "editTitle": "Tekrarlanan Etkinlik",
+        "editDescription": "Bu etkinliği nasıl düzenlemek istersiniz?",
+        "editSingle": "Sadece bu etkinlik",
+        "editSeries": "Tüm seri",
+        "deleteTitle": "Etkinliği Sil",
+        "deleteDescription": "Bu tekrarlanan etkinliği nasıl silmek istersiniz?",
+        "deleteSingle": "Sadece bu etkinlik",
+        "deleteSeries": "Tüm seri"
+      },
+      "status": "Durum",
+
     "upcoming": "Yaklaşan Etkinlikler",
     "today": "Bugün",
     "addEvent": "Etkinlik Ekle",
@@ -286,6 +297,7 @@
     "deleteEvent": "Etkinliği Sil",
     "deleteEventConfirmation": "\"{{title}}\" etkinliğini silmek istediğinizden emin misiniz?",
     "eventDeleted": "Etkinlik başarıyla silindi",
+    "singleEditWarning": "Bu değişiklik yalnızca bu etkinliği etkiler. Tekrar ayarları devre dışı bırakıldı.",
     "deleteEventError": "Etkinlik silinirken bir hata oluştu",
     "copy": "Kopya",
     "sharedFrom": "Petopia Petcare ile paylaşıldı",
@@ -371,6 +383,7 @@
       "exercise": "Düzenli egzersiz petin fiziksel ve mental sağlığı için önemlidir. Yaşa uygun aktiviteler seçin.",
       "grooming": "Düzenli bakım petin temizliği ve sağlığı için gereklidir. Tüy, tırnak ve diş bakımını unutmayın.",
       "play": "Oyun zamanı petinizle bağ kurmanın ve egzersiz yapmanın harika bir yoludur.",
+      "walk": "Düzenli yürüyüşler petinizin fiziksel sağlığı ve zihinsel uyarımı için esastır. Süreyi ırka ve yaşa göre ayarlayın.",
       "training": "Eğitim seansları petinizin öğrenmesi ve sosyalleşmesi için önemlidir. Sabır ve ödülle ilerleyin.",
       "bath": "Banyo petin temizliği için gereklidir. Sıklığı pet türüne göre ayarlayın.",
       "other": "Diğer etkinlikler de hatırlatıcıyla daha iyi takip edilir. Ayrıntı ekleyin.",
@@ -637,7 +650,9 @@
     "frequency.monthly": "Aylık",
     "frequency.yearly": "Yıllık",
     "frequency.custom": "Özel aralık",
-    "frequency.timesPerDay": "Günde birden fazla kez"
+    "frequency.timesPerDay": "Günde birden fazla kez",
+    "manageTitle": "Tekrarlayan Kuralları Yönet",
+    "manageDescription": "Otomatik rutinlerinizi görüntüleyin ve düzenleyin"
   },
   "days": {
     "monday": "Pazartesi",

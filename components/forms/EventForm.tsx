@@ -25,6 +25,7 @@ import { showToast } from '@/lib/toast/showToast';
 
 interface EventFormProps {
   event?: Event;
+  editType?: 'single' | 'series';
   onSubmit: (data: EventFormData) => void | Promise<void>;
   onCancel: () => void;
   loading?: boolean;
@@ -35,6 +36,7 @@ interface EventFormProps {
 
 export function EventForm({
   event,
+  editType,
   onSubmit,
   onCancel,
   loading = false,
@@ -373,10 +375,22 @@ export function EventForm({
 
         {/* Recurrence Settings - Step 2 */}
         {currentStep === 2 && (
-          <RecurrenceSettings
-            disabled={loading || isSubmitting}
-            testID={`${testID}-recurrence`}
-          />
+          <>
+            {isEditMode && editType === 'single' && (
+              <View style={[styles.recurrenceWarningBox, { backgroundColor: theme.colors.tertiaryContainer }]}>
+                <Text
+                  variant="bodySmall"
+                  style={[styles.recurrenceWarningText, { color: theme.colors.onTertiaryContainer }]}
+                >
+                  {t('events.singleEditWarning', 'This change will only affect this occurrence. Recurrence settings are disabled.')}
+                </Text>
+              </View>
+            )}
+            <RecurrenceSettings
+              disabled={loading || isSubmitting || (isEditMode && editType === 'single')}
+              testID={`${testID}-recurrence`}
+            />
+          </>
         )}
 
         {currentStep === 3 && (
@@ -523,6 +537,14 @@ const styles = StyleSheet.create({
   upgradeLink: {
     fontWeight: '600',
     textDecorationLine: 'underline',
+  },
+  recurrenceWarningBox: {
+    padding: 12,
+    borderRadius: 8,
+    marginBottom: 12,
+  },
+  recurrenceWarningText: {
+    lineHeight: 18,
   },
   actions: {
     flexDirection: 'row',

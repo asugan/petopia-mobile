@@ -106,6 +106,9 @@ export function TimesPerDayPicker({
               key={option}
               onPress={() => handleCountChange(option)}
               disabled={disabled}
+              accessibilityLabel={`${option} times per day`}
+              accessibilityRole="button"
+              accessibilityState={{ selected: count === option }}
               style={[
                 styles.countButton,
                 {
@@ -147,7 +150,7 @@ export function TimesPerDayPicker({
         <View style={styles.timesGrid}>
           {times.slice(0, count).map((time, index) => (
             <View
-              key={index}
+              key={`${index}-${time}`}
               style={[
                 styles.timeSlot,
                 { backgroundColor: theme.colors.surfaceVariant },

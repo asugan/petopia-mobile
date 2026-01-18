@@ -30,6 +30,8 @@ import { usePet } from '@/lib/hooks/usePets';
 import { useTheme } from '@/lib/theme';
 import { useEventReminderStore } from '@/stores/eventReminderStore';
 import { showToast } from '@/lib/toast/showToast';
+import { RecurrenceEditChoiceModal } from '@/components/modals/RecurrenceEditChoiceModal';
+import { useAddRecurrenceException, useDeleteRecurrenceRule } from '@/lib/hooks/useRecurrence';
 
 export default function EventDetailScreen() {
   const { width } = useWindowDimensions();
@@ -45,6 +47,11 @@ export default function EventDetailScreen() {
   const { data: pet } = usePet(event?.petId || '');
   const deleteEventMutation = useDeleteEvent();
   const updateEventMutation = useUpdateEvent();
+  const addRecurrenceExceptionMutation = useAddRecurrenceException();
+  const deleteRecurrenceRuleMutation = useDeleteRecurrenceRule();
+  
+  const [choiceModalVisible, setChoiceModalVisible] = useState(false);
+  const [choiceMode, setChoiceMode] = useState<'edit' | 'delete'>('edit');
   const reminderStatus = useEventReminderStore((state) => (event?._id ? state.statuses[event._id] : undefined));
   const markMissed = useEventReminderStore((state) => state.markMissed);
   const markCompleted = useEventReminderStore((state) => state.markCompleted);
@@ -70,7 +77,12 @@ export default function EventDetailScreen() {
   };
 
   const handleEdit = () => {
-    if (event) {
+    if (!event) return;
+    
+    if (event.recurrenceRuleId) {
+      setChoiceMode('edit');
+      setChoiceModalVisible(true);
+    } else {
       router.push({
         pathname: '/(tabs)/calendar',
         params: { editEventId: event._id }
@@ -81,27 +93,92 @@ export default function EventDetailScreen() {
   const handleDelete = () => {
     if (!event) return;
 
-    Alert.alert(
-      t('events.deleteEvent'),
-      t('events.deleteEventConfirmation', { title: event.title }),
-      [
-        { text: t('common.cancel'), style: 'cancel' },
-        {
-          text: t('common.delete'),
-          style: 'destructive',
-          onPress: async () => {
-            try {
-              await deleteEventMutation.mutateAsync(event._id);
-              router.back();
-            } catch (error) {
-              console.error('Failed to delete event', error);
-              showToast({ type: 'error', title: t('common.error'), message: t('serviceResponse.event.deleteError') });
-              return;
-            }
+    if (event.recurrenceRuleId) {
+      setChoiceMode('delete');
+      setChoiceModalVisible(true);
+    } else {
+      Alert.alert(
+        t('events.deleteEvent'),
+        t('events.deleteEventConfirmation', { title: event.title }),
+        [
+          { text: t('common.cancel'), style: 'cancel' },
+          {
+            text: t('common.delete'),
+            style: 'destructive',
+            onPress: async () => {
+              try {
+                await deleteEventMutation.mutateAsync(event._id);
+                router.back();
+              } catch (error) {
+                console.error('Failed to delete event', error);
+                showToast({ type: 'error', title: t('common.error'), message: t('serviceResponse.event.deleteError') });
+              }
+            },
           },
-        },
-      ]
-    );
+        ]
+      );
+    }
+  };
+
+  const handleChoice = async (choice: 'single' | 'series') => {
+    setChoiceModalVisible(false);
+    if (!event) return;
+
+    if (choice === 'series') {
+      if (choiceMode === 'edit') {
+        // Redirect to calendar with edit ID - calendar should handle rule editing
+        router.push({
+          pathname: '/(tabs)/calendar',
+          params: { editEventId: event._id, editType: 'series' }
+        });
+      } else {
+        // Delete the whole series
+        Alert.alert(
+          t('events.deleteEvent'),
+          t('events.deleteEventConfirmation', { title: event.title }),
+          [
+            { text: t('common.cancel'), style: 'cancel' },
+            {
+              text: t('common.delete'),
+              style: 'destructive',
+              onPress: async () => {
+                try {
+                  if (event.recurrenceRuleId) {
+                    await deleteRecurrenceRuleMutation.mutateAsync(event.recurrenceRuleId);
+                    showToast({ type: 'success', title: t('serviceResponse.recurrence.deleteSuccess') });
+                    router.back();
+                  }
+                } catch {
+                  showToast({ type: 'error', title: t('common.error'), message: t('serviceResponse.event.deleteError') });
+                }
+              },
+            },
+          ]
+        );
+      }
+    } else {
+      // Single occurrence
+      if (choiceMode === 'edit') {
+        router.push({
+          pathname: '/(tabs)/calendar',
+          params: { editEventId: event._id, editType: 'single' }
+        });
+      } else {
+        // Delete only this occurrence via exception
+        try {
+          if (event.recurrenceRuleId) {
+            await addRecurrenceExceptionMutation.mutateAsync({
+              id: event.recurrenceRuleId,
+              date: event.startTime.toString(),
+            });
+            showToast({ type: 'success', title: t('events.eventDeleted') });
+            router.back();
+          }
+        } catch {
+          showToast({ type: 'error', title: t('common.error'), message: t('serviceResponse.event.deleteError') });
+        }
+      }
+    }
   };
 
   const handleShare = async () => {
@@ -524,6 +601,13 @@ export default function EventDetailScreen() {
           </TouchableOpacity>
         </View>
       </View>
+      
+      <RecurrenceEditChoiceModal
+        visible={choiceModalVisible}
+        onDismiss={() => setChoiceModalVisible(false)}
+        onChoice={handleChoice}
+        mode={choiceMode}
+      />
     </View>
   );
 }

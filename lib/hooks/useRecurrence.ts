@@ -166,3 +166,29 @@ export const useRegenerateRecurrenceEvents = () => {
     },
   });
 };
+
+/**
+ * Hook to add an exception to a recurrence rule
+ */
+export const useAddRecurrenceException = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({ id, date }: { id: string; date: string }) => {
+      const response = await recurrenceService.addException(id, date);
+      if (!response.success || !response.data) {
+        const errorMsg = typeof response.error === 'string' ? response.error : response.error?.message;
+        throw new Error(errorMsg || 'Failed to add exception');
+      }
+      return response.data;
+    },
+    onSuccess: (data, variables) => {
+      // Invalidate events
+      queryClient.invalidateQueries({ queryKey: eventKeys.lists() });
+      queryClient.invalidateQueries({ queryKey: eventKeys.upcoming() });
+      queryClient.invalidateQueries({ queryKey: eventKeys.today() });
+      // Invalidate specific rule events
+      queryClient.invalidateQueries({ queryKey: recurrenceKeys.events(variables.id) });
+    },
+  });
+};

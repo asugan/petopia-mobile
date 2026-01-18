@@ -203,7 +203,7 @@ export function EventCard({
                 <Text style={styles.indicatorIcon}>🔄</Text>
                 <Text
                   variant="labelSmall"
-                  style={[styles.indicatorText, { color: theme.colors.onSurfaceVariant }]}
+                  style={[styles.indicatorText, { color: theme.colors.primary, fontWeight: '700' }]}
                 >
                   {t('eventCard.recurring')}
                 </Text>

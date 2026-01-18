@@ -29,7 +29,7 @@ export default function CalendarScreen() {
   const router = useRouter();
   const queryClient = useQueryClient();
   const { isProUser, presentPaywall } = useSubscription();
-  const { petId, action, editEventId } = useLocalSearchParams<{ petId?: string; action?: string; editEventId?: string }>();
+  const { petId, action, editEventId, editType } = useLocalSearchParams<{ petId?: string; action?: string; editEventId?: string; editType?: string }>();
 
   const [viewType, setViewType] = useState<CalendarViewType>('week');
   const [currentDate, setCurrentDate] = useState(new Date());
@@ -323,6 +323,7 @@ export default function CalendarScreen() {
       <EventModal
         visible={modalVisible}
         event={selectedEvent}
+        editType={editType as 'single' | 'series'}
         initialPetId={initialPetId}
         onClose={handleModalClose}
         onSuccess={handleModalSuccess}
