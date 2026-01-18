@@ -636,7 +636,7 @@ export class NotificationService {
       await SecureStore.setItemAsync('deviceId', deviceId);
 
       return true;
-    } catch (error) {
+    } catch {
       return false;
     }
   }
@@ -674,7 +674,7 @@ export class NotificationService {
         return false;
       }
 
-      const response = await api.get<ApiResponse<Array<{ deviceId: string }>>>('/api/push/devices');
+      const response = await api.get<ApiResponse<{ deviceId: string }[]>>('/api/push/devices');
       return response.data?.success === true && Array.isArray(response.data?.data) && response.data.data.length > 0;
     } catch {
       return false;

@@ -1,5 +1,5 @@
 import { useCallback } from 'react';
-import { cancelEventNotifications, scheduleReminderChain, notificationService } from '@/lib/services/notificationService';
+import { cancelEventNotifications, scheduleReminderChain, isPushTokenRegistered, notificationService } from '@/lib/services/notificationService';
 import { REMINDER_PRESETS, ReminderPresetKey } from '@/constants/reminders';
 import { Event } from '@/lib/types';
 import { useEventReminderStore } from '@/stores/eventReminderStore';
@@ -47,6 +47,18 @@ export const useReminderScheduler = () => {
       if (!notificationsEnabled) {
         clearReminderIds(event._id);
         return [];
+      }
+
+      // If push token is registered with backend, let backend handle notifications
+      // Skip local notifications to avoid duplicate notifications
+      try {
+        const pushRegistered = await isPushTokenRegistered();
+        if (pushRegistered) {
+          clearReminderIds(event._id);
+          return [];
+        }
+      } catch {
+        // If check fails, continue with local notifications as fallback
       }
 
       const presetKey =
