@@ -1,10 +1,14 @@
 import * as Notifications from 'expo-notifications';
 import type { Href } from 'expo-router';
 import { Platform } from 'react-native';
+import * as Device from 'expo-device';
+import * as Application from 'expo-application';
 import { Event } from '../types';
 import { EVENT_TYPE_DEFAULT_REMINDERS } from '../../constants/eventIcons';
 import { REMINDER_PRESETS, QUIET_HOURS_WINDOW } from '@/constants/reminders';
 import i18n from '@/lib/i18n';
+import * as SecureStore from 'expo-secure-store';
+import { api, type ApiResponse } from '../api/client';
 
 /**
  * Notification Service - Handles all push notification operations
@@ -578,6 +582,119 @@ export class NotificationService {
     adjusted.setHours(this.quietHours.endHour, this.quietHours.endMinute, 0, 0);
     return adjusted;
   }
+
+  /**
+   * Register push token with backend
+   * This enables backend-initiated push notifications
+   */
+  async registerPushTokenWithBackend(): Promise<boolean> {
+    try {
+      const hasPermission = await this.requestPermissions();
+      if (!hasPermission) {
+        return false;
+      }
+
+      // Get Expo push token - handle both old and new API
+      let expoPushToken: string;
+      try {
+        const tokenResult = await Notifications.getExpoPushTokenAsync();
+        // New API returns string directly, old API returns object with data property
+        expoPushToken = typeof tokenResult === 'string' ? tokenResult : tokenResult?.data;
+      } catch {
+        // Fallback for older expo-notifications versions
+        const tokenResult = await Notifications.getExpoPushTokenAsync();
+        expoPushToken = typeof tokenResult === 'string' ? tokenResult : tokenResult?.data || '';
+      }
+
+      if (!expoPushToken) {
+        return false;
+      }
+
+      // Get or generate device ID
+      let deviceId = await SecureStore.getItemAsync('deviceId');
+      if (!deviceId) {
+        deviceId = `${Platform.OS}-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`;
+        await SecureStore.setItemAsync('deviceId', deviceId);
+      }
+
+      // Get device info
+      const platform = Platform.OS;
+      const deviceName = Device.deviceName || undefined;
+      const appVersion = Application.nativeApplicationVersion || undefined;
+
+      // Register with backend
+      await api.post('/api/push/devices', {
+        expoPushToken,
+        deviceId,
+        platform,
+        deviceName,
+        appVersion,
+      });
+
+      // Store the token locally
+      await SecureStore.setItemAsync('expoPushToken', expoPushToken);
+      await SecureStore.setItemAsync('deviceId', deviceId);
+
+      return true;
+    } catch (error) {
+      return false;
+    }
+  }
+
+  /**
+   * Unregister push token from backend
+   */
+  async unregisterPushTokenFromBackend(): Promise<boolean> {
+    try {
+      const deviceId = await SecureStore.getItemAsync('deviceId');
+      if (!deviceId) {
+        return true;
+      }
+
+      await api.delete('/api/push/devices', {
+        data: { deviceId },
+      });
+
+      await SecureStore.deleteItemAsync('expoPushToken');
+      await SecureStore.deleteItemAsync('deviceId');
+
+      return true;
+    } catch {
+      return false;
+    }
+  }
+
+  /**
+   * Check if push token is registered with backend
+   */
+  async isPushTokenRegistered(): Promise<boolean> {
+    try {
+      const storedToken = await SecureStore.getItemAsync('expoPushToken');
+      if (!storedToken) {
+        return false;
+      }
+
+      const response = await api.get<ApiResponse<Array<{ deviceId: string }>>>('/api/push/devices');
+      return response.data?.success === true && Array.isArray(response.data?.data) && response.data.data.length > 0;
+    } catch {
+      return false;
+    }
+  }
+
+  /**
+   * Send a test notification to verify push is working
+   */
+  async sendTestNotification(): Promise<boolean> {
+    try {
+      await api.post('/api/push/test', {
+        title: 'Petopia Test',
+        body: 'Test bildirimi başarılı! Artık etkinlik hatırlatmaları alabileceksiniz.',
+      });
+      return true;
+    } catch {
+      return false;
+    }
+  }
 }
 
 // Export singleton instance
@@ -598,3 +715,16 @@ export const scheduleReminderChain = (
   reminderTimes?: readonly number[],
   respectQuietHours?: boolean
 ) => notificationService.scheduleReminderChain(event, reminderTimes, respectQuietHours);
+
+// Backend push token registration
+export const registerPushTokenWithBackend = () =>
+  notificationService.registerPushTokenWithBackend();
+
+export const unregisterPushTokenFromBackend = () =>
+  notificationService.unregisterPushTokenFromBackend();
+
+export const isPushTokenRegistered = () =>
+  notificationService.isPushTokenRegistered();
+
+export const sendTestNotification = () =>
+  notificationService.sendTestNotification();
