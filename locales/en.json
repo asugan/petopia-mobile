@@ -411,6 +411,7 @@
       "tomorrow": "Tomorrow",
       "thisWeek": "This Week",
       "upcoming": "Upcoming",
+      "completed": "Completed",
       "past": "Past"
     },
     "events": "Events",
@@ -431,7 +432,8 @@
   },
   "eventCard": {
     "forPet": "For Pet",
-    "reminderSet": "Reminder Set"
+    "reminderSet": "Reminder Set",
+    "recurring": "Recurring"
   },
   "notifications": {
     "enableTitle": "Enable Notifications",
@@ -636,6 +638,31 @@
     "medication": "Medication",
     "other": "Other"
   },
+  "recurrence": {
+    "settings": "Repeat Settings",
+    "enableRecurring": "Repeat this event",
+    "enableRecurringDesc": "Create recurring events automatically",
+    "frequency": "Repeat frequency",
+    "selectFrequency": "Select frequency",
+    "repeatOn": "Repeat on",
+    "dayOfMonth": "Day of month",
+    "selectDay": "Select day",
+    "repeatEvery": "Repeat every",
+    "everyXDays_one": "{{count}} day",
+    "everyXDays_other": "{{count}} days",
+    "timesPerDay": "Times per day",
+    "scheduledTimes": "Scheduled times",
+    "timesHint": "Times are automatically distributed throughout the day",
+    "endDate": "End date (optional)",
+    "endDateHint": "Leave empty for indefinite repeating",
+    "timezoneInfo": "Events will be created in your timezone",
+    "frequency.daily": "Daily",
+    "frequency.weekly": "Weekly",
+    "frequency.monthly": "Monthly",
+    "frequency.yearly": "Yearly",
+    "frequency.custom": "Custom interval",
+    "frequency.timesPerDay": "Multiple times per day"
+  },
   "days": {
     "monday": "Monday",
     "tuesday": "Tuesday",
@@ -643,7 +670,14 @@
     "thursday": "Thursday",
     "friday": "Friday",
     "saturday": "Saturday",
-    "sunday": "Sunday"
+    "sunday": "Sunday",
+    "mondayShort": "Mon",
+    "tuesdayShort": "Tue",
+    "wednesdayShort": "Wed",
+    "thursdayShort": "Thu",
+    "fridayShort": "Fri",
+    "saturdayShort": "Sat",
+    "sundayShort": "Sun"
   },
   "foodTypes": {
     "dry_food": "Dry Food",
@@ -948,6 +982,17 @@
         "fetchBreakdownError": "Failed to get pet spending breakdown",
         "checkActiveError": "Failed to check active budget status",
         "fetchSummaryError": "Failed to get budget summary"
+      },
+      "recurrence": {
+        "frequencyInvalid": "Please select a valid frequency",
+        "intervalMin": "Interval must be at least 1",
+        "intervalMax": "Interval cannot exceed 365",
+        "dayOfMonthMin": "Day of month must be at least 1",
+        "dayOfMonthMax": "Day of month cannot exceed 31",
+        "timesPerDayMin": "Times per day must be at least 1",
+        "timesPerDayMax": "Times per day cannot exceed 10",
+        "timeFormatInvalid": "Time must be in HH:MM format",
+        "timezoneRequired": "Timezone is required"
       }
     },
     "dropdown": {
@@ -1210,6 +1255,15 @@
       "fetchByDateError": "Failed to fetch events for this date. Please try again.",
       "fetchUpcomingError": "Failed to fetch upcoming events. Please try again.",
       "fetchTodayError": "Failed to fetch today's events. Please try again."
+    },
+    "recurrence": {
+      "createSuccess": "Recurring event created successfully",
+      "updateSuccess": "Recurring event updated successfully",
+      "deleteSuccess": "Recurring event deleted successfully",
+      "createError": "Failed to create recurring event. Please check the information and try again.",
+      "updateError": "Failed to update recurring event. Please try again.",
+      "deleteError": "Failed to delete recurring event. Please try again.",
+      "fetchError": "Failed to fetch recurring events. Please try again."
     },
     "expense": {
       "createSuccess": "Expense created successfully",

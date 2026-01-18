@@ -5,9 +5,10 @@ import { useTranslation } from 'react-i18next';
 import { Text, Button } from '@/components/ui';
 import { useTheme } from '@/lib/theme';
 import { Event } from '../lib/types';
-import { EventFormData, transformFormDataToAPI } from '../lib/schemas/eventSchema';
+import { EventFormData, transformFormDataToAPI, transformFormDataToRecurrenceRule } from '../lib/schemas/eventSchema';
 import { EventForm } from './forms/EventForm';
 import { useCreateEvent, useUpdateEvent } from '../lib/hooks/useEvents';
+import { useCreateRecurrenceRule } from '../lib/hooks/useRecurrence';
 import { usePets } from '../lib/hooks/usePets';
 import { ReminderPresetKey } from '@/constants/reminders';
 import { showToast } from '@/lib/toast/showToast';
@@ -36,26 +37,34 @@ export function EventModal({
   // React Query hooks for server state
   const createEventMutation = useCreateEvent();
   const updateEventMutation = useUpdateEvent();
+  const createRecurrenceRuleMutation = useCreateRecurrenceRule();
   const { data: pets = [] } = usePets();
 
 
   const handleSubmit = React.useCallback(async (data: EventFormData) => {
     try {
-      // Transform form data to API format (combines date+time into ISO datetime)
-      const apiData = transformFormDataToAPI(data);
       const reminderPresetKey: ReminderPresetKey = data.reminderPreset || 'standard';
       const reminderEnabled = data.reminder === true;
 
       setLoading(true);
-      if (event) {
-        // Event güncelleme
+
+      // Check if this is a recurring event
+      if (data.isRecurring && data.recurrence && !event) {
+        // Create a recurrence rule instead of a single event
+        const ruleData = transformFormDataToRecurrenceRule(data, reminderEnabled, reminderPresetKey);
+        await createRecurrenceRuleMutation.mutateAsync(ruleData);
+        showToast({ type: 'success', title: t('serviceResponse.recurrence.createSuccess') });
+      } else if (event) {
+        // Event güncelleme (existing event - recurrence edit not supported yet)
+        const apiData = transformFormDataToAPI(data);
         await updateEventMutation.mutateAsync({
           _id: event._id,
           data: { ...apiData, reminderPresetKey, reminder: reminderEnabled }
         });
         showToast({ type: 'success', title: t('serviceResponse.event.updateSuccess') });
       } else {
-        // Yeni event oluşturma
+        // Yeni tek seferlik event oluşturma
+        const apiData = transformFormDataToAPI(data);
         await createEventMutation.mutateAsync({
           ...apiData,
           reminderPresetKey,
@@ -67,13 +76,17 @@ export function EventModal({
       onSuccess();
       onClose();
     } catch (error) {
-      const fallbackMessage = event ? t('serviceResponse.event.updateError') : t('serviceResponse.event.createError');
+      const fallbackMessage = event 
+        ? t('serviceResponse.event.updateError') 
+        : data.isRecurring 
+          ? t('serviceResponse.recurrence.createError') 
+          : t('serviceResponse.event.createError');
       const errorMessage = error instanceof Error ? error.message : fallbackMessage;
       showToast({ type: 'error', title: fallbackMessage, message: errorMessage });
     } finally {
       setLoading(false);
     }
-  }, [event, createEventMutation, updateEventMutation, onSuccess, onClose, t]);
+  }, [event, createEventMutation, updateEventMutation, createRecurrenceRuleMutation, onSuccess, onClose, t]);
 
   const handleClose = React.useCallback(() => {
     if (!loading) {

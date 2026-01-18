@@ -196,18 +196,33 @@ export function EventCard({
 
         {/* Footer with reminder and actions */}
         <View style={styles.footer}>
-          {/* Reminder indicator */}
-          {event.reminder && (
-            <View style={styles.reminderContainer}>
-              <Text style={styles.reminderIcon}>🔔</Text>
-              <Text
-                variant="labelSmall"
-                style={[styles.reminderText, { color: theme.colors.onSurfaceVariant }]}
-              >
-                {t('eventCard.reminderSet')}
-              </Text>
-            </View>
-          )}
+          <View style={styles.indicatorsContainer}>
+            {/* Recurring indicator */}
+            {event.recurrenceRuleId && (
+              <View style={styles.indicatorContainer}>
+                <Text style={styles.indicatorIcon}>🔄</Text>
+                <Text
+                  variant="labelSmall"
+                  style={[styles.indicatorText, { color: theme.colors.onSurfaceVariant }]}
+                >
+                  {t('eventCard.recurring')}
+                </Text>
+              </View>
+            )}
+
+            {/* Reminder indicator */}
+            {event.reminder && (
+              <View style={styles.indicatorContainer}>
+                <Text style={styles.indicatorIcon}>🔔</Text>
+                <Text
+                  variant="labelSmall"
+                  style={[styles.indicatorText, { color: theme.colors.onSurfaceVariant }]}
+                >
+                  {t('eventCard.reminderSet')}
+                </Text>
+              </View>
+            )}
+          </View>
 
           {/* Action buttons */}
           {showActions && (
@@ -351,15 +366,21 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginTop: 8,
   },
-  reminderContainer: {
+  indicatorsContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+    flex: 1,
+  },
+  indicatorContainer: {
     flexDirection: 'row',
     alignItems: 'center',
   },
-  reminderIcon: {
+  indicatorIcon: {
     fontSize: 14,
     marginRight: 4,
   },
-  reminderText: {
+  indicatorText: {
     fontSize: 11,
     fontWeight: '500',
   },

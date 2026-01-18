@@ -387,6 +387,7 @@
       "tomorrow": "Yarın",
       "thisWeek": "Bu Hafta",
       "upcoming": "Yaklaşan",
+      "completed": "Tamamlanan",
       "past": "Geçmiş"
     },
     "events": "Etkinlikler",
@@ -407,7 +408,8 @@
   },
   "eventCard": {
     "forPet": "Evcil Dost İçin",
-    "reminderSet": "Hatırlatıcı Ayarlandı"
+    "reminderSet": "Hatırlatıcı Ayarlandı",
+    "recurring": "Tekrarlayan"
   },
   "notifications": {
     "enableTitle": "Bildirimleri Etkinleştir",
@@ -612,6 +614,31 @@
     "medication": "İlaç",
     "other": "Diğer"
   },
+  "recurrence": {
+    "settings": "Tekrarlama Ayarları",
+    "enableRecurring": "Bu etkinliği tekrarla",
+    "enableRecurringDesc": "Otomatik tekrarlayan etkinlikler oluştur",
+    "frequency": "Tekrarlama sıklığı",
+    "selectFrequency": "Sıklık seçin",
+    "repeatOn": "Tekrarlama günleri",
+    "dayOfMonth": "Ayın günü",
+    "selectDay": "Gün seçin",
+    "repeatEvery": "Her ... tekrarla",
+    "everyXDays_one": "{{count}} gün",
+    "everyXDays_other": "{{count}} gün",
+    "timesPerDay": "Günde kaç kez",
+    "scheduledTimes": "Planlanan saatler",
+    "timesHint": "Saatler gün boyunca otomatik olarak dağıtılır",
+    "endDate": "Bitiş tarihi (isteğe bağlı)",
+    "endDateHint": "Süresiz tekrarlama için boş bırakın",
+    "timezoneInfo": "Etkinlikler sizin saat diliminizde oluşturulacak",
+    "frequency.daily": "Günlük",
+    "frequency.weekly": "Haftalık",
+    "frequency.monthly": "Aylık",
+    "frequency.yearly": "Yıllık",
+    "frequency.custom": "Özel aralık",
+    "frequency.timesPerDay": "Günde birden fazla kez"
+  },
   "days": {
     "monday": "Pazartesi",
     "tuesday": "Salı",
@@ -619,7 +646,14 @@
     "thursday": "Perşembe",
     "friday": "Cuma",
     "saturday": "Cumartesi",
-    "sunday": "Pazar"
+    "sunday": "Pazar",
+    "mondayShort": "Pzt",
+    "tuesdayShort": "Sal",
+    "wednesdayShort": "Çar",
+    "thursdayShort": "Per",
+    "fridayShort": "Cum",
+    "saturdayShort": "Cmt",
+    "sundayShort": "Paz"
   },
   "foodTypes": {
     "dry_food": "Kuru Mama",
@@ -924,6 +958,17 @@
         "fetchBreakdownError": "Pet harcama özeti alınamadı",
         "checkActiveError": "Aktif bütçe durumu kontrol edilemedi",
         "fetchSummaryError": "Bütçe özeti alınamadı"
+      },
+      "recurrence": {
+        "frequencyInvalid": "Geçerli bir sıklık seçiniz",
+        "intervalMin": "Aralık en az 1 olmalıdır",
+        "intervalMax": "Aralık 365'i geçemez",
+        "dayOfMonthMin": "Ayın günü en az 1 olmalıdır",
+        "dayOfMonthMax": "Ayın günü 31'i geçemez",
+        "timesPerDayMin": "Günlük tekrar en az 1 olmalıdır",
+        "timesPerDayMax": "Günlük tekrar 10'u geçemez",
+        "timeFormatInvalid": "Saat SS:DD formatında olmalıdır",
+        "timezoneRequired": "Saat dilimi zorunludur"
       }
     },
     "dropdown": {
@@ -1186,6 +1231,15 @@
       "fetchByDateError": "Bu tarih için etkinlikler alınamadı. Lütfen tekrar deneyin.",
       "fetchUpcomingError": "Yaklaşan etkinlikler alınamadı. Lütfen tekrar deneyin.",
       "fetchTodayError": "Bugünün etkinlikleri alınamadı. Lütfen tekrar deneyin."
+    },
+    "recurrence": {
+      "createSuccess": "Tekrarlayan etkinlik başarıyla oluşturuldu",
+      "updateSuccess": "Tekrarlayan etkinlik başarıyla güncellendi",
+      "deleteSuccess": "Tekrarlayan etkinlik başarıyla silindi",
+      "createError": "Tekrarlayan etkinlik oluşturulamadı. Lütfen bilgileri kontrol edip tekrar deneyin.",
+      "updateError": "Tekrarlayan etkinlik güncellenemedi. Lütfen tekrar deneyin.",
+      "deleteError": "Tekrarlayan etkinlik silinemedi. Lütfen tekrar deneyin.",
+      "fetchError": "Tekrarlayan etkinlikler alınamadı. Lütfen tekrar deneyin."
     },
     "expense": {
       "createSuccess": "Harcama başarıyla oluşturuldu",

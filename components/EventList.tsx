@@ -25,7 +25,7 @@ interface EventListProps {
   testID?: string;
 }
 
-type FilterType = 'all' | 'today' | 'tomorrow' | 'week' | 'upcoming' | 'past';
+type FilterType = 'all' | 'today' | 'tomorrow' | 'week' | 'upcoming' | 'completed' | 'past';
 
 export function EventList({
   events,
@@ -99,8 +99,13 @@ export function EventList({
       case 'upcoming':
         filtered = filtered.filter(event => {
           const eventDate = new Date(event.startTime);
-          return eventDate >= todayStart;
+          return eventDate >= todayStart && event.status === 'upcoming';
         });
+        break;
+      case 'completed':
+        filtered = filtered.filter(event =>
+          event.status === 'completed' || event.status === 'missed' || event.status === 'cancelled'
+        );
         break;
       case 'past':
         filtered = filtered.filter(event => {
@@ -116,11 +121,13 @@ export function EventList({
       filtered = filtered.filter(event => event.type === selectedEventType);
     }
 
-    // Sort by start time (earliest first for upcoming, latest first for past)
+    // Sort by start time (earliest first for upcoming, latest first for past/completed)
     filtered.sort((a, b) => {
       const dateA = new Date(a.startTime);
       const dateB = new Date(b.startTime);
-      return selectedFilter === 'past' ? dateB.getTime() - dateA.getTime() : dateA.getTime() - dateB.getTime();
+      return selectedFilter === 'past' || selectedFilter === 'completed'
+        ? dateB.getTime() - dateA.getTime()
+        : dateA.getTime() - dateB.getTime();
     });
 
     return filtered;
@@ -165,6 +172,7 @@ export function EventList({
     { type: 'tomorrow', label: t('eventList.filters.tomorrow') },
     { type: 'week', label: t('eventList.filters.thisWeek') },
     { type: 'upcoming', label: t('eventList.filters.upcoming') },
+    { type: 'completed', label: t('eventList.filters.completed') },
     { type: 'past', label: t('eventList.filters.past') },
   ];
 

@@ -20,6 +20,7 @@ import { SmartInput } from './SmartInput';
 import { SmartPetPicker } from './SmartPetPicker';
 import { SmartSwitch } from './SmartSwitch';
 import { StepHeader } from './StepHeader';
+import { RecurrenceSettings } from './RecurrenceSettings';
 import { showToast } from '@/lib/toast/showToast';
 
 interface EventFormProps {
@@ -177,7 +178,7 @@ export function EventForm({
       {
         key: 'schedule',
         title: t('events.steps.schedule'),
-        fields: ['startDate', 'startTime', 'endDate', 'endTime', 'location'] as (keyof EventFormData)[],
+        fields: ['startDate', 'startTime', 'endDate', 'endTime', 'location', 'isRecurring'] as (keyof EventFormData)[],
       },
       {
         key: 'options',
@@ -368,6 +369,14 @@ export function EventForm({
               testID={`${testID}-location`}
             />
           </FormSection>
+        )}
+
+        {/* Recurrence Settings - Step 2 */}
+        {currentStep === 2 && (
+          <RecurrenceSettings
+            disabled={loading || isSubmitting}
+            testID={`${testID}-recurrence`}
+          />
         )}
 
         {currentStep === 3 && (
