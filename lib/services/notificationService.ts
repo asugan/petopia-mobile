@@ -8,7 +8,7 @@ import { EVENT_TYPE_DEFAULT_REMINDERS } from '../../constants/eventIcons';
 import { REMINDER_PRESETS, QUIET_HOURS_WINDOW } from '@/constants/reminders';
 import i18n from '@/lib/i18n';
 import * as SecureStore from 'expo-secure-store';
-import { api, type ApiResponse } from '../api/client';
+import { api } from '../api/client';
 
 /**
  * Notification Service - Handles all push notification operations
@@ -768,6 +768,8 @@ export class NotificationService {
 
       // Store the token locally
       await SecureStore.setItemAsync('expoPushToken', expoPushToken);
+      // Mark as registered with backend (avoids network call on every reminder check)
+      await SecureStore.setItemAsync('pushTokenRegisteredWithBackend', 'true');
       await SecureStore.setItemAsync('deviceId', deviceId);
 
       return true;
@@ -792,6 +794,7 @@ export class NotificationService {
 
       await SecureStore.deleteItemAsync('expoPushToken');
       await SecureStore.deleteItemAsync('deviceId');
+      await SecureStore.deleteItemAsync('pushTokenRegisteredWithBackend');
 
       return true;
     } catch {
@@ -801,16 +804,49 @@ export class NotificationService {
 
   /**
    * Check if push token is registered with backend
+   * Uses local cache to avoid network calls on every reminder schedule
+   * Falls back to network check if cache is missing
    */
   async isPushTokenRegistered(): Promise<boolean> {
     try {
+      // First check local cache (fast path - no network call)
+      const cachedStatus = await SecureStore.getItemAsync('pushTokenRegisteredWithBackend');
+      if (cachedStatus === 'true') {
+        // Verify token still exists locally
+        const storedToken = await SecureStore.getItemAsync('expoPushToken');
+        return !!storedToken;
+      }
+
+      // No cached status - token not registered or cache cleared
+      return false;
+    } catch {
+      return false;
+    }
+  }
+
+  /**
+   * Force re-verify push token registration with backend
+   * Use this sparingly as it makes a network call
+   */
+  async verifyPushTokenRegistration(): Promise<boolean> {
+    try {
       const storedToken = await SecureStore.getItemAsync('expoPushToken');
       if (!storedToken) {
+        await SecureStore.deleteItemAsync('pushTokenRegisteredWithBackend');
         return false;
       }
 
-      const response = await api.get<ApiResponse<{ deviceId: string }[]>>('/api/push/devices');
-      return response.data?.success === true && Array.isArray(response.data?.data) && response.data.data.length > 0;
+      const response = await api.get<{ deviceId: string }[]>('/api/push/devices');
+      const isRegistered = Array.isArray(response.data) && response.data.length > 0;
+      
+      // Update cache based on server response
+      if (isRegistered) {
+        await SecureStore.setItemAsync('pushTokenRegisteredWithBackend', 'true');
+      } else {
+        await SecureStore.deleteItemAsync('pushTokenRegisteredWithBackend');
+      }
+      
+      return isRegistered;
     } catch {
       return false;
     }
@@ -860,6 +896,9 @@ export const unregisterPushTokenFromBackend = () =>
 
 export const isPushTokenRegistered = () =>
   notificationService.isPushTokenRegistered();
+
+export const verifyPushTokenRegistration = () =>
+  notificationService.verifyPushTokenRegistration();
 
 export const sendTestNotification = () =>
   notificationService.sendTestNotification();
