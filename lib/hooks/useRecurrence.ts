@@ -84,6 +84,13 @@ export const useCreateRecurrenceRule = () => {
       queryClient.invalidateQueries({ queryKey: eventKeys.lists() });
       queryClient.invalidateQueries({ queryKey: eventKeys.upcoming() });
       queryClient.invalidateQueries({ queryKey: eventKeys.today() });
+      // Invalidate all calendar queries
+      queryClient.invalidateQueries({
+        predicate: (query) =>
+          Array.isArray(query.queryKey) &&
+          query.queryKey[0] === eventKeys.all[0] &&
+          query.queryKey[1] === 'calendar',
+      });
     },
   });
 };
@@ -111,6 +118,13 @@ export const useUpdateRecurrenceRule = () => {
       // Invalidate events since they were updated
       queryClient.invalidateQueries({ queryKey: eventKeys.lists() });
       queryClient.invalidateQueries({ queryKey: eventKeys.upcoming() });
+      // Invalidate all calendar queries
+      queryClient.invalidateQueries({
+        predicate: (query) =>
+          Array.isArray(query.queryKey) &&
+          query.queryKey[0] === eventKeys.all[0] &&
+          query.queryKey[1] === 'calendar',
+      });
     },
   });
 };
@@ -137,6 +151,13 @@ export const useDeleteRecurrenceRule = () => {
       queryClient.invalidateQueries({ queryKey: eventKeys.lists() });
       queryClient.invalidateQueries({ queryKey: eventKeys.upcoming() });
       queryClient.invalidateQueries({ queryKey: eventKeys.today() });
+      // Invalidate all calendar queries
+      queryClient.invalidateQueries({
+        predicate: (query) =>
+          Array.isArray(query.queryKey) &&
+          query.queryKey[0] === eventKeys.all[0] &&
+          query.queryKey[1] === 'calendar',
+      });
     },
   });
 };
