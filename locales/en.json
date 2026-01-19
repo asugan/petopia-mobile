@@ -273,6 +273,8 @@
     "comingSoon": "Coming Soon",
     "upcomingEvents": "Upcoming Events",
     "noEvents": "No events scheduled",
+    "eventCount": "{{count}} event",
+    "eventCount_other": "{{count}} events",
     "today": "Today",
     "addEvent": "Add Event",
     "noEventsToday": "No events scheduled for today",

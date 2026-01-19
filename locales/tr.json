@@ -258,6 +258,7 @@
     "comingSoon": "Yakında gelecek",
     "upcomingEvents": "Yaklaşan Etkinlikler",
     "noEvents": "Planlanmış etkinlik yok",
+    "eventCount": "{{count}} etkinlik",
     "today": "Bugün",
     "addEvent": "Etkinlik Ekle",
     "noEventsToday": "Bugün için planlanmış etkinlik yok",

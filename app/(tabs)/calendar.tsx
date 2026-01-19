@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from 'react';
-import { View, StyleSheet, ActivityIndicator, FlatList } from 'react-native';
+import React, { useState, useEffect, useCallback } from 'react';
+import { View, StyleSheet } from 'react-native';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 
-import { Text, FAB } from '@/components/ui';
+import { FAB } from '@/components/ui';
 import { HeaderActions, LargeTitle } from '@/components/LargeTitle';
 import { useTheme } from '@/lib/theme';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -11,12 +11,11 @@ import { addMonths, subMonths, addWeeks, subWeeks } from 'date-fns';
 import { MonthView } from '@/components/calendar/MonthView';
 import { toISODateString } from '@/lib/utils/dateConversion';
 import { WeekView } from '@/components/calendar/WeekView';
+import { EventsBottomSheet } from '@/components/calendar/EventsBottomSheet';
 import { EventModal } from '@/components/EventModal';
 import { useUpcomingEvents, useCalendarEvents, useEvent, useUpdateEvent } from '@/lib/hooks/useEvents';
 import { eventKeys } from '@/lib/hooks/queryKeys';
 import { Event } from '@/lib/types';
-import { LAYOUT } from '@/constants';
-import { CalendarEventCard } from '@/components/calendar/CalendarEventCard';
 import { useQueryClient } from '@tanstack/react-query';
 import { showToast } from '@/lib/toast/showToast';
 
@@ -97,11 +96,11 @@ export default function CalendarScreen() {
     setCurrentDate(date);
   };
 
-  const handleEventPress = (event: Event) => {
+  const handleEventPress = useCallback((event: Event) => {
     router.push(`/event/${event._id}`);
-  };
+  }, [router]);
 
-  const handleToggleReminder = async (event: Event, nextValue: boolean) => {
+  const handleToggleReminder = useCallback(async (event: Event, nextValue: boolean) => {
     const eventDate =
       toISODateString(new Date(event.startTime)) ??
       event.startTime.split('T')[0];
@@ -133,7 +132,7 @@ export default function CalendarScreen() {
       queryClient.invalidateQueries({ queryKey: eventKeys.calendar(eventDate) });
       queryClient.invalidateQueries({ queryKey: eventKeys.list({ petId: 'all' }) });
     }
-  };
+  }, [queryClient, updateEventMutation]);
 
   const handleAddEvent = async () => {
     setInitialPetId(undefined);
@@ -199,61 +198,19 @@ export default function CalendarScreen() {
       <View style={styles.header}>
         <LargeTitle title={t('calendar.calendar')} actions={<HeaderActions />} />
       </View>
+      
       <View style={styles.calendarContainer}>
         {renderCalendarView()}
-        <View
-          style={[
-            styles.eventsWrapper,
-            { backgroundColor: theme.colors.surfaceVariant },
-          ]}
-        >
-          <FlatList
-            data={selectedDateEvents}
-            keyExtractor={(item) => item._id}
-            renderItem={({ item }) => (
-              <CalendarEventCard
-                event={item}
-                onPress={handleEventPress}
-                onToggleReminder={handleToggleReminder}
-                testID={`calendar-event-${item._id}`}
-              />
-            )}
-            contentContainerStyle={styles.eventsContent}
-            ListEmptyComponent={
-              isLoadingSelected ? (
-                <View style={styles.loadingContainer}>
-                  <ActivityIndicator size="small" color={theme.colors.primary} />
-                  <Text
-                    variant="bodyMedium"
-                    style={[styles.loadingText, { color: theme.colors.onSurface }]}
-                  >
-                    {t('common.loading')}
-                  </Text>
-                </View>
-              ) : errorSelected ? (
-                <View style={styles.emptyContainer}>
-                  <Text
-                    variant="bodyMedium"
-                    style={[styles.emptyText, { color: theme.colors.onSurfaceVariant }]}
-                  >
-                    {t('calendar.noEvents')}
-                  </Text>
-                </View>
-              ) : (
-                <View style={styles.emptyContainer}>
-                  <Text
-                    variant="bodyMedium"
-                    style={[styles.emptyText, { color: theme.colors.onSurfaceVariant }]}
-                  >
-                    {t('calendar.noEvents')}
-                  </Text>
-                </View>
-              )
-            }
-            showsVerticalScrollIndicator={false}
-          />
-        </View>
       </View>
+
+      <EventsBottomSheet
+        events={selectedDateEvents}
+        isLoading={isLoadingSelected}
+        selectedDate={currentDate}
+        onEventPress={handleEventPress}
+        onToggleReminder={handleToggleReminder}
+        testID="calendar-events-bottom-sheet"
+      />
 
       <FAB
         icon="add"
@@ -290,34 +247,7 @@ const styles = StyleSheet.create({
     paddingTop: 8,
   },
   calendarContainer: {
-    flex: 1,
-  },
-  eventsWrapper: {
-    flex: 1,
-    marginTop: 16,
-    borderTopLeftRadius: 28,
-    borderTopRightRadius: 28,
-    paddingTop: 16,
-  },
-  eventsContent: {
-    paddingHorizontal: 16,
-    paddingBottom: LAYOUT.FAB_OFFSET + 24,
-  },
-  loadingContainer: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingVertical: 32,
-  },
-  loadingText: {
-    marginTop: 12,
-  },
-  emptyContainer: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingVertical: 32,
-  },
-  emptyText: {
-    textAlign: 'center',
+    paddingBottom: 16,
   },
   fab: {
     position: 'absolute',
