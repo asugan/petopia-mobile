@@ -175,10 +175,6 @@
     "care": {
       "feedingFooter": "Free plan allows {{limit}} feeding schedule ({{used}}/{{limit}}). Go Pro for unlimited planning."
     },
-    "calendar": {
-      "counter": "Reminders: {{used}}/{{limit}}",
-      "cta": "Increase Limit"
-    },
     "budgets": {
       "title": "Smart Budget Tracking",
       "subtitle": "Manage monthly budgets and alerts in one place with Pro.",
@@ -280,8 +276,6 @@
     "today": "Today",
     "addEvent": "Add Event",
     "noEventsToday": "No events scheduled for today",
-    "reminderLimitTitle": "Reminder limit reached",
-    "reminderLimitMessage": "You have reached the reminder limit. Upgrade to add more reminders.",
     "reminderOn": "Reminder On",
     "reminderOff": "Reminder Off",
     "views": {
@@ -1412,7 +1406,6 @@
     "trialDaysRemaining": "{{days}} days remaining",
     "trialExpired": "Trial Expired",
     "trialPrompt": "Your trial ends in {{days}} days",
-    "reminderLimitReached": "You have reached the free reminder limit (2).",
     "upgradeToPro": "Upgrade to Pro",
     "upgrade": "Upgrade to Pro",
     "upgradePrompt": "Unlock all features with Pro",

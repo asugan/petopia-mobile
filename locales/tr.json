@@ -167,10 +167,6 @@
     "care": {
       "feedingFooter": "Free planda {{limit}} beslenme programı hakkınız var ({{used}}/{{limit}}). Sınırsız planlama için Pro'ya geçin."
     },
-    "calendar": {
-      "counter": "Hatırlatıcılar: {{used}}/{{limit}}",
-      "cta": "Limiti Artır"
-    },
     "budgets": {
       "title": "Akıllı Bütçe Takibi",
       "subtitle": "Pro ile aylık bütçe ve uyarıları tek yerden yönetin.",
@@ -265,8 +261,6 @@
     "today": "Bugün",
     "addEvent": "Etkinlik Ekle",
     "noEventsToday": "Bugün için planlanmış etkinlik yok",
-    "reminderLimitTitle": "Hatırlatıcı limiti dolu",
-    "reminderLimitMessage": "Hatırlatıcı limiti dolu. Daha fazla hatırlatıcı için Premium'a geçebilirsin.",
     "reminderOn": "Hatırlatıcı Açık",
     "reminderOff": "Hatırlatıcı Kapalı",
     "views": {
@@ -1388,7 +1382,6 @@
     "trialDaysRemaining": "{{days}} gün kaldı",
     "trialExpired": "Deneme Süresi Doldu",
     "trialPrompt": "Denemeniz {{days}} gün içinde sona eriyor",
-    "reminderLimitReached": "Ücretsiz hatırlatıcı limitine ulaştınız (2).",
     "upgradeToPro": "Pro'ya Yükselt",
     "upgrade": "Pro'ya Yükselt",
     "upgradePrompt": "Tüm özellikleri Pro ile açın",

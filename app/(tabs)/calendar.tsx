@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, StyleSheet, ActivityIndicator, FlatList, Pressable } from 'react-native';
+import { View, StyleSheet, ActivityIndicator, FlatList } from 'react-native';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 
 import { Text, FAB } from '@/components/ui';
@@ -12,9 +12,8 @@ import { MonthView } from '@/components/calendar/MonthView';
 import { toISODateString } from '@/lib/utils/dateConversion';
 import { WeekView } from '@/components/calendar/WeekView';
 import { EventModal } from '@/components/EventModal';
-import { useUpcomingEvents, useCalendarEvents, useEvent, useAllEvents, useUpdateEvent } from '@/lib/hooks/useEvents';
+import { useUpcomingEvents, useCalendarEvents, useEvent, useUpdateEvent } from '@/lib/hooks/useEvents';
 import { eventKeys } from '@/lib/hooks/queryKeys';
-import { useSubscription } from '@/lib/hooks/useSubscription';
 import { Event } from '@/lib/types';
 import { LAYOUT } from '@/constants';
 import { CalendarEventCard } from '@/components/calendar/CalendarEventCard';
@@ -28,7 +27,6 @@ export default function CalendarScreen() {
   const { t } = useTranslation();
   const router = useRouter();
   const queryClient = useQueryClient();
-  const { isProUser, presentPaywall } = useSubscription();
   const { petId, action, editEventId, editType } = useLocalSearchParams<{ petId?: string; action?: string; editEventId?: string; editType?: string }>();
 
   const [viewType, setViewType] = useState<CalendarViewType>('week');
@@ -52,8 +50,6 @@ export default function CalendarScreen() {
   }, [action, petId, editEventId, eventToEdit]);
 
   const { data: upcomingEvents = [] } = useUpcomingEvents();
-  const { data: allEvents = [] } = useAllEvents();
-  const activeReminderCount = allEvents.filter((event) => event.reminder).length;
   const formattedDate = toISODateString(currentDate) ?? '';
   const {
     data: selectedDateEvents = [],
@@ -105,20 +101,7 @@ export default function CalendarScreen() {
     router.push(`/event/${event._id}`);
   };
 
-  const handleReminderLimitReached = () => {
-    showToast({
-      type: 'info',
-      title: t('calendar.reminderLimitTitle'),
-      message: t('calendar.reminderLimitMessage'),
-    });
-  };
-
   const handleToggleReminder = async (event: Event, nextValue: boolean) => {
-    if (nextValue && !event.reminder && !isProUser && activeReminderCount >= 2) {
-      handleReminderLimitReached();
-      return;
-    }
-
     const eventDate =
       toISODateString(new Date(event.startTime)) ??
       event.startTime.split('T')[0];
@@ -153,12 +136,6 @@ export default function CalendarScreen() {
   };
 
   const handleAddEvent = async () => {
-    if (!isProUser && activeReminderCount >= 2) {
-      const didPurchase = await presentPaywall();
-      if (!didPurchase) {
-        return;
-      }
-    }
     setInitialPetId(undefined);
     setSelectedEvent(undefined);
     setModalVisible(true);
@@ -180,10 +157,6 @@ export default function CalendarScreen() {
     if (editEventId) {
       router.setParams({ editEventId: undefined });
     }
-  };
-
-  const handleReminderLimitPress = async () => {
-    await presentPaywall();
   };
 
   const renderCalendarView = () => {
@@ -234,31 +207,6 @@ export default function CalendarScreen() {
             { backgroundColor: theme.colors.surfaceVariant },
           ]}
         >
-          {!isProUser && (
-            <Pressable
-              onPress={handleReminderLimitPress}
-              style={({ pressed }) => [
-                styles.reminderCounter,
-                pressed && styles.chipPressed,
-              ]}
-            >
-              <Text
-                variant="labelSmall"
-                style={{
-                  color: activeReminderCount >= 2
-                    ? theme.colors.error
-                    : theme.colors.onSurfaceVariant,
-                }}
-              >
-                {t('limits.calendar.counter', { used: activeReminderCount, limit: 2 })}
-              </Text>
-              {activeReminderCount >= 2 && (
-                <Text variant="labelSmall" style={{ color: theme.colors.error }}>
-                  {t('limits.calendar.cta')}
-                </Text>
-              )}
-            </Pressable>
-          )}
           <FlatList
             data={selectedDateEvents}
             keyExtractor={(item) => item._id}
@@ -370,16 +318,6 @@ const styles = StyleSheet.create({
   },
   emptyText: {
     textAlign: 'center',
-  },
-  reminderCounter: {
-    alignSelf: 'flex-end',
-    alignItems: 'flex-end',
-    gap: 2,
-    marginBottom: 8,
-    marginRight: 16,
-  },
-  chipPressed: {
-    transform: [{ scale: 0.98 }],
   },
   fab: {
     position: 'absolute',
