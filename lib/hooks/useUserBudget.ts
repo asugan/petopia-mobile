@@ -14,7 +14,7 @@ import { notificationService, isPushTokenRegistered } from "../services/notifica
 import { useUserSettingsStore } from "@/stores/userSettingsStore";
 import { createQueryKeys } from "./core/createQueryKeys";
 import { useConditionalQuery } from "./core/useConditionalQuery";
-import { useProQueryEnabled } from "./useSubscriptionQueries";
+import { useSubscriptionQueryEnabled } from "./useSubscriptionQueries";
 
 // Query keys factory for user budget
 const baseUserBudgetKeys = createQueryKeys("budget");
@@ -34,7 +34,7 @@ export const userBudgetKeys = {
  * Returns the user's single budget with proper caching
  */
 export function useUserBudget() {
-  const { enabled } = useProQueryEnabled();
+  const { enabled } = useSubscriptionQueryEnabled();
 
   return useConditionalQuery<UserBudget | null>({
     queryKey: userBudgetKeys.all,
@@ -52,7 +52,7 @@ export function useUserBudget() {
  * Depends on budget data and provides comprehensive spending analysis
  */
 export function useUserBudgetStatus() {
-  const { enabled } = useProQueryEnabled();
+  const { enabled } = useSubscriptionQueryEnabled();
   const { data: budget } = useUserBudget();
 
   return useConditionalQuery<UserBudgetStatus | null>({
@@ -201,7 +201,7 @@ export function useDeleteUserBudget() {
  * Returns alert information with short cache time for real-time monitoring
  */
 export function useBudgetAlerts() {
-  const { enabled } = useProQueryEnabled();
+  const { enabled } = useSubscriptionQueryEnabled();
   const { data: budget } = useUserBudget();
   const notificationsEnabled = useUserSettingsStore(
     (state) => state.settings?.notificationsEnabled ?? true
@@ -227,7 +227,7 @@ export function useBudgetAlerts() {
  * Extracted from budget status for focused pet-specific spending analysis
  */
 export function usePetSpendingBreakdown() {
-  const { enabled } = useProQueryEnabled();
+  const { enabled } = useSubscriptionQueryEnabled();
   const { data: budget } = useUserBudget();
 
   return useConditionalQuery<PetBreakdown[]>({
@@ -246,7 +246,7 @@ export function usePetSpendingBreakdown() {
  * Quick boolean check for conditional rendering and feature access
  */
 export function useHasActiveBudget() {
-  const { enabled } = useProQueryEnabled();
+  const { enabled } = useSubscriptionQueryEnabled();
 
   return useConditionalQuery<boolean>({
     queryKey: userBudgetKeys.isActive(),
@@ -264,7 +264,7 @@ export function useHasActiveBudget() {
  * Combines budget info, status, and alerts for dashboard views
  */
 export function useBudgetSummary() {
-  const { enabled } = useProQueryEnabled();
+  const { enabled } = useSubscriptionQueryEnabled();
 
   return useConditionalQuery<{
     budget: UserBudget | null;
