@@ -44,6 +44,9 @@
       "favicon": "./assets/images/favicon.png"
     },
     "plugins": [
+      ["expo-notifications", {
+        "enableBackgroundRemoteNotifications": true
+      }],
       "expo-router",
       [
         "expo-splash-screen",
