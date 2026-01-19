@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useRef } from 'react';
+import React, { useCallback, useMemo, useRef, useImperativeHandle, forwardRef } from 'react';
 import { View, StyleSheet, ActivityIndicator } from 'react-native';
 import BottomSheet, { BottomSheetFlatList } from '@gorhom/bottom-sheet';
 import { useTranslation } from 'react-i18next';
@@ -11,6 +11,10 @@ import { Event } from '@/lib/types';
 import { CalendarEventCard } from './CalendarEventCard';
 import { BOTTOM_SHEET, LAYOUT } from '@/constants';
 
+export interface EventsBottomSheetRef {
+  snapToIndex: (index: number) => void;
+}
+
 interface EventsBottomSheetProps {
   events: Event[];
   isLoading: boolean;
@@ -21,21 +25,31 @@ interface EventsBottomSheetProps {
   testID?: string;
 }
 
-export function EventsBottomSheet({
-  events,
-  isLoading,
-  selectedDate,
-  onEventPress,
-  onToggleReminder,
-  onSnapChange,
-  testID,
-}: EventsBottomSheetProps) {
+export const EventsBottomSheet = forwardRef<EventsBottomSheetRef, EventsBottomSheetProps>(
+  function EventsBottomSheet(
+    {
+      events,
+      isLoading,
+      selectedDate,
+      onEventPress,
+      onToggleReminder,
+      onSnapChange,
+      testID,
+    },
+    ref
+  ) {
   const { theme } = useTheme();
   const { t, i18n } = useTranslation();
   const bottomSheetRef = useRef<BottomSheet>(null);
   const locale = i18n.language === 'tr' ? tr : enUS;
 
   const snapPoints = useMemo(() => [...BOTTOM_SHEET.SNAP_POINTS], []);
+
+  useImperativeHandle(ref, () => ({
+    snapToIndex: (index: number) => {
+      bottomSheetRef.current?.snapToIndex(index);
+    },
+  }));
 
   const handleSheetChange = useCallback(
     (index: number) => {
@@ -158,7 +172,7 @@ export function EventsBottomSheet({
       </View>
     </BottomSheet>
   );
-}
+});
 
 const styles = StyleSheet.create({
   background: {

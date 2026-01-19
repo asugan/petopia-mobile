@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { View, StyleSheet } from 'react-native';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 
@@ -11,7 +11,7 @@ import { addMonths, subMonths, addWeeks, subWeeks } from 'date-fns';
 import { MonthView } from '@/components/calendar/MonthView';
 import { toISODateString } from '@/lib/utils/dateConversion';
 import { WeekView } from '@/components/calendar/WeekView';
-import { EventsBottomSheet } from '@/components/calendar/EventsBottomSheet';
+import { EventsBottomSheet, EventsBottomSheetRef } from '@/components/calendar/EventsBottomSheet';
 import { EventModal } from '@/components/EventModal';
 import { useUpcomingEvents, useCalendarEvents, useEvent, useUpdateEvent } from '@/lib/hooks/useEvents';
 import { eventKeys } from '@/lib/hooks/queryKeys';
@@ -33,6 +33,7 @@ export default function CalendarScreen() {
   const [modalVisible, setModalVisible] = useState(false);
   const [initialPetId, setInitialPetId] = useState<string | undefined>(undefined);
   const [selectedEvent, setSelectedEvent] = useState<Event | undefined>(undefined);
+  const bottomSheetRef = useRef<EventsBottomSheetRef>(null);
 
   const { data: eventToEdit } = useEvent(editEventId);
   const updateEventMutation = useUpdateEvent();
@@ -89,7 +90,14 @@ export default function CalendarScreen() {
   };
 
   const handleToggleView = () => {
-    setViewType((prev) => (prev === 'month' ? 'week' : 'month'));
+    const newViewType = viewType === 'month' ? 'week' : 'month';
+    setViewType(newViewType);
+    // Collapse bottom sheet when expanding to month view
+    if (newViewType === 'month') {
+      bottomSheetRef.current?.snapToIndex(0);
+    } else {
+      bottomSheetRef.current?.snapToIndex(1);
+    }
   };
 
   const handleDayPress = (date: Date) => {
@@ -204,6 +212,7 @@ export default function CalendarScreen() {
       </View>
 
       <EventsBottomSheet
+        ref={bottomSheetRef}
         events={selectedDateEvents}
         isLoading={isLoadingSelected}
         selectedDate={currentDate}

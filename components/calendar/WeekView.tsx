@@ -85,6 +85,13 @@ export function WeekView({
           onPress={onNext}
           testID={`${testID}-next`}
         />
+        <IconButton
+          icon="fullscreen"
+          size={18}
+          iconColor={theme.colors.onSurfaceVariant}
+          onPress={onToggleView}
+          testID={`${testID}-toggle`}
+        />
       </View>
 
       <View style={styles.weekRow}>
@@ -160,14 +167,6 @@ export function WeekView({
           { backgroundColor: theme.colors.surfaceVariant },
         ]}
       />
-      <IconButton
-        icon="fullscreen"
-        size={18}
-        iconColor={theme.colors.onSurfaceVariant}
-        onPress={onToggleView}
-        style={styles.toggleButton}
-        testID={`${testID}-toggle`}
-      />
     </View>
   );
 }
@@ -240,11 +239,6 @@ const styles = StyleSheet.create({
     width: 40,
     height: 4,
     borderRadius: 2,
-  },
-  toggleButton: {
-    position: 'absolute',
-    bottom: 2,
-    right: 8,
   },
 });
 
