@@ -238,6 +238,24 @@ export const eventFormSchema = () =>
           });
         }
       }
+
+      // Validate recurrence fields when isRecurring is true
+      if (data.isRecurring) {
+        if (!data.recurrence?.frequency) {
+          ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            message: t('forms.validation.recurrence.frequencyInvalid'),
+            path: ['recurrence', 'frequency'],
+          });
+        }
+        if (!data.recurrence?.timezone) {
+          ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            message: t('forms.validation.recurrence.timezoneRequired'),
+            path: ['recurrence', 'timezone'],
+          });
+        }
+      }
     });
 
 // Type inference from the form schema
@@ -522,7 +540,7 @@ export const transformFormDataToRecurrenceRule = (
     dosage: formData.dosage || undefined,
 
     // Recurrence settings
-    frequency: formData.recurrence.frequency,
+    frequency: formData.recurrence.frequency!,
     interval: formData.recurrence.interval ?? 1,
     daysOfWeek: formData.recurrence.daysOfWeek,
     dayOfMonth: formData.recurrence.dayOfMonth,
@@ -531,7 +549,7 @@ export const transformFormDataToRecurrenceRule = (
     eventDurationMinutes,
 
     // Timezone
-    timezone: formData.recurrence.timezone,
+    timezone: formData.recurrence.timezone!,
 
     // Date boundaries
     startDate: startDate.toISOString(),

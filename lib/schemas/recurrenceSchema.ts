@@ -9,13 +9,15 @@ export { RECURRENCE_FREQUENCIES, type RecurrenceFrequency } from '@/constants/re
 
 /**
  * Recurrence settings schema (for form)
+ * All fields are optional to allow partial form state when isRecurring is false.
+ * Validation of required fields is done in eventFormSchema when isRecurring is true.
  */
 export const recurrenceSettingsSchema = () =>
   z.object({
     frequency: z.enum(
       Object.values(RECURRENCE_FREQUENCIES) as [RecurrenceFrequency, ...RecurrenceFrequency[]],
       { message: t('forms.validation.recurrence.frequencyInvalid') }
-    ),
+    ).optional(),
 
     // interval: accepts both string (from SmartDropdown) and number, coerces to number
     interval: z
@@ -66,7 +68,7 @@ export const recurrenceSettingsSchema = () =>
       .optional()
       .transform((val) => val?.trim() || undefined),
 
-    timezone: z.string().min(1, { message: t('forms.validation.recurrence.timezoneRequired') }),
+    timezone: z.string().optional(),
   });
 
 export type RecurrenceSettings = z.infer<ReturnType<typeof recurrenceSettingsSchema>>;
