@@ -156,6 +156,20 @@ export default function CareScreen() {
   };
 
   const handleToggleReminder = async (schedule: FeedingSchedule, reminderEnabled: boolean) => {
+    if (reminderEnabled) {
+      const { requestNotificationPermissions, registerPushTokenWithBackend } = await import('@/lib/services/notificationService');
+      const granted = await requestNotificationPermissions();
+      if (!granted) {
+        showToast({
+          type: 'warning',
+          title: t('settings.notifications'),
+          message: t('settings.notificationPermissionDenied'),
+        });
+        return;
+      }
+      // Register push token after permission granted
+      void registerPushTokenWithBackend();
+    }
     try {
       await toggleReminderMutation.mutateAsync({
         id: schedule._id,

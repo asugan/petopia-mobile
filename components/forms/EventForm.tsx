@@ -6,7 +6,7 @@ import { Button, Text } from '@/components/ui';
 import { useEventForm } from '@/hooks/useEventForm';
 import { useTheme } from '@/lib/theme';
 import { REMINDER_PRESETS, ReminderPresetKey } from '@/constants/reminders';
-import { requestNotificationPermissions } from '@/lib/services/notificationService';
+import { requestNotificationPermissions, registerPushTokenWithBackend } from '@/lib/services/notificationService';
 import { useUserSettingsStore } from '@/stores/userSettingsStore';
 import { useSubscription } from '@/lib/hooks/useSubscription';
 import { useAllEvents } from '@/lib/hooks/useEvents';
@@ -103,7 +103,11 @@ export function EventForm({
           type: 'warning',
           title: t('settings.notifications'),
           message: t('settings.notificationPermissionDenied'),
-        });      }
+        });
+        return;
+      }
+      // Register push token after permission granted
+      void registerPushTokenWithBackend();
     };
 
     void ensureNotificationAccess();

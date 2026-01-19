@@ -268,6 +268,16 @@ export default function FinanceScreen() {
       return;
     }
 
+    // Request notification permission if budget notifications are enabled
+    const budgetNotificationsEnabled = settings?.budgetNotificationsEnabled ?? true;
+    if (budgetNotificationsEnabled) {
+      const { requestNotificationPermissions, registerPushTokenWithBackend } = await import('@/lib/services/notificationService');
+      const granted = await requestNotificationPermissions();
+      if (granted) {
+        void registerPushTokenWithBackend();
+      }
+    }
+
     try {
       await setBudgetMutation.mutateAsync(data);
       setBudgetModalVisible(false);

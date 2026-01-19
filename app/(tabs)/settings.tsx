@@ -6,7 +6,7 @@ import { LargeTitle } from "@/components/LargeTitle";
 import { DateTimePicker } from "@/components/DateTimePicker";
 import { useAuth } from "@/lib/auth";
 import { accountService } from "@/lib/services/accountService";
-import { notificationService, requestNotificationPermissions } from "@/lib/services/notificationService";
+import { notificationService, requestNotificationPermissions, registerPushTokenWithBackend } from "@/lib/services/notificationService";
 import { useAuthStore } from "@/stores/authStore";
 import { useEventReminderStore } from "@/stores/eventReminderStore";
 import { SupportedCurrency, useUserSettingsStore } from "@/stores/userSettingsStore";
@@ -110,7 +110,8 @@ export default function SettingsScreen() {
           // Ensure backend stays disabled if permission denied
           await updateSettings({ notificationsEnabled: false });
         } else {
-          // Permission granted, update backend
+          // Permission granted, register push token and update backend
+          void registerPushTokenWithBackend();
           await updateSettings({ notificationsEnabled: true });
         }
       } else {

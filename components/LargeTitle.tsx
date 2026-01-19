@@ -6,7 +6,7 @@ import { useTranslation } from "react-i18next";
 import { Text } from "@/components/ui";
 import { useTheme } from "@/lib/theme";
 import { useSubscription } from "@/lib/hooks/useSubscription";
-import { notificationService, requestNotificationPermissions } from "@/lib/services/notificationService";
+import { notificationService, requestNotificationPermissions, registerPushTokenWithBackend } from "@/lib/services/notificationService";
 import { showToast } from "@/lib/toast/showToast";
 import { useEventReminderStore } from "@/stores/eventReminderStore";
 import { useUserSettingsStore } from "@/stores/userSettingsStore";
@@ -74,6 +74,8 @@ export const HeaderActions = () => {
           await updateSettings({ notificationsEnabled: false });
           return;
         }
+        // Register push token after permission granted
+        void registerPushTokenWithBackend();
         await updateSettings({ notificationsEnabled: true });
       }
     } catch {

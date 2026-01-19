@@ -12,7 +12,7 @@ import { ApiErrorBoundary } from "@/lib/components/ApiErrorBoundary";
 import { MOBILE_QUERY_CONFIG } from "@/lib/config/queryConfig";
 import { useAuth } from '@/lib/auth';
 import { setOnUnauthorized, setOnProRequired } from '@/lib/api/client';
-import { notificationService, registerPushTokenWithBackend } from '@/lib/services/notificationService';
+import { notificationService } from '@/lib/services/notificationService';
 import { useOnlineManager } from "@/lib/hooks/useOnlineManager";
 import { useSubscription } from '@/lib/hooks/useSubscription';
 import { NetworkStatus } from "@/lib/components/NetworkStatus";
@@ -60,19 +60,7 @@ function AppProviders({ children }: { children: React.ReactNode }) {
     });
   }, []);
 
-  useEffect(() => {
-    // Register push token with backend for server-side notifications
-    // This enables notifications even when app is closed
-    const initPushNotifications = async () => {
-      try {
-        await registerPushTokenWithBackend();
-      } catch {
-        // Silent fail - notifications will use local fallback
-      }
-    };
 
-    void initPushNotifications();
-  }, []);
 
   useEffect(() => {
     const receivedSubscription = Notifications.addNotificationReceivedListener(
