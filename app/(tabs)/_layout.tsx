@@ -80,20 +80,20 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name="care"
-        options={{
-          title: t('navigation.care'),
-          tabBarIcon: ({ color, size }) => (
-            <MaterialCommunityIcons name="heart-pulse" size={size} color={color} />
-          ),
-        }}
-      />
-      <Tabs.Screen
         name="calendar"
         options={{
           title: t('navigation.calendar'),
           tabBarIcon: ({ color, size }) => (
             <MaterialCommunityIcons name="calendar" size={size} color={color} />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="care"
+        options={{
+          title: t('navigation.care'),
+          tabBarIcon: ({ color, size }) => (
+            <MaterialCommunityIcons name="heart-pulse" size={size} color={color} />
           ),
         }}
       />
