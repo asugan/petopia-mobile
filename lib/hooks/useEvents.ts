@@ -135,6 +135,27 @@ export const useAllEvents = () => {
   });
 };
 
+/**
+ * Hook for getting the last 3 past events
+ * Shows recent events when there are no upcoming events
+ */
+export const useRecentPastEvents = () => {
+  const { data: allEvents = [], isLoading } = useAllEvents();
+
+  const recentPastEvents = useMemo(() => {
+    const now = new Date();
+    return allEvents
+      .filter((event) => new Date(event.startTime) < now)
+      .sort((a, b) => new Date(b.startTime).getTime() - new Date(a.startTime).getTime())
+      .slice(0, 3);
+  }, [allEvents]);
+
+  return {
+    data: recentPastEvents,
+    isLoading,
+  };
+};
+
 // Mutations
 export const useCreateEvent = () => {
   const queryClient = useQueryClient();

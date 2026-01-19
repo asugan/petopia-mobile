@@ -72,6 +72,7 @@
     "upcomingEventsEmptyTitle": "Plan the first event",
     "upcomingEventsEmptyDescription": "Vet visits, grooming, and play dates appear here once scheduled.",
     "upcomingEventsEmptyCta": "Add event",
+    "recentEventsTitle": "Recent Events",
     "healthOverviewEmptyTitle": "Start a health timeline",
     "healthOverviewEmptyDescription": "Add checkups and visits to keep a quick view of your pet's health history.",
     "healthOverviewEmptyCta": "Add health record",
@@ -300,6 +301,7 @@
       "status": "Status",
 
     "upcoming": "Upcoming Events",
+    "past": "Past",
     "today": "Today",
     "addEvent": "Add Event",
     "forPet": "For pet",

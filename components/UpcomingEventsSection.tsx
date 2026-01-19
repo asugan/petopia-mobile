@@ -4,7 +4,7 @@ import { Button, Card, Text } from '@/components/ui';
 import { useTheme } from '@/lib/theme';
 import { useTranslation } from 'react-i18next';
 import { Ionicons } from '@expo/vector-icons';
-import { useUpcomingEvents } from '@/lib/hooks/useEvents';
+import { useUpcomingEvents, useRecentPastEvents } from '@/lib/hooks/useEvents';
 import { usePets } from '@/lib/hooks/usePets';
 import { useRouter } from 'expo-router';
 
@@ -61,6 +61,7 @@ export function UpcomingEventsSection() {
   const { t } = useTranslation();
   const router = useRouter();
   const { data: events, isLoading } = useUpcomingEvents();
+  const { data: pastEvents, isLoading: isPastLoading } = useRecentPastEvents();
   const { data: pets } = usePets();
 
   // Get pet name by id
@@ -79,7 +80,7 @@ export function UpcomingEventsSection() {
     return `${day}.${month} - ${hours}:${minutes}`;
   };
 
-  if (isLoading) {
+  if (isLoading || isPastLoading) {
     return (
       <Card style={[styles.card, { backgroundColor: theme.colors.surface, borderColor: '#4B5563' }]}>
         <View style={styles.content}>
@@ -95,6 +96,50 @@ export function UpcomingEventsSection() {
   }
 
   const upcomingEvents = events?.slice(0, 3) || [];
+
+  // If no upcoming events but there are past events, show recent past events
+  if (upcomingEvents.length === 0 && pastEvents.length > 0) {
+    return (
+      <Card style={[styles.card, { backgroundColor: theme.colors.surface, borderColor: '#4B5563' }]}>
+        <View style={styles.content}>
+          <Text variant="titleMedium" style={[styles.title, { color: theme.colors.onSurface }]}>
+            {t('home.recentEventsTitle')}
+          </Text>
+
+          <View style={styles.list}>
+            {pastEvents.map((event) => {
+              const iconName = getEventIcon(event.type);
+              const iconColor = getEventColor(event.type);
+              const petName = getPetName(event.petId);
+
+              return (
+                <View key={event._id} style={styles.eventItem}>
+                  <View style={[styles.iconCircle, { backgroundColor: iconColor + '33' }]}>
+                    <Ionicons name={iconName} size={20} color={iconColor} />
+                  </View>
+                  <View style={styles.eventInfo}>
+                    <View style={styles.eventHeader}>
+                      <Text variant="bodyMedium" style={{ color: theme.colors.onSurface, flex: 1 }}>
+                        {event.title}
+                      </Text>
+                      <View style={[styles.pastBadge, { backgroundColor: theme.colors.secondaryContainer }]}>
+                        <Text variant="labelSmall" style={{ color: theme.colors.secondary }}>
+                          {t('events.past')}
+                        </Text>
+                      </View>
+                    </View>
+                    <Text variant="bodySmall" style={{ color: theme.colors.onSurfaceVariant }}>
+                      {petName}{event.description ? ` - ${event.description}` : ''}
+                    </Text>
+                  </View>
+                </View>
+              );
+            })}
+          </View>
+        </View>
+      </Card>
+    );
+  }
 
   if (upcomingEvents.length === 0) {
     return (
@@ -232,6 +277,11 @@ const styles = StyleSheet.create({
   },
   emptyCta: {
     alignSelf: 'center',
+  },
+  pastBadge: {
+    paddingHorizontal: 8,
+    paddingVertical: 2,
+    borderRadius: 4,
   },
 });
 

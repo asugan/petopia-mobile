@@ -72,6 +72,7 @@
     "upcomingEventsEmptyTitle": "İlk etkinliği planlayın",
     "upcomingEventsEmptyDescription": "Veteriner, bakım ve oyun etkinlikleri planlandıkça burada görünür.",
     "upcomingEventsEmptyCta": "Etkinlik ekle",
+    "recentEventsTitle": "Son Etkinlikler",
     "healthOverviewEmptyTitle": "Sağlık zaman çizelgesi oluşturun",
     "healthOverviewEmptyDescription": "Kontrol ve ziyaretleri ekleyerek sağlık geçmişini hızlıca takip edin.",
     "healthOverviewEmptyCta": "Sağlık kaydı ekle",
@@ -284,6 +285,7 @@
       "status": "Durum",
 
     "upcoming": "Yaklaşan Etkinlikler",
+    "past": "Geçmiş",
     "today": "Bugün",
     "addEvent": "Etkinlik Ekle",
     "forPet": "Pet için",
