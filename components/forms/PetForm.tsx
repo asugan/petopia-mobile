@@ -1,8 +1,8 @@
 import React from 'react';
-import { ScrollView, StyleSheet, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import { FormProvider } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
-import { Button } from '@/components/ui';
+import { Button, KeyboardAwareView } from '@/components/ui';
 import { useTheme } from '@/lib/theme';
 import { usePetForm } from '../../hooks/usePetForm';
 import { PetCreateFormInput } from '../../lib/schemas/petSchema';
@@ -132,10 +132,9 @@ export function PetForm({
 
   return (
     <FormProvider {...form}>
-      <ScrollView
+      <KeyboardAwareView
         style={[styles.container, { backgroundColor: theme.colors.background }]}
         contentContainerStyle={styles.contentContainer}
-        keyboardShouldPersistTaps="handled"
         testID={testID}
       >
         <StepHeader
@@ -261,7 +260,7 @@ export function PetForm({
         </View>
 
         {/* Form Status */}
-      </ScrollView>
+      </KeyboardAwareView>
     </FormProvider>
   );
 }

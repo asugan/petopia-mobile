@@ -1,8 +1,8 @@
 import React from 'react';
-import { Alert, ScrollView, StyleSheet, View } from 'react-native';
+import { Alert, StyleSheet, View } from 'react-native';
 import { FormProvider, useWatch } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
-import { Button, Text } from '@/components/ui';
+import { Button, Text, KeyboardAwareView } from '@/components/ui';
 import { useFeedingScheduleForm } from '@/hooks/useFeedingScheduleForm';
 import { useTheme } from '@/lib/theme';
 import { createFoodTypeOptions } from '../../constants';
@@ -177,10 +177,9 @@ export function FeedingScheduleForm({
 
   return (
     <FormProvider {...form}>
-      <ScrollView
+      <KeyboardAwareView
         style={[styles.container, { backgroundColor: theme.colors.background }]}
         contentContainerStyle={styles.contentContainer}
-        keyboardShouldPersistTaps="handled"
         testID={testID}
       >
         <StepHeader
@@ -318,7 +317,7 @@ export function FeedingScheduleForm({
           )}
         </View>
 
-      </ScrollView>
+      </KeyboardAwareView>
     </FormProvider>
   );
 }

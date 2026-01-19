@@ -1,11 +1,11 @@
 import React from "react";
 import { useForm, Controller, FormProvider } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { View, StyleSheet, TouchableOpacity, ScrollView } from "react-native";
+import { View, StyleSheet, TouchableOpacity } from "react-native";
 import { FormSection } from "./forms/FormSection";
 import { SmartCurrencyInput } from "./forms/SmartCurrencyInput";
 import { SmartSwitch } from "./forms/SmartSwitch";
-import { Button, Text } from "@/components/ui";
+import { Button, Text, KeyboardAwareView } from "@/components/ui";
 import { useTheme } from "@/lib/theme";
 import { useTranslation } from "react-i18next";
 import {
@@ -106,10 +106,9 @@ const UserBudgetForm: React.FC<UserBudgetFormProps> = ({
 
   return (
     <FormProvider {...form}>
-      <ScrollView
+      <KeyboardAwareView
         style={styles.container}
         contentContainerStyle={styles.contentContainer}
-        keyboardShouldPersistTaps="handled"
       >
         <StepHeader
           title={steps[currentStep].title}
@@ -255,7 +254,7 @@ const UserBudgetForm: React.FC<UserBudgetFormProps> = ({
             </Text>
           </View>
         )}
-      </ScrollView>
+      </KeyboardAwareView>
     </FormProvider>
   );
 };

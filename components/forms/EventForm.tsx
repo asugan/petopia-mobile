@@ -1,8 +1,8 @@
 import React from 'react';
-import { Alert, ScrollView, StyleSheet, View } from 'react-native';
+import { Alert, StyleSheet, View } from 'react-native';
 import { FormProvider, useWatch } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
-import { Button, Text } from '@/components/ui';
+import { Button, Text, KeyboardAwareView } from '@/components/ui';
 import { useEventForm } from '@/hooks/useEventForm';
 import { useTheme } from '@/lib/theme';
 import { REMINDER_PRESETS, ReminderPresetKey } from '@/constants/reminders';
@@ -220,10 +220,9 @@ export function EventForm({
 
   return (
     <FormProvider {...form}>
-      <ScrollView
+      <KeyboardAwareView
         style={[styles.container, { backgroundColor: theme.colors.background }]}
         contentContainerStyle={styles.contentContainer}
-        keyboardShouldPersistTaps="handled"
         testID={testID}
       >
         <StepHeader
@@ -476,7 +475,7 @@ export function EventForm({
           )}
         </View>
 
-      </ScrollView>
+      </KeyboardAwareView>
     </FormProvider>
   );
 }

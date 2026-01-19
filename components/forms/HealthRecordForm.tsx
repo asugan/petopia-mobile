@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
-import { Modal as RNModal, ScrollView, StyleSheet, View, TouchableOpacity } from 'react-native';
+import { Modal as RNModal, StyleSheet, View, TouchableOpacity } from 'react-native';
 import { FormProvider, useFieldArray } from 'react-hook-form';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useTranslation } from 'react-i18next';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { Button, Text } from '@/components/ui';
+import { Button, Text, KeyboardAwareView } from '@/components/ui';
 import { useHealthRecordForm } from '@/hooks/useHealthRecordForm';
 import { useEvent } from '@/lib/hooks/useEvents';
 import { useTheme } from '@/lib/theme';
@@ -277,10 +277,9 @@ export function HealthRecordForm({
           </Button>
         </View>
         <FormProvider {...form}>
-          <ScrollView
+          <KeyboardAwareView
             style={styles.content}
             contentContainerStyle={styles.contentContainer}
-            showsVerticalScrollIndicator={false}
           >
             <StepHeader
               title={steps[currentStep].title}
@@ -485,7 +484,7 @@ export function HealthRecordForm({
                 </Text>
               </View>
             )}
-          </ScrollView>
+          </KeyboardAwareView>
         </FormProvider>
       </SafeAreaView>
     </RNModal>

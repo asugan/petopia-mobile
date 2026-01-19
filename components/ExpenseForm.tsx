@@ -1,9 +1,9 @@
 import React from 'react';
-import { ScrollView, StyleSheet, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { FormProvider, useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
-import { Button, Text, TextInput } from '@/components/ui';
+import { Button, Text, TextInput, KeyboardAwareView } from '@/components/ui';
 import { useTheme } from '@/lib/theme';
 import { ExpenseCreateFormInput, ExpenseCreateSchema } from '../lib/schemas/expenseSchema';
 import { CreateExpenseInput as CreateExpenseInputType, Expense, ExpenseCategory } from '../lib/types';
@@ -113,7 +113,7 @@ const ExpenseForm: React.FC<ExpenseFormProps> = ({
 
   return (
     <FormProvider {...methods}>
-      <ScrollView style={[styles.container, { backgroundColor: theme.colors.background }]} contentContainerStyle={styles.form}>
+      <KeyboardAwareView style={[styles.container, { backgroundColor: theme.colors.background }]} contentContainerStyle={styles.form}>
         <StepHeader
           title={steps[currentStep].title}
           counterLabel={t('expenses.stepIndicator', { current: currentStep + 1, total: totalSteps })}
@@ -247,7 +247,7 @@ const ExpenseForm: React.FC<ExpenseFormProps> = ({
             </Text>
           </View>
         )}
-      </ScrollView>
+      </KeyboardAwareView>
     </FormProvider>
   );
 };
