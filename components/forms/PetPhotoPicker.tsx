@@ -180,7 +180,7 @@ export const PetPhotoPicker: React.FC<PetPhotoPickerProps> = ({
             <Button
               mode="text"
               onPress={() => onChange(undefined)}
-              textColor="#FF6B6B"
+              textColor={theme.colors.error}
               compact
             >
               {t('forms.photoPicker.removePhoto')}
@@ -235,8 +235,8 @@ export const PetPhotoPicker: React.FC<PetPhotoPickerProps> = ({
                 description={t('forms.photoPicker.removePhotoDescription')}
                 left={<MaterialCommunityIcons name="delete" size={24} color={theme.colors.onSurfaceVariant} />}
                 onPress={removePhoto}
-                style={{ ...styles.modalItem, ...styles.dangerItem }}
-                titleStyle={{ color: '#FF6B6B' }}
+                style={styles.modalItem}
+                titleStyle={{ color: theme.colors.error }}
               />
             )}
           </Surface>
@@ -302,7 +302,6 @@ const styles = StyleSheet.create({
     minWidth: 120,
   },
   modal: {
-    backgroundColor: 'white',
     padding: 20,
     margin: 20,
     borderRadius: 12,
@@ -317,9 +316,6 @@ const styles = StyleSheet.create({
   },
   modalItem: {
     paddingVertical: 4,
-  },
-  dangerItem: {
-    backgroundColor: '#FFE5E5',
   },
   cancelButton: {
     width: '100%',
