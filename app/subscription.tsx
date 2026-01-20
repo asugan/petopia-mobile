@@ -76,9 +76,14 @@ export default function SubscriptionScreen() {
       description: t('subscription.features.unlimitedDesc'),
     },
     {
-      icon: 'heart-pulse' as const,
-      title: t('subscription.features.advanced'),
-      description: t('subscription.features.advancedDesc'),
+      icon: 'silverware-fork-knife' as const,
+      title: t('subscription.features.feedingSchedules'),
+      description: t('subscription.features.feedingSchedulesDesc'),
+    },
+    {
+      icon: 'wallet' as const,
+      title: t('subscription.features.budgetTracking'),
+      description: t('subscription.features.budgetTrackingDesc'),
     },
     {
       icon: 'export' as const,
