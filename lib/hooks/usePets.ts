@@ -7,7 +7,7 @@ import { useCreateResource, useDeleteResource, useUpdateResource } from './useCr
 import { useResource } from './core/useResource';
 import { useConditionalQuery } from './core/useConditionalQuery';
 import { useAuthQueryEnabled } from './useAuthQueryEnabled';
-import { eventKeys, expenseKeys, feedingScheduleKeys, healthRecordKeys, petKeys } from './queryKeys';
+import { downgradeKeys, eventKeys, expenseKeys, feedingScheduleKeys, healthRecordKeys, petKeys } from './queryKeys';
 
 export { petKeys } from './queryKeys';
 
@@ -103,6 +103,8 @@ export function useCreatePet() {
       listQueryKey: petKeys.lists(),
       onSettled: () => {
         queryClient.invalidateQueries({ queryKey: petKeys.all });
+        // Invalidate downgrade status as pet count changed
+        queryClient.invalidateQueries({ queryKey: downgradeKeys.all });
       },
     }
   );

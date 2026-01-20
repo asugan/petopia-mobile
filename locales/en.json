@@ -1475,5 +1475,18 @@
       "button": "Go to Homepage"
     },
     "note": "Payment will be charged to your App Store / Google Play account. Subscriptions automatically renew unless cancelled at least 24 hours before the end of the current period. You can manage or cancel your subscription in your App Store / Google Play account settings."
+  },
+  "downgrade": {
+    "title": "Choose Your Pet",
+    "subtitle": "Your subscription has expired. The free plan allows {{limit}} pet. Please select which pet to keep.",
+    "selectPet": "Select a pet to keep",
+    "warning": "All data for unselected pets (health records, events, expenses, feeding schedules) will be permanently deleted. This action cannot be undone.",
+    "keepButton": "Keep Selected Pet",
+    "upgradeButton": "Upgrade to Pro",
+    "confirmTitle": "Confirm Selection",
+    "confirmMessage": "All data for other pets will be permanently deleted. This cannot be undone.",
+    "confirmDelete": "Yes, Delete Others",
+    "cancel": "Cancel",
+    "error": "Failed to process. Please try again."
   }
 }

@@ -55,3 +55,10 @@ export const expenseKeys = {
   infinite: <T extends object | undefined>(petId: string | undefined, filters?: T) =>
     [...baseExpenseKeys.all, 'infinite', petId, filters] as const,
 };
+
+// Downgrade
+const baseDowngradeKeys = createQueryKeys('downgrade');
+export const downgradeKeys = {
+  ...baseDowngradeKeys,
+  status: (userId?: string) => [...baseDowngradeKeys.all, 'status', userId] as const,
+};

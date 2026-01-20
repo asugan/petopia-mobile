@@ -1450,5 +1450,18 @@
       "button": "Anasayfaya Dön"
     },
     "note": "Ödeme App Store / Google Play hesabınızdan tahsil edilecektir. Abonelikler, mevcut dönemin sonundan en az 24 saat önce iptal edilmediği sürece otomatik olarak yenilenir. Aboneliğinizi App Store / Google Play hesap ayarlarınızdan yönetebilir veya iptal edebilirsiniz."
+  },
+  "downgrade": {
+    "title": "Evcil Hayvanınızı Seçin",
+    "subtitle": "Aboneliğiniz sona erdi. Ücretsiz plan {{limit}} evcil hayvana izin veriyor. Lütfen saklamak istediğinizi seçin.",
+    "selectPet": "Saklamak istediğiniz evcil hayvanı seçin",
+    "warning": "Seçilmeyen evcil hayvanların tüm verileri (sağlık kayıtları, etkinlikler, harcamalar, besleme programları) kalıcı olarak silinecektir. Bu işlem geri alınamaz.",
+    "keepButton": "Seçili Evcil Hayvanı Sakla",
+    "upgradeButton": "Pro'ya Yükselt",
+    "confirmTitle": "Seçimi Onayla",
+    "confirmMessage": "Diğer evcil hayvanların tüm verileri kalıcı olarak silinecek. Bu işlem geri alınamaz.",
+    "confirmDelete": "Evet, Diğerlerini Sil",
+    "cancel": "İptal",
+    "error": "İşlem başarısız. Lütfen tekrar deneyin."
   }
 }

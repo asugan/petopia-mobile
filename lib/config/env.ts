@@ -65,9 +65,13 @@ export const ENV = {
 
     // Subscription endpoints
     SUBSCRIPTION_STATUS: "/api/subscription/status", // Unified status endpoint
+    SUBSCRIPTION_DOWNGRADE_STATUS: "/api/subscription/downgrade-status", // Check if downgrade required
     SUBSCRIPTION_TRIAL_STATUS: "/api/subscription/trial-status", // Deprecated
     SUBSCRIPTION_START_TRIAL: "/api/subscription/start-trial",
     SUBSCRIPTION_DEACTIVATE_TRIAL: "/api/subscription/deactivate-trial", // Deprecated
+
+    // Pet downgrade endpoint
+    PETS_DOWNGRADE: "/api/pets/downgrade",
   },
 
   // Request timeout

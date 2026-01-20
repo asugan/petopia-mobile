@@ -4,7 +4,7 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { StatusBar } from 'expo-status-bar';
 import * as Notifications from 'expo-notifications';
-import { Stack, useRouter } from "expo-router";
+import { Stack, useRouter, useSegments } from "expo-router";
 import { QueryClient, QueryClientProvider, focusManager } from '@tanstack/react-query';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Toast from 'react-native-toast-message';
@@ -15,6 +15,7 @@ import { setOnUnauthorized, setOnProRequired } from '@/lib/api/client';
 import { notificationService } from '@/lib/services/notificationService';
 import { useOnlineManager } from "@/lib/hooks/useOnlineManager";
 import { useSubscription } from '@/lib/hooks/useSubscription';
+import { useDowngradeStatus } from '@/lib/hooks/useDowngrade';
 import { NetworkStatus } from "@/lib/components/NetworkStatus";
 import { LanguageProvider } from "@/providers/LanguageProvider";
 import { AuthProvider } from "@/providers/AuthProvider";
@@ -53,6 +54,41 @@ function SubscriptionGate({ children }: { children: React.ReactNode }) {
   return <>{children}</>;
 }
 
+function DowngradeGate({ children }: { children: React.ReactNode }) {
+  const router = useRouter();
+  const segments = useSegments();
+  const { isAuthenticated } = useAuth();
+  const { isProUser, isLoading: isSubscriptionLoading } = useSubscription();
+  const { data: downgradeStatus, isLoading: isDowngradeLoading } = useDowngradeStatus();
+  const hasRedirectedRef = useRef(false);
+
+  useEffect(() => {
+    // Only check downgrade when user is authenticated, not pro, and data is loaded
+    if (!isAuthenticated || isSubscriptionLoading || isDowngradeLoading) {
+      return;
+    }
+
+    // If user is pro, no need to check downgrade
+    if (isProUser) {
+      hasRedirectedRef.current = false;
+      return;
+    }
+
+    const isOnDowngradePage = segments.includes('downgrade' as never);
+    const requiresDowngrade = downgradeStatus?.requiresDowngrade ?? false;
+
+    if (requiresDowngrade && !isOnDowngradePage && !hasRedirectedRef.current) {
+      hasRedirectedRef.current = true;
+      router.replace('/downgrade');
+    } else if (!requiresDowngrade && isOnDowngradePage) {
+      hasRedirectedRef.current = false;
+      router.replace('/(tabs)');
+    }
+  }, [isAuthenticated, isProUser, isSubscriptionLoading, isDowngradeLoading, downgradeStatus, segments, router]);
+
+  return <>{children}</>;
+}
+
 function AppProviders({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     setOnUnauthorized(() => {
@@ -84,7 +120,9 @@ function AppProviders({ children }: { children: React.ReactNode }) {
             <ApiErrorBoundary>
               <AuthProvider>
                 <SubscriptionProvider>
-                  <SubscriptionGate>{children}</SubscriptionGate>
+                  <SubscriptionGate>
+                    <DowngradeGate>{children}</DowngradeGate>
+                  </SubscriptionGate>
                 </SubscriptionProvider>
               </AuthProvider>
             </ApiErrorBoundary>
@@ -227,6 +265,14 @@ function RootLayoutContent() {
           options={{
             headerShown: false,
             presentation: 'modal',
+          }}
+        />
+        <Stack.Screen
+          name="downgrade"
+          options={{
+            headerShown: false,
+            presentation: 'fullScreenModal',
+            gestureEnabled: false,
           }}
         />
       </Stack>
