@@ -23,7 +23,7 @@ import {
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { getEventTypeLabel } from '@/constants/eventIcons';
-import { FALLBACK_IMAGES } from '@/constants/images';
+import { FALLBACK_IMAGES, PET_TYPE_AVATARS } from '@/constants/images';
 import { useReminderScheduler } from '@/hooks/useReminderScheduler';
 import { useDeleteEvent, useEvent, useUpdateEvent } from '@/lib/hooks/useEvents';
 import { usePet } from '@/lib/hooks/usePets';
@@ -380,7 +380,9 @@ export default function EventDetailScreen() {
   const eventTypeLabel = getEventTypeLabel(event.type, t);
   const heroImage = pet?.profilePhoto 
     ? { uri: pet.profilePhoto } 
-    : FALLBACK_IMAGES.petHero;
+    : pet?.type
+      ? (PET_TYPE_AVATARS[pet.type.toLowerCase() as keyof typeof PET_TYPE_AVATARS] ?? FALLBACK_IMAGES.petHero)
+      : FALLBACK_IMAGES.petHero;
 
   return (
     <View style={[styles.container, { backgroundColor: COLORS.backgroundDark }]}>
@@ -459,7 +461,9 @@ export default function EventDetailScreen() {
               <View style={[styles.card, { backgroundColor: COLORS.surfaceDark, width: (width - 32 - 12) / 2 }]}>
                 <View style={[styles.cardIconContainer, styles.petAvatarContainer, { borderColor: COLORS.primary }]}>
                   <Image 
-                    source={pet.profilePhoto ? { uri: pet.profilePhoto } : FALLBACK_IMAGES.petAvatar} 
+                    source={pet.profilePhoto 
+                      ? { uri: pet.profilePhoto } 
+                      : PET_TYPE_AVATARS[pet.type.toLowerCase() as keyof typeof PET_TYPE_AVATARS] ?? FALLBACK_IMAGES.petAvatar} 
                     style={styles.petAvatar} 
                   />
                 </View>

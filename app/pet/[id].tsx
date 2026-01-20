@@ -10,7 +10,7 @@ import { tr, enUS } from 'date-fns/locale';
 import { Ionicons, MaterialCommunityIcons, MaterialIcons } from '@expo/vector-icons';
 
 import { Text, ActivityIndicator } from '@/components/ui';
-import { FALLBACK_IMAGES } from '@/constants/images';
+import { FALLBACK_IMAGES, PET_TYPE_AVATARS } from '@/constants/images';
 import { useTheme } from '@/lib/theme';
 import { usePet, useDeletePet } from '@/lib/hooks/usePets';
 import { useEvents } from '@/lib/hooks/useEvents';
@@ -268,7 +268,7 @@ export default function PetDetailScreen() {
 
   const heroSource = pet.profilePhoto
     ? { uri: pet.profilePhoto }
-    : FALLBACK_IMAGES.petHero;
+    : PET_TYPE_AVATARS[pet.type.toLowerCase() as keyof typeof PET_TYPE_AVATARS] ?? FALLBACK_IMAGES.petHero;
 
   return (
     <View style={[styles.container, { backgroundColor: theme.colors.background }]}>
