@@ -29,13 +29,13 @@ function HomeScreenContent() {
   const { theme } = useTheme();
   const { t } = useTranslation();
   const router = useRouter();
-  const { isProUser, presentPaywall } = useSubscription();
+  const { isProUser } = useSubscription();
 
   // Tüm mantık useHomeData hook'unda toplandı
   const { layout, data, status, financial } = useHomeData();
 
   const handleUpgradePress = async () => {
-    await presentPaywall();
+    router.push('/subscription');
   };
 
   // Hook must be called unconditionally before any early returns

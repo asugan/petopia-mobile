@@ -34,7 +34,7 @@ type CareTabValue = 'health' | 'feeding';
 export default function CareScreen() {
   const { theme } = useTheme();
   const { t } = useTranslation();
-  const { isProUser, presentPaywall } = useSubscription();
+  const { isProUser } = useSubscription();
   const router = useRouter();
   const { settings } = useUserSettingsStore();
   const baseCurrency = settings?.baseCurrency || 'TRY';
@@ -114,10 +114,8 @@ export default function CareScreen() {
 
   const handleAddSchedule = async () => {
     if (!isProUser && activeFeedingSchedules.length >= 1) {
-      const didPurchase = await presentPaywall();
-      if (!didPurchase) {
-        return;
-      }
+      router.push('/subscription');
+      return;
     }
 
     setSelectedSchedule(undefined);
@@ -143,10 +141,8 @@ export default function CareScreen() {
 
   const handleToggleActive = async (schedule: FeedingSchedule, isActive: boolean) => {
     if (isActive && !schedule.isActive && !isProUser && activeFeedingSchedules.length >= 1) {
-      const didPurchase = await presentPaywall();
-      if (!didPurchase) {
-        return;
-      }
+      router.push('/subscription');
+      return;
     }
 
     try {
@@ -185,7 +181,7 @@ export default function CareScreen() {
   };
 
   const handleFeedingUpgradePress = async () => {
-    await presentPaywall();
+    router.push('/subscription');
   };
 
   const renderHealthContent = () => {

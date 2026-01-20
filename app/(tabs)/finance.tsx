@@ -9,6 +9,7 @@ import {
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
+import { useRouter } from "expo-router";
 import { useTranslation } from "react-i18next";
 import { useQueryClient } from "@tanstack/react-query";
 import { Button, Card, FAB, SegmentedButtons, Text } from "@/components/ui";
@@ -61,7 +62,8 @@ type FinanceTabValue = 'budget' | 'expenses';
 export default function FinanceScreen() {
   const { theme } = useTheme();
   const { t } = useTranslation();
-  const { isProUser, presentPaywall } = useSubscription();
+  const router = useRouter();
+  const { isProUser } = useSubscription();
   const insets = useSafeAreaInsets();
   const TAB_BAR_HEIGHT = LAYOUT.TAB_BAR_HEIGHT + insets.bottom;
   const contentBottomPadding = TAB_BAR_HEIGHT + LAYOUT.FAB_OFFSET;
@@ -221,7 +223,7 @@ export default function FinanceScreen() {
   // Budget handlers (new simplified system)
   const handleCreateBudget = async () => {
     if (!isProUser) {
-      await presentPaywall();
+      router.push('/subscription');
       return;
     }
     setEditingBudget(undefined);
@@ -234,7 +236,7 @@ export default function FinanceScreen() {
     }
 
     if (!isProUser) {
-      await presentPaywall();
+      router.push('/subscription');
       return;
     }
 
@@ -264,7 +266,7 @@ export default function FinanceScreen() {
 
   const handleBudgetFormSubmit = async (data: SetUserBudgetInput) => {
     if (!isProUser) {
-      await presentPaywall();
+      router.push('/subscription');
       return;
     }
 
@@ -290,7 +292,7 @@ export default function FinanceScreen() {
 
   const handleExportCsv = async () => {
     if (!isProUser) {
-      await presentPaywall();
+      router.push('/subscription');
       return;
     }
 
@@ -310,7 +312,7 @@ export default function FinanceScreen() {
 
   const handleExportPdf = async () => {
     if (!isProUser) {
-      await presentPaywall();
+      router.push('/subscription');
       return;
     }
 
@@ -347,7 +349,7 @@ export default function FinanceScreen() {
     }
 
     if (!isProUser) {
-      await presentPaywall();
+      router.push('/subscription');
       return;
     }
 
@@ -482,7 +484,7 @@ export default function FinanceScreen() {
                 },
                 pressed && styles.chipPressed,
               ]}
-              onPress={() => void presentPaywall()}
+              onPress={() => router.push('/subscription')}
             >
               <View style={[styles.upgradeIconWrap, { backgroundColor: theme.colors.primaryContainer }]}
               >

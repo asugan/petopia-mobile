@@ -20,7 +20,7 @@ export default function PetsScreen() {
   const { theme } = useTheme();
   const { t } = useTranslation();
   const router = useRouter();
-  const { isProUser, presentPaywall } = useSubscription();
+  const { isProUser } = useSubscription();
 
   // React Query infinite query for pets
   const {
@@ -58,17 +58,15 @@ export default function PetsScreen() {
 
   const handleAddPet = async () => {
     if (!isProUser && allPets.length >= 1) {
-      const didPurchase = await presentPaywall();
-      if (!didPurchase) {
-        return;
-      }
+      router.push('/subscription');
+      return;
     }
     setSelectedPetState(undefined);
     setModalVisible(true);
   };
 
   const handleUpgradePress = async () => {
-    await presentPaywall();
+    router.push('/subscription');
   };
 
   const handleModalSuccess = () => {

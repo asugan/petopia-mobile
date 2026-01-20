@@ -1,6 +1,7 @@
 import React from 'react';
 import { View, StyleSheet, Modal as RNModal } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { useRouter } from 'expo-router';
 import { Text, Button } from '@/components/ui';
 import { useTheme } from '@/lib/theme';
 import { useTranslation } from 'react-i18next';
@@ -36,9 +37,10 @@ export function FeedingScheduleModal({
 }: FeedingScheduleModalProps) {
   const { theme } = useTheme();
   const { t } = useTranslation();
+  const router = useRouter();
   const [loading, setLoading] = React.useState(false);
 
-  const { isProUser, presentPaywall } = useSubscription();
+  const { isProUser } = useSubscription();
   const { data: feedingSchedulesAll = [] } = useAllFeedingSchedules();
   const activeFeedingSchedules = feedingSchedulesAll.filter((schedule) => schedule.isActive);
 
@@ -55,18 +57,14 @@ export function FeedingScheduleModal({
       if (schedule) {
         // Update existing schedule
         if (willBeActive && !schedule.isActive && !isProUser && activeFeedingSchedules.length >= 1) {
-          const didPurchase = await presentPaywall();
-          if (!didPurchase) {
-            return;
-          }
+          router.push('/subscription');
+          return;
         }
       } else {
         // Create new schedule
         if (willBeActive && !isProUser && activeFeedingSchedules.length >= 1) {
-          const didPurchase = await presentPaywall();
-          if (!didPurchase) {
-            return;
-          }
+          router.push('/subscription');
+          return;
         }
       }
 
@@ -90,7 +88,7 @@ export function FeedingScheduleModal({
     } finally {
       setLoading(false);
     }
-  }, [schedule, createMutation, updateMutation, onSuccess, onClose, t, activeFeedingSchedules.length, isProUser, presentPaywall]);
+  }, [schedule, createMutation, updateMutation, onSuccess, onClose, t, activeFeedingSchedules.length, isProUser, router]);
 
   const handleClose = React.useCallback(() => {
     if (!loading) {

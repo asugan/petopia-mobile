@@ -1,5 +1,6 @@
 import { View, StyleSheet, Pressable } from 'react-native';
 import { useTranslation } from 'react-i18next';
+import { useRouter } from 'expo-router';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { Text, Button, Card } from '@/components/ui';
 import { useTheme } from '@/lib/theme';
@@ -47,13 +48,13 @@ export function UpgradePrompt({
   feature,
 }: UpgradePromptProps) {
   const { t } = useTranslation();
+  const router = useRouter();
   const { theme } = useTheme();
   const {
     isProUser,
     isTrialActive,
     daysRemaining,
     isLoading,
-    presentPaywall,
   } = useSubscription();
 
   // Don't show if user already has Pro access (unless in trial)
@@ -62,7 +63,7 @@ export function UpgradePrompt({
   }
 
   const handleUpgrade = async () => {
-    await presentPaywall();
+    router.push('/subscription');
   };
 
   const displayMessage = message ?? (
