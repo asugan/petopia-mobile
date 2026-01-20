@@ -56,10 +56,14 @@ export function useStartTrial() {
 
 export function useRefetchSubscriptionStatus() {
   const queryClient = useQueryClient();
+  const { userId } = useAuthQueryEnabled();
 
   return useMutation({
     mutationFn: () => subscriptionApiService.getSubscriptionStatus({ bypassCache: true }),
-    onSuccess: () => {
+    onSuccess: (response) => {
+      if (response.success && response.data) {
+        queryClient.setQueryData(subscriptionKeys.status(userId), response.data);
+      }
       queryClient.invalidateQueries({ predicate: (query) => query.queryKey[0] === 'subscription' && query.queryKey[1] === 'status' });
     },
   });
