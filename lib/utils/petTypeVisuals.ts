@@ -1,5 +1,7 @@
 import { Ionicons } from '@expo/vector-icons';
+import { ImageSourcePropType } from 'react-native';
 import { Pet } from '@/lib/types';
+import { PET_TYPE_AVATARS, FALLBACK_IMAGES } from '@/constants/images';
 
 export const getPetTypeIcon = (petType?: Pet['type']): keyof typeof Ionicons.glyphMap => {
   switch (petType) {
@@ -41,4 +43,11 @@ export const getPetTypeColor = (petType?: Pet['type']): string => {
     default:
       return '#FFB3D1';
   }
+};
+
+export const getPetTypeAvatar = (petType?: Pet['type']): ImageSourcePropType => {
+  if (petType && petType in PET_TYPE_AVATARS) {
+    return PET_TYPE_AVATARS[petType as keyof typeof PET_TYPE_AVATARS];
+  }
+  return FALLBACK_IMAGES.petAvatar;
 };

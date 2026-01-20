@@ -7,6 +7,7 @@ import { usePetNextActivity } from '@/lib/hooks/usePetNextActivity';
 import { useTheme } from '@/lib/theme';
 import { Pet } from '@/lib/types';
 import { NextActivity } from '@/lib/utils/activityUtils';
+import { getPetTypeAvatar } from '@/lib/utils/petTypeVisuals';
 
 interface PetListCardProps {
   pet: Pet;
@@ -117,12 +118,7 @@ const PetListCard: React.FC<PetListCardProps> = ({
             {pet.profilePhoto ? (
               <Avatar.Image size={64} source={{ uri: pet.profilePhoto }} style={styles.avatar} />
             ) : (
-              <Avatar.Text
-                size={64}
-                label={pet.name.charAt(0).toUpperCase()}
-                style={[styles.avatar, { backgroundColor: theme.colors.primaryContainer }]}
-                labelStyle={{ color: theme.colors.onPrimaryContainer, fontWeight: '700' }}
-              />
+              <Avatar.Image size={64} source={getPetTypeAvatar(pet.type)} style={styles.avatar} />
             )}
             <View style={[styles.statusBadge, { backgroundColor: statusColor, borderColor: theme.colors.surface }]}>
               <Ionicons name={showAttention ? 'alert-outline' : 'checkmark'} size={12} color={statusIconColor} />
