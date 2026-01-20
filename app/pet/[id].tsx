@@ -1,5 +1,6 @@
 import React, { useMemo, useState } from 'react';
-import { View, StyleSheet, ScrollView, Image, TouchableOpacity, Dimensions, Share, Alert } from 'react-native';
+import { View, StyleSheet, ScrollView, TouchableOpacity, Dimensions, Share, Alert } from 'react-native';
+import { Image } from 'expo-image';
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -277,7 +278,7 @@ export default function PetDetailScreen() {
         showsVerticalScrollIndicator={false}
       >
         <View style={styles.heroContainer}>
-          <Image source={heroSource} style={styles.heroImage} resizeMode="cover" />
+          <Image source={heroSource} style={styles.heroImage} contentFit="cover" />
           <LinearGradient
             colors={['transparent', theme.colors.scrim, theme.colors.background]}
             style={styles.heroGradient}

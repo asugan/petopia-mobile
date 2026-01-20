@@ -1,4 +1,5 @@
-import { View, Text, StyleSheet, Image, Pressable } from 'react-native';
+import { View, Text, StyleSheet, Pressable } from 'react-native';
+import { Image } from 'expo-image';
 import { useRouter } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -116,7 +117,7 @@ export default function OnboardingStep1() {
         <Image
           source={require('../../assets/images/onboarding-hero.jpg')}
           style={styles.image}
-          resizeMode="cover"
+          contentFit="cover"
         />
         <LinearGradient
           colors={['transparent', 'transparent', theme.colors.background]}
