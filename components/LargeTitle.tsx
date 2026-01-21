@@ -45,7 +45,7 @@ export const HeaderActions = () => {
   const clearAllReminderState = useEventReminderStore((state) => state.clearAllReminderState);
   const isDarkMode = settings?.theme === "dark";
   const notificationsEnabled = settings?.notificationsEnabled ?? true;
-  const [notificationLoading, setNotificationLoading] = React.useState(false);
+  const [isRequestingPermission, setIsRequestingPermission] = React.useState(false);
   const [showPermissionModal, setShowPermissionModal] = React.useState(false);
 
   // Notifications hook
@@ -57,8 +57,8 @@ export const HeaderActions = () => {
   };
 
   const handleNotificationToggle = async () => {
-    if (!settings || isLoading || notificationLoading) return;
-    setNotificationLoading(true);
+    if (!settings || isLoading || isRequestingPermission) return;
+    setIsRequestingPermission(true);
     try {
       if (notificationsEnabled) {
         showToast({
@@ -81,7 +81,7 @@ export const HeaderActions = () => {
       }
     } catch {
     } finally {
-      setNotificationLoading(false);
+      setIsRequestingPermission(false);
     }
   };
 
@@ -119,7 +119,7 @@ export const HeaderActions = () => {
       </View>
       <Pressable
         onPress={handleNotificationToggle}
-        disabled={notificationLoading || !settings}
+        disabled={isRequestingPermission || !settings}
         style={({ pressed }) => [
           styles.iconButton,
           { backgroundColor: theme.colors.surfaceVariant, borderColor: theme.colors.outlineVariant },

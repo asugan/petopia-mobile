@@ -5,12 +5,19 @@ import { Controller, useFormContext } from 'react-hook-form';
 import { StyleSheet, View } from 'react-native';
 
 interface SmartSwitchProps {
+  /** The form field name (must be registered in react-hook-form) */
   name: string;
+  /** The label text to display next to the switch */
   label: string;
+  /** Optional description text displayed below the label */
   description?: string;
+  /** When true, the switch is disabled and cannot be toggled */
   disabled?: boolean;
+  /** When true, shows an ActivityIndicator instead of the switch */
   loading?: boolean;
+  /** Test ID for automated testing */
   testID?: string;
+  /** Callback fired when the value changes (in addition to form submission) */
   onValueChange?: (value: boolean) => void;
 }
 

@@ -21,6 +21,8 @@ interface FeedingScheduleCardProps {
   petName?: string;
   reminderEnabled?: boolean;
   isReminderScheduled?: boolean;
+  /** Disables the reminder toggle button while a permission request is in progress */
+  isReminderLoading?: boolean;
 }
 
 export function FeedingScheduleCard({
@@ -37,6 +39,7 @@ export function FeedingScheduleCard({
   petName,
   reminderEnabled = false,
   isReminderScheduled = false,
+  isReminderLoading = false,
 }: FeedingScheduleCardProps) {
   const { t } = useTranslation();
   const { theme } = useTheme();
@@ -145,6 +148,7 @@ export function FeedingScheduleCard({
                 size={20}
                 iconColor={reminderEnabled ? theme.colors.primary : theme.colors.surfaceDisabled}
                 onPress={() => onToggleReminder(schedule, !reminderEnabled)}
+                disabled={isReminderLoading}
                 testID={`${testID}-reminder-toggle`}
               />
             )}

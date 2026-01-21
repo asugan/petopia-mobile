@@ -28,6 +28,7 @@ import type { HealthRecord, FeedingSchedule } from '@/lib/types';
 import MoneyDisplay from '@/components/ui/MoneyDisplay';
 import { showToast } from '@/lib/toast/showToast';
 import { useNotifications } from '@/lib/hooks/useNotifications';
+import { useRequestDeduplication } from '@/lib/hooks/useRequestCancellation';
 import NotificationPermissionPrompt from '@/components/NotificationPermissionPrompt';
 import { registerPushTokenWithBackend } from '@/lib/services/notificationService';
 
@@ -56,6 +57,8 @@ export default function CareScreen() {
 
   // Notifications
   const { requestPermission } = useNotifications();
+  const { executeWithDeduplication } = useRequestDeduplication();
+  const [isRequestingPermission, setIsRequestingPermission] = useState(false);
 
   // Get pets for selection
   const { data: pets = [], isLoading: petsLoading } = usePets();
@@ -161,7 +164,13 @@ export default function CareScreen() {
 
   const handleToggleReminder = async (schedule: FeedingSchedule, reminderEnabled: boolean) => {
     if (reminderEnabled) {
-      const granted = await requestPermission();
+      setIsRequestingPermission(true);
+      const granted = await executeWithDeduplication(
+        `reminder-toggle-${schedule._id}`,
+        async () => await requestPermission()
+      );
+      setIsRequestingPermission(false);
+
       if (granted) {
         void registerPushTokenWithBackend();
         await toggleReminderMutation.mutateAsync({ id: schedule._id, enabled: true });
@@ -342,6 +351,7 @@ export default function CareScreen() {
             onToggleActive={handleToggleActive}
             onToggleReminder={handleToggleReminder}
             reminderEnabled={schedule.remindersEnabled ?? false}
+            isReminderLoading={isRequestingPermission && activeSchedule?._id === schedule._id}
             showPetInfo={true}
             showActions
             petName={petNameById[schedule.petId]}

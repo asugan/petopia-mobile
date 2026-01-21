@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useMemo, useRef } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import * as Notifications from 'expo-notifications';
 import { notificationService, getReminderTimes } from '../services/notificationService';
 import { Event } from '../types';
@@ -14,8 +14,6 @@ export const useNotifications = () => {
   const [permissions, setPermissions] = useState<Notifications.NotificationPermissionsStatus | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const quietHours = useEventReminderStore((state) => state.quietHours);
-  const notificationServiceRef = useRef(notificationService);
-  notificationServiceRef.current = notificationService;
 
   const checkPermissionStatus = useCallback(async () => {
     try {
@@ -56,7 +54,7 @@ export const useNotifications = () => {
   const requestPermission = useCallback(async () => {
     setIsLoading(true);
     try {
-      const granted = await notificationServiceRef.current.requestPermissions();
+      const granted = await notificationService.requestPermissions();
       const nextPermissions = await Notifications.getPermissionsAsync();
       setPermissions(nextPermissions);
       return granted;

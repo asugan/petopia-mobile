@@ -57,6 +57,7 @@ import { LAYOUT } from "@/constants";
 import { ENV } from "@/lib/config/env";
 import { showToast } from "@/lib/toast/showToast";
 import { useNotifications } from "@/lib/hooks/useNotifications";
+import { useRequestDeduplication } from "@/lib/hooks/useRequestCancellation";
 import NotificationPermissionPrompt from "@/components/NotificationPermissionPrompt";
 import { registerPushTokenWithBackend } from "@/lib/services/notificationService";
 
@@ -94,9 +95,11 @@ export default function FinanceScreen() {
   const [editingBudget, setEditingBudget] = useState<UserBudget | undefined>();
   const [showPermissionModal, setShowPermissionModal] = useState(false);
   const [pendingBudgetData, setPendingBudgetData] = useState<SetUserBudgetInput | null>(null);
+  const [isRequestingPermission, setIsRequestingPermission] = useState(false);
 
   // Notifications
   const { requestPermission } = useNotifications();
+  const { executeWithDeduplication } = useRequestDeduplication();
 
   // Fetch pets
   const { data: pets = [], isLoading: petsLoading } = usePets();
@@ -281,7 +284,13 @@ export default function FinanceScreen() {
     // Request notification permission if budget notifications are enabled
     const budgetNotificationsEnabled = settings?.budgetNotificationsEnabled ?? true;
     if (budgetNotificationsEnabled) {
-      const granted = await requestPermission();
+      setIsRequestingPermission(true);
+      const granted = await executeWithDeduplication(
+        'budget-notification-permission',
+        async () => await requestPermission()
+      );
+      setIsRequestingPermission(false);
+
       if (granted) {
         void registerPushTokenWithBackend();
         await setBudgetMutation.mutateAsync(data);
@@ -760,7 +769,7 @@ export default function FinanceScreen() {
           setEditingBudget(undefined);
         }}
         onSubmit={handleBudgetFormSubmit}
-        isSubmitting={setBudgetMutation.isPending}
+        isSubmitting={setBudgetMutation.isPending || isRequestingPermission}
       />
 
       <NotificationPermissionPrompt
