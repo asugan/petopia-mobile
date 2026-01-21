@@ -6,7 +6,7 @@ import { LargeTitle } from "@/components/LargeTitle";
 import { DateTimePicker } from "@/components/DateTimePicker";
 import { useAuth } from "@/lib/auth";
 import { accountService } from "@/lib/services/accountService";
-import { notificationService, requestNotificationPermissions, registerPushTokenWithBackend } from "@/lib/services/notificationService";
+import { notificationService, registerPushTokenWithBackend } from "@/lib/services/notificationService";
 import { useAuthStore } from "@/stores/authStore";
 import { useEventReminderStore } from "@/stores/eventReminderStore";
 import { SupportedCurrency, useUserSettingsStore } from "@/stores/userSettingsStore";
@@ -22,8 +22,9 @@ import { useOnboardingStore } from "@/stores/onboardingStore";
 import CurrencyPicker from "@/components/CurrencyPicker";
 import LoadingSpinner from "@/components/LoadingSpinner";
 import { LanguageSettings } from "@/components/LanguageSettings";
-import { NotificationPermissionCard } from "@/components/NotificationPermissionPrompt";
+import NotificationPermissionPrompt, { NotificationPermissionCard } from "@/components/NotificationPermissionPrompt";
 import { subscriptionStyles } from "@/lib/styles/subscription";
+import { useNotifications } from "@/lib/hooks/useNotifications";
 
 type ModalState = "none" | "contact" | "deleteWarning" | "deleteConfirm";
 
@@ -58,6 +59,10 @@ export default function SettingsScreen() {
   const [deletingAccount, setDeletingAccount] = useState(false);
   const [permissionRefreshKey, setPermissionRefreshKey] = useState(0);
   const hasSyncedPermission = useRef(false);
+  const [showPermissionModal, setShowPermissionModal] = useState(false);
+
+  // Notifications hook
+  const { requestPermission } = useNotifications();
 
   useEffect(() => {
     const fetchPermissionStatus = async () => {
@@ -98,22 +103,17 @@ export default function SettingsScreen() {
     try {
       if (value) {
         // If user wants to enable, check system permissions first
-        const granted = await requestNotificationPermissions();
+        const granted = await requestPermission();
         setNotificationPermissionEnabled(granted);
         setPermissionRefreshKey((prev) => prev + 1);
-        
-        if (!granted) {
-          showToast({
-            type: 'warning',
-            title: t("settings.notifications"),
-            message: t("settings.notificationPermissionDenied"),
-          });
-          // Ensure backend stays disabled if permission denied
-          await updateSettings({ notificationsEnabled: false });
-        } else {
+
+        if (granted) {
           // Permission granted, register push token and update backend
           void registerPushTokenWithBackend();
           await updateSettings({ notificationsEnabled: true });
+        } else {
+          // Permission denied - show modal
+          setShowPermissionModal(true);
         }
       } else {
         // If user wants to disable, update backend and cancel existing
@@ -834,6 +834,22 @@ export default function SettingsScreen() {
           </View>
         </KeyboardAvoidingView>
       )}
+
+      <NotificationPermissionPrompt
+        visible={showPermissionModal}
+        onDismiss={() => setShowPermissionModal(false)}
+        onPermissionGranted={async () => {
+          setNotificationPermissionEnabled(true);
+          setPermissionRefreshKey((prev) => prev + 1);
+          void registerPushTokenWithBackend();
+          await updateSettings({ notificationsEnabled: true });
+        }}
+        onPermissionDenied={async () => {
+          setNotificationPermissionEnabled(false);
+          setPermissionRefreshKey((prev) => prev + 1);
+          await updateSettings({ notificationsEnabled: false });
+        }}
+      />
     </SafeAreaView>
   );
 }

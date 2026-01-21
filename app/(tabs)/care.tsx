@@ -27,6 +27,9 @@ import { useUserSettingsStore } from '@/stores/userSettingsStore';
 import type { HealthRecord, FeedingSchedule } from '@/lib/types';
 import MoneyDisplay from '@/components/ui/MoneyDisplay';
 import { showToast } from '@/lib/toast/showToast';
+import { useNotifications } from '@/lib/hooks/useNotifications';
+import NotificationPermissionPrompt from '@/components/NotificationPermissionPrompt';
+import { registerPushTokenWithBackend } from '@/lib/services/notificationService';
 
 
 type CareTabValue = 'health' | 'feeding';
@@ -48,6 +51,11 @@ export default function CareScreen() {
   // Feeding state
   const [isFeedingModalVisible, setIsFeedingModalVisible] = useState(false);
   const [selectedSchedule, setSelectedSchedule] = useState<FeedingSchedule | undefined>();
+  const [showPermissionModal, setShowPermissionModal] = useState(false);
+  const [activeSchedule, setActiveSchedule] = useState<FeedingSchedule | undefined>();
+
+  // Notifications
+  const { requestPermission } = useNotifications();
 
   // Get pets for selection
   const { data: pets = [], isLoading: petsLoading } = usePets();
@@ -153,25 +161,16 @@ export default function CareScreen() {
 
   const handleToggleReminder = async (schedule: FeedingSchedule, reminderEnabled: boolean) => {
     if (reminderEnabled) {
-      const { requestNotificationPermissions, registerPushTokenWithBackend } = await import('@/lib/services/notificationService');
-      const granted = await requestNotificationPermissions();
-      if (!granted) {
-        showToast({
-          type: 'warning',
-          title: t('settings.notifications'),
-          message: t('settings.notificationPermissionDenied'),
-        });
-        return;
+      const granted = await requestPermission();
+      if (granted) {
+        void registerPushTokenWithBackend();
+        await toggleReminderMutation.mutateAsync({ id: schedule._id, enabled: true });
+      } else {
+        setActiveSchedule(schedule);
+        setShowPermissionModal(true);
       }
-      // Register push token after permission granted
-      void registerPushTokenWithBackend();
-    }
-    try {
-      await toggleReminderMutation.mutateAsync({
-        id: schedule._id,
-        enabled: reminderEnabled,
-      });
-    } catch {
+    } else {
+      await toggleReminderMutation.mutateAsync({ id: schedule._id, enabled: false });
     }
   };
 
@@ -455,6 +454,24 @@ export default function CareScreen() {
         onClose={handleFeedingModalClose}
         onSuccess={() => {}}
         pets={pets}
+      />
+
+      <NotificationPermissionPrompt
+        visible={showPermissionModal}
+        onDismiss={() => {
+          setShowPermissionModal(false);
+          setActiveSchedule(undefined);
+        }}
+        onPermissionGranted={async () => {
+          if (activeSchedule) {
+            void registerPushTokenWithBackend();
+            await toggleReminderMutation.mutateAsync({ id: activeSchedule._id, enabled: true });
+          }
+          setActiveSchedule(undefined);
+        }}
+        onPermissionDenied={() => {
+          setActiveSchedule(undefined);
+        }}
       />
     </SafeAreaView>
   );

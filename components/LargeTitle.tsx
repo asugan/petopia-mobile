@@ -6,10 +6,12 @@ import { useTranslation } from "react-i18next";
 import { Text } from "@/components/ui";
 import { useTheme } from "@/lib/theme";
 import { useSubscription } from "@/lib/hooks/useSubscription";
-import { notificationService, requestNotificationPermissions, registerPushTokenWithBackend } from "@/lib/services/notificationService";
+import { notificationService, registerPushTokenWithBackend } from "@/lib/services/notificationService";
 import { showToast } from "@/lib/toast/showToast";
 import { useEventReminderStore } from "@/stores/eventReminderStore";
 import { useUserSettingsStore } from "@/stores/userSettingsStore";
+import { useNotifications } from "@/lib/hooks/useNotifications";
+import NotificationPermissionPrompt from "@/components/NotificationPermissionPrompt";
 
 interface LargeTitleProps {
   title: string;
@@ -44,6 +46,10 @@ export const HeaderActions = () => {
   const isDarkMode = settings?.theme === "dark";
   const notificationsEnabled = settings?.notificationsEnabled ?? true;
   const [notificationLoading, setNotificationLoading] = React.useState(false);
+  const [showPermissionModal, setShowPermissionModal] = React.useState(false);
+
+  // Notifications hook
+  const { requestPermission } = useNotifications();
 
   const handleToggleTheme = async () => {
     if (!settings || isLoading) return;
@@ -64,19 +70,14 @@ export const HeaderActions = () => {
         clearAllReminderState();
         await updateSettings({ notificationsEnabled: false });
       } else {
-        const granted = await requestNotificationPermissions();
-        if (!granted) {
-          showToast({
-            type: "warning",
-            title: t("settings.notifications"),
-            message: t("settings.notificationPermissionDenied"),
-          });
-          await updateSettings({ notificationsEnabled: false });
-          return;
+        const granted = await requestPermission();
+        if (granted) {
+          // Register push token after permission granted
+          void registerPushTokenWithBackend();
+          await updateSettings({ notificationsEnabled: true });
+        } else {
+          setShowPermissionModal(true);
         }
-        // Register push token after permission granted
-        void registerPushTokenWithBackend();
-        await updateSettings({ notificationsEnabled: true });
       }
     } catch {
     } finally {
@@ -155,6 +156,18 @@ export const HeaderActions = () => {
       >
         <MaterialCommunityIcons name="cog" size={18} color={theme.colors.onSurface} />
       </Pressable>
+
+      <NotificationPermissionPrompt
+        visible={showPermissionModal}
+        onDismiss={() => setShowPermissionModal(false)}
+        onPermissionGranted={async () => {
+          void registerPushTokenWithBackend();
+          await updateSettings({ notificationsEnabled: true });
+        }}
+        onPermissionDenied={async () => {
+          await updateSettings({ notificationsEnabled: false });
+        }}
+      />
     </View>
   );
 };

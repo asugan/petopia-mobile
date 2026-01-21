@@ -56,6 +56,9 @@ import {
 import { LAYOUT } from "@/constants";
 import { ENV } from "@/lib/config/env";
 import { showToast } from "@/lib/toast/showToast";
+import { useNotifications } from "@/lib/hooks/useNotifications";
+import NotificationPermissionPrompt from "@/components/NotificationPermissionPrompt";
+import { registerPushTokenWithBackend } from "@/lib/services/notificationService";
 
 type FinanceTabValue = 'budget' | 'expenses';
 
@@ -89,6 +92,11 @@ export default function FinanceScreen() {
   // Budget state
   const [budgetModalVisible, setBudgetModalVisible] = useState(false);
   const [editingBudget, setEditingBudget] = useState<UserBudget | undefined>();
+  const [showPermissionModal, setShowPermissionModal] = useState(false);
+  const [pendingBudgetData, setPendingBudgetData] = useState<SetUserBudgetInput | null>(null);
+
+  // Notifications
+  const { requestPermission } = useNotifications();
 
   // Fetch pets
   const { data: pets = [], isLoading: petsLoading } = usePets();
@@ -273,20 +281,26 @@ export default function FinanceScreen() {
     // Request notification permission if budget notifications are enabled
     const budgetNotificationsEnabled = settings?.budgetNotificationsEnabled ?? true;
     if (budgetNotificationsEnabled) {
-      const { requestNotificationPermissions, registerPushTokenWithBackend } = await import('@/lib/services/notificationService');
-      const granted = await requestNotificationPermissions();
+      const granted = await requestPermission();
       if (granted) {
         void registerPushTokenWithBackend();
+        await setBudgetMutation.mutateAsync(data);
+        setBudgetModalVisible(false);
+        setEditingBudget(undefined);
+        showToast({ type: 'success', title: t("budgets.budgetSetSuccess") });
+      } else {
+        setPendingBudgetData(data);
+        setShowPermissionModal(true);
       }
-    }
-
-    try {
-      await setBudgetMutation.mutateAsync(data);
-      setBudgetModalVisible(false);
-      setEditingBudget(undefined);
-      showToast({ type: 'success', title: t("budgets.budgetSetSuccess") });
-    } catch {
-      showToast({ type: 'error', title: t("budgets.budgetSetError") });
+    } else {
+      try {
+        await setBudgetMutation.mutateAsync(data);
+        setBudgetModalVisible(false);
+        setEditingBudget(undefined);
+        showToast({ type: 'success', title: t("budgets.budgetSetSuccess") });
+      } catch {
+        showToast({ type: 'error', title: t("budgets.budgetSetError") });
+      }
     }
   };
 
@@ -747,6 +761,27 @@ export default function FinanceScreen() {
         }}
         onSubmit={handleBudgetFormSubmit}
         isSubmitting={setBudgetMutation.isPending}
+      />
+
+      <NotificationPermissionPrompt
+        visible={showPermissionModal}
+        onDismiss={() => {
+          setShowPermissionModal(false);
+          setPendingBudgetData(null);
+        }}
+        onPermissionGranted={async () => {
+          if (pendingBudgetData) {
+            void registerPushTokenWithBackend();
+            await setBudgetMutation.mutateAsync(pendingBudgetData);
+            setBudgetModalVisible(false);
+            setEditingBudget(undefined);
+            showToast({ type: 'success', title: t("budgets.budgetSetSuccess") });
+            setPendingBudgetData(null);
+          }
+        }}
+        onPermissionDenied={() => {
+          setPendingBudgetData(null);
+        }}
       />
 
     </SafeAreaView>
