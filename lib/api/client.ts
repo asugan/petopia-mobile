@@ -1,4 +1,7 @@
 import axios, { AxiosInstance, AxiosError, AxiosResponse, InternalAxiosRequestConfig } from 'axios';
+import { Platform } from 'react-native';
+import Constants from 'expo-constants';
+import * as Application from 'expo-application';
 import { ENV } from '../config/env';
 import { ErrorDetails } from '../types';
 import { authClient } from '../auth/client';
@@ -52,6 +55,14 @@ const authRequestInterceptor = (config: InternalAxiosRequestConfig) => {
     config.headers.set('Cookie', cookies);
   }
 
+  return config;
+};
+
+// Version interceptor - adds app version info to requests
+const versionInterceptor = (config: InternalAxiosRequestConfig) => {
+  config.headers.set('X-App-Version', Constants.expoConfig?.version || '1.0.0');
+  config.headers.set('X-Build-Number', Application.nativeBuildVersion || '1');
+  config.headers.set('X-Platform', Platform.OS);
   return config;
 };
 
@@ -117,6 +128,7 @@ const createApiClient = (): AxiosInstance => {
   // Add interceptors
   // Auth interceptor first to add session cookie
   client.interceptors.request.use(authRequestInterceptor);
+  client.interceptors.request.use(versionInterceptor);
   client.interceptors.request.use(requestInterceptor);
   client.interceptors.response.use(responseInterceptor, errorInterceptor);
 
