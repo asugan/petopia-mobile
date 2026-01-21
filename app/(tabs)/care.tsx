@@ -56,9 +56,8 @@ export default function CareScreen() {
   const [activeSchedule, setActiveSchedule] = useState<FeedingSchedule | undefined>();
 
   // Notifications
-  const { requestPermission } = useNotifications();
+  const { requestPermission, isLoading: isNotificationLoading } = useNotifications();
   const { executeWithDeduplication } = useRequestDeduplication();
-  const [isRequestingPermission, setIsRequestingPermission] = useState(false);
 
   // Get pets for selection
   const { data: pets = [], isLoading: petsLoading } = usePets();
@@ -164,12 +163,10 @@ export default function CareScreen() {
 
   const handleToggleReminder = async (schedule: FeedingSchedule, reminderEnabled: boolean) => {
     if (reminderEnabled) {
-      setIsRequestingPermission(true);
       const granted = await executeWithDeduplication(
         `reminder-toggle-${schedule._id}`,
         async () => await requestPermission()
       );
-      setIsRequestingPermission(false);
 
       if (granted) {
         void registerPushTokenWithBackend();
@@ -351,7 +348,7 @@ export default function CareScreen() {
             onToggleActive={handleToggleActive}
             onToggleReminder={handleToggleReminder}
             reminderEnabled={schedule.remindersEnabled ?? false}
-            isReminderLoading={isRequestingPermission && activeSchedule?._id === schedule._id}
+            isReminderLoading={isNotificationLoading}
             showPetInfo={true}
             showActions
             petName={petNameById[schedule.petId]}

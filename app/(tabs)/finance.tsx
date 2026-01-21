@@ -95,10 +95,9 @@ export default function FinanceScreen() {
   const [editingBudget, setEditingBudget] = useState<UserBudget | undefined>();
   const [showPermissionModal, setShowPermissionModal] = useState(false);
   const [pendingBudgetData, setPendingBudgetData] = useState<SetUserBudgetInput | null>(null);
-  const [isRequestingPermission, setIsRequestingPermission] = useState(false);
 
   // Notifications
-  const { requestPermission } = useNotifications();
+  const { requestPermission, isLoading: isNotificationLoading } = useNotifications();
   const { executeWithDeduplication } = useRequestDeduplication();
 
   // Fetch pets
@@ -284,12 +283,10 @@ export default function FinanceScreen() {
     // Request notification permission if budget notifications are enabled
     const budgetNotificationsEnabled = settings?.budgetNotificationsEnabled ?? true;
     if (budgetNotificationsEnabled) {
-      setIsRequestingPermission(true);
       const granted = await executeWithDeduplication(
         'budget-notification-permission',
         async () => await requestPermission()
       );
-      setIsRequestingPermission(false);
 
       if (granted) {
         void registerPushTokenWithBackend();
@@ -769,7 +766,7 @@ export default function FinanceScreen() {
           setEditingBudget(undefined);
         }}
         onSubmit={handleBudgetFormSubmit}
-        isSubmitting={setBudgetMutation.isPending || isRequestingPermission}
+        isSubmitting={setBudgetMutation.isPending || isNotificationLoading}
       />
 
       <NotificationPermissionPrompt

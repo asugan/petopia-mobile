@@ -45,11 +45,10 @@ export const HeaderActions = () => {
   const clearAllReminderState = useEventReminderStore((state) => state.clearAllReminderState);
   const isDarkMode = settings?.theme === "dark";
   const notificationsEnabled = settings?.notificationsEnabled ?? true;
-  const [isRequestingPermission, setIsRequestingPermission] = React.useState(false);
   const [showPermissionModal, setShowPermissionModal] = React.useState(false);
 
   // Notifications hook
-  const { requestPermission } = useNotifications();
+  const { requestPermission, isLoading: isNotificationLoading } = useNotifications();
 
   const handleToggleTheme = async () => {
     if (!settings || isLoading) return;
@@ -57,8 +56,7 @@ export const HeaderActions = () => {
   };
 
   const handleNotificationToggle = async () => {
-    if (!settings || isLoading || isRequestingPermission) return;
-    setIsRequestingPermission(true);
+    if (!settings || isLoading || isNotificationLoading) return;
     try {
       if (notificationsEnabled) {
         showToast({
@@ -79,9 +77,10 @@ export const HeaderActions = () => {
           setShowPermissionModal(true);
         }
       }
-    } catch {
-    } finally {
-      setIsRequestingPermission(false);
+    } catch (error) {
+      if (__DEV__) {
+        console.warn('[LargeTitle] Notification toggle failed:', error);
+      }
     }
   };
 
@@ -119,7 +118,7 @@ export const HeaderActions = () => {
       </View>
       <Pressable
         onPress={handleNotificationToggle}
-        disabled={isRequestingPermission || !settings}
+        disabled={isNotificationLoading || !settings}
         style={({ pressed }) => [
           styles.iconButton,
           { backgroundColor: theme.colors.surfaceVariant, borderColor: theme.colors.outlineVariant },

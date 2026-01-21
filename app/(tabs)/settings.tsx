@@ -38,7 +38,6 @@ export default function SettingsScreen() {
   const { resetOnboarding } = useOnboardingStore();
   const isDarkMode = settings?.theme === "dark";
   const [notificationPermissionEnabled, setNotificationPermissionEnabled] = useState(false);
-  const [notificationLoading, setNotificationLoading] = useState(true);
   const quietHoursEnabled = settings?.quietHoursEnabled ?? true;
   const quietHours = useMemo(() => (
     settings?.quietHours ?? {
@@ -62,23 +61,24 @@ export default function SettingsScreen() {
   const [showPermissionModal, setShowPermissionModal] = useState(false);
 
   // Notifications hook
-  const { requestPermission } = useNotifications();
+  const { requestPermission, isLoading: isNotificationLoading } = useNotifications();
 
   useEffect(() => {
     const fetchPermissionStatus = async () => {
       try {
         const enabled = await notificationService.areNotificationsEnabled();
         setNotificationPermissionEnabled(enabled);
-        
+
         // Sync backend with system permission if they differ
         // Only auto-disable backend if system is disabled (one-time sync)
         if (!hasSyncedPermission.current && !enabled && settings?.notificationsEnabled === true) {
           hasSyncedPermission.current = true;
           await updateSettings({ notificationsEnabled: false });
         }
-      } catch {
-      } finally {
-        setNotificationLoading(false);
+      } catch (error) {
+        if (__DEV__) {
+          console.warn('[Settings] Failed to fetch permission status:', error);
+        }
       }
     };
 
@@ -99,7 +99,6 @@ export default function SettingsScreen() {
   }, [error, t]);
 
   const handleNotificationToggle = async (value: boolean) => {
-    setNotificationLoading(true);
     try {
       if (value) {
         // If user wants to enable, check system permissions first
@@ -126,19 +125,20 @@ export default function SettingsScreen() {
         clearAllReminderState();
         await updateSettings({ notificationsEnabled: false });
       }
-    } catch {
-    } finally {
-      setNotificationLoading(false);
+    } catch (error) {
+      if (__DEV__) {
+        console.warn('[Settings] Notification toggle failed:', error);
+      }
     }
   };
 
   const handleBudgetNotificationToggle = async (value: boolean) => {
-    setNotificationLoading(true);
     try {
       await updateSettings({ budgetNotificationsEnabled: value });
-    } catch {
-    } finally {
-      setNotificationLoading(false);
+    } catch (error) {
+      if (__DEV__) {
+        console.warn('[Settings] Budget notification toggle failed:', error);
+      }
     }
   };
 
@@ -393,7 +393,7 @@ export default function SettingsScreen() {
                 <Switch
                   value={notificationsEnabled}
                   onValueChange={handleNotificationToggle}
-                  disabled={notificationLoading || !settings}
+                  disabled={isNotificationLoading || !settings}
                   color={theme.colors.primary}
                 />
               }
@@ -412,7 +412,7 @@ export default function SettingsScreen() {
                 <Switch
                   value={budgetNotificationsEnabled}
                   onValueChange={handleBudgetNotificationToggle}
-                  disabled={notificationLoading || !settings || !notificationsActive}
+                  disabled={isNotificationLoading || !settings || !notificationsActive}
                   color={theme.colors.primary}
                 />
               }
@@ -434,7 +434,7 @@ export default function SettingsScreen() {
                     setQuietHoursEnabled(value);
                     void updateSettings({ quietHoursEnabled: value });
                   }}
-                  disabled={notificationLoading || !notificationsActive}
+                  disabled={isNotificationLoading || !notificationsActive}
                   color={theme.colors.primary}
                 />
               }
@@ -446,14 +446,14 @@ export default function SettingsScreen() {
                   label={t("settings.quietHoursStart")}
                   value={createTimeDate(quietHours.startHour, quietHours.startMinute)}
                   onChange={handleQuietHoursStartChange}
-                  disabled={notificationLoading || !notificationsActive}
+                  disabled={isNotificationLoading || !notificationsActive}
                 />
                 <DateTimePicker
                   mode="time"
                   label={t("settings.quietHoursEnd")}
                   value={createTimeDate(quietHours.endHour, quietHours.endMinute)}
                   onChange={handleQuietHoursEndChange}
-                  disabled={notificationLoading || !notificationsActive}
+                  disabled={isNotificationLoading || !notificationsActive}
                 />
               </View>
             )}
