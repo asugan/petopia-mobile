@@ -1,4 +1,4 @@
-import { Switch, Text } from '@/components/ui';
+import { ActivityIndicator, Switch, Text } from '@/components/ui';
 import { useTheme } from '@/lib/theme';
 import React from 'react';
 import { Controller, useFormContext } from 'react-hook-form';
@@ -9,6 +9,7 @@ interface SmartSwitchProps {
   label: string;
   description?: string;
   disabled?: boolean;
+  loading?: boolean;
   testID?: string;
   onValueChange?: (value: boolean) => void;
 }
@@ -22,13 +23,14 @@ export const SmartSwitch = ({
   label,
   description,
   disabled,
+  loading,
   testID,
   onValueChange,
-}: SmartSwitchProps) => {
+}: SmartSwitchProps): React.ReactElement => {
   const { control } = useFormContext();
   const { theme } = useTheme();
 
-  const handleValueChange = (value: boolean) => {
+  const handleValueChange = (value: boolean): void => {
     onValueChange?.(value);
   };
 
@@ -46,15 +48,19 @@ export const SmartSwitch = ({
               </Text>
             )}
           </View>
-          <Switch
-            value={value}
-            onValueChange={(val) => {
-              onChange(val);
-              handleValueChange(val);
-            }}
-            disabled={disabled}
-            testID={testID}
-          />
+          {loading ? (
+            <ActivityIndicator size="small" />
+          ) : (
+            <Switch
+              value={value}
+              onValueChange={(val) => {
+                onChange(val);
+                handleValueChange(val);
+              }}
+              disabled={disabled}
+              testID={testID}
+            />
+          )}
         </View>
       )}
     />

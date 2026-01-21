@@ -21,6 +21,25 @@ export const useNotifications = () => {
   }, []);
 
   useEffect(() => {
+    let isMounted = true;
+    const initPermissions = async () => {
+      try {
+        const perms = await Notifications.getPermissionsAsync();
+        if (isMounted) {
+          setPermissions(perms);
+        }
+      } catch {
+        // Silently handle permission check errors
+      }
+    };
+
+    initPermissions();
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
+  useEffect(() => {
     notificationService.setQuietHours(quietHours);
   }, [quietHours]);
 

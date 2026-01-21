@@ -47,6 +47,7 @@ export function EventForm({
   const { theme } = useTheme();
   const { requestPermission } = useNotifications();
   const [isSubmitting, setIsSubmitting] = React.useState(false);
+  const [isRequestingPermission, setIsRequestingPermission] = React.useState(false);
   const [currentStep, setCurrentStep] = React.useState(0);
   const [showPermissionModal, setShowPermissionModal] = React.useState(false);
 
@@ -73,6 +74,7 @@ export function EventForm({
 
   const handleReminderToggle = async (value: boolean) => {
     if (value) {
+      setIsRequestingPermission(true);
       const granted = await requestPermission();
       if (granted) {
         form.setValue('reminder', true);
@@ -81,6 +83,7 @@ export function EventForm({
         form.setValue('reminder', false);
         setShowPermissionModal(true);
       }
+      setIsRequestingPermission(false);
     } else {
       form.setValue('reminder', false);
     }
@@ -377,6 +380,7 @@ export function EventForm({
               label={t('events.enableReminder')}
               description={t('events.reminderDescription')}
               disabled={loading || isSubmitting}
+              loading={isRequestingPermission}
               onValueChange={handleReminderToggle}
               testID={`${testID}-reminder`}
             />
