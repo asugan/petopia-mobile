@@ -10,6 +10,7 @@ interface SmartSwitchProps {
   description?: string;
   disabled?: boolean;
   testID?: string;
+  onValueChange?: (value: boolean) => void;
 }
 
 /**
@@ -22,9 +23,14 @@ export const SmartSwitch = ({
   description,
   disabled,
   testID,
+  onValueChange,
 }: SmartSwitchProps) => {
   const { control } = useFormContext();
   const { theme } = useTheme();
+
+  const handleValueChange = (value: boolean) => {
+    onValueChange?.(value);
+  };
 
   return (
     <Controller
@@ -42,7 +48,10 @@ export const SmartSwitch = ({
           </View>
           <Switch
             value={value}
-            onValueChange={onChange}
+            onValueChange={(val) => {
+              onChange(val);
+              handleValueChange(val);
+            }}
             disabled={disabled}
             testID={testID}
           />

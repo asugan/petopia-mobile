@@ -450,6 +450,8 @@
   "notifications": {
     "enableTitle": "Enable Notifications",
     "enableDescription": "Never miss important pet care reminders",
+    "permissionDeniedTitle": "Notifications Blocked",
+    "permissionDeniedDescription": "Notifications have been blocked. Please enable them from your device settings to receive pet care reminders.",
     "enablePrompt": "Enable notifications to receive pet care reminders",
     "benefit1": "Timely feeding and activity reminders",
     "benefit2": "Vet appointments and vaccination alerts",

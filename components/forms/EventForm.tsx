@@ -6,8 +6,9 @@ import { Button, Text, KeyboardAwareView } from '@/components/ui';
 import { useEventForm } from '@/hooks/useEventForm';
 import { useTheme } from '@/lib/theme';
 import { REMINDER_PRESETS, ReminderPresetKey } from '@/constants/reminders';
-import { requestNotificationPermissions, registerPushTokenWithBackend } from '@/lib/services/notificationService';
-import { useUserSettingsStore } from '@/stores/userSettingsStore';
+import { registerPushTokenWithBackend } from '@/lib/services/notificationService';
+import { useNotifications } from '@/lib/hooks/useNotifications';
+import NotificationPermissionPrompt from '@/components/NotificationPermissionPrompt';
 import { type EventFormData } from '../../lib/schemas/eventSchema';
 import { Event, Pet } from '../../lib/types';
 import { FormSection } from './FormSection';
@@ -44,11 +45,10 @@ export function EventForm({
 }: EventFormProps) {
   const { t } = useTranslation();
   const { theme } = useTheme();
-  const notificationsEnabled = useUserSettingsStore(
-    (state) => state.settings?.notificationsEnabled ?? true
-  );
+  const { requestPermission } = useNotifications();
   const [isSubmitting, setIsSubmitting] = React.useState(false);
   const [currentStep, setCurrentStep] = React.useState(0);
+  const [showPermissionModal, setShowPermissionModal] = React.useState(false);
 
   // Use the custom hook for form management
   const { form, control, handleSubmit, isDirty } = useEventForm(event, initialPetId);
@@ -71,38 +71,20 @@ export function EventForm({
     return t(`eventForm.suggestions.${eventType || 'default'}`);
   };
 
-  React.useEffect(() => {
-    const ensureNotificationAccess = async () => {
-      if (!reminderEnabled) {
-        return;
-      }
-
-      if (!notificationsEnabled) {
+  const handleReminderToggle = async (value: boolean) => {
+    if (value) {
+      const granted = await requestPermission();
+      if (granted) {
+        form.setValue('reminder', true);
+        void registerPushTokenWithBackend();
+      } else {
         form.setValue('reminder', false);
-        showToast({
-          type: 'warning',
-          title: t('settings.notifications'),
-          message: t('settings.notificationDisabled'),
-        });
-        return;
+        setShowPermissionModal(true);
       }
-
-      const granted = await requestNotificationPermissions();
-      if (!granted) {
-        form.setValue('reminder', false);
-        showToast({
-          type: 'warning',
-          title: t('settings.notifications'),
-          message: t('settings.notificationPermissionDenied'),
-        });
-        return;
-      }
-      // Register push token after permission granted
-      void registerPushTokenWithBackend();
-    };
-
-    void ensureNotificationAccess();
-  }, [form, notificationsEnabled, reminderEnabled, t]);
+    } else {
+      form.setValue('reminder', false);
+    }
+  };
 
   // Handle form submission
   const onFormSubmit = React.useCallback(
@@ -394,7 +376,8 @@ export function EventForm({
               name="reminder"
               label={t('events.enableReminder')}
               description={t('events.reminderDescription')}
-              disabled={loading || isSubmitting || !notificationsEnabled}
+              disabled={loading || isSubmitting}
+              onValueChange={handleReminderToggle}
               testID={`${testID}-reminder`}
             />
 
@@ -476,6 +459,18 @@ export function EventForm({
         </View>
 
       </KeyboardAwareView>
+
+      <NotificationPermissionPrompt
+        visible={showPermissionModal}
+        onDismiss={() => setShowPermissionModal(false)}
+        onPermissionGranted={() => {
+          form.setValue('reminder', true);
+          void registerPushTokenWithBackend();
+        }}
+        onPermissionDenied={() => {
+          form.setValue('reminder', false);
+        }}
+      />
     </FormProvider>
   );
 }

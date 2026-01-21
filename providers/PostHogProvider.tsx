@@ -1,19 +1,8 @@
-import { useEffect } from 'react';
-import { PostHogProvider, usePostHog } from 'posthog-react-native';
+import { PostHogProvider } from 'posthog-react-native';
 import { usePublicConfig } from '@/lib/hooks/usePublicConfig';
 
 interface PostHogProviderWrapperProps {
   children: React.ReactNode;
-}
-
-function PostHogDebug() {
-  const posthog = usePostHog();
-
-  useEffect(() => {
-    posthog.debug(__DEV__);
-  }, [posthog]);
-
-  return null;
 }
 
 function PostHogContent({ children }: { children: React.ReactNode }) {
@@ -52,7 +41,6 @@ function PostHogContent({ children }: { children: React.ReactNode }) {
         captureScreens: true,
       }}
     >
-      <PostHogDebug />
       {children}
     </PostHogProvider>
   );

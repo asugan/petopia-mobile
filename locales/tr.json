@@ -425,6 +425,8 @@
   "notifications": {
     "enableTitle": "Bildirimleri Etkinleştir",
     "enableDescription": "Önemli pet bakım hatırlatmalarını kaçırmayın",
+    "permissionDeniedTitle": "Bildirimler Engellendi",
+    "permissionDeniedDescription": "Bildirimler engellendi. Pet bakım hatırlatmaları almak için cihaz ayarlarından etkinleştirin.",
     "enablePrompt": "Pet bakım hatırlatmaları almak için bildirimleri etkinleştirin",
     "benefit1": "Zamanında besleme ve aktivite hatırlatmaları",
     "benefit2": "Veteriner randevuları ve aşı hatırlatmaları",
