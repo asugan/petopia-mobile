@@ -13,12 +13,13 @@ import { Avatar, Button, Surface, Text, Modal, ListItem } from '@/components/ui'
 import { showToast } from '@/lib/toast/showToast';
 import { useTheme } from '@/lib/theme';
 import { getPetTypeColor, getPetTypeIcon } from '@/lib/utils/petTypeVisuals';
-import { Pet } from '../../lib/types';
+import { PET_TYPE_AVATARS } from '@/constants/images';
+import { PetType } from '../../lib/types';
 
 interface PetPhotoPickerProps {
   value?: string;
   onChange: (photoUri: string | undefined) => void;
-  petType?: Pet['type'];
+  petType?: PetType;
   disabled?: boolean;
 }
 
@@ -152,6 +153,11 @@ export const PetPhotoPicker: React.FC<PetPhotoPickerProps> = ({
                 </View>
               )}
             </>
+          ) : petType && (PET_TYPE_AVATARS as Record<PetType, unknown>)[petType] ? (
+            <Image
+              source={(PET_TYPE_AVATARS as Record<PetType, unknown>)[petType] as import('expo-image').ImageSource}
+              style={styles.photo}
+            />
           ) : (
             <Avatar.Icon
               size={100}
