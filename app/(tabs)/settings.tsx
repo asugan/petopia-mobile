@@ -497,24 +497,6 @@ export default function SettingsScreen() {
               {t("settings.dataPrivacy")}
             </Text>
             <ListItem
-              title={t("settings.dataBackup")}
-              description={t("settings.dataBackupDescription")}
-              left={
-                <MaterialCommunityIcons
-                  name="cloud-upload"
-                  size={24}
-                  color={theme.colors.onSurfaceVariant}
-                />
-              }
-              right={
-                <MaterialCommunityIcons
-                  name="chevron-right"
-                  size={24}
-                  color={theme.colors.onSurfaceVariant}
-                />
-              }
-            />
-            <ListItem
               title={t("settings.deleteAccount")}
               description={t("settings.deleteAccountDescription")}
               left={
@@ -634,6 +616,24 @@ export default function SettingsScreen() {
             >
               Development
             </Text>
+            <ListItem
+              title="Data Backup"
+              description="Export/import your data (coming soon)"
+              left={
+                <MaterialCommunityIcons
+                  name="cloud-upload"
+                  size={24}
+                  color={theme.colors.onSurfaceVariant}
+                />
+              }
+              right={
+                <MaterialCommunityIcons
+                  name="chevron-right"
+                  size={24}
+                  color={theme.colors.onSurfaceVariant}
+                />
+              }
+            />
             <ListItem
               title="Reset Onboarding"
               description="Unlocks the onboarding flow for testing"
