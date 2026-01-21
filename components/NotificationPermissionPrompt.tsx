@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, StyleSheet, Linking, Platform } from 'react-native';
+import { View, StyleSheet, Linking, Platform, ActivityIndicator } from 'react-native';
 import { Text, Button, Card, Portal, Dialog } from '@/components/ui';
 import { useTheme } from '@/lib/theme';
 import { useTranslation } from 'react-i18next';
@@ -188,7 +188,19 @@ export function NotificationPermissionCard({ refreshKey }: NotificationPermissio
   };
 
   if (permissions === null || hookLoading) {
-    return null;
+    return (
+      <Card style={[styles.card, { backgroundColor: theme.colors.surfaceVariant }]}>
+        <View style={styles.cardContainer}>
+          <View style={styles.cardHeaderRow}>
+            <ActivityIndicator size="small" />
+            <View style={styles.cardText}>
+              <View style={[styles.skeletonTitle, { backgroundColor: theme.colors.surface }]} />
+              <View style={[styles.skeletonSubtitle, { backgroundColor: theme.colors.surface }]} />
+            </View>
+          </View>
+        </View>
+      </Card>
+    );
   }
 
   if (isEnabled) {
@@ -322,5 +334,16 @@ const styles = StyleSheet.create({
   },
   settingsButton: {
     marginTop: 12,
+  },
+  skeletonTitle: {
+    height: 16,
+    width: '60%',
+    borderRadius: 4,
+    marginBottom: 4,
+  },
+  skeletonSubtitle: {
+    height: 12,
+    width: '80%',
+    borderRadius: 4,
   },
 });

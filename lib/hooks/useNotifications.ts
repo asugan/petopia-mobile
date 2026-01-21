@@ -1,8 +1,11 @@
-import { useState, useEffect, useCallback, useMemo } from 'react';
+import { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import * as Notifications from 'expo-notifications';
 import { notificationService, getReminderTimes } from '../services/notificationService';
 import { Event } from '../types';
 import { useEventReminderStore } from '@/stores/eventReminderStore';
+
+// TypeScript declaration for __DEV__ global
+declare const __DEV__: boolean;
 
 /**
  * Custom hook for managing notifications
@@ -11,12 +14,17 @@ export const useNotifications = () => {
   const [permissions, setPermissions] = useState<Notifications.NotificationPermissionsStatus | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const quietHours = useEventReminderStore((state) => state.quietHours);
+  const notificationServiceRef = useRef(notificationService);
+  notificationServiceRef.current = notificationService;
 
   const checkPermissionStatus = useCallback(async () => {
     try {
       const nextPermissions = await Notifications.getPermissionsAsync();
       setPermissions(nextPermissions);
-    } catch {
+    } catch (error) {
+      if (__DEV__) {
+        console.warn('[useNotifications] Failed to check permission status:', error);
+      }
     }
   }, []);
 
@@ -28,8 +36,10 @@ export const useNotifications = () => {
         if (isMounted) {
           setPermissions(perms);
         }
-      } catch {
-        // Silently handle permission check errors
+      } catch (error) {
+        if (__DEV__) {
+          console.warn('[useNotifications] Failed to initialize permissions:', error);
+        }
       }
     };
 
@@ -46,11 +56,14 @@ export const useNotifications = () => {
   const requestPermission = useCallback(async () => {
     setIsLoading(true);
     try {
-      const granted = await notificationService.requestPermissions();
+      const granted = await notificationServiceRef.current.requestPermissions();
       const nextPermissions = await Notifications.getPermissionsAsync();
       setPermissions(nextPermissions);
       return granted;
-    } catch {
+    } catch (error) {
+      if (__DEV__) {
+        console.warn('[useNotifications] Permission request failed:', error);
+      }
       return false;
     } finally {
       setIsLoading(false);
@@ -86,7 +99,10 @@ export const useEventReminders = (eventId?: string) => {
     try {
       const reminders = await notificationService.getEventNotifications(eventId);
       setScheduledReminders(reminders);
-    } catch {
+    } catch (error) {
+      if (__DEV__) {
+        console.warn('[useEventReminders] Failed to load scheduled reminders:', error);
+      }
     }
   }, [eventId]);
 
@@ -108,7 +124,10 @@ export const useEventReminders = (eventId?: string) => {
         return notificationId;
       }
       return null;
-    } catch {
+    } catch (error) {
+      if (__DEV__) {
+        console.warn('[useEventReminders] Failed to schedule reminder:', error);
+      }
       return null;
     } finally {
       setIsLoading(false);
@@ -124,7 +143,10 @@ export const useEventReminders = (eventId?: string) => {
       });
       await loadScheduledReminders();
       return notificationIds;
-    } catch {
+    } catch (error) {
+      if (__DEV__) {
+        console.warn('[useEventReminders] Failed to schedule multiple reminders:', error);
+      }
       return [];
     } finally {
       setIsLoading(false);
@@ -136,7 +158,10 @@ export const useEventReminders = (eventId?: string) => {
     try {
       await notificationService.cancelNotification(notificationId);
       await loadScheduledReminders();
-    } catch {
+    } catch (error) {
+      if (__DEV__) {
+        console.warn('[useEventReminders] Failed to cancel reminder:', error);
+      }
     } finally {
       setIsLoading(false);
     }
@@ -149,7 +174,10 @@ export const useEventReminders = (eventId?: string) => {
     try {
       await notificationService.cancelEventNotifications(eventId);
       await loadScheduledReminders();
-    } catch {
+    } catch (error) {
+      if (__DEV__) {
+        console.warn('[useEventReminders] Failed to cancel all reminders:', error);
+      }
     } finally {
       setIsLoading(false);
     }
@@ -181,7 +209,10 @@ export const useNotificationStats = () => {
     try {
       const notificationStats = await notificationService.getNotificationStats();
       setStats(notificationStats);
-    } catch {
+    } catch (error) {
+      if (__DEV__) {
+        console.warn('[useNotificationStats] Failed to load stats:', error);
+      }
     } finally {
       setIsLoading(false);
     }

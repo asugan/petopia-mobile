@@ -4,6 +4,7 @@ import { FormProvider, useWatch } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import { Button, Text, KeyboardAwareView } from '@/components/ui';
 import { useEventForm } from '@/hooks/useEventForm';
+import { useRequestDeduplication } from '@/lib/hooks/useRequestCancellation';
 import { useTheme } from '@/lib/theme';
 import { REMINDER_PRESETS, ReminderPresetKey } from '@/constants/reminders';
 import { registerPushTokenWithBackend } from '@/lib/services/notificationService';
@@ -46,6 +47,7 @@ export function EventForm({
   const { t } = useTranslation();
   const { theme } = useTheme();
   const { requestPermission } = useNotifications();
+  const { executeWithDeduplication: executePermissionRequest } = useRequestDeduplication();
   const [isSubmitting, setIsSubmitting] = React.useState(false);
   const [isRequestingPermission, setIsRequestingPermission] = React.useState(false);
   const [currentStep, setCurrentStep] = React.useState(0);
@@ -75,7 +77,10 @@ export function EventForm({
   const handleReminderToggle = async (value: boolean) => {
     if (value) {
       setIsRequestingPermission(true);
-      const granted = await requestPermission();
+      const granted = await executePermissionRequest('permission-request', async () => {
+        const result = await requestPermission();
+        return result;
+      });
       if (granted) {
         form.setValue('reminder', true);
         void registerPushTokenWithBackend();
