@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import * as Notifications from 'expo-notifications';
 import { notificationService, getReminderTimes } from '../services/notificationService';
 import { Event } from '../types';
@@ -20,11 +20,6 @@ export const useNotifications = () => {
     }
   }, []);
 
-  // Check initial permission status
-  useEffect(() => {
-    checkPermissionStatus();
-  }, [checkPermissionStatus]);
-
   useEffect(() => {
     notificationService.setQuietHours(quietHours);
   }, [quietHours]);
@@ -43,7 +38,10 @@ export const useNotifications = () => {
     }
   }, []);
 
-  const permissionStatus = permissions?.status ?? Notifications.PermissionStatus.UNDETERMINED;
+  const permissionStatus = useMemo(
+    () => permissions?.status ?? Notifications.PermissionStatus.UNDETERMINED,
+    [permissions]
+  );
 
   return {
     permissions,

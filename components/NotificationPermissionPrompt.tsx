@@ -7,7 +7,7 @@ import { MaterialCommunityIcons } from '@expo/vector-icons';
 import * as Notifications from 'expo-notifications';
 import { useNotifications } from '@/lib/hooks/useNotifications';
 
-interface NotificationPermissionPromptProps {
+export interface NotificationPermissionPromptProps {
   visible: boolean;
   onDismiss: () => void;
   onPermissionGranted?: () => void;
@@ -155,7 +155,7 @@ export default function NotificationPermissionPrompt({
 /**
  * Inline notification permission card (for settings page)
  */
-interface NotificationPermissionCardProps {
+export interface NotificationPermissionCardProps {
   refreshKey?: number;
 }
 
