@@ -18,6 +18,7 @@ import { useSubscription } from '@/lib/hooks/useSubscription';
 import { useDowngradeStatus } from '@/lib/hooks/useDowngrade';
 import { NetworkStatus } from "@/lib/components/NetworkStatus";
 import { LanguageProvider } from "@/providers/LanguageProvider";
+import { PostHogProviderWrapper } from "@/providers/PostHogProvider";
 import { AuthProvider } from "@/providers/AuthProvider";
 import { SubscriptionProvider } from "@/providers/SubscriptionProvider";
 import { useUserSettingsStore } from '@/stores/userSettingsStore';
@@ -116,17 +117,19 @@ function AppProviders({ children }: { children: React.ReactNode }) {
     <QueryClientProvider client={queryClient}>
       <OnlineManagerProvider>
         <NetworkStatus>
-          <LanguageProvider>
-            <ApiErrorBoundary>
-              <AuthProvider>
-                <SubscriptionProvider>
-                  <SubscriptionGate>
-                    <DowngradeGate>{children}</DowngradeGate>
-                  </SubscriptionGate>
-                </SubscriptionProvider>
-              </AuthProvider>
-            </ApiErrorBoundary>
-          </LanguageProvider>
+          <PostHogProviderWrapper>
+            <LanguageProvider>
+              <ApiErrorBoundary>
+                <AuthProvider>
+                  <SubscriptionProvider>
+                    <SubscriptionGate>
+                      <DowngradeGate>{children}</DowngradeGate>
+                    </SubscriptionGate>
+                  </SubscriptionProvider>
+                </AuthProvider>
+              </ApiErrorBoundary>
+            </LanguageProvider>
+          </PostHogProviderWrapper>
         </NetworkStatus>
       </OnlineManagerProvider>
     </QueryClientProvider>

@@ -34,7 +34,10 @@
               "scheme": "petopia-petcare"
             }
           ],
-          "category": ["BROWSABLE", "DEFAULT"]
+          "category": [
+            "BROWSABLE",
+            "DEFAULT"
+          ]
         }
       ],
       "permissions": []
@@ -44,9 +47,12 @@
       "favicon": "./assets/images/favicon.png"
     },
     "plugins": [
-      ["expo-notifications", {
-        "enableBackgroundRemoteNotifications": true
-      }],
+      [
+        "expo-notifications",
+        {
+          "enableBackgroundRemoteNotifications": true
+        }
+      ],
       "expo-router",
       [
         "expo-splash-screen",
@@ -98,7 +104,8 @@
             }
           }
         }
-      ]
+      ],
+      "expo-localization"
     ],
     "experiments": {
       "typedRoutes": true,
