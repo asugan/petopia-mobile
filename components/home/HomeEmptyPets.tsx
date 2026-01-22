@@ -31,7 +31,7 @@ export const HomeEmptyPets: React.FC<HomeEmptyPetsProps> = ({
   const router = useRouter();
 
   // Use provided source or fall back to local asset
-  const imageSource = placeholderImageSource ?? require("@/assets/images/emptypet.png");
+  const imageSource = placeholderImageSource ?? require("@/assets/images/cat_avatar.webp");
 
   // Ripple effect colors - subtle concentric circles behind pet
   const renderRipple = (index: number, size: number) => (

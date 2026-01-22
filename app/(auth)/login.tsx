@@ -297,7 +297,7 @@ export default function LoginScreen() {
       
       <View style={[styles.heroContainer, { paddingTop: insets.top + 32 }]}>
         <Image
-          source={require('../../assets/images/login-hero.jpg')}
+          source={require('../../assets/images/login.webp')}
           style={styles.heroImage}
           contentFit="cover"
           transition={1000}
