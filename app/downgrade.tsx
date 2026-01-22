@@ -9,6 +9,7 @@ import { Text, Button, Card } from '@/components/ui';
 import { useTheme } from '@/lib/theme';
 import { useDowngradeStatus, useExecuteDowngrade } from '@/lib/hooks/useDowngrade';
 import { ConfirmationModal } from '@/components/ui/ConfirmationModal';
+import { TAB_ROUTES, SUBSCRIPTION_ROUTES } from '@/constants/routes';
 
 export default function DowngradeScreen() {
   const { t } = useTranslation();
@@ -37,14 +38,14 @@ export default function DowngradeScreen() {
     try {
       await executeDowngrade(selectedPetId);
       setShowConfirmModal(false);
-      router.replace('/(tabs)');
+      router.replace(TAB_ROUTES.home);
     } catch {
       // Error handled by mutation
     }
   };
 
   const handleUpgrade = () => {
-    router.push('/subscription');
+    router.push(SUBSCRIPTION_ROUTES.main);
   };
 
   if (isLoadingStatus) {

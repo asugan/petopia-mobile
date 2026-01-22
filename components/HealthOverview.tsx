@@ -9,6 +9,7 @@ import { usePets } from '@/lib/hooks/usePets';
 import type { HealthRecord } from '@/lib/types';
 import { useUserSettingsStore } from '@/stores/userSettingsStore';
 import MoneyDisplay from '@/components/ui/MoneyDisplay';
+import { TAB_ROUTES } from '@/constants/routes';
 
 interface HealthOverviewProps {
   healthRecords?: HealthRecord[];
@@ -111,7 +112,7 @@ const HealthOverview: React.FC<HealthOverviewProps> = ({
           </Text>
           <Button
             mode="contained"
-            onPress={() => router.push('/(tabs)/care')}
+            onPress={() => router.push(TAB_ROUTES.care)}
             buttonColor={theme.colors.tertiary}
             textColor={theme.colors.onTertiary}
             style={styles.emptyCta}

@@ -21,6 +21,7 @@ import { useSubscription } from "@/lib/hooks/useSubscription";
 import { useTheme } from "@/lib/theme";
 import { LAYOUT } from "@/constants";
 import { showToast } from "@/lib/toast/showToast";
+import { SUBSCRIPTION_ROUTES, FEATURE_ROUTES } from "@/constants/routes";
 
 export default function HomeScreen() {
   return <HomeScreenContent />;
@@ -42,7 +43,7 @@ function HomeScreenContent() {
   }, [processPendingPet, data.pets?.length, isInitialized]);
 
   const handleUpgradePress = async () => {
-    router.push('/subscription');
+    router.push(SUBSCRIPTION_ROUTES.main);
   };
 
   // Hook must be called unconditionally before any early returns
@@ -102,7 +103,7 @@ function HomeScreenContent() {
                   <PetCard
                     pet={pet}
                     petId={pet._id}
-                    onPress={() => router.push(`/pet/${pet._id}`)}
+                    onPress={() => router.push(FEATURE_ROUTES.petDetail(pet._id))}
                     showActions={false}
                   />
                 </View>

@@ -31,6 +31,7 @@ import { useNotifications } from '@/lib/hooks/useNotifications';
 import { useRequestDeduplication } from '@/lib/hooks/useRequestCancellation';
 import NotificationPermissionPrompt from '@/components/NotificationPermissionPrompt';
 import { registerPushTokenWithBackend } from '@/lib/services/notificationService';
+import { SUBSCRIPTION_ROUTES, FEATURE_ROUTES } from '@/constants/routes';
 
 
 type CareTabValue = 'health' | 'feeding';
@@ -124,7 +125,7 @@ export default function CareScreen() {
 
   const handleAddSchedule = async () => {
     if (!isProUser && activeFeedingSchedules.length >= 1) {
-      router.push('/subscription');
+      router.push(SUBSCRIPTION_ROUTES.main);
       return;
     }
 
@@ -151,7 +152,7 @@ export default function CareScreen() {
 
   const handleToggleActive = async (schedule: FeedingSchedule, isActive: boolean) => {
     if (isActive && !schedule.isActive && !isProUser && activeFeedingSchedules.length >= 1) {
-      router.push('/subscription');
+      router.push(SUBSCRIPTION_ROUTES.main);
       return;
     }
 
@@ -186,7 +187,7 @@ export default function CareScreen() {
   };
 
   const handleFeedingUpgradePress = async () => {
-    router.push('/subscription');
+    router.push(SUBSCRIPTION_ROUTES.main);
   };
 
   const renderHealthContent = () => {
@@ -228,7 +229,7 @@ export default function CareScreen() {
         {filteredHealthRecords.map((record: HealthRecord) => (
           <Pressable
             key={record._id}
-            onPress={() => router.push(`/health/${record._id}`)}
+            onPress={() => router.push(FEATURE_ROUTES.petHealth(record._id))}
             style={({ pressed }) => [
               styles.healthCard,
               {

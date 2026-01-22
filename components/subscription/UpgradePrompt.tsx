@@ -5,6 +5,7 @@ import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { Text, Button, Card } from '@/components/ui';
 import { useTheme } from '@/lib/theme';
 import { useSubscription } from '@/lib/hooks/useSubscription';
+import { SUBSCRIPTION_ROUTES } from '@/constants/routes';
 
 interface UpgradePromptProps {
   /**
@@ -63,7 +64,7 @@ export function UpgradePrompt({
   }
 
   const handleUpgrade = async () => {
-    router.push('/subscription');
+    router.push(SUBSCRIPTION_ROUTES.main);
   };
 
   const displayMessage = message ?? (

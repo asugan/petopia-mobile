@@ -12,6 +12,7 @@ import { useEventReminderStore } from "@/stores/eventReminderStore";
 import { useUserSettingsStore } from "@/stores/userSettingsStore";
 import { useNotifications } from "@/lib/hooks/useNotifications";
 import NotificationPermissionPrompt from "@/components/NotificationPermissionPrompt";
+import { TAB_ROUTES } from "@/constants/routes";
 
 interface LargeTitleProps {
   title: string;
@@ -146,7 +147,7 @@ export const HeaderActions = () => {
         />
       </Pressable>
       <Pressable
-        onPress={() => router.push("/(tabs)/settings")}
+        onPress={() => router.push(TAB_ROUTES.settings)}
         style={({ pressed }) => [
           styles.iconButton,
           { backgroundColor: theme.colors.surfaceVariant, borderColor: theme.colors.outlineVariant },

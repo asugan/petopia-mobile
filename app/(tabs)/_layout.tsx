@@ -6,6 +6,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useEffect } from 'react';
 import { authClient } from '@/lib/auth/client';
 import { useOnboardingStore } from '@/stores/onboardingStore';
+import { ONBOARDING_ROUTES, AUTH_ROUTES } from '@/constants/routes';
 
 export default function TabLayout() {
   const { theme } = useTheme();
@@ -23,14 +24,14 @@ export default function TabLayout() {
     if (isPending || !hasHydrated) return;
 
     if (!hasSeenOnboarding) {
-      router.replace('/(onboarding)');
+      router.replace(ONBOARDING_ROUTES.step1);
       return;
     }
 
     const inAuthGroup = segments[0] === '(auth)';
 
     if (!isAuthenticated && !inAuthGroup) {
-      router.replace('/(auth)/login');
+      router.replace(AUTH_ROUTES.login);
     }
   }, [hasHydrated, hasSeenOnboarding, isAuthenticated, isPending, segments, router]);
 

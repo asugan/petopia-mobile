@@ -12,6 +12,7 @@ import {
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 
+import { TAB_ROUTES } from "@/constants/routes";
 import { Text } from "@/components/ui";
 import { useTheme } from "@/lib/theme";
 
@@ -49,7 +50,7 @@ export const HomeEmptyPets: React.FC<HomeEmptyPetsProps> = ({
   );
 
   const handlePress = () => {
-    router.push("/(tabs)/pets");
+    router.push(TAB_ROUTES.pets);
   };
 
   return (

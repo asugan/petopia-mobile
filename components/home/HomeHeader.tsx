@@ -5,6 +5,7 @@ import { useRouter } from "expo-router";
 import { StyleSheet, TouchableOpacity, View } from "react-native";
 import { Image } from "expo-image";
 
+import { TAB_ROUTES } from "@/constants/routes";
 import { Text } from "@/components/ui";
 import { User } from "@/lib/auth";
 import { useTheme } from "@/lib/theme";
@@ -21,7 +22,7 @@ export const HomeHeader = ({
   const router = useRouter();
 
   const handleSettingsPress = useCallback(() => {
-    router.push("/(tabs)/settings");
+    router.push(TAB_ROUTES.settings);
   }, [router]);
 
   return (

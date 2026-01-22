@@ -11,6 +11,7 @@ import { usePublicConfig } from '@/lib/hooks/usePublicConfig';
 import { SubscriptionCard } from '@/components/subscription';
 import { SuccessSubscriptionModal } from '@/components/subscription/SuccessSubscriptionModal';
 import { subscriptionStyles } from '@/lib/styles/subscription';
+import { TAB_ROUTES } from '@/constants/routes';
 
 /**
  * Subscription screen with RevenueCat paywall
@@ -45,7 +46,7 @@ export default function SubscriptionScreen() {
 
   const handleModalClose = () => {
     setModalVisible(false);
-    router.replace('/(tabs)');
+    router.replace(TAB_ROUTES.home);
   };
 
   const handleTerms = () => {

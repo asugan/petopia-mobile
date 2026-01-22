@@ -6,6 +6,7 @@ import { useTranslation } from 'react-i18next';
 import { useRouter } from 'expo-router';
 import { useNextFeedingWithDetails } from '@/lib/hooks/useFeedingSchedules';
 import { formatTimeForDisplay } from '@/lib/schemas/feedingScheduleSchema';
+import { TAB_ROUTES } from '@/constants/routes';
 import { Ionicons } from '@expo/vector-icons';
 
 export function NextFeedingWidget() {
@@ -22,7 +23,7 @@ export function NextFeedingWidget() {
   } = useNextFeedingWithDetails(i18n.language);
 
   const handlePress = () => {
-    router.push('/(tabs)/care');
+    router.push(TAB_ROUTES.care);
   };
 
   // Loading state

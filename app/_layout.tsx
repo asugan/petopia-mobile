@@ -26,6 +26,7 @@ import { useEventReminderStore } from '@/stores/eventReminderStore';
 import { useUpcomingEvents } from '@/lib/hooks/useEvents';
 import { useReminderScheduler } from '@/hooks/useReminderScheduler';
 import { createToastConfig } from '@/lib/toast/toastConfig';
+import { SUBSCRIPTION_ROUTES, TAB_ROUTES } from '@/constants/routes';
 import { LAYOUT } from '@/constants';
 import "../lib/i18n";
 
@@ -80,10 +81,10 @@ function DowngradeGate({ children }: { children: React.ReactNode }) {
 
     if (requiresDowngrade && !isOnDowngradePage && !hasRedirectedRef.current) {
       hasRedirectedRef.current = true;
-      router.replace('/downgrade');
+      router.replace(SUBSCRIPTION_ROUTES.downgrade);
     } else if (!requiresDowngrade && isOnDowngradePage) {
       hasRedirectedRef.current = false;
-      router.replace('/(tabs)');
+      router.replace(TAB_ROUTES.home);
     }
   }, [isAuthenticated, isProUser, isSubscriptionLoading, isDowngradeLoading, downgradeStatus, segments, router]);
 

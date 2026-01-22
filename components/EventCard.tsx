@@ -8,6 +8,7 @@ import { Pressable, StyleSheet, View, GestureResponderEvent } from 'react-native
 import { getEventTypeIcon, getEventTypeLabel } from '../constants/eventIcons';
 import { getEventColor } from '@/lib/utils/eventColors';
 import { Event } from '../lib/types';
+import { FEATURE_ROUTES } from '@/constants/routes';
 
 interface EventCardProps {
   event: Event;
@@ -63,7 +64,7 @@ export function EventCard({
     if (onPress) {
       onPress(event);
     } else {
-      router.push(`/event/${event._id}`);
+      router.push(FEATURE_ROUTES.petEvent(event._id));
     }
   }, [onPress, event, router]);
 

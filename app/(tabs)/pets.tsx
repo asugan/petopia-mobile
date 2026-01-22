@@ -16,6 +16,7 @@ import { Pet } from '@/lib/types';
 import { useInfinitePets } from '@/lib/hooks/usePets';
 import { showToast } from '@/lib/toast/showToast';
 import { usePendingPet } from '@/lib/hooks/usePendingPet';
+import { SUBSCRIPTION_ROUTES, FEATURE_ROUTES } from '@/constants/routes';
 
 export default function PetsScreen() {
   const { theme } = useTheme();
@@ -65,7 +66,7 @@ export default function PetsScreen() {
 
   const handleAddPet = async () => {
     if (!isProUser && allPets.length >= 1) {
-      router.push('/subscription');
+      router.push(SUBSCRIPTION_ROUTES.main);
       return;
     }
     setSelectedPetState(undefined);
@@ -73,7 +74,7 @@ export default function PetsScreen() {
   };
 
   const handleUpgradePress = async () => {
-    router.push('/subscription');
+    router.push(SUBSCRIPTION_ROUTES.main);
   };
 
   const handleModalSuccess = () => {
@@ -85,7 +86,7 @@ export default function PetsScreen() {
   };
 
   const handleViewPet = (pet: Pet) => {
-    router.push(`/pet/${pet._id}`);
+    router.push(FEATURE_ROUTES.petDetail(pet._id));
   };
 
   const handleLoadMore = () => {

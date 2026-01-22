@@ -4,6 +4,7 @@ import { Button, Card, Text } from '@/components/ui';
 import { useTheme } from '@/lib/theme';
 import { useTranslation } from 'react-i18next';
 import { Ionicons } from '@expo/vector-icons';
+import { TAB_ROUTES } from '@/constants/routes';
 import { useUpcomingEvents, useRecentPastEvents } from '@/lib/hooks/useEvents';
 import { usePets } from '@/lib/hooks/usePets';
 import { useRouter } from 'expo-router';
@@ -164,7 +165,7 @@ export function UpcomingEventsSection() {
           </Text>
           <Button
             mode="contained"
-            onPress={() => router.push('/(tabs)/calendar')}
+            onPress={() => router.push(TAB_ROUTES.calendar)}
             buttonColor={theme.colors.secondary}
             textColor={theme.colors.onSecondary}
             style={styles.emptyCta}

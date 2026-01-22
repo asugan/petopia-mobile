@@ -15,6 +15,7 @@ import {
 } from '../lib/hooks/useFeedingSchedules';
 import { useSubscription } from '@/lib/hooks/useSubscription';
 import { showToast } from '@/lib/toast/showToast';
+import { SUBSCRIPTION_ROUTES } from '@/constants/routes';
 
 interface FeedingScheduleModalProps {
   visible: boolean;
@@ -57,13 +58,13 @@ export function FeedingScheduleModal({
       if (schedule) {
         // Update existing schedule
         if (willBeActive && !schedule.isActive && !isProUser && activeFeedingSchedules.length >= 1) {
-          router.push('/subscription');
+          router.push(SUBSCRIPTION_ROUTES.main);
           return;
         }
       } else {
         // Create new schedule
         if (willBeActive && !isProUser && activeFeedingSchedules.length >= 1) {
-          router.push('/subscription');
+          router.push(SUBSCRIPTION_ROUTES.main);
           return;
         }
       }

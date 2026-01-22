@@ -6,6 +6,7 @@ import { enUS, tr } from 'date-fns/locale';
 import { Image } from 'expo-image';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
+import { TAB_ROUTES } from '@/constants/routes';
 import { useTranslation } from 'react-i18next';
 import {
   ActivityIndicator,
@@ -84,7 +85,7 @@ export default function EventDetailScreen() {
       setChoiceModalVisible(true);
     } else {
       router.push({
-        pathname: '/(tabs)/calendar',
+        pathname: TAB_ROUTES.calendar,
         params: { editEventId: event._id }
       });
     }
@@ -128,7 +129,7 @@ export default function EventDetailScreen() {
       if (choiceMode === 'edit') {
         // Redirect to calendar with edit ID - calendar should handle rule editing
         router.push({
-          pathname: '/(tabs)/calendar',
+          pathname: TAB_ROUTES.calendar,
           params: { editEventId: event._id, editType: 'series' }
         });
       } else {
@@ -160,7 +161,7 @@ export default function EventDetailScreen() {
       // Single occurrence
       if (choiceMode === 'edit') {
         router.push({
-          pathname: '/(tabs)/calendar',
+          pathname: TAB_ROUTES.calendar,
           params: { editEventId: event._id, editType: 'single' }
         });
       } else {

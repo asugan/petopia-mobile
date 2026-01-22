@@ -19,6 +19,7 @@ import { useActiveFeedingSchedulesByPet } from '@/lib/hooks/useFeedingSchedules'
 import { formatTimeForDisplay, getNextFeedingTime, getPreviousFeedingTime } from '@/lib/schemas/feedingScheduleSchema';
 import { PetModal } from '@/components/PetModal';
 import { showToast } from '@/lib/toast/showToast';
+import { TAB_ROUTES } from '@/constants/routes';
 
 const { width } = Dimensions.get('window');
 
@@ -289,7 +290,7 @@ export default function PetDetailScreen() {
             <View style={styles.heroActions}>
               <TouchableOpacity
                 style={[styles.heroActionButton, { backgroundColor: theme.colors.primary, shadowColor: theme.colors.primary }]}
-                onPress={() => router.push({ pathname: '/(tabs)/calendar', params: { petId: pet._id, action: 'create' } })}
+                onPress={() => router.push({ pathname: TAB_ROUTES.calendar, params: { petId: pet._id, action: 'create' } })}
                 accessibilityLabel={t('events.addEvent')}
                 accessibilityRole="button"
               >
@@ -460,7 +461,7 @@ export default function PetDetailScreen() {
             <View style={styles.sectionHeader}>
               <Text style={[styles.sectionTitle, { color: theme.colors.onSurface }]}>{t('pets.healthStatus')}</Text>
               <TouchableOpacity
-                onPress={() => router.push('/(tabs)/care')}
+                onPress={() => router.push(TAB_ROUTES.care)}
                 accessibilityLabel={t('pets.viewHealthDetails')}
                 accessibilityRole="button"
               >

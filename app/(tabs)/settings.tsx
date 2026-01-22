@@ -25,6 +25,7 @@ import { LanguageSettings } from "@/components/LanguageSettings";
 import NotificationPermissionPrompt, { NotificationPermissionCard } from "@/components/NotificationPermissionPrompt";
 import { subscriptionStyles } from "@/lib/styles/subscription";
 import { useNotifications } from "@/lib/hooks/useNotifications";
+import { AUTH_ROUTES, ONBOARDING_ROUTES, SETTINGS_ROUTES } from "@/constants/routes";
 
 type ModalState = "none" | "contact" | "deleteWarning" | "deleteConfirm";
 
@@ -155,7 +156,7 @@ export default function SettingsScreen() {
           setLoading(true);
           try {
             await signOut();
-            router.replace("/(auth)/login");
+            router.replace(AUTH_ROUTES.login);
           } catch {
           } finally {
             setLoading(false);
@@ -203,7 +204,7 @@ export default function SettingsScreen() {
         setLoading(true);
         try {
           await signOut();
-          router.replace("/(auth)/login");
+          router.replace(AUTH_ROUTES.login);
         } catch {
         } finally {
           setLoading(false);
@@ -589,7 +590,7 @@ export default function SettingsScreen() {
                   color={theme.colors.onSurfaceVariant}
                 />
               }
-              onPress={() => router.push("/settings/recurrence")}
+              onPress={() => router.push(SETTINGS_ROUTES.recurrence)}
               right={
                 <MaterialCommunityIcons
                   name="chevron-right"
@@ -656,7 +657,7 @@ export default function SettingsScreen() {
                       onPress: () => {
                         resetOnboarding();
                         // Navigate directly to onboarding to avoid race conditions with root redirector
-                        router.replace('/(onboarding)');
+                        router.replace(ONBOARDING_ROUTES.step1);
                       }
                     }
                   ]

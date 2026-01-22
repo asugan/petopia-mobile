@@ -18,6 +18,7 @@ import { useTheme } from '@/lib/theme';
 import { useAuth } from '@/lib/auth';
 import { useAuthStore } from '@/stores/authStore';
 import { usePublicConfig } from '@/lib/hooks/usePublicConfig';
+import { TAB_ROUTES } from '@/constants/routes';
 import { Text, ActivityIndicator } from '@/components/ui';
 
 const { height } = Dimensions.get('window');
@@ -41,7 +42,7 @@ export default function LoginScreen() {
     if (waitForAuth && isAuthenticated) {
       setWaitForAuth(false);
       setLoading(false);
-      router.replace('/(tabs)');
+      router.replace(TAB_ROUTES.home);
 
       if (timeoutRef.current) {
         clearTimeout(timeoutRef.current);

@@ -60,6 +60,7 @@ import { useNotifications } from "@/lib/hooks/useNotifications";
 import { useRequestDeduplication } from "@/lib/hooks/useRequestCancellation";
 import NotificationPermissionPrompt from "@/components/NotificationPermissionPrompt";
 import { registerPushTokenWithBackend } from "@/lib/services/notificationService";
+import { SUBSCRIPTION_ROUTES } from "@/constants/routes";
 
 type FinanceTabValue = 'budget' | 'expenses';
 
@@ -233,7 +234,7 @@ export default function FinanceScreen() {
   // Budget handlers (new simplified system)
   const handleCreateBudget = async () => {
     if (!isProUser) {
-      router.push('/subscription');
+      router.push(SUBSCRIPTION_ROUTES.main);
       return;
     }
     setEditingBudget(undefined);
@@ -246,7 +247,7 @@ export default function FinanceScreen() {
     }
 
     if (!isProUser) {
-      router.push('/subscription');
+      router.push(SUBSCRIPTION_ROUTES.main);
       return;
     }
 
@@ -276,7 +277,7 @@ export default function FinanceScreen() {
 
   const handleBudgetFormSubmit = async (data: SetUserBudgetInput) => {
     if (!isProUser) {
-      router.push('/subscription');
+      router.push(SUBSCRIPTION_ROUTES.main);
       return;
     }
 
@@ -312,7 +313,7 @@ export default function FinanceScreen() {
 
   const handleExportCsv = async () => {
     if (!isProUser) {
-      router.push('/subscription');
+      router.push(SUBSCRIPTION_ROUTES.main);
       return;
     }
 
@@ -332,7 +333,7 @@ export default function FinanceScreen() {
 
   const handleExportPdf = async () => {
     if (!isProUser) {
-      router.push('/subscription');
+      router.push(SUBSCRIPTION_ROUTES.main);
       return;
     }
 
@@ -369,7 +370,7 @@ export default function FinanceScreen() {
     }
 
     if (!isProUser) {
-      router.push('/subscription');
+      router.push(SUBSCRIPTION_ROUTES.main);
       return;
     }
 
@@ -504,7 +505,7 @@ export default function FinanceScreen() {
                 },
                 pressed && styles.chipPressed,
               ]}
-              onPress={() => router.push('/subscription')}
+              onPress={() => router.push(SUBSCRIPTION_ROUTES.main)}
             >
               <View style={[styles.upgradeIconWrap, { backgroundColor: theme.colors.primaryContainer }]}
               >

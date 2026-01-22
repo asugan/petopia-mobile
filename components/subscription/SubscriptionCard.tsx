@@ -6,6 +6,7 @@ import { Card, Text, Button, ProgressBar } from '@/components/ui';
 import { useTheme } from '@/lib/theme';
 import { useSubscription } from '@/lib/hooks/useSubscription';
 import { REVENUECAT_CONFIG } from '@/lib/revenuecat/config';
+import { SUBSCRIPTION_ROUTES } from '@/constants/routes';
 
 interface SubscriptionCardProps {
   showManageButton?: boolean;
@@ -89,7 +90,7 @@ export function SubscriptionCard({ showManageButton = true, compact = false, onU
       if (onUpgrade) {
         await onUpgrade();
       } else {
-        router.push('/subscription');
+        router.push(SUBSCRIPTION_ROUTES.main);
       }
     } catch (error) {
       console.error('Upgrade error:', error);
@@ -120,7 +121,7 @@ export function SubscriptionCard({ showManageButton = true, compact = false, onU
       if (onUpgrade) {
         await onUpgrade();
       } else {
-        router.push('/subscription');
+        router.push(SUBSCRIPTION_ROUTES.main);
       }
     } catch (error) {
       console.error('Navigation error:', error);

@@ -18,6 +18,7 @@ import { eventKeys } from '@/lib/hooks/queryKeys';
 import { Event } from '@/lib/types';
 import { useQueryClient } from '@tanstack/react-query';
 import { showToast } from '@/lib/toast/showToast';
+import { FEATURE_ROUTES } from '@/constants/routes';
 
 type CalendarViewType = 'month' | 'week';
 
@@ -105,7 +106,7 @@ export default function CalendarScreen() {
   };
 
   const handleEventPress = useCallback((event: Event) => {
-    router.push(`/event/${event._id}`);
+    router.push(FEATURE_ROUTES.petEvent(event._id));
   }, [router]);
 
   const handleToggleReminder = useCallback(async (event: Event, nextValue: boolean) => {

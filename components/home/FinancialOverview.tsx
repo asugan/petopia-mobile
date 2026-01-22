@@ -6,6 +6,7 @@ import { useTheme } from "@/lib/theme";
 import { useTranslation } from "react-i18next";
 import { useRouter } from "expo-router";
 import { UserBudgetStatus, Expense } from "@/lib/types";
+import { TAB_ROUTES } from "@/constants/routes";
 import CompactExpenseItem from "@/components/CompactExpenseItem";
 
 interface FinancialOverviewProps {
@@ -93,7 +94,7 @@ export const FinancialOverview: React.FC<FinancialOverviewProps> = ({
           </Text>
           <Button
             mode="contained"
-            onPress={() => router.push("/(tabs)/finance")}
+            onPress={() => router.push(TAB_ROUTES.finance)}
             buttonColor={theme.colors.primary}
             textColor={theme.colors.onPrimary}
             style={styles.emptyButton}
@@ -106,7 +107,7 @@ export const FinancialOverview: React.FC<FinancialOverviewProps> = ({
   }
 
   return (
-    <Pressable onPress={() => router.push("/(tabs)/finance")}>
+    <Pressable onPress={() => router.push(TAB_ROUTES.finance)}>
       <Card
         style={[styles.card, { backgroundColor: theme.colors.surface }]}
         elevation={2}
