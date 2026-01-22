@@ -116,7 +116,7 @@ export default function OnboardingStep1() {
       {/* Background Section with Image */}
       <View style={styles.imageContainer}>
         <Image
-          source={require('../../assets/images/onboarding-hero.jpg')}
+          source={require('../../assets/images/onboarding_1.webp')}
           style={styles.image}
           contentFit="cover"
         />
