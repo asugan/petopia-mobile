@@ -9,12 +9,14 @@ import { PetCreateInput, PetCreateFormInput, PetCreateSchema } from '../lib/sche
 import { Pet } from '../lib/types';
 import { PetForm } from './forms/PetForm';
 import { showToast } from '@/lib/toast/showToast';
+import { usePendingPetStore } from '@/stores/pendingPetStore';
 
 interface PetModalProps {
   visible: boolean;
   pet?: Pet;
   onClose: () => void;
   onSuccess: () => void;
+  isOnboarding?: boolean;
   testID?: string;
 }
 
@@ -23,11 +25,15 @@ export function PetModal({
   pet,
   onClose,
   onSuccess,
+  isOnboarding,
   testID,
 }: PetModalProps) {
   const { t } = useTranslation();
   const { theme } = useTheme();
   const [loading, setLoading] = React.useState(false);
+
+  // Store for pending pet during onboarding
+  const { setPendingPet } = usePendingPetStore();
 
   // ✅ React Query hooks for server state
   const createPetMutation = useCreatePet();
@@ -44,6 +50,10 @@ export function PetModal({
         // Pet güncelleme
         await updatePetMutation.mutateAsync({ _id: pet._id, data: apiData });
         showToast({ type: 'success', title: t('pets.updateSuccess') });
+      } else if (isOnboarding) {
+        // Pending store'a kaydet, API login sonrası yapılacak
+        setPendingPet(data);
+        showToast({ type: 'success', title: t('pets.petSavedForAfterLogin') });
       } else {
         // Yeni pet oluşturma
         await createPetMutation.mutateAsync(apiData);
@@ -59,7 +69,7 @@ export function PetModal({
     } finally {
       setLoading(false);
     }
-  }, [pet, createPetMutation, updatePetMutation, onSuccess, onClose, t]);
+  }, [pet, createPetMutation, updatePetMutation, onSuccess, onClose, t, isOnboarding, setPendingPet]);
 
   const handleClose = React.useCallback(() => {
     if (!loading) {
@@ -81,7 +91,12 @@ export function PetModal({
         <SafeAreaView style={[styles.container, { backgroundColor: theme.colors.surface }]}>
           <View style={styles.header}>
             <Text style={[styles.title, { color: theme.colors.onSurface }]}>
-              {pet ? t('pets.editPet') : t('pets.addNewPet')}
+              {isOnboarding
+                ? t('onboarding.screen3.addYourFirstPet')
+                : pet
+                  ? t('pets.editPet')
+                  : t('pets.addNewPet')
+              }
             </Text>
           </View>
 

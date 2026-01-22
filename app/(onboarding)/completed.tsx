@@ -9,7 +9,8 @@ import { Gesture, GestureDetector, Directions } from 'react-native-gesture-handl
 import { scheduleOnRN } from 'react-native-worklets';
 import { useTheme } from '@/lib/theme';
 import { useAuth } from '@/lib/auth/useAuth';
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
+import { PetModal } from '@/components/PetModal';
 
 export default function OnboardingCompleted() {
   const router = useRouter();
@@ -17,7 +18,7 @@ export default function OnboardingCompleted() {
   const { t } = useTranslation();
   const { theme } = useTheme();
   const { isAuthenticated } = useAuth();
-
+  const [modalVisible, setModalVisible] = useState(false);
 
   const handleComplete = async () => {
     // Mark onboarding as seen
@@ -29,6 +30,19 @@ export default function OnboardingCompleted() {
     } else {
       router.replace('/(auth)/login');
     }
+  };
+
+  const handleAddPet = () => {
+    setModalVisible(true);
+  };
+
+  const handleSkipPet = () => {
+    handleComplete();
+  };
+
+  const handlePetFormSuccess = () => {
+    // Pet is already saved to pending store, just complete onboarding
+    handleComplete();
   };
 
   const swipeRight = Gesture.Fling()
@@ -107,19 +121,28 @@ export default function OnboardingCompleted() {
       fontWeight: '600',
       textAlign: 'center',
     },
-    button: {
+    addPetButton: {
       backgroundColor: theme.colors.primary,
-      height: 48,
+      height: 56,
       borderRadius: theme.roundness / 2,
       width: '100%',
       maxWidth: 480,
       alignItems: 'center',
       justifyContent: 'center',
     },
-    buttonText: {
+    addPetButtonText: {
       color: theme.colors.onPrimary,
       fontSize: 16,
       fontWeight: '700',
+    },
+    skipButton: {
+      marginTop: 12,
+    },
+    skipButtonText: {
+      color: theme.colors.onSurfaceVariant,
+      fontSize: 14,
+      fontWeight: '600',
+      textAlign: 'center',
     },
   }), [theme]);
 
@@ -152,14 +175,33 @@ export default function OnboardingCompleted() {
           <View style={styles.trialNotice}>
             <Text style={styles.trialNoticeText}>{t('onboarding.screen3.trialNotice')}</Text>
           </View>
-          <Pressable 
-            style={styles.button}
-            onPress={handleComplete}
+
+          <Pressable
+            style={styles.addPetButton}
+            onPress={handleAddPet}
           >
-            <Text style={styles.buttonText}>{t('onboarding.screen3.button')}</Text>
+            <Text style={styles.addPetButtonText}>
+              {t('onboarding.screen3.addPet')}
+            </Text>
+          </Pressable>
+
+          <Pressable
+            style={styles.skipButton}
+            onPress={handleSkipPet}
+          >
+            <Text style={styles.skipButtonText}>
+              {t('onboarding.screen3.skipPet')}
+            </Text>
           </Pressable>
         </View>
       </SafeAreaView>
+
+      <PetModal
+        visible={modalVisible}
+        onClose={() => setModalVisible(false)}
+        onSuccess={handlePetFormSuccess}
+        isOnboarding={true}
+      />
       </View>
     </GestureDetector>
   );

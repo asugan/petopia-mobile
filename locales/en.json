@@ -165,7 +165,11 @@
     "viewHealthDetails": "View health details",
     "sharePet": "Share pet information",
     "editPetHint": "Edits the pet details",
-    "sharePetHint": "Shares this pet's information with others"
+    "sharePetHint": "Shares this pet's information with others",
+    "petSavedForAfterLogin": "Pet saved! It will be created when you sign in.",
+    "pendingPetCreated": "Your pet has been added successfully!",
+    "pendingPetError": "Could not save your pet. Please add it manually.",
+    "pendingPetSkipped": "You already have pets. Skipped pending pet."
   },
   "limits": {
     "pets": {
@@ -1253,7 +1257,9 @@
       "title": "You Are Ready!",
       "description": "Everything is ready to manage your pet's care and health data.",
       "trialNotice": "Your 14-day free trial starts now. No credit card required.",
-      "button": "Go to Home"
+      "addPet": "Add Your Pet",
+      "skipPet": "Do it later",
+      "addYourFirstPet": "Add Your First Pet"
     }
   },
   "serviceResponse": {

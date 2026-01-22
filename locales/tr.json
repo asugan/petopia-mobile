@@ -157,7 +157,11 @@
     "viewHealthDetails": "Sağlık detaylarını görüntüle",
     "sharePet": "Evcil hayvan bilgilerini paylaş",
     "editPetHint": "Evcil hayvan detaylarını düzenler",
-    "sharePetHint": "Bu evcil hayvanın bilgilerini başkalarıyla paylaşır"
+    "sharePetHint": "Bu evcil hayvanın bilgilerini başkalarıyla paylaşır",
+    "petSavedForAfterLogin": "Pet kaydedildi! Giriş yaptığında oluşturulacak.",
+    "pendingPetCreated": "Petin başarıyla eklendi!",
+    "pendingPetError": "Pet kaydedilemedi. Lütfen manuel olarak ekleyin.",
+    "pendingPetSkipped": "Zaten petleriniz var. Bekleyen pet atlandı."
   },
   "limits": {
     "pets": {
@@ -1228,7 +1232,9 @@
       "title": "Artık Hazırsınız!",
       "description": "Evcil hayvanınızın bakım ve sağlık verilerini yönetmek için her şey hazır.",
       "trialNotice": "14 günlük ücretsiz deneme süreniz başlıyor. Kredi kartı gerekmez.",
-      "button": "Ana Sayfaya Git"
+      "addPet": "Petini Ekle",
+      "skipPet": "Sonra Yaparım",
+      "addYourFirstPet": "İlk Petini Ekle"
     }
   },
   "serviceResponse": {
