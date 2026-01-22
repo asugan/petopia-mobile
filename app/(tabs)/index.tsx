@@ -1,6 +1,6 @@
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
-import React, { useEffect, useRef } from "react";
+import React, { useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { ScrollView, StyleSheet, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -15,15 +15,12 @@ import { FinancialOverview } from "@/components/home/FinancialOverview";
 import { HomeEmptyPets } from "@/components/home/HomeEmptyPets";
 import { HeaderActions, LargeTitle } from "@/components/LargeTitle";
 import { Text } from "@/components/ui";
-import { useAuth } from "@/lib/auth/useAuth";
-import { useCreatePet } from "@/lib/hooks/usePets";
 import { useHomeData } from "@/lib/hooks/useHomeData";
+import { usePendingPet } from "@/lib/hooks/usePendingPet";
 import { useSubscription } from "@/lib/hooks/useSubscription";
 import { useTheme } from "@/lib/theme";
 import { LAYOUT } from "@/constants";
-import { PetCreateInput, PetCreateSchema } from "@/lib/schemas/petSchema";
 import { showToast } from "@/lib/toast/showToast";
-import { usePendingPetStore } from "@/stores/pendingPetStore";
 
 export default function HomeScreen() {
   return <HomeScreenContent />;
@@ -33,54 +30,16 @@ function HomeScreenContent() {
   const { theme } = useTheme();
   const { t } = useTranslation();
   const router = useRouter();
-  const { isProUser } = useSubscription();
-  const { isAuthenticated } = useAuth();
-  const createPetMutation = useCreatePet();
-  const { hasPendingPet, getPetData, clearPendingPet } = usePendingPetStore();
-  const pendingPetProcessed = useRef(false);
+  const { isProUser, isInitialized } = useSubscription();
+  const { processPendingPet } = usePendingPet();
 
   // Tüm mantık useHomeData hook'unda toplandı
   const { layout, data, status, financial } = useHomeData();
-  const allPets = data.pets || [];
 
   // Login sonrası pending pet kontrolü
   useEffect(() => {
-    const processPendingPet = async () => {
-      if (pendingPetProcessed.current) return;
-
-      if (hasPendingPet && isAuthenticated && !status.isLoading && allPets.length === 0) {
-        pendingPetProcessed.current = true;
-        const petData = getPetData();
-        if (petData) {
-          try {
-            const apiData: PetCreateInput = PetCreateSchema().parse(petData);
-            await createPetMutation.mutateAsync(apiData);
-            clearPendingPet();
-            showToast({
-              type: 'success',
-              title: t('pets.pendingPetCreated')
-            });
-          } catch (error) {
-            console.error('Pending pet creation failed:', error);
-            showToast({
-              type: 'error',
-              title: t('pets.pendingPetError')
-            });
-          }
-        }
-      }
-      else if (hasPendingPet && !status.isLoading && allPets.length > 0) {
-        pendingPetProcessed.current = true;
-        clearPendingPet();
-        showToast({
-          type: 'info',
-          title: t('pets.pendingPetSkipped')
-        });
-      }
-    };
-
-    processPendingPet();
-  }, [isAuthenticated, status.isLoading, hasPendingPet, createPetMutation, clearPendingPet, t, getPetData, allPets.length]);
+    processPendingPet(data.pets?.length ?? 0);
+  }, [processPendingPet, data.pets?.length, isInitialized]);
 
   const handleUpgradePress = async () => {
     router.push('/subscription');

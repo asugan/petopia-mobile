@@ -1,9 +1,8 @@
-
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { useTheme } from '@/lib/theme';
 import { useCreatePet, useUpdatePet } from '@/lib/hooks/usePets';
-import { Modal as RNModal, StyleSheet, Text, View } from 'react-native';
+import { Modal as RNModal, StyleSheet, Text, View, Platform } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { PetCreateInput, PetCreateFormInput, PetCreateSchema } from '../lib/schemas/petSchema';
 import { Pet } from '../lib/types';
@@ -77,13 +76,22 @@ export function PetModal({
     }
   }, [onClose, loading]);
 
+  const animationType = Platform.select({
+    ios: 'slide' as const,
+    android: 'fade' as const,
+  });
+
+  const presentationStyle = Platform.select({
+    ios: 'pageSheet' as const,
+    android: undefined,
+  });
 
   return (
     <>
       <RNModal
         visible={visible}
-        animationType="slide"
-        presentationStyle="pageSheet"
+        animationType={animationType}
+        presentationStyle={presentationStyle}
         onDismiss={handleClose}
         onRequestClose={handleClose}
         testID={testID}

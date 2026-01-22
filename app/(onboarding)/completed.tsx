@@ -3,46 +3,32 @@ import { useRouter } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { MaterialIcons } from '@expo/vector-icons';
-import { useOnboardingStore } from '@/stores/onboardingStore';
 import { useTranslation } from 'react-i18next';
 import { Gesture, GestureDetector, Directions } from 'react-native-gesture-handler';
 import { scheduleOnRN } from 'react-native-worklets';
 import { useTheme } from '@/lib/theme';
-import { useAuth } from '@/lib/auth/useAuth';
 import { useMemo, useState } from 'react';
 import { PetModal } from '@/components/PetModal';
+import { useOnboardingCompletion } from '@/lib/hooks/useOnboardingCompletion';
 
 export default function OnboardingCompleted() {
   const router = useRouter();
-  const { setHasSeenOnboarding } = useOnboardingStore();
   const { t } = useTranslation();
   const { theme } = useTheme();
-  const { isAuthenticated } = useAuth();
   const [modalVisible, setModalVisible] = useState(false);
-
-  const handleComplete = async () => {
-    // Mark onboarding as seen
-    setHasSeenOnboarding(true);
-
-    // Navigate based on authentication state
-    if (isAuthenticated) {
-      router.replace('/(tabs)');
-    } else {
-      router.replace('/(auth)/login');
-    }
-  };
+  const { completeOnboarding, skipPetAndComplete } = useOnboardingCompletion();
 
   const handleAddPet = () => {
     setModalVisible(true);
   };
 
   const handleSkipPet = () => {
-    handleComplete();
+    skipPetAndComplete();
   };
 
   const handlePetFormSuccess = () => {
     // Pet is already saved to pending store, just complete onboarding
-    handleComplete();
+    completeOnboarding();
   };
 
   const swipeRight = Gesture.Fling()

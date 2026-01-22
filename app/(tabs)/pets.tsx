@@ -1,4 +1,4 @@
-import React, { useMemo, useState, useEffect, useRef } from 'react';
+import React, { useMemo, useState, useEffect } from 'react';
 import { View, StyleSheet, ScrollView, RefreshControl, TextInput, Pressable } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
@@ -13,20 +13,16 @@ import { PetCardSkeleton } from '@/components/PetCardSkeleton';
 import { PetModal } from '@/components/PetModal';
 import { LAYOUT } from '@/constants';
 import { Pet } from '@/lib/types';
-import { useInfinitePets, useCreatePet } from '@/lib/hooks/usePets';
+import { useInfinitePets } from '@/lib/hooks/usePets';
 import { showToast } from '@/lib/toast/showToast';
-import { usePendingPetStore } from '@/stores/pendingPetStore';
-import { useAuth } from '@/lib/auth/useAuth';
-import { PetCreateInput, PetCreateSchema } from '@/lib/schemas/petSchema';
+import { usePendingPet } from '@/lib/hooks/usePendingPet';
 
 export default function PetsScreen() {
   const { theme } = useTheme();
   const { t } = useTranslation();
   const router = useRouter();
-  const { isProUser } = useSubscription();
-  const { isAuthenticated } = useAuth();
-  const createPetMutation = useCreatePet();
-  const { hasPendingPet, getPetData, clearPendingPet } = usePendingPetStore();
+  const { isProUser, isInitialized } = useSubscription();
+  const { processPendingPet } = usePendingPet();
 
   // React Query infinite query for pets
   const {
@@ -51,48 +47,11 @@ export default function PetsScreen() {
   const [searchQuery, setSearchQuery] = useState('');
   const [activeFilter, setActiveFilter] = useState<'all' | 'dog' | 'cat' | 'urgent'>('all');
   const [urgentStatus, setUrgentStatus] = useState<Record<string, { urgent: boolean; loading: boolean }>>({});
-  const pendingPetProcessed = useRef(false);
 
   // Login sonrası pending pet kontrolü
   useEffect(() => {
-    const processPendingPet = async () => {
-      if (pendingPetProcessed.current) return;
-
-      // Kullanıcının pet'i yoksa pending pet'i oluştur
-      if (hasPendingPet && isAuthenticated && !isLoading && allPets.length === 0) {
-        pendingPetProcessed.current = true;
-        const petData = getPetData();
-        if (petData) {
-          try {
-            const apiData: PetCreateInput = PetCreateSchema().parse(petData);
-            await createPetMutation.mutateAsync(apiData);
-            clearPendingPet();
-            showToast({
-              type: 'success',
-              title: t('pets.pendingPetCreated')
-            });
-          } catch (error) {
-            console.error('Pending pet creation failed:', error);
-            showToast({
-              type: 'error',
-              title: t('pets.pendingPetError')
-            });
-          }
-        }
-      }
-      // Kullanıcının zaten pet'i varsa pending pet'i temizle
-      else if (hasPendingPet && !isLoading && allPets.length > 0) {
-        pendingPetProcessed.current = true;
-        clearPendingPet();
-        showToast({
-          type: 'info',
-          title: t('pets.pendingPetSkipped')
-        });
-      }
-    };
-
-    processPendingPet();
-  }, [isAuthenticated, isLoading, hasPendingPet, createPetMutation, clearPendingPet, t, getPetData, allPets.length]);
+    processPendingPet(allPets.length);
+  }, [processPendingPet, allPets.length, isInitialized]);
 
   useEffect(() => {
     if (error) {

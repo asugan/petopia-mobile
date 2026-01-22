@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, StyleSheet, Modal as RNModal } from 'react-native';
+import { View, StyleSheet, Modal as RNModal, Platform } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useTranslation } from 'react-i18next';
 import { Text, Button } from '@/components/ui';
@@ -108,13 +108,22 @@ export function EventModal({
     }
   }, [onClose, loading]);
 
+  const animationType = Platform.select({
+    ios: 'slide' as const,
+    android: 'fade' as const,
+  });
+
+  const presentationStyle = Platform.select({
+    ios: 'pageSheet' as const,
+    android: undefined,
+  });
 
   return (
     <>
       <RNModal
         visible={visible}
-        animationType="slide"
-        presentationStyle="pageSheet"
+        animationType={animationType}
+        presentationStyle={presentationStyle}
         onDismiss={handleClose}
         onRequestClose={handleClose}
         testID={testID}
