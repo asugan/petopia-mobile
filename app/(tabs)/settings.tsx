@@ -10,7 +10,9 @@ import { notificationService, registerPushTokenWithBackend } from "@/lib/service
 import { useAuthStore } from "@/stores/authStore";
 import { useEventReminderStore } from "@/stores/eventReminderStore";
 import { SupportedCurrency, useUserSettingsStore } from "@/stores/userSettingsStore";
-import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
+import Constants from 'expo-constants';
+import { Ionicons } from "@expo/vector-icons";
+import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import { useRouter } from "expo-router";
 import { useTranslation } from "react-i18next";
 import { Alert, Keyboard, KeyboardAvoidingView, Platform, Pressable, ScrollView, StyleSheet, TextInput, View } from "react-native";
@@ -535,7 +537,7 @@ export default function SettingsScreen() {
             </Text>
             <ListItem
               title={t("settings.version")}
-              description={t("settings.versionNumber")}
+              description={Constants.expoConfig?.version || '1.0.0'}
               left={
                 <MaterialCommunityIcons
                   name="information"
