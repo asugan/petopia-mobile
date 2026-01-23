@@ -35,7 +35,7 @@
     "linkOpenError": "Bağlantı açılamadı. Lütfen tekrar deneyin.",
     "logoutConfirm": "Çıkış yapmak istediğinizden emin misiniz?",
     "logoutSuccess": "Başarıyla çıkış yapıldı",
-    "freeTrialNotice": "Giriş yaptığınızda 14 günlük ücretsiz deneme başlar. Kredi kartı gerekmez."
+    "freeTrialNotice": "Sosyal medya ile giriş yapın, bilgilerinizi buluta senkronize edin ve tüm cihazlarınızda kullanın."
   },
   "navigation": {
     "home": "Ana Sayfa",
@@ -1230,7 +1230,7 @@
     "screen3": {
       "title": "Artık Hazırsınız!",
       "description": "Evcil hayvanınızın bakım ve sağlık verilerini yönetmek için her şey hazır.",
-      "trialNotice": "14 günlük ücretsiz deneme süreniz başlıyor. Kredi kartı gerekmez.",
+      "trialNotice": "Hemen petinizi ekleyerek başlayın!",
       "addPet": "Petini Ekle",
       "skipPet": "Sonra Yaparım",
       "addYourFirstPet": "İlk Petini Ekle"
@@ -1395,6 +1395,9 @@
     "upgradeToPro": "Pro'ya Yükselt",
     "startTrial": "14 Gün Ücretsiz Dene",
     "noCreditCardRequired": "Kredi kartı gerekmez",
+    "confirmStartTrialTitle": "Ücretsiz Deneme Başlasın mı?",
+    "confirmStartTrialMessage": "14 gün ücretsiz Pro özellikler. Kredi kartı gerekmez.",
+    "confirmStartTrialAction": "Denemeyi Başlat",
     "upgrade": "Pro'ya Yükselt",
     "upgradePrompt": "Tüm özellikleri Pro ile açın",
     "upgradeBeforeTrialEnds": "Deneme Bitmeden Yükseltin",
@@ -1456,6 +1459,11 @@
     "success": {
       "title": "Abonelik Başarılı!",
       "message": "Artık Pro üyesiniz. Tüm premium özelliklerin keyfini çıkarın.",
+      "button": "Anasayfaya Dön"
+    },
+    "trialSuccess": {
+      "title": "Tebrikler!",
+      "message": "14 günlük ücretsiz denemeniz başladı. Tüm Pro özelliklerin keyfini çıkarın!",
       "button": "Anasayfaya Dön"
     },
     "note": "Ödeme App Store / Google Play hesabınızdan tahsil edilecektir. Abonelikler, mevcut dönemin sonundan en az 24 saat önce iptal edilmediği sürece otomatik olarak yenilenir. Aboneliğinizi App Store / Google Play hesap ayarlarınızdan yönetebilir veya iptal edebilirsiniz."

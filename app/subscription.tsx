@@ -22,6 +22,7 @@ export default function SubscriptionScreen() {
   const { theme } = useTheme();
   const router = useRouter();
   const [modalVisible, setModalVisible] = useState(false);
+  const [isTrialSuccess, setIsTrialSuccess] = useState(false);
   const {
     isPaidSubscription,
     isLoading,
@@ -44,8 +45,14 @@ export default function SubscriptionScreen() {
     }
   };
 
+  const handleTrialStartSuccess = () => {
+    setIsTrialSuccess(true);
+    setModalVisible(true);
+  };
+
   const handleModalClose = () => {
     setModalVisible(false);
+    setIsTrialSuccess(false);
     router.replace(TAB_ROUTES.home);
   };
 
@@ -116,7 +123,7 @@ export default function SubscriptionScreen() {
 
       <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
         {/* Current Status Card */}
-        <SubscriptionCard onUpgrade={handlePresentPaywall} />
+        <SubscriptionCard onUpgrade={handlePresentPaywall} onTrialStartSuccess={handleTrialStartSuccess} />
 
         {/* Subscription Note */}
         <Text
@@ -198,6 +205,7 @@ export default function SubscriptionScreen() {
       <SuccessSubscriptionModal
         visible={modalVisible}
         onClose={handleModalClose}
+        isTrial={isTrialSuccess}
       />
     </SafeAreaView>
   );

@@ -12,13 +12,14 @@ interface SubscriptionCardProps {
   showManageButton?: boolean;
   compact?: boolean;
   onUpgrade?: () => void | Promise<void>;
+  onTrialStartSuccess?: () => void;
 }
 
 /**
  * SubscriptionCard displays the current subscription status
  * Used in Settings screen and other places where subscription info is needed
  */
-export function SubscriptionCard({ showManageButton = true, compact = false, onUpgrade }: SubscriptionCardProps) {
+export function SubscriptionCard({ showManageButton = true, compact = false, onUpgrade, onTrialStartSuccess }: SubscriptionCardProps) {
   const { t } = useTranslation();
   const { theme } = useTheme();
   const router = useRouter();
@@ -269,7 +270,22 @@ export function SubscriptionCard({ showManageButton = true, compact = false, onU
             ) : canStartTrial ? (
               <Button
                 mode="contained"
-                onPress={startTrial}
+                onPress={() => {
+                  Alert.alert(
+                    t('subscription.confirmStartTrialTitle'),
+                    t('subscription.confirmStartTrialMessage'),
+                    [
+                      { text: t('common.cancel'), style: 'cancel' },
+                      {
+                        text: t('subscription.confirmStartTrialAction'),
+                        onPress: async () => {
+                          await startTrial();
+                          onTrialStartSuccess?.();
+                        },
+                      },
+                    ]
+                  );
+                }}
                 loading={isLoading}
                 disabled={isLoading}
                 style={styles.actionButton}
