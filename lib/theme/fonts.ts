@@ -1,4 +1,6 @@
 import { ThemeFonts } from "./types";
+// Fontlar fontFamily string değerleri olarak kullanılıyor (runtime'da yükleniyor)
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { Roboto_400Regular, Roboto_500Medium, Roboto_700Bold } from '@expo-google-fonts/roboto';
 
 export const fonts: ThemeFonts = {

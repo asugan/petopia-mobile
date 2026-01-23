@@ -1,8 +1,8 @@
 import { View, Text, StyleSheet, Pressable } from 'react-native';
+import { Image } from 'expo-image';
 import { useRouter } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { MaterialIcons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
 import { Gesture, GestureDetector, Directions } from 'react-native-gesture-handler';
 import { scheduleOnRN } from 'react-native-worklets';
@@ -58,17 +58,29 @@ export default function OnboardingCompleted() {
       width: 160,
       height: 160,
       borderRadius: 80,
-      backgroundColor: theme.colors.primary + '33',
+      backgroundColor: '#d3dff1',
+      borderColor: theme.colors.surface,
+      borderWidth: 2,
       justifyContent: 'center',
       alignItems: 'center',
+      elevation: 12,
+      shadowColor: '#000',
+      shadowOffset: { width: 0, height: 4 },
+      shadowOpacity: 0.2,
+      shadowRadius: 8,
     },
     innerCircle: {
       width: 128,
       height: 128,
       borderRadius: 64,
-      backgroundColor: theme.colors.primary + '4D',
+      backgroundColor: '#d3dff1',
       justifyContent: 'center',
       alignItems: 'center',
+    },
+    logoImage: {
+      width: '100%',
+      height: '100%',
+      transform: [{ scale: 1.5 }],
     },
     title: {
       fontSize: 32,
@@ -143,7 +155,11 @@ export default function OnboardingCompleted() {
           <View style={styles.heroContainer}>
             <View style={styles.outerCircle}>
               <View style={styles.innerCircle}>
-                <MaterialIcons name="pets" size={64} color={theme.colors.primary} />
+                <Image
+                  source={require('../../assets/images/foreground.png')}
+                  style={styles.logoImage}
+                  contentFit="cover"
+                />
               </View>
             </View>
           </View>
