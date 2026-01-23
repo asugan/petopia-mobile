@@ -35,7 +35,7 @@
     "linkOpenError": "Could not open the link. Please try again.",
     "logoutConfirm": "Are you sure you want to log out?",
     "logoutSuccess": "Successfully logged out",
-    "freeTrialNotice": "You get a 14-day free trial. No credit card required."
+    "freeTrialNotice": "Sign in with social media, sync your data to the cloud, and use it across all your devices."
   },
   "navigation": {
     "home": "Home",
@@ -66,6 +66,16 @@
     "financialOverviewEmptyTitle": "Start tracking finances",
     "financialOverviewEmptyDescription": "You have not added any expenses or a budget yet. Add your first entry to see insights here.",
     "financialOverviewEmptyCta": "Add budget or expense",
+    "nextFeedingEmptyTitle": "No feeding plan yet",
+    "nextFeedingEmptyDescription": "Create a feeding schedule to see the next meal time and keep routines consistent.",
+    "nextFeedingEmptyCta": "Create feeding plan",
+    "upcomingEventsEmptyTitle": "Plan the first event",
+    "upcomingEventsEmptyDescription": "Vet visits, grooming, and play dates appear here once scheduled.",
+    "upcomingEventsEmptyCta": "Add event",
+    "recentEventsTitle": "Recent Events",
+    "healthOverviewEmptyTitle": "Start a health timeline",
+    "healthOverviewEmptyDescription": "Add checkups and visits to keep a quick view of your pet's health history.",
+    "healthOverviewEmptyCta": "Add health record",
     "greeting": "Hello",
     "nextActivity": "Next Activity",
     "noActivity": "No Activity",
@@ -118,6 +128,9 @@
     "update": "Update",
     "add": "Add",
     "addFirstPetDescription": "Start by adding your first pet",
+    "emptyTitle": "You don't have any pets yet!",
+    "emptyDescription": "Start by adding your first pet. Add your friend for health tracking, vaccine reminders, and more.",
+    "emptyCta": "Add Pet",
     "pleaseFillRequiredFields": "Please fill required fields",
     "ageUnknown": "Age unknown",
     "months": "months",
@@ -152,7 +165,26 @@
     "viewHealthDetails": "View health details",
     "sharePet": "Share pet information",
     "editPetHint": "Edits the pet details",
-    "sharePetHint": "Shares this pet's information with others"
+    "sharePetHint": "Shares this pet's information with others",
+    "petSavedForAfterLogin": "Pet saved! It will be created when you sign in.",
+    "pendingPetCreated": "Your pet has been added successfully!",
+    "pendingPetError": "Could not save your pet. Please add it manually.",
+    "pendingPetSkipped": "You already have pets. Skipped pending pet."
+  },
+  "limits": {
+    "pets": {
+      "title": "Add Unlimited Pets",
+      "subtitle": "Manage your whole family in one place with Pro.",
+      "cta": "Upgrade to Pro"
+    },
+    "care": {
+      "feedingFooter": "Free plan allows {{limit}} feeding schedule ({{used}}/{{limit}}). Go Pro for unlimited planning."
+    },
+    "budgets": {
+      "title": "Smart Budget Tracking",
+      "subtitle": "Manage monthly budgets and alerts in one place with Pro.",
+      "cta": "Upgrade to Pro"
+    }
   },
   "health": {
     "healthRecords": "Health Records",
@@ -246,18 +278,34 @@
     "comingSoon": "Coming Soon",
     "upcomingEvents": "Upcoming Events",
     "noEvents": "No events scheduled",
+    "eventCount": "{{count}} event",
+    "eventCount_other": "{{count}} events",
     "today": "Today",
     "addEvent": "Add Event",
     "noEventsToday": "No events scheduled for today",
+    "reminderOn": "Reminder On",
+    "reminderOff": "Reminder Off",
     "views": {
       "month": "Month",
       "week": "Week",
       "day": "Day"
     }
   },
-  "events": {
-    "status": "Status",
+    "events": {
+      "recurrence": {
+        "editTitle": "Recurring Event",
+        "editDescription": "How would you like to edit this event?",
+        "editSingle": "Only this event",
+        "editSeries": "All events in series",
+        "deleteTitle": "Delete Event",
+        "deleteDescription": "How would you like to delete this recurring event?",
+        "deleteSingle": "Only this event",
+        "deleteSeries": "All events in series"
+      },
+      "status": "Status",
+
     "upcoming": "Upcoming Events",
+    "past": "Past",
     "today": "Today",
     "addEvent": "Add Event",
     "forPet": "For pet",
@@ -266,6 +314,7 @@
     "deleteEvent": "Delete Event",
     "deleteEventConfirmation": "Are you sure you want to delete \"{{title}}\"?",
     "eventDeleted": "Event deleted successfully",
+    "singleEditWarning": "This change will only affect this occurrence. Recurrence settings are disabled.",
     "deleteEventError": "Error deleting event",
     "createError": "Failed to create event. Please check the information and try again.",
     "fetchError": "Failed to fetch events. Please check your internet connection.",
@@ -281,6 +330,7 @@
     "dateAndTime": "Date & Time",
     "date": "Date",
     "time": "Time",
+    "atTime": "at {{time}}",
     "pet": "Pet",
     "location": "Location",
     "noLocation": "No location specified",
@@ -360,6 +410,7 @@
       "exercise": "Regular exercise is important for your pet's physical and mental health. Choose age-appropriate activities.",
       "grooming": "Regular grooming is necessary for your pet's cleanliness and health. Don't forget fur, nail and dental care.",
       "play": "Playtime is a great way to bond with your pet and get exercise.",
+      "walk": "Regular walks are essential for your pet's physical health and mental stimulation. Adjust duration based on breed and age.",
       "training": "Training sessions are important for your pet's learning and socialization. Progress with patience and rewards.",
       "bath": "Bathing is necessary for your pet's cleanliness. Adjust frequency based on pet type.",
       "other": "Other activities can benefit from reminders too. Add details to make it actionable.",
@@ -376,6 +427,7 @@
       "tomorrow": "Tomorrow",
       "thisWeek": "This Week",
       "upcoming": "Upcoming",
+      "completed": "Completed",
       "past": "Past"
     },
     "events": "Events",
@@ -396,11 +448,14 @@
   },
   "eventCard": {
     "forPet": "For Pet",
-    "reminderSet": "Reminder Set"
+    "reminderSet": "Reminder Set",
+    "recurring": "Recurring"
   },
   "notifications": {
     "enableTitle": "Enable Notifications",
     "enableDescription": "Never miss important pet care reminders",
+    "permissionDeniedTitle": "Notifications Blocked",
+    "permissionDeniedDescription": "Notifications have been blocked. Please enable them from your device settings to receive pet care reminders.",
     "enablePrompt": "Enable notifications to receive pet care reminders",
     "benefit1": "Timely feeding and activity reminders",
     "benefit2": "Vet appointments and vaccination alerts",
@@ -424,7 +479,11 @@
       "1w": "1 week before"
     },
     "testTitle": "Petopia reminder",
-    "testBody": "Notifications are set up. We'll remind you about pet care events."
+    "testBody": "Notifications are set up. We'll remind you about pet care events.",
+    "feedingReminderTitle": "{{emoji}} Feeding Time",
+    "feedingReminderBody": "Time to feed {{foodType}} ({{amount}}) at {{time}}",
+    "feedingReminderNowTitle": "{{emoji}} Feed Now",
+    "feedingReminderNowBody": "Time to feed your pet {{foodType}} ({{amount}})"
   },
   "network": {
     "noConnection": "No internet connection. Please check your connection."
@@ -480,7 +539,6 @@
     "deleteAccountTypeConfirm": "Type DELETE to confirm",
     "about": "About",
     "version": "Version",
-    "versionNumber": "1.0.0",
     "helpSupport": "Help & Support",
     "helpSupportDescription": "FAQ and contact",
     "contactEmail": "petopia@dekadans.net",
@@ -530,6 +588,7 @@
     "unsavedChangesMessage": "You have unsaved changes. Are you sure you want to discard them?",
     "discard": "Discard",
     "close": "Close",
+    "clear": "Clear",
     "offline": "Offline",
     "wifi": "Wi-Fi",
     "cellular": "Mobile",
@@ -600,6 +659,33 @@
     "medication": "Medication",
     "other": "Other"
   },
+  "recurrence": {
+    "settings": "Repeat Settings",
+    "enableRecurring": "Repeat this event",
+    "enableRecurringDesc": "Create recurring events automatically",
+    "frequency": "Repeat frequency",
+    "selectFrequency": "Select frequency",
+    "repeatOn": "Repeat on",
+    "dayOfMonth": "Day of month",
+    "selectDay": "Select day",
+    "repeatEvery": "Repeat every",
+    "everyXDays_one": "{{count}} day",
+    "everyXDays_other": "{{count}} days",
+    "timesPerDay": "Times per day",
+    "scheduledTimes": "Scheduled times",
+    "timesHint": "Times are automatically distributed throughout the day",
+    "endDate": "End date (optional)",
+    "endDateHint": "Leave empty for indefinite repeating",
+    "timezoneInfo": "Events will be created in your timezone",
+    "frequency.daily": "Daily",
+    "frequency.weekly": "Weekly",
+    "frequency.monthly": "Monthly",
+    "frequency.yearly": "Yearly",
+    "frequency.custom": "Custom interval",
+    "frequency.timesPerDay": "Multiple times per day",
+    "manageTitle": "Manage Recurring Rules",
+    "manageDescription": "View and edit your automated routines"
+  },
   "days": {
     "monday": "Monday",
     "tuesday": "Tuesday",
@@ -607,7 +693,14 @@
     "thursday": "Thursday",
     "friday": "Friday",
     "saturday": "Saturday",
-    "sunday": "Sunday"
+    "sunday": "Sunday",
+    "mondayShort": "Mon",
+    "tuesdayShort": "Tue",
+    "wednesdayShort": "Wed",
+    "thursdayShort": "Thu",
+    "fridayShort": "Fri",
+    "saturdayShort": "Sat",
+    "sundayShort": "Sun"
   },
   "foodTypes": {
     "dry_food": "Dry Food",
@@ -632,6 +725,7 @@
     "everyday": "Everyday",
     "active": "Active",
     "inactive": "Inactive",
+    "reminderScheduled": "Reminder set",
     "selectedPet": "Selected Pet",
     "fields": {
       "pet": "Pet",
@@ -912,6 +1006,17 @@
         "fetchBreakdownError": "Failed to get pet spending breakdown",
         "checkActiveError": "Failed to check active budget status",
         "fetchSummaryError": "Failed to get budget summary"
+      },
+      "recurrence": {
+        "frequencyInvalid": "Please select a valid frequency",
+        "intervalMin": "Interval must be at least 1",
+        "intervalMax": "Interval cannot exceed 365",
+        "dayOfMonthMin": "Day of month must be at least 1",
+        "dayOfMonthMax": "Day of month cannot exceed 31",
+        "timesPerDayMin": "Times per day must be at least 1",
+        "timesPerDayMax": "Times per day cannot exceed 10",
+        "timeFormatInvalid": "Time must be in HH:MM format",
+        "timezoneRequired": "Timezone is required"
       }
     },
     "dropdown": {
@@ -1150,8 +1255,10 @@
     "screen3": {
       "title": "You Are Ready!",
       "description": "Everything is ready to manage your pet's care and health data.",
-      "trialNotice": "Your 14-day free trial starts now. No credit card required.",
-      "button": "Go to Home"
+      "trialNotice": "Add your pet now to get started!",
+      "addPet": "Add Your Pet",
+      "skipPet": "Do it later",
+      "addYourFirstPet": "Add Your First Pet"
     }
   },
   "serviceResponse": {
@@ -1174,6 +1281,15 @@
       "fetchByDateError": "Failed to fetch events for this date. Please try again.",
       "fetchUpcomingError": "Failed to fetch upcoming events. Please try again.",
       "fetchTodayError": "Failed to fetch today's events. Please try again."
+    },
+    "recurrence": {
+      "createSuccess": "Recurring event created successfully",
+      "updateSuccess": "Recurring event updated successfully",
+      "deleteSuccess": "Recurring event deleted successfully",
+      "createError": "Failed to create recurring event. Please check the information and try again.",
+      "updateError": "Failed to update recurring event. Please try again.",
+      "deleteError": "Failed to delete recurring event. Please try again.",
+      "fetchError": "Failed to fetch recurring events. Please try again."
     },
     "expense": {
       "createSuccess": "Expense created successfully",
@@ -1223,7 +1339,13 @@
       "fetchTodayError": "Failed to load today's feeding schedules",
       "fetchNextError": "Failed to load next feeding schedule",
       "fetchActiveByPetError": "Failed to load active feeding schedules for this pet",
-      "toggleError": "Failed to update schedule status"
+      "toggleError": "Failed to update schedule status",
+      "fetchNotificationsSuccess": "Feeding notifications loaded successfully",
+      "fetchNotificationsError": "Failed to load feeding notifications",
+      "triggerReminderSuccess": "Feeding reminder scheduled successfully",
+      "triggerReminderError": "Failed to schedule feeding reminder",
+      "completeFeedingSuccess": "Feeding completed successfully",
+      "completeFeedingError": "Failed to complete feeding"
     },
     "healthRecord": {
       "createSuccess": "Health record created successfully",
@@ -1295,6 +1417,12 @@
     "trialDaysRemaining": "{{days}} days remaining",
     "trialExpired": "Trial Expired",
     "trialPrompt": "Your trial ends in {{days}} days",
+    "upgradeToPro": "Upgrade to Pro",
+    "startTrial": "Try 14 Days Free",
+    "noCreditCardRequired": "No credit card required",
+    "confirmStartTrialTitle": "Start Free Trial?",
+    "confirmStartTrialMessage": "14 days of free Pro features. No credit card required.",
+    "confirmStartTrialAction": "Start Trial",
     "upgrade": "Upgrade to Pro",
     "upgradePrompt": "Unlock all features with Pro",
     "upgradeBeforeTrialEnds": "Upgrade Before Trial Ends",
@@ -1333,11 +1461,13 @@
     "features": {
       "title": "Pro Features",
       "unlimited": "Unlimited Pets",
-      "unlimitedDesc": "Add as many pets as you want",
-      "advanced": "Advanced Health Tracking",
-      "advancedDesc": "Detailed health analytics and insights",
+      "unlimitedDesc": "Add and manage all your pets in one place",
+      "feedingSchedules": "Unlimited Feeding Schedules",
+      "feedingSchedulesDesc": "Create unlimited feeding schedules for all your pets",
+      "budgetTracking": "Budget Tracking & Alerts",
+      "budgetTrackingDesc": "Set monthly budgets, track expenses, and get spending alerts",
       "export": "Data Export",
-      "exportDesc": "Export your data in multiple formats",
+      "exportDesc": "Export expenses to CSV or PDF, generate vet summaries",
       "priority": "Priority Support",
       "priorityDesc": "Get help when you need it",
       "petManagement": "Pet Management",
@@ -1356,6 +1486,24 @@
       "message": "You are now a Pro member. Enjoy all premium features.",
       "button": "Go to Homepage"
     },
+    "trialSuccess": {
+      "title": "Congratulations!",
+      "message": "Your 14-day free trial has started. Enjoy all Pro features!",
+      "button": "Go to Homepage"
+    },
     "note": "Payment will be charged to your App Store / Google Play account. Subscriptions automatically renew unless cancelled at least 24 hours before the end of the current period. You can manage or cancel your subscription in your App Store / Google Play account settings."
+  },
+  "downgrade": {
+    "title": "Choose Your Pet",
+    "subtitle": "Your subscription has expired. The free plan allows {{limit}} pet. Please select which pet to keep.",
+    "selectPet": "Select a pet to keep",
+    "warning": "All data for unselected pets (health records, events, expenses, feeding schedules) will be permanently deleted. This action cannot be undone.",
+    "keepButton": "Keep Selected Pet",
+    "upgradeButton": "Upgrade to Pro",
+    "confirmTitle": "Confirm Selection",
+    "confirmMessage": "All data for other pets will be permanently deleted. This cannot be undone.",
+    "confirmDelete": "Yes, Delete Others",
+    "cancel": "Cancel",
+    "error": "Failed to process. Please try again."
   }
 }

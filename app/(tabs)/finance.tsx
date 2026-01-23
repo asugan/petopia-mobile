@@ -5,15 +5,19 @@ import {
   ScrollView,
   RefreshControl,
   Alert,
+  Pressable,
 } from "react-native";
+import { Ionicons } from "@expo/vector-icons";
 import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
+import { useRouter } from "expo-router";
 import { useTranslation } from "react-i18next";
 import { useQueryClient } from "@tanstack/react-query";
-import { Button, Card, FAB, SegmentedButtons, Snackbar, Text } from "@/components/ui";
+import { Button, Card, FAB, SegmentedButtons, Text } from "@/components/ui";
+import { HeaderActions, LargeTitle } from "@/components/LargeTitle";
 import { PetPickerBase } from "@/components/PetPicker";
 import { BudgetInsights } from "@/components/BudgetInsights";
-import { ProtectedRoute } from "@/components/subscription";
 import { useTheme } from "@/lib/theme";
+import { useSubscription } from "@/lib/hooks/useSubscription";
 import { expenseService } from "@/lib/services/expenseService";
 import { usePets } from "@/lib/hooks/usePets";
 import { formatCurrency } from "@/lib/utils/currency";
@@ -25,11 +29,11 @@ import {
   useCreateExpense,
   useUpdateExpense,
   useDeleteExpense,
-  expenseKeys,
   useExportExpensesCSV,
   useExportExpensesPDF,
   useExportVetSummaryPDF,
 } from "@/lib/hooks/useExpenses";
+import { expenseKeys } from "@/lib/hooks/queryKeys";
 import {
   useUserBudget,
   useUserBudgetStatus,
@@ -51,12 +55,20 @@ import {
 } from "@/lib/types";
 import { LAYOUT } from "@/constants";
 import { ENV } from "@/lib/config/env";
+import { showToast } from "@/lib/toast/showToast";
+import { useNotifications } from "@/lib/hooks/useNotifications";
+import { useRequestDeduplication } from "@/lib/hooks/useRequestCancellation";
+import NotificationPermissionPrompt from "@/components/NotificationPermissionPrompt";
+import { registerPushTokenWithBackend } from "@/lib/services/notificationService";
+import { SUBSCRIPTION_ROUTES } from "@/constants/routes";
 
 type FinanceTabValue = 'budget' | 'expenses';
 
 export default function FinanceScreen() {
   const { theme } = useTheme();
   const { t } = useTranslation();
+  const router = useRouter();
+  const { isProUser } = useSubscription();
   const insets = useSafeAreaInsets();
   const TAB_BAR_HEIGHT = LAYOUT.TAB_BAR_HEIGHT + insets.bottom;
   const contentBottomPadding = TAB_BAR_HEIGHT + LAYOUT.FAB_OFFSET;
@@ -66,12 +78,10 @@ export default function FinanceScreen() {
   const baseCurrency = settings?.baseCurrency || "TRY";
 
   // Tab state
-  const [activeTab, setActiveTab] = useState<FinanceTabValue>('budget');
+  const [activeTab, setActiveTab] = useState<FinanceTabValue>('expenses');
 
   // Shared state - default to undefined to show all pets
   const [selectedPetId, setSelectedPetId] = useState<string | undefined>();
-  const [snackbarVisible, setSnackbarVisible] = useState(false);
-  const [snackbarMessage, setSnackbarMessage] = useState("");
 
   // Expenses state
   const [expenseModalVisible, setExpenseModalVisible] = useState(false);
@@ -84,6 +94,12 @@ export default function FinanceScreen() {
   // Budget state
   const [budgetModalVisible, setBudgetModalVisible] = useState(false);
   const [editingBudget, setEditingBudget] = useState<UserBudget | undefined>();
+  const [showPermissionModal, setShowPermissionModal] = useState(false);
+  const [pendingBudgetData, setPendingBudgetData] = useState<SetUserBudgetInput | null>(null);
+
+  // Notifications
+  const { requestPermission, isLoading: isNotificationLoading } = useNotifications();
+  const { executeWithDeduplication } = useRequestDeduplication();
 
   // Fetch pets
   const { data: pets = [], isLoading: petsLoading } = usePets();
@@ -184,11 +200,9 @@ export default function FinanceScreen() {
         onPress: async () => {
           try {
             await deleteExpenseMutation.mutateAsync(expense._id);
-            setSnackbarMessage(t("expenses.deleteSuccess"));
-            setSnackbarVisible(true);
+            showToast({ type: 'success', title: t("expenses.deleteSuccess") });
           } catch {
-            setSnackbarMessage(t("expenses.deleteError"));
-            setSnackbarVisible(true);
+            showToast({ type: 'error', title: t("expenses.deleteError") });
           }
         },
       },
@@ -202,33 +216,43 @@ export default function FinanceScreen() {
           _id: editingExpense._id,
           data,
         });
-        setSnackbarMessage(t("expenses.updateSuccess"));
+        showToast({ type: 'success', title: t("expenses.updateSuccess") });
       } else {
         await createExpenseMutation.mutateAsync(data);
-        setSnackbarMessage(t("expenses.createSuccess"));
+        showToast({ type: 'success', title: t("expenses.createSuccess") });
       }
       setExpenseModalVisible(false);
       setEditingExpense(undefined);
-      setSnackbarVisible(true);
     } catch {
-      setSnackbarMessage(
-        editingExpense ? t("expenses.updateError") : t("expenses.createError")
-      );
-      setSnackbarVisible(true);
+      showToast({
+        type: 'error',
+        title: editingExpense ? t("expenses.updateError") : t("expenses.createError"),
+      });
     }
   };
 
   // Budget handlers (new simplified system)
-  const handleSetBudget = () => {
-    setEditingBudget(budget || undefined);
+  const handleCreateBudget = async () => {
+    if (!isProUser) {
+      router.push(SUBSCRIPTION_ROUTES.main);
+      return;
+    }
+    setEditingBudget(undefined);
     setBudgetModalVisible(true);
   };
 
-  const handleEditBudget = () => {
-    if (budget) {
-      setEditingBudget(budget);
-      setBudgetModalVisible(true);
+  const handleEditBudget = async () => {
+    if (!budget) {
+      return;
     }
+
+    if (!isProUser) {
+      router.push(SUBSCRIPTION_ROUTES.main);
+      return;
+    }
+
+    setEditingBudget(budget);
+    setBudgetModalVisible(true);
   };
 
   const handleDeleteBudget = () => {
@@ -242,11 +266,9 @@ export default function FinanceScreen() {
         onPress: async () => {
           try {
             await deleteBudgetMutation.mutateAsync();
-            setSnackbarMessage(t("budgets.deleteSuccess"));
-            setSnackbarVisible(true);
+            showToast({ type: 'success', title: t("budgets.deleteSuccess") });
           } catch {
-            setSnackbarMessage(t("budgets.deleteError"));
-            setSnackbarVisible(true);
+            showToast({ type: 'error', title: t("budgets.deleteError") });
           }
         },
       },
@@ -254,81 +276,122 @@ export default function FinanceScreen() {
   };
 
   const handleBudgetFormSubmit = async (data: SetUserBudgetInput) => {
-    try {
-      await setBudgetMutation.mutateAsync(data);
-      setBudgetModalVisible(false);
-      setEditingBudget(undefined);
-      setSnackbarMessage(t("budgets.budgetSetSuccess"));
-      setSnackbarVisible(true);
-    } catch {
-      setSnackbarMessage(t("budgets.budgetSetError"));
-      setSnackbarVisible(true);
+    if (!isProUser) {
+      router.push(SUBSCRIPTION_ROUTES.main);
+      return;
+    }
+
+    // Request notification permission if budget notifications are enabled
+    const budgetNotificationsEnabled = settings?.budgetNotificationsEnabled ?? true;
+    if (budgetNotificationsEnabled) {
+      const granted = await executeWithDeduplication(
+        'budget-notification-permission',
+        async () => await requestPermission()
+      );
+
+      if (granted) {
+        void registerPushTokenWithBackend();
+        await setBudgetMutation.mutateAsync(data);
+        setBudgetModalVisible(false);
+        setEditingBudget(undefined);
+        showToast({ type: 'success', title: t("budgets.budgetSetSuccess") });
+      } else {
+        setPendingBudgetData(data);
+        setShowPermissionModal(true);
+      }
+    } else {
+      try {
+        await setBudgetMutation.mutateAsync(data);
+        setBudgetModalVisible(false);
+        setEditingBudget(undefined);
+        showToast({ type: 'success', title: t("budgets.budgetSetSuccess") });
+      } catch {
+        showToast({ type: 'error', title: t("budgets.budgetSetError") });
+      }
     }
   };
 
   const handleExportCsv = async () => {
+    if (!isProUser) {
+      router.push(SUBSCRIPTION_ROUTES.main);
+      return;
+    }
+
     try {
       await exportCsvMutation.mutateAsync({
         petId: selectedPetId,
       });
-      setSnackbarMessage(t("expenses.exportSuccess", "Export completed"));
-      setSnackbarVisible(true);
+      showToast({ type: 'success', title: t("expenses.exportSuccess") });
     } catch (error) {
-      setSnackbarMessage(
-        error instanceof Error ? error.message : t("expenses.exportError", "Export failed")
-      );
-      setSnackbarVisible(true);
+      showToast({
+        type: 'error',
+        title: t("expenses.exportError"),
+        message: error instanceof Error ? error.message : undefined,
+      });
     }
   };
 
   const handleExportPdf = async () => {
+    if (!isProUser) {
+      router.push(SUBSCRIPTION_ROUTES.main);
+      return;
+    }
+
     try {
       const uri = await exportPdfMutation.mutateAsync({
         petId: selectedPetId,
       });
-      const shareResult = await expenseService.sharePdf(uri, t("expenses.exportTitle", "Expenses PDF"));
+      const shareResult = await expenseService.sharePdf(uri, t("expenses.exportTitle"));
       if (!shareResult.success) {
-        setSnackbarMessage(
-          typeof shareResult.error === "string"
-            ? shareResult.error
-            : t("expenses.exportError", "Export failed")
-        );
+        showToast({
+          type: 'error',
+          title: t("expenses.exportError"),
+          message: typeof shareResult.error === "string" ? shareResult.error : undefined,
+        });
       } else {
-        setSnackbarMessage(t("expenses.exportSuccess", "Export completed"));
+        showToast({ type: 'success', title: t("expenses.exportSuccess") });
       }
-      setSnackbarVisible(true);
     } catch (error) {
-      setSnackbarMessage(
-        error instanceof Error ? error.message : t("expenses.exportError", "Export failed")
-      );
-      setSnackbarVisible(true);
+      showToast({
+        type: 'error',
+        title: t("expenses.exportError"),
+        message: error instanceof Error ? error.message : undefined,
+      });
     }
   };
 
   const handleVetSummary = async () => {
     if (!selectedPetId) {
-      setSnackbarMessage(t("expenses.selectPetForSummary", "Select a pet to export summary"));
-      setSnackbarVisible(true);
+      showToast({
+        type: 'warning',
+        title: t("expenses.selectPetForSummary"),
+      });
       return;
     }
+
+    if (!isProUser) {
+      router.push(SUBSCRIPTION_ROUTES.main);
+      return;
+    }
+
     try {
       const uri = await exportVetSummaryMutation.mutateAsync(selectedPetId);
-      const shareResult = await expenseService.sharePdf(uri, t("expenses.vetSummaryTitle", "Vet Summary PDF"));
+      const shareResult = await expenseService.sharePdf(uri, t("expenses.vetSummaryTitle"));
       if (!shareResult.success) {
-        setSnackbarMessage(
-          typeof shareResult.error === "string"
-            ? shareResult.error
-            : t("expenses.exportError", "Export failed")
-        );
+        showToast({
+          type: 'error',
+          title: t("expenses.exportError"),
+          message: typeof shareResult.error === "string" ? shareResult.error : undefined,
+        });
       } else {
-        setSnackbarMessage(t("expenses.exportSuccess", "Export completed"));
+        showToast({ type: 'success', title: t("expenses.exportSuccess") });
       }
-      setSnackbarVisible(true);
     } catch (error) {
-      setSnackbarMessage(
-        error instanceof Error ? error.message : t("expenses.exportError", "Export failed")
-      );
-      setSnackbarVisible(true);
+      showToast({
+        type: 'error',
+        title: t("expenses.exportError"),
+        message: error instanceof Error ? error.message : undefined,
+      });
     }
   };
 
@@ -432,34 +495,67 @@ export default function FinanceScreen() {
       >
 
         <View style={styles.budgetSection}>
-          {renderExportActions()}
+          {!isProUser ? (
+            <Pressable
+              style={({ pressed }) => [
+                styles.upgradeCard,
+                {
+                  borderColor: theme.colors.primary,
+                  backgroundColor: theme.colors.surface,
+                },
+                pressed && styles.chipPressed,
+              ]}
+              onPress={() => router.push(SUBSCRIPTION_ROUTES.main)}
+            >
+              <View style={[styles.upgradeIconWrap, { backgroundColor: theme.colors.primaryContainer }]}
+              >
+                <Ionicons name="lock-closed" size={20} color={theme.colors.primary} />
+              </View>
+              <Text variant="titleMedium" style={[styles.upgradeTitle, { color: theme.colors.onSurface }]}
+              >
+                {t("limits.budgets.title")}
+              </Text>
+              <Text variant="bodySmall" style={[styles.upgradeSubtitle, { color: theme.colors.onSurfaceVariant }]}
+              >
+                {t("limits.budgets.subtitle")}
+              </Text>
+              <Text variant="labelLarge" style={[styles.upgradeCta, { color: theme.colors.primary }]}
+              >
+                {t("limits.budgets.cta")}
+              </Text>
+            </Pressable>
+          ) : (
+            <>
+              {renderExportActions()}
 
-          {/* EmptyState - shown when no budget exists */}
-          {(!budget || (typeof budget === 'object' && Object.keys(budget).length === 0)) && (
-            <EmptyState
-              title={t("budgets.noBudgetSet", "No Budget Set")}
-              description={t(
-                "budgets.setBudgetDescription",
-                "Set a monthly budget to track your pet expenses"
+              {/* EmptyState - shown when no budget exists */}
+              {(!budget || (typeof budget === 'object' && Object.keys(budget).length === 0)) && (
+                <EmptyState
+                  title={t("budgets.noBudgetSet", "No Budget Set")}
+                  description={t(
+                    "budgets.setBudgetDescription",
+                    "Set a monthly budget to track your pet expenses"
+                  )}
+                  icon="wallet"
+                  buttonText={t("budgets.setBudget", "Set Budget")}
+                  onButtonPress={handleCreateBudget}
+                />
               )}
-              icon="wallet"
-              buttonText={t("budgets.setBudget", "Set Budget")}
-              onButtonPress={handleSetBudget}
-            />
-          )}
 
-          {/* Budget Card with Actions - shown when budget exists */}
-          {budget && budgetStatus && (
-            <UserBudgetCard
-              budget={budget}
-              status={budgetStatus}
-              onEdit={handleEditBudget}
-              onDelete={handleDeleteBudget}
-            />
-          )}
+              {/* Budget Card with Actions - shown when budget exists */}
+              {budget && budgetStatus && (
+                <UserBudgetCard
+                  budget={budget}
+                  status={budgetStatus}
+                  onEdit={handleEditBudget}
+                  onDelete={handleDeleteBudget}
+                />
+              )}
 
-          {budgetStatus && (
-            <BudgetInsights status={budgetStatus} />
+              {budgetStatus && (
+                <BudgetInsights status={budgetStatus} />
+              )}
+            </>
           )}
         </View>
       </ScrollView>
@@ -567,7 +663,6 @@ export default function FinanceScreen() {
           </Card>
         )}
 
-        {renderExportActions(styles.exportSectionInset)}
 
         <Text variant="titleMedium" style={[styles.recentTitle, { color: theme.colors.onSurface }]}>
           {t("expenses.recent", "Recent Expenses")}
@@ -591,89 +686,112 @@ export default function FinanceScreen() {
 
 
   return (
-    <ProtectedRoute featureName={t("subscription.features.expenses")}>
-      <SafeAreaView
-        style={[styles.container, { backgroundColor: theme.colors.background }]}
-        edges={['top', 'left', 'right']} // Remove bottom to handle manually
-      >
-        <View style={styles.tabsContainer}>
-          <SegmentedButtons
-            value={activeTab}
-            onValueChange={(value) => setActiveTab(value as FinanceTabValue)}
-            buttons={[
-              {
-                value: 'budget',
-                label: t('finance.budget', 'Budget'),
-                icon: 'wallet'
-              },
-              {
-                value: 'expenses',
-                label: t('finance.expenses', 'Expenses'),
-                icon: 'cash'
-              }
-            ]}
-            density="small"
-            style={StyleSheet.flatten([
-              styles.segmentedButtons,
-              { backgroundColor: theme.colors.surface, borderColor: theme.colors.surfaceVariant },
-            ])}
-          />
-        </View>
+    <SafeAreaView
+      style={[styles.container, { backgroundColor: theme.colors.background }]}
+      edges={['top', 'left', 'right']} // Remove bottom to handle manually
+    >
+      <View style={styles.header}>
+        <LargeTitle title={t('finance.title')} actions={<HeaderActions />} />
+      </View>
+      <View style={styles.tabsContainer}>
+        <SegmentedButtons
+          value={activeTab}
+          onValueChange={(value) => {
+            const nextTab = value as FinanceTabValue;
+            setActiveTab(nextTab);
+          }}
+          buttons={[
+            {
+              value: 'budget',
+              label: t('finance.budget', 'Budget'),
+              icon: 'wallet'
+            },
+            {
+              value: 'expenses',
+              label: t('finance.expenses', 'Expenses'),
+              icon: 'cash'
+            }
+          ]}
+          density="small"
+          style={StyleSheet.flatten([
+            styles.segmentedButtons,
+            { backgroundColor: theme.colors.surface, borderColor: theme.colors.surfaceVariant },
+          ])}
+        />
+      </View>
 
-        {activeTab === 'budget' ? renderBudgetContent() : renderExpensesContent()}
+      {activeTab === 'budget' ? renderBudgetContent() : renderExpensesContent()}
 
-        {/* Conditional FABs */}
-        {activeTab === 'budget' && budget && (typeof budget === 'object' && Object.keys(budget).length > 0) && (
+      {/* Conditional FABs */}
+      {activeTab === 'budget' && (
+        budget && (typeof budget === 'object' && Object.keys(budget).length > 0) ? (
           <FAB
             icon="pencil"
-            style={{ ...styles.fab, backgroundColor: theme.colors.primary, bottom: TAB_BAR_HEIGHT }}
-            onPress={handleSetBudget}
+            style={{ ...styles.fab, backgroundColor: theme.colors.primary, bottom: 0 }}
+            onPress={handleEditBudget}
           />
-        )}
-        {activeTab === 'expenses' && pets.length > 0 && (
+        ) : (
           <FAB
             icon="add"
-            style={{ ...styles.fab, backgroundColor: theme.colors.primary, bottom: TAB_BAR_HEIGHT }}
-            onPress={handleAddExpense}
+            style={{ ...styles.fab, backgroundColor: theme.colors.primary, bottom: 0 }}
+            onPress={handleCreateBudget}
           />
-        )}
-
-        {/* Modals */}
-        <ExpenseFormModal
-          visible={expenseModalVisible}
-          expense={editingExpense}
-          petId={editingExpense?.petId}
-          onDismiss={() => {
-            setExpenseModalVisible(false);
-            setEditingExpense(undefined);
-          }}
-          onSubmit={handleExpenseFormSubmit}
+        )
+      )}
+      {activeTab === 'expenses' && pets.length > 0 && (
+        <FAB
+          icon="add"
+          style={{ ...styles.fab, backgroundColor: theme.colors.primary, bottom: 0 }}
+          onPress={handleAddExpense}
         />
+      )}
 
-        <UserBudgetFormModal
-          visible={budgetModalVisible}
-          budget={editingBudget}
-          onDismiss={() => {
+
+      {/* Modals */}
+      <ExpenseFormModal
+        visible={expenseModalVisible}
+        expense={editingExpense}
+        petId={editingExpense?.petId}
+        onDismiss={() => {
+          setExpenseModalVisible(false);
+          setEditingExpense(undefined);
+        }}
+        onSubmit={handleExpenseFormSubmit}
+      />
+
+      <UserBudgetFormModal
+        visible={budgetModalVisible}
+        budget={editingBudget}
+        onDismiss={() => {
+          setBudgetModalVisible(false);
+          setEditingBudget(undefined);
+        }}
+        onSubmit={handleBudgetFormSubmit}
+        isSubmitting={setBudgetMutation.isPending || isNotificationLoading}
+      />
+
+      <NotificationPermissionPrompt
+        visible={showPermissionModal}
+        onDismiss={() => {
+          setShowPermissionModal(false);
+          setPendingBudgetData(null);
+        }}
+        onPermissionGranted={async () => {
+          if (pendingBudgetData) {
+            void registerPushTokenWithBackend();
+            await setBudgetMutation.mutateAsync(pendingBudgetData);
             setBudgetModalVisible(false);
             setEditingBudget(undefined);
-          }}
-          onSubmit={handleBudgetFormSubmit}
-          isSubmitting={setBudgetMutation.isPending}
-        />
+            showToast({ type: 'success', title: t("budgets.budgetSetSuccess") });
+            setPendingBudgetData(null);
+          }
+        }}
+        onPermissionDenied={() => {
+          setPendingBudgetData(null);
+        }}
+      />
 
-        {/* Snackbar */}
-        <Snackbar
-          visible={snackbarVisible}
-          message={snackbarMessage}
-          onDismiss={() => setSnackbarVisible(false)}
-          duration={3000}
-          action={{
-            label: t("common.close"),
-            onPress: () => setSnackbarVisible(false),
-          }}
-        />
-      </SafeAreaView>
-    </ProtectedRoute>
+    </SafeAreaView>
   );
 }
 
@@ -682,12 +800,11 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   header: {
-    padding: 16,
-    paddingBottom: 8,
+    paddingHorizontal: 16,
+    paddingTop: 8,
   },
   tabsContainer: {
     paddingHorizontal: 16,
-    paddingTop: 12,
     paddingBottom: 16,
   },
   segmentedButtons: {
@@ -789,4 +906,35 @@ const styles = StyleSheet.create({
     alignItems: "center",
     paddingBottom: 80,
   },
+  upgradeCard: {
+    borderWidth: 1,
+    borderStyle: "dashed",
+    borderRadius: 16,
+    paddingVertical: 16,
+    paddingHorizontal: 16,
+    alignItems: "center",
+    gap: 6,
+    opacity: 0.9,
+    marginBottom: 16,
+  },
+  upgradeIconWrap: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  upgradeTitle: {
+    fontWeight: "700",
+    textAlign: "center",
+  },
+  upgradeSubtitle: {
+    textAlign: "center",
+  },
+  upgradeCta: {
+    fontWeight: "700",
+  },
+  chipPressed: {
+    transform: [{ scale: 0.98 }],
+  }
 });

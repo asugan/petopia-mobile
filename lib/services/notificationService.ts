@@ -1,10 +1,14 @@
 import * as Notifications from 'expo-notifications';
 import type { Href } from 'expo-router';
 import { Platform } from 'react-native';
+import * as Device from 'expo-device';
+import * as Application from 'expo-application';
 import { Event } from '../types';
 import { EVENT_TYPE_DEFAULT_REMINDERS } from '../../constants/eventIcons';
 import { REMINDER_PRESETS, QUIET_HOURS_WINDOW } from '@/constants/reminders';
 import i18n from '@/lib/i18n';
+import * as SecureStore from 'expo-secure-store';
+import { api } from '../api/client';
 
 /**
  * Notification Service - Handles all push notification operations
@@ -467,6 +471,141 @@ export class NotificationService {
   }
 
   /**
+   * Schedule a feeding reminder notification
+   * @param schedule Feeding schedule to create reminder for
+   * @param reminderMinutes Minutes before feeding time to send reminder
+   * @returns Notification identifier or null if failed
+   */
+  async scheduleFeedingReminder(
+    schedule: { _id: string; petId: string; time: string; foodType: string; amount: string },
+    reminderMinutes: number = 15
+  ): Promise<string | null> {
+    try {
+      const hasPermission = await this.areNotificationsEnabled();
+      if (!hasPermission) {
+        return null;
+      }
+
+      // Calculate trigger time
+      const feedingTime = new Date(schedule.time);
+      const triggerDate = new Date(feedingTime.getTime() - reminderMinutes * 60 * 1000);
+
+      // Don't schedule if trigger time is in the past
+      if (triggerDate <= new Date()) {
+        return null;
+      }
+
+      // Get food type emoji
+      const foodTypeEmoji = this.getFoodTypeEmoji(schedule.foodType);
+      const foodTypeLabel = i18n.t(`foodTypes.${schedule.foodType}`, schedule.foodType);
+
+      const notificationTitle = i18n.t('notifications.feedingReminderTitle', {
+        emoji: foodTypeEmoji,
+      });
+      const notificationBody = i18n.t('notifications.feedingReminderBody', {
+        foodType: foodTypeLabel,
+        amount: schedule.amount,
+        time: i18n.t('time.atTime', { time: feedingTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) }),
+      });
+
+      await this.ensureNotificationChannel();
+      const notificationId = await Notifications.scheduleNotificationAsync({
+        content: {
+          title: notificationTitle,
+          body: notificationBody,
+          data: {
+            scheduleId: schedule._id,
+            petId: schedule.petId,
+            scheduleTime: schedule.time,
+            screen: 'feeding',
+          },
+          sound: 'default',
+          priority: Notifications.AndroidNotificationPriority.HIGH,
+          categoryIdentifier: 'feeding-reminder',
+        },
+        trigger: {
+          date: triggerDate,
+          channelId: this.eventChannelId,
+        },
+      });
+
+      return notificationId;
+    } catch {
+      return null;
+    }
+  }
+
+  /**
+   * Cancel a scheduled feeding reminder notification
+   * @param notificationId Notification identifier to cancel
+   */
+  async cancelFeedingReminder(notificationId: string): Promise<void> {
+    try {
+      await Notifications.cancelScheduledNotificationAsync(notificationId);
+    } catch {
+    }
+  }
+
+  /**
+   * Send immediate feeding reminder notification
+   * @param schedule Feeding schedule for immediate reminder
+   */
+  async sendImmediateFeedingReminder(
+    schedule: { _id: string; petId: string; time: string; foodType: string; amount: string }
+  ): Promise<void> {
+    try {
+      const hasPermission = await this.areNotificationsEnabled();
+      if (!hasPermission) {
+        return;
+      }
+
+      const foodTypeEmoji = this.getFoodTypeEmoji(schedule.foodType);
+      const foodTypeLabel = i18n.t(`foodTypes.${schedule.foodType}`, schedule.foodType);
+
+      await this.ensureNotificationChannel();
+      await Notifications.scheduleNotificationAsync({
+        content: {
+          title: i18n.t('notifications.feedingReminderNowTitle', { emoji: foodTypeEmoji }),
+          body: i18n.t('notifications.feedingReminderNowBody', {
+            foodType: foodTypeLabel,
+            amount: schedule.amount,
+          }),
+          data: {
+            scheduleId: schedule._id,
+            petId: schedule.petId,
+            screen: 'feeding',
+            immediate: true,
+          },
+          sound: 'default',
+          priority: Notifications.AndroidNotificationPriority.HIGH,
+          categoryIdentifier: 'feeding-reminder',
+        },
+        trigger: Platform.OS === 'android' ? { channelId: this.eventChannelId } : null,
+      });
+    } catch {
+    }
+  }
+
+  /**
+   * Get food type emoji for feeding notifications
+   * @param foodType Food type
+   * @returns Emoji string
+   */
+  private getFoodTypeEmoji(foodType: string): string {
+    const emojiMap: Record<string, string> = {
+      dry_food: '🍖',
+      wet_food: '🥫',
+      raw_food: '🥩',
+      homemade: '🍲',
+      treats: '🦴',
+      supplements: '💊',
+      other: '🍽️',
+    };
+
+    return emojiMap[foodType] || '🍽️';
+  }
+
+  /**
    * Get event type emoji for notifications
    * @param eventType Event type
    * @returns Emoji string
@@ -578,6 +717,155 @@ export class NotificationService {
     adjusted.setHours(this.quietHours.endHour, this.quietHours.endMinute, 0, 0);
     return adjusted;
   }
+
+  /**
+   * Register push token with backend
+   * This enables backend-initiated push notifications
+   */
+  async registerPushTokenWithBackend(): Promise<boolean> {
+    try {
+      const hasPermission = await this.requestPermissions();
+      if (!hasPermission) {
+        return false;
+      }
+
+      // Get Expo push token - handle both old and new API
+      let expoPushToken: string;
+      try {
+        const tokenResult = await Notifications.getExpoPushTokenAsync();
+        // New API returns string directly, old API returns object with data property
+        expoPushToken = typeof tokenResult === 'string' ? tokenResult : tokenResult?.data;
+      } catch {
+        // Fallback for older expo-notifications versions
+        const tokenResult = await Notifications.getExpoPushTokenAsync();
+        expoPushToken = typeof tokenResult === 'string' ? tokenResult : tokenResult?.data || '';
+      }
+
+      if (!expoPushToken) {
+        return false;
+      }
+
+      // Get or generate device ID
+      let deviceId = await SecureStore.getItemAsync('deviceId');
+      if (!deviceId) {
+        deviceId = `${Platform.OS}-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`;
+        await SecureStore.setItemAsync('deviceId', deviceId);
+      }
+
+      // Get device info
+      const platform = Platform.OS;
+      const deviceName = Device.deviceName || undefined;
+      const appVersion = Application.nativeApplicationVersion || undefined;
+
+      // Register with backend
+      await api.post('/api/push/devices', {
+        expoPushToken,
+        deviceId,
+        platform,
+        deviceName,
+        appVersion,
+      });
+
+      // Store the token locally
+      await SecureStore.setItemAsync('expoPushToken', expoPushToken);
+      // Mark as registered with backend (avoids network call on every reminder check)
+      await SecureStore.setItemAsync('pushTokenRegisteredWithBackend', 'true');
+      await SecureStore.setItemAsync('deviceId', deviceId);
+
+      return true;
+    } catch {
+      return false;
+    }
+  }
+
+  /**
+   * Unregister push token from backend
+   */
+  async unregisterPushTokenFromBackend(): Promise<boolean> {
+    try {
+      const deviceId = await SecureStore.getItemAsync('deviceId');
+      if (!deviceId) {
+        return true;
+      }
+
+      await api.delete('/api/push/devices', {
+        data: { deviceId },
+      });
+
+      await SecureStore.deleteItemAsync('expoPushToken');
+      await SecureStore.deleteItemAsync('deviceId');
+      await SecureStore.deleteItemAsync('pushTokenRegisteredWithBackend');
+
+      return true;
+    } catch {
+      return false;
+    }
+  }
+
+  /**
+   * Check if push token is registered with backend
+   * Uses local cache to avoid network calls on every reminder schedule
+   * Falls back to network check if cache is missing
+   */
+  async isPushTokenRegistered(): Promise<boolean> {
+    try {
+      // First check local cache (fast path - no network call)
+      const cachedStatus = await SecureStore.getItemAsync('pushTokenRegisteredWithBackend');
+      if (cachedStatus === 'true') {
+        // Verify token still exists locally
+        const storedToken = await SecureStore.getItemAsync('expoPushToken');
+        return !!storedToken;
+      }
+
+      // No cached status - token not registered or cache cleared
+      return false;
+    } catch {
+      return false;
+    }
+  }
+
+  /**
+   * Force re-verify push token registration with backend
+   * Use this sparingly as it makes a network call
+   */
+  async verifyPushTokenRegistration(): Promise<boolean> {
+    try {
+      const storedToken = await SecureStore.getItemAsync('expoPushToken');
+      if (!storedToken) {
+        await SecureStore.deleteItemAsync('pushTokenRegisteredWithBackend');
+        return false;
+      }
+
+      const response = await api.get<{ deviceId: string }[]>('/api/push/devices');
+      const isRegistered = Array.isArray(response.data) && response.data.length > 0;
+      
+      // Update cache based on server response
+      if (isRegistered) {
+        await SecureStore.setItemAsync('pushTokenRegisteredWithBackend', 'true');
+      } else {
+        await SecureStore.deleteItemAsync('pushTokenRegisteredWithBackend');
+      }
+      
+      return isRegistered;
+    } catch {
+      return false;
+    }
+  }
+
+  /**
+   * Send a test notification to verify push is working
+   */
+  async sendTestNotification(): Promise<boolean> {
+    try {
+      await api.post('/api/push/test', {
+        title: 'Petopia Test',
+        body: 'Test bildirimi başarılı! Artık etkinlik hatırlatmaları alabileceksiniz.',
+      });
+      return true;
+    } catch {
+      return false;
+    }
+  }
 }
 
 // Export singleton instance
@@ -598,3 +886,32 @@ export const scheduleReminderChain = (
   reminderTimes?: readonly number[],
   respectQuietHours?: boolean
 ) => notificationService.scheduleReminderChain(event, reminderTimes, respectQuietHours);
+
+// Backend push token registration
+export const registerPushTokenWithBackend = () =>
+  notificationService.registerPushTokenWithBackend();
+
+export const unregisterPushTokenFromBackend = () =>
+  notificationService.unregisterPushTokenFromBackend();
+
+export const isPushTokenRegistered = () =>
+  notificationService.isPushTokenRegistered();
+
+export const verifyPushTokenRegistration = () =>
+  notificationService.verifyPushTokenRegistration();
+
+export const sendTestNotification = () =>
+  notificationService.sendTestNotification();
+
+// Feeding reminder exports
+export const scheduleFeedingReminder = (
+  schedule: { _id: string; petId: string; time: string; foodType: string; amount: string },
+  reminderMinutes?: number
+) => notificationService.scheduleFeedingReminder(schedule, reminderMinutes);
+
+export const cancelFeedingReminder = (notificationId: string) =>
+  notificationService.cancelFeedingReminder(notificationId);
+
+export const sendImmediateFeedingReminder = (
+  schedule: { _id: string; petId: string; time: string; foodType: string; amount: string }
+) => notificationService.sendImmediateFeedingReminder(schedule);

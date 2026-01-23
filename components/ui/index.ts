@@ -71,3 +71,10 @@ export type { SurfaceProps } from "./Surface";
 
 export { Modal } from "./Modal";
 export type { ModalProps } from "./Modal";
+
+export { ConfirmationModal } from "./ConfirmationModal";
+export type { ConfirmationModalProps } from "./ConfirmationModal";
+
+// Keyboard Handling
+export { KeyboardAwareView } from "./KeyboardAwareView";
+export type { KeyboardAwareViewProps } from "./KeyboardAwareView";

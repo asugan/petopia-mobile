@@ -1,13 +1,15 @@
 import React from 'react';
 import { View, StyleSheet } from 'react-native';
-import { Card, Text } from '@/components/ui';
+import { Button, Card, Text } from '@/components/ui';
 import { useTheme } from '@/lib/theme';
 import { useTranslation } from 'react-i18next';
 import { Ionicons } from '@expo/vector-icons';
+import { useRouter } from 'expo-router';
 import { usePets } from '@/lib/hooks/usePets';
 import type { HealthRecord } from '@/lib/types';
 import { useUserSettingsStore } from '@/stores/userSettingsStore';
 import MoneyDisplay from '@/components/ui/MoneyDisplay';
+import { TAB_ROUTES } from '@/constants/routes';
 
 interface HealthOverviewProps {
   healthRecords?: HealthRecord[];
@@ -20,6 +22,7 @@ const HealthOverview: React.FC<HealthOverviewProps> = ({
 }) => {
   const { theme } = useTheme();
   const { t } = useTranslation();
+  const router = useRouter();
   const { data: pets } = usePets();
   const { settings } = useUserSettingsStore();
   const baseCurrency = settings?.baseCurrency || 'TRY';
@@ -87,14 +90,35 @@ const HealthOverview: React.FC<HealthOverviewProps> = ({
 
   if (healthItems.length === 0) {
     return (
-      <Card style={[styles.card, { backgroundColor: theme.colors.surface, borderColor: '#4B5563' }]}>
-        <View style={styles.content}>
-          <Text variant="titleMedium" style={[styles.title, { color: theme.colors.onSurface }]}>
-            {t('home.healthOverview')}
+      <Card
+        style={[
+          styles.card,
+          { backgroundColor: theme.colors.surface, borderColor: theme.colors.outlineVariant },
+        ]}
+      >
+        <View style={styles.emptyContent}>
+          <View style={[styles.emptyIconWrap, { backgroundColor: theme.colors.tertiaryContainer }]}
+          >
+            <Ionicons name="heart" size={24} color={theme.colors.tertiary} />
+          </View>
+          <Text variant="titleMedium" style={[styles.emptyTitle, { color: theme.colors.onSurface }]}>
+            {t('home.healthOverviewEmptyTitle')}
           </Text>
-          <Text variant="bodyMedium" style={{ color: theme.colors.onSurfaceVariant }}>
-            {t('health.noRecords')}
+          <Text
+            variant="bodySmall"
+            style={[styles.emptyDescription, { color: theme.colors.onSurfaceVariant }]}
+          >
+            {t('home.healthOverviewEmptyDescription')}
           </Text>
+          <Button
+            mode="contained"
+            onPress={() => router.push(TAB_ROUTES.care)}
+            buttonColor={theme.colors.tertiary}
+            textColor={theme.colors.onTertiary}
+            style={styles.emptyCta}
+          >
+            {t('home.healthOverviewEmptyCta')}
+          </Button>
         </View>
       </Card>
     );
@@ -145,7 +169,6 @@ const styles = StyleSheet.create({
   card: {
     borderRadius: 12,
     borderWidth: 1,
-    marginBottom: 16,
   },
   content: {
     padding: 16,
@@ -171,6 +194,32 @@ const styles = StyleSheet.create({
   },
   healthInfo: {
     flex: 1,
+  },
+  emptyContent: {
+    alignItems: 'center',
+    paddingVertical: 20,
+    paddingHorizontal: 16,
+  },
+  emptyIconWrap: {
+    width: 52,
+    height: 52,
+    borderRadius: 26,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 12,
+  },
+  emptyTitle: {
+    textAlign: 'center',
+    fontWeight: '700',
+    marginBottom: 6,
+  },
+  emptyDescription: {
+    textAlign: 'center',
+    lineHeight: 20,
+    marginBottom: 14,
+  },
+  emptyCta: {
+    alignSelf: 'center',
   },
 });
 

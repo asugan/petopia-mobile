@@ -99,6 +99,11 @@ export const FeedingScheduleSchema = () =>
   feedingScheduleSchema().extend({
     _id: objectIdSchema(),
     createdAt: z.string().datetime(),
+    // Notification fields from backend
+    remindersEnabled: z.boolean().optional(),
+    reminderMinutesBefore: z.number().optional(),
+    lastNotificationAt: z.string().datetime().optional(),
+    nextNotificationTime: z.string().datetime().optional(),
   });
 
 // Type inference from the API schema

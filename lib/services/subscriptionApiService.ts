@@ -32,6 +32,30 @@ export interface StartTrialResponse {
 }
 
 /**
+ * Downgrade status response from backend
+ */
+export interface DowngradeStatus {
+  requiresDowngrade: boolean;
+  currentPetCount: number;
+  freemiumLimit: number;
+  pets: {
+    _id: string;
+    name: string;
+    type: string;
+    breed?: string;
+    profilePhoto?: string;
+  }[];
+}
+
+/**
+ * Downgrade response
+ */
+export interface DowngradeResponse {
+  success: boolean;
+  deletedCount: number;
+}
+
+/**
  * Subscription API Service - Handles all subscription related API calls
  * Note: Request deduplication is handled by React Query automatically
  */
@@ -136,6 +160,93 @@ export class SubscriptionApiService {
         error: {
           code: 'START_TRIAL_ERROR',
           message: 'subscription.startTrialError',
+        },
+      };
+    }
+  }
+
+  /**
+   * Get downgrade status - check if user needs to select pets after subscription expiry
+   */
+  async getDowngradeStatus(): Promise<ApiResponse<DowngradeStatus>> {
+    try {
+      const response = await api.get<DowngradeStatus>(
+        ENV.ENDPOINTS.SUBSCRIPTION_DOWNGRADE_STATUS
+      );
+
+      if (!response.data) {
+        return {
+          success: false,
+          error: {
+            code: 'INVALID_RESPONSE',
+            message: 'subscription.invalidResponse',
+          },
+        };
+      }
+
+      return {
+        success: true,
+        data: response.data,
+      };
+    } catch (error) {
+      if (error instanceof ApiError) {
+        return {
+          success: false,
+          error: {
+            code: error.code ?? 'UNKNOWN_ERROR',
+            message: error.message,
+          },
+        };
+      }
+      return {
+        success: false,
+        error: {
+          code: 'LOAD_ERROR',
+          message: 'subscription.loadError',
+        },
+      };
+    }
+  }
+
+  /**
+   * Execute downgrade - delete all pets except the selected one
+   */
+  async executeDowngrade(keepPetId: string): Promise<ApiResponse<DowngradeResponse>> {
+    try {
+      const response = await api.post<DowngradeResponse>(
+        ENV.ENDPOINTS.PETS_DOWNGRADE,
+        { keepPetId }
+      );
+
+      if (!response.data) {
+        return {
+          success: false,
+          error: {
+            code: 'INVALID_RESPONSE',
+            message: 'subscription.invalidResponse',
+          },
+        };
+      }
+
+      return {
+        success: true,
+        data: response.data,
+      };
+    } catch (error) {
+      if (error instanceof ApiError) {
+        return {
+          success: false,
+          error: {
+            code: error.code ?? 'DOWNGRADE_ERROR',
+            message: error.message,
+          },
+        };
+      }
+      return {
+        success: false,
+        error: {
+          code: 'DOWNGRADE_ERROR',
+          message: 'downgrade.error',
         },
       };
     }

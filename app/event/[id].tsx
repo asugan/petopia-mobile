@@ -6,29 +6,33 @@ import { enUS, tr } from 'date-fns/locale';
 import { Image } from 'expo-image';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
+import { TAB_ROUTES } from '@/constants/routes';
 import { useTranslation } from 'react-i18next';
 import {
-    ActivityIndicator,
-    Alert,
-    ScrollView,
-    Share,
-    StatusBar,
-    StyleSheet,
-    Switch,
-    Text,
-    TouchableOpacity,
-    useWindowDimensions,
-    View,
+  ActivityIndicator,
+  Alert,
+  ScrollView,
+  Share,
+  StatusBar,
+  StyleSheet,
+  Switch,
+  Text,
+  TouchableOpacity,
+  useWindowDimensions,
+  View,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { getEventTypeLabel } from '@/constants/eventIcons';
-import { FALLBACK_IMAGES } from '@/constants/images';
+import { FALLBACK_IMAGES, PET_TYPE_AVATARS } from '@/constants/images';
 import { useReminderScheduler } from '@/hooks/useReminderScheduler';
 import { useDeleteEvent, useEvent, useUpdateEvent } from '@/lib/hooks/useEvents';
 import { usePet } from '@/lib/hooks/usePets';
 import { useTheme } from '@/lib/theme';
 import { useEventReminderStore } from '@/stores/eventReminderStore';
+import { showToast } from '@/lib/toast/showToast';
+import { RecurrenceEditChoiceModal } from '@/components/modals/RecurrenceEditChoiceModal';
+import { useAddRecurrenceException, useDeleteRecurrenceRule } from '@/lib/hooks/useRecurrence';
 
 export default function EventDetailScreen() {
   const { width } = useWindowDimensions();
@@ -44,6 +48,11 @@ export default function EventDetailScreen() {
   const { data: pet } = usePet(event?.petId || '');
   const deleteEventMutation = useDeleteEvent();
   const updateEventMutation = useUpdateEvent();
+  const addRecurrenceExceptionMutation = useAddRecurrenceException();
+  const deleteRecurrenceRuleMutation = useDeleteRecurrenceRule();
+  
+  const [choiceModalVisible, setChoiceModalVisible] = useState(false);
+  const [choiceMode, setChoiceMode] = useState<'edit' | 'delete'>('edit');
   const reminderStatus = useEventReminderStore((state) => (event?._id ? state.statuses[event._id] : undefined));
   const markMissed = useEventReminderStore((state) => state.markMissed);
   const markCompleted = useEventReminderStore((state) => state.markCompleted);
@@ -69,9 +78,14 @@ export default function EventDetailScreen() {
   };
 
   const handleEdit = () => {
-    if (event) {
+    if (!event) return;
+    
+    if (event.recurrenceRuleId) {
+      setChoiceMode('edit');
+      setChoiceModalVisible(true);
+    } else {
       router.push({
-        pathname: '/(tabs)/calendar',
+        pathname: TAB_ROUTES.calendar,
         params: { editEventId: event._id }
       });
     }
@@ -80,27 +94,92 @@ export default function EventDetailScreen() {
   const handleDelete = () => {
     if (!event) return;
 
-    Alert.alert(
-      t('events.deleteEvent'),
-      t('events.deleteEventConfirmation', { title: event.title }),
-      [
-        { text: t('common.cancel'), style: 'cancel' },
-        {
-          text: t('common.delete'),
-          style: 'destructive',
-          onPress: async () => {
-            try {
-              await deleteEventMutation.mutateAsync(event._id);
-              router.back();
-            } catch (error) {
-              console.error('Failed to delete event', error);
-              Alert.alert(t('common.error'), t('serviceResponse.event.deleteError'));
-              return;
-            }
+    if (event.recurrenceRuleId) {
+      setChoiceMode('delete');
+      setChoiceModalVisible(true);
+    } else {
+      Alert.alert(
+        t('events.deleteEvent'),
+        t('events.deleteEventConfirmation', { title: event.title }),
+        [
+          { text: t('common.cancel'), style: 'cancel' },
+          {
+            text: t('common.delete'),
+            style: 'destructive',
+            onPress: async () => {
+              try {
+                await deleteEventMutation.mutateAsync(event._id);
+                router.back();
+              } catch (error) {
+                console.error('Failed to delete event', error);
+                showToast({ type: 'error', title: t('common.error'), message: t('serviceResponse.event.deleteError') });
+              }
+            },
           },
-        },
-      ]
-    );
+        ]
+      );
+    }
+  };
+
+  const handleChoice = async (choice: 'single' | 'series') => {
+    setChoiceModalVisible(false);
+    if (!event) return;
+
+    if (choice === 'series') {
+      if (choiceMode === 'edit') {
+        // Redirect to calendar with edit ID - calendar should handle rule editing
+        router.push({
+          pathname: TAB_ROUTES.calendar,
+          params: { editEventId: event._id, editType: 'series' }
+        });
+      } else {
+        // Delete the whole series
+        Alert.alert(
+          t('events.deleteEvent'),
+          t('events.deleteEventConfirmation', { title: event.title }),
+          [
+            { text: t('common.cancel'), style: 'cancel' },
+            {
+              text: t('common.delete'),
+              style: 'destructive',
+              onPress: async () => {
+                try {
+                  if (event.recurrenceRuleId) {
+                    await deleteRecurrenceRuleMutation.mutateAsync(event.recurrenceRuleId);
+                    showToast({ type: 'success', title: t('serviceResponse.recurrence.deleteSuccess') });
+                    router.back();
+                  }
+                } catch {
+                  showToast({ type: 'error', title: t('common.error'), message: t('serviceResponse.event.deleteError') });
+                }
+              },
+            },
+          ]
+        );
+      }
+    } else {
+      // Single occurrence
+      if (choiceMode === 'edit') {
+        router.push({
+          pathname: TAB_ROUTES.calendar,
+          params: { editEventId: event._id, editType: 'single' }
+        });
+      } else {
+        // Delete only this occurrence via exception
+        try {
+          if (event.recurrenceRuleId) {
+            await addRecurrenceExceptionMutation.mutateAsync({
+              id: event.recurrenceRuleId,
+              date: event.startTime.toString(),
+            });
+            showToast({ type: 'success', title: t('events.eventDeleted') });
+            router.back();
+          }
+        } catch {
+          showToast({ type: 'error', title: t('common.error'), message: t('serviceResponse.event.deleteError') });
+        }
+      }
+    }
   };
 
   const handleShare = async () => {
@@ -112,7 +191,7 @@ export default function EventDetailScreen() {
       await Share.share({ message: shareMessage, title: event.title });
     } catch (error) {
       console.error('Failed to share event', error);
-      Alert.alert(t('common.error'), t('errors.generalError'));
+      showToast({ type: 'error', title: t('common.error'), message: t('errors.generalError') });
       return;
     }
   };
@@ -154,7 +233,7 @@ export default function EventDetailScreen() {
           await cancelRemindersForEvent(event._id);
         } catch (error) {
           console.error('Failed to mark event as missed', error);
-          Alert.alert(t('common.error'), t('serviceResponse.event.updateError'));
+          showToast({ type: 'error', title: t('common.error'), message: t('serviceResponse.event.updateError') });
         }
       };
 
@@ -175,7 +254,7 @@ export default function EventDetailScreen() {
       setEventStatus('completed');
     } catch (error) {
       console.error('Failed to mark event as completed', error);
-      Alert.alert(t('common.error'), t('serviceResponse.event.updateError'));
+      showToast({ type: 'error', title: t('common.error'), message: t('serviceResponse.event.updateError') });
     }
   };
 
@@ -191,7 +270,7 @@ export default function EventDetailScreen() {
       setEventStatus('missed');
     } catch (error) {
       console.error('Failed to mark event as missed', error);
-      Alert.alert(t('common.error'), t('serviceResponse.event.updateError'));
+      showToast({ type: 'error', title: t('common.error'), message: t('serviceResponse.event.updateError') });
     }
   };
 
@@ -207,7 +286,7 @@ export default function EventDetailScreen() {
       setEventStatus('cancelled');
     } catch (error) {
       console.error('Failed to cancel event', error);
-      Alert.alert(t('common.error'), t('serviceResponse.event.updateError'));
+      showToast({ type: 'error', title: t('common.error'), message: t('serviceResponse.event.updateError') });
     }
   };
 
@@ -223,7 +302,7 @@ export default function EventDetailScreen() {
       setEventStatus('upcoming');
     } catch (error) {
       console.error('Failed to resume event reminders', error);
-      Alert.alert(t('common.error'), t('serviceResponse.event.updateError'));
+      showToast({ type: 'error', title: t('common.error'), message: t('serviceResponse.event.updateError') });
     }
   };
 
@@ -302,7 +381,9 @@ export default function EventDetailScreen() {
   const eventTypeLabel = getEventTypeLabel(event.type, t);
   const heroImage = pet?.profilePhoto 
     ? { uri: pet.profilePhoto } 
-    : FALLBACK_IMAGES.petHero;
+    : pet?.type
+      ? (PET_TYPE_AVATARS[pet.type.toLowerCase() as keyof typeof PET_TYPE_AVATARS] ?? FALLBACK_IMAGES.petHero)
+      : FALLBACK_IMAGES.petHero;
 
   return (
     <View style={[styles.container, { backgroundColor: COLORS.backgroundDark }]}>
@@ -332,7 +413,7 @@ export default function EventDetailScreen() {
         </View>
       </View>
 
-      <ScrollView style={styles.scrollView} contentContainerStyle={{ paddingBottom: FOOTER_HEIGHT + insets.bottom }}>
+      <ScrollView style={styles.scrollView} contentContainerStyle={{ paddingBottom: FOOTER_HEIGHT + insets.bottom + 24 }}>
         <View style={styles.heroContainer}>
           <Image
             source={heroImage}
@@ -381,7 +462,9 @@ export default function EventDetailScreen() {
               <View style={[styles.card, { backgroundColor: COLORS.surfaceDark, width: (width - 32 - 12) / 2 }]}>
                 <View style={[styles.cardIconContainer, styles.petAvatarContainer, { borderColor: COLORS.primary }]}>
                   <Image 
-                    source={pet.profilePhoto ? { uri: pet.profilePhoto } : FALLBACK_IMAGES.petAvatar} 
+                    source={pet.profilePhoto 
+                      ? { uri: pet.profilePhoto } 
+                      : PET_TYPE_AVATARS[pet.type.toLowerCase() as keyof typeof PET_TYPE_AVATARS] ?? FALLBACK_IMAGES.petAvatar} 
                     style={styles.petAvatar} 
                   />
                 </View>
@@ -523,6 +606,13 @@ export default function EventDetailScreen() {
           </TouchableOpacity>
         </View>
       </View>
+      
+      <RecurrenceEditChoiceModal
+        visible={choiceModalVisible}
+        onDismiss={() => setChoiceModalVisible(false)}
+        onChoice={handleChoice}
+        mode={choiceMode}
+      />
     </View>
   );
 }

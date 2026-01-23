@@ -38,6 +38,7 @@ export const Text: React.FC<TextProps> = ({
           fontSize: fontStyle.fontSize,
           fontWeight: fontStyle.fontWeight,
           lineHeight: fontStyle.lineHeight,
+          fontFamily: fontStyle.fontFamily,
           color: color || theme.colors.onBackground,
         },
         style,

@@ -35,7 +35,7 @@
     "linkOpenError": "Bağlantı açılamadı. Lütfen tekrar deneyin.",
     "logoutConfirm": "Çıkış yapmak istediğinizden emin misiniz?",
     "logoutSuccess": "Başarıyla çıkış yapıldı",
-    "freeTrialNotice": "Giriş yaptığınızda 14 günlük ücretsiz deneme başlar. Kredi kartı gerekmez."
+    "freeTrialNotice": "Sosyal medya ile giriş yapın, bilgilerinizi buluta senkronize edin ve tüm cihazlarınızda kullanın."
   },
   "navigation": {
     "home": "Ana Sayfa",
@@ -66,6 +66,16 @@
     "financialOverviewEmptyTitle": "Finansları takip etmeye başlayın",
     "financialOverviewEmptyDescription": "Henüz bir bütçe veya harcama eklemediniz. Burada özetleri görmek için ilk kaydınızı ekleyin.",
     "financialOverviewEmptyCta": "Bütçe veya harcama ekle",
+    "nextFeedingEmptyTitle": "Henüz besleme planı yok",
+    "nextFeedingEmptyDescription": "Bir besleme planı oluşturarak sonraki öğünü görüntüleyin ve rutini koruyun.",
+    "nextFeedingEmptyCta": "Besleme planı oluştur",
+    "upcomingEventsEmptyTitle": "İlk etkinliği planlayın",
+    "upcomingEventsEmptyDescription": "Veteriner, bakım ve oyun etkinlikleri planlandıkça burada görünür.",
+    "upcomingEventsEmptyCta": "Etkinlik ekle",
+    "recentEventsTitle": "Son Etkinlikler",
+    "healthOverviewEmptyTitle": "Sağlık zaman çizelgesi oluşturun",
+    "healthOverviewEmptyDescription": "Kontrol ve ziyaretleri ekleyerek sağlık geçmişini hızlıca takip edin.",
+    "healthOverviewEmptyCta": "Sağlık kaydı ekle",
     "greeting": "Merhaba",
     "nextActivity": "Sonraki Aktivite",
     "noActivity": "Aktivite Yok",
@@ -118,6 +128,9 @@
     "update": "Güncelle",
     "add": "Ekle",
     "addFirstPetDescription": "İlk evcil dostunuzu ekleyerek başlayın",
+    "emptyTitle": "Henüz bir evcil dostun yok!",
+    "emptyDescription": "İlk dostunu ekleyerek başlayın. Sağlık takibi, aşı hatırlatmaları ve daha fazlası için ekleyin.",
+    "emptyCta": "Pet Ekle",
     "pleaseFillRequiredFields": "Lütfen zorunlu alanları doldurunuz",
     "ageUnknown": "Yaş bilinmiyor",
     "months": "ay",
@@ -144,7 +157,26 @@
     "viewHealthDetails": "Sağlık detaylarını görüntüle",
     "sharePet": "Evcil hayvan bilgilerini paylaş",
     "editPetHint": "Evcil hayvan detaylarını düzenler",
-    "sharePetHint": "Bu evcil hayvanın bilgilerini başkalarıyla paylaşır"
+    "sharePetHint": "Bu evcil hayvanın bilgilerini başkalarıyla paylaşır",
+    "petSavedForAfterLogin": "Pet kaydedildi! Giriş yaptığında oluşturulacak.",
+    "pendingPetCreated": "Petin başarıyla eklendi!",
+    "pendingPetError": "Pet kaydedilemedi. Lütfen manuel olarak ekleyin.",
+    "pendingPetSkipped": "Zaten petleriniz var. Bekleyen pet atlandı."
+  },
+  "limits": {
+    "pets": {
+      "title": "Sınırsız Dost Ekle",
+      "subtitle": "Pro ile tüm ailenizi tek bir yerden yönetin.",
+      "cta": "Pro'ya Geç"
+    },
+    "care": {
+      "feedingFooter": "Free planda {{limit}} beslenme programı hakkınız var ({{used}}/{{limit}}). Sınırsız planlama için Pro'ya geçin."
+    },
+    "budgets": {
+      "title": "Akıllı Bütçe Takibi",
+      "subtitle": "Pro ile aylık bütçe ve uyarıları tek yerden yönetin.",
+      "cta": "Pro'ya Geç"
+    }
   },
   "health": {
     "healthRecords": "Sağlık Kayıtları",
@@ -231,18 +263,33 @@
     "comingSoon": "Yakında gelecek",
     "upcomingEvents": "Yaklaşan Etkinlikler",
     "noEvents": "Planlanmış etkinlik yok",
+    "eventCount": "{{count}} etkinlik",
     "today": "Bugün",
     "addEvent": "Etkinlik Ekle",
     "noEventsToday": "Bugün için planlanmış etkinlik yok",
+    "reminderOn": "Hatırlatıcı Açık",
+    "reminderOff": "Hatırlatıcı Kapalı",
     "views": {
       "month": "Ay",
       "week": "Hafta",
       "day": "Gün"
     }
   },
-  "events": {
-    "status": "Durum",
+    "events": {
+      "recurrence": {
+        "editTitle": "Tekrarlanan Etkinlik",
+        "editDescription": "Bu etkinliği nasıl düzenlemek istersiniz?",
+        "editSingle": "Sadece bu etkinlik",
+        "editSeries": "Tüm seri",
+        "deleteTitle": "Etkinliği Sil",
+        "deleteDescription": "Bu tekrarlanan etkinliği nasıl silmek istersiniz?",
+        "deleteSingle": "Sadece bu etkinlik",
+        "deleteSeries": "Tüm seri"
+      },
+      "status": "Durum",
+
     "upcoming": "Yaklaşan Etkinlikler",
+    "past": "Geçmiş",
     "today": "Bugün",
     "addEvent": "Etkinlik Ekle",
     "forPet": "Pet için",
@@ -251,12 +298,14 @@
     "deleteEvent": "Etkinliği Sil",
     "deleteEventConfirmation": "\"{{title}}\" etkinliğini silmek istediğinizden emin misiniz?",
     "eventDeleted": "Etkinlik başarıyla silindi",
+    "singleEditWarning": "Bu değişiklik yalnızca bu etkinliği etkiler. Tekrar ayarları devre dışı bırakıldı.",
     "deleteEventError": "Etkinlik silinirken bir hata oluştu",
     "copy": "Kopya",
     "sharedFrom": "Petopia Petcare ile paylaşıldı",
     "dateAndTime": "Tarih ve Saat",
     "date": "Tarih",
     "time": "Saat",
+    "atTime": "{{time}}'de",
     "pet": "Evcil Dost",
     "location": "Konum",
     "noLocation": "Konum belirtilmemiş",
@@ -336,6 +385,7 @@
       "exercise": "Düzenli egzersiz petin fiziksel ve mental sağlığı için önemlidir. Yaşa uygun aktiviteler seçin.",
       "grooming": "Düzenli bakım petin temizliği ve sağlığı için gereklidir. Tüy, tırnak ve diş bakımını unutmayın.",
       "play": "Oyun zamanı petinizle bağ kurmanın ve egzersiz yapmanın harika bir yoludur.",
+      "walk": "Düzenli yürüyüşler petinizin fiziksel sağlığı ve zihinsel uyarımı için esastır. Süreyi ırka ve yaşa göre ayarlayın.",
       "training": "Eğitim seansları petinizin öğrenmesi ve sosyalleşmesi için önemlidir. Sabır ve ödülle ilerleyin.",
       "bath": "Banyo petin temizliği için gereklidir. Sıklığı pet türüne göre ayarlayın.",
       "other": "Diğer etkinlikler de hatırlatıcıyla daha iyi takip edilir. Ayrıntı ekleyin.",
@@ -352,6 +402,7 @@
       "tomorrow": "Yarın",
       "thisWeek": "Bu Hafta",
       "upcoming": "Yaklaşan",
+      "completed": "Tamamlanan",
       "past": "Geçmiş"
     },
     "events": "Etkinlikler",
@@ -372,11 +423,14 @@
   },
   "eventCard": {
     "forPet": "Evcil Dost İçin",
-    "reminderSet": "Hatırlatıcı Ayarlandı"
+    "reminderSet": "Hatırlatıcı Ayarlandı",
+    "recurring": "Tekrarlayan"
   },
   "notifications": {
     "enableTitle": "Bildirimleri Etkinleştir",
     "enableDescription": "Önemli pet bakım hatırlatmalarını kaçırmayın",
+    "permissionDeniedTitle": "Bildirimler Engellendi",
+    "permissionDeniedDescription": "Bildirimler engellendi. Pet bakım hatırlatmaları almak için cihaz ayarlarından etkinleştirin.",
     "enablePrompt": "Pet bakım hatırlatmaları almak için bildirimleri etkinleştirin",
     "benefit1": "Zamanında besleme ve aktivite hatırlatmaları",
     "benefit2": "Veteriner randevuları ve aşı hatırlatmaları",
@@ -400,7 +454,11 @@
       "1w": "1 hafta önce"
     },
     "testTitle": "Petopia hatırlatması",
-    "testBody": "Bildirimler hazır. Pet bakım etkinliklerini sana hatırlatacağız."
+    "testBody": "Bildirimler hazır. Pet bakım etkinliklerini sana hatırlatacağız.",
+    "feedingReminderTitle": "{{emoji}} Besleme Zamanı",
+    "feedingReminderBody": "{{foodType}} ({{amount}}) besleme zamanı {{time}}",
+    "feedingReminderNowTitle": "{{emoji}} Şimdi Besle",
+    "feedingReminderNowBody": "Petını {{foodType}} ({{amount}}) besleme zamanı"
   },
   "network": {
     "noConnection": "İnternet bağlantısı yok. Lütfen bağlantınızı kontrol edin."
@@ -456,7 +514,6 @@
     "accountDeleteError": "Hesap silinemedi. Lütfen tekrar deneyin.",
     "about": "Hakkında",
     "version": "Versiyon",
-    "versionNumber": "1.0.0",
     "helpSupport": "Yardım ve Destek",
     "helpSupportDescription": "SSS ve iletişim",
     "contactEmail": "petopia@dekadans.net",
@@ -506,6 +563,7 @@
     "unsavedChangesMessage": "Kaydedilmemiş değişiklikleriniz var. Bunları silmek istediğinizden emin misiniz?",
     "discard": "Değişiklikleri Sil",
     "close": "Kapat",
+    "clear": "Temizle",
     "offline": "Çevrimdışı",
     "wifi": "Wi-Fi",
     "cellular": "Mobil",
@@ -576,6 +634,33 @@
     "medication": "İlaç",
     "other": "Diğer"
   },
+  "recurrence": {
+    "settings": "Tekrarlama Ayarları",
+    "enableRecurring": "Bu etkinliği tekrarla",
+    "enableRecurringDesc": "Otomatik tekrarlayan etkinlikler oluştur",
+    "frequency": "Tekrarlama sıklığı",
+    "selectFrequency": "Sıklık seçin",
+    "repeatOn": "Tekrarlama günleri",
+    "dayOfMonth": "Ayın günü",
+    "selectDay": "Gün seçin",
+    "repeatEvery": "Her ... tekrarla",
+    "everyXDays_one": "{{count}} gün",
+    "everyXDays_other": "{{count}} gün",
+    "timesPerDay": "Günde kaç kez",
+    "scheduledTimes": "Planlanan saatler",
+    "timesHint": "Saatler gün boyunca otomatik olarak dağıtılır",
+    "endDate": "Bitiş tarihi (isteğe bağlı)",
+    "endDateHint": "Süresiz tekrarlama için boş bırakın",
+    "timezoneInfo": "Etkinlikler sizin saat diliminizde oluşturulacak",
+    "frequency.daily": "Günlük",
+    "frequency.weekly": "Haftalık",
+    "frequency.monthly": "Aylık",
+    "frequency.yearly": "Yıllık",
+    "frequency.custom": "Özel aralık",
+    "frequency.timesPerDay": "Günde birden fazla kez",
+    "manageTitle": "Tekrarlayan Kuralları Yönet",
+    "manageDescription": "Otomatik rutinlerinizi görüntüleyin ve düzenleyin"
+  },
   "days": {
     "monday": "Pazartesi",
     "tuesday": "Salı",
@@ -583,7 +668,14 @@
     "thursday": "Perşembe",
     "friday": "Cuma",
     "saturday": "Cumartesi",
-    "sunday": "Pazar"
+    "sunday": "Pazar",
+    "mondayShort": "Pzt",
+    "tuesdayShort": "Sal",
+    "wednesdayShort": "Çar",
+    "thursdayShort": "Per",
+    "fridayShort": "Cum",
+    "saturdayShort": "Cmt",
+    "sundayShort": "Paz"
   },
   "foodTypes": {
     "dry_food": "Kuru Mama",
@@ -608,6 +700,7 @@
     "everyday": "Her Gün",
     "active": "Aktif",
     "inactive": "Pasif",
+    "reminderScheduled": "Hatırlatıcı ayarlandı",
     "selectedPet": "Seçili Evcil Dost",
     "fields": {
       "pet": "Evcil Dost",
@@ -888,6 +981,17 @@
         "fetchBreakdownError": "Pet harcama özeti alınamadı",
         "checkActiveError": "Aktif bütçe durumu kontrol edilemedi",
         "fetchSummaryError": "Bütçe özeti alınamadı"
+      },
+      "recurrence": {
+        "frequencyInvalid": "Geçerli bir sıklık seçiniz",
+        "intervalMin": "Aralık en az 1 olmalıdır",
+        "intervalMax": "Aralık 365'i geçemez",
+        "dayOfMonthMin": "Ayın günü en az 1 olmalıdır",
+        "dayOfMonthMax": "Ayın günü 31'i geçemez",
+        "timesPerDayMin": "Günlük tekrar en az 1 olmalıdır",
+        "timesPerDayMax": "Günlük tekrar 10'u geçemez",
+        "timeFormatInvalid": "Saat SS:DD formatında olmalıdır",
+        "timezoneRequired": "Saat dilimi zorunludur"
       }
     },
     "dropdown": {
@@ -1126,8 +1230,10 @@
     "screen3": {
       "title": "Artık Hazırsınız!",
       "description": "Evcil hayvanınızın bakım ve sağlık verilerini yönetmek için her şey hazır.",
-      "trialNotice": "14 günlük ücretsiz deneme süreniz başlıyor. Kredi kartı gerekmez.",
-      "button": "Ana Sayfaya Git"
+      "trialNotice": "Hemen petinizi ekleyerek başlayın!",
+      "addPet": "Petini Ekle",
+      "skipPet": "Sonra Yaparım",
+      "addYourFirstPet": "İlk Petini Ekle"
     }
   },
   "serviceResponse": {
@@ -1150,6 +1256,15 @@
       "fetchByDateError": "Bu tarih için etkinlikler alınamadı. Lütfen tekrar deneyin.",
       "fetchUpcomingError": "Yaklaşan etkinlikler alınamadı. Lütfen tekrar deneyin.",
       "fetchTodayError": "Bugünün etkinlikleri alınamadı. Lütfen tekrar deneyin."
+    },
+    "recurrence": {
+      "createSuccess": "Tekrarlayan etkinlik başarıyla oluşturuldu",
+      "updateSuccess": "Tekrarlayan etkinlik başarıyla güncellendi",
+      "deleteSuccess": "Tekrarlayan etkinlik başarıyla silindi",
+      "createError": "Tekrarlayan etkinlik oluşturulamadı. Lütfen bilgileri kontrol edip tekrar deneyin.",
+      "updateError": "Tekrarlayan etkinlik güncellenemedi. Lütfen tekrar deneyin.",
+      "deleteError": "Tekrarlayan etkinlik silinemedi. Lütfen tekrar deneyin.",
+      "fetchError": "Tekrarlayan etkinlikler alınamadı. Lütfen tekrar deneyin."
     },
     "expense": {
       "createSuccess": "Harcama başarıyla oluşturuldu",
@@ -1199,7 +1314,13 @@
       "fetchTodayError": "Bugünün besleme programları yüklenemedi",
       "fetchNextError": "Sıradaki besleme yüklenemedi",
       "fetchActiveByPetError": "Bu pet için aktif besleme programları yüklenemedi",
-      "toggleError": "Program durumu güncellenemedi"
+      "toggleError": "Program durumu güncellenemedi",
+      "fetchNotificationsSuccess": "Besleme bildirimleri başarıyla yüklendi",
+      "fetchNotificationsError": "Besleme bildirimleri yüklenemedi",
+      "triggerReminderSuccess": "Besleme hatırlatması başarıyla planlandı",
+      "triggerReminderError": "Besleme hatırlatması planlanamadı",
+      "completeFeedingSuccess": "Besleme başarıyla tamamlandı",
+      "completeFeedingError": "Besleme tamamlanamadı"
     },
     "healthRecord": {
       "createSuccess": "Sağlık kaydı başarıyla oluşturuldu",
@@ -1271,6 +1392,12 @@
     "trialDaysRemaining": "{{days}} gün kaldı",
     "trialExpired": "Deneme Süresi Doldu",
     "trialPrompt": "Denemeniz {{days}} gün içinde sona eriyor",
+    "upgradeToPro": "Pro'ya Yükselt",
+    "startTrial": "14 Gün Ücretsiz Dene",
+    "noCreditCardRequired": "Kredi kartı gerekmez",
+    "confirmStartTrialTitle": "Ücretsiz Deneme Başlasın mı?",
+    "confirmStartTrialMessage": "14 gün ücretsiz Pro özellikler. Kredi kartı gerekmez.",
+    "confirmStartTrialAction": "Denemeyi Başlat",
     "upgrade": "Pro'ya Yükselt",
     "upgradePrompt": "Tüm özellikleri Pro ile açın",
     "upgradeBeforeTrialEnds": "Deneme Bitmeden Yükseltin",
@@ -1309,11 +1436,13 @@
     "features": {
       "title": "Pro Özellikler",
       "unlimited": "Sınırsız Pet",
-      "unlimitedDesc": "İstediğiniz kadar pet ekleyin",
-      "advanced": "Gelişmiş Sağlık Takibi",
-      "advancedDesc": "Detaylı sağlık analizi ve içgörüler",
+      "unlimitedDesc": "Tüm evcil dostlarınızı tek yerden yönetin",
+      "feedingSchedules": "Sınırsız Besleme Programı",
+      "feedingSchedulesDesc": "Tüm dostlarınız için sınırsız besleme programı oluşturun",
+      "budgetTracking": "Bütçe Takibi ve Uyarılar",
+      "budgetTrackingDesc": "Aylık bütçe belirleyin, harcamaları izleyin ve limit uyarıları alın",
       "export": "Veri Dışa Aktarma",
-      "exportDesc": "Verilerinizi birden çok formatta dışa aktarın",
+      "exportDesc": "Harcamaları CSV veya PDF olarak dışa aktarın, veteriner özeti oluşturun",
       "priority": "Öncelikli Destek",
       "priorityDesc": "İhtiyacınız olduğunda yardım alın",
       "petManagement": "Pet Yönetimi",
@@ -1332,6 +1461,24 @@
       "message": "Artık Pro üyesiniz. Tüm premium özelliklerin keyfini çıkarın.",
       "button": "Anasayfaya Dön"
     },
+    "trialSuccess": {
+      "title": "Tebrikler!",
+      "message": "14 günlük ücretsiz denemeniz başladı. Tüm Pro özelliklerin keyfini çıkarın!",
+      "button": "Anasayfaya Dön"
+    },
     "note": "Ödeme App Store / Google Play hesabınızdan tahsil edilecektir. Abonelikler, mevcut dönemin sonundan en az 24 saat önce iptal edilmediği sürece otomatik olarak yenilenir. Aboneliğinizi App Store / Google Play hesap ayarlarınızdan yönetebilir veya iptal edebilirsiniz."
+  },
+  "downgrade": {
+    "title": "Evcil Hayvanınızı Seçin",
+    "subtitle": "Aboneliğiniz sona erdi. Ücretsiz plan {{limit}} evcil hayvana izin veriyor. Lütfen saklamak istediğinizi seçin.",
+    "selectPet": "Saklamak istediğiniz evcil hayvanı seçin",
+    "warning": "Seçilmeyen evcil hayvanların tüm verileri (sağlık kayıtları, etkinlikler, harcamalar, besleme programları) kalıcı olarak silinecektir. Bu işlem geri alınamaz.",
+    "keepButton": "Seçili Evcil Hayvanı Sakla",
+    "upgradeButton": "Pro'ya Yükselt",
+    "confirmTitle": "Seçimi Onayla",
+    "confirmMessage": "Diğer evcil hayvanların tüm verileri kalıcı olarak silinecek. Bu işlem geri alınamaz.",
+    "confirmDelete": "Evet, Diğerlerini Sil",
+    "cancel": "İptal",
+    "error": "İşlem başarısız. Lütfen tekrar deneyin."
   }
 }

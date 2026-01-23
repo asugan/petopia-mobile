@@ -1,7 +1,7 @@
 import React from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { Text } from '@/components/ui';
+import { Text, Switch } from '@/components/ui';
 import { useTheme } from '@/lib/theme';
 import { useTranslation } from 'react-i18next';
 import { format } from 'date-fns';
@@ -13,12 +13,14 @@ import { getEventTypeIcon, getEventTypeLabel } from '@/constants/eventIcons';
 interface CalendarEventCardProps {
   event: Event;
   onPress?: (event: Event) => void;
+  onToggleReminder?: (event: Event, value: boolean) => void;
   testID?: string;
 }
 
 export function CalendarEventCard({
   event,
   onPress,
+  onToggleReminder,
   testID,
 }: CalendarEventCardProps) {
   const { theme } = useTheme();
@@ -30,6 +32,23 @@ export function CalendarEventCard({
   const eventTypeText = eventTypeLabel.toLocaleUpperCase(i18n.language);
   const eventTypeIcon = getEventTypeIcon(event.type);
   const subtitle = event.location || event.description;
+  const reminderLabel = event.reminder
+    ? t('calendar.reminderOn')
+    : t('calendar.reminderOff');
+  const statusColorMap = {
+    upcoming: theme.colors.primary,
+    completed: theme.colors.success,
+    cancelled: theme.colors.error,
+    missed: theme.colors.warning,
+  } as const;
+  const statusLabelMap = {
+    upcoming: t('events.statusUpcoming'),
+    completed: t('events.statusCompleted'),
+    cancelled: t('events.statusCancelled'),
+    missed: t('events.statusMissed'),
+  } as const;
+  const statusColor = statusColorMap[event.status] ?? theme.colors.onSurfaceVariant;
+  const statusLabel = statusLabelMap[event.status] ?? event.status;
 
   const handlePress = React.useCallback(() => {
     onPress?.(event);
@@ -103,21 +122,48 @@ export function CalendarEventCard({
           )}
         </View>
 
-        <View style={styles.avatarColumn}>
-          <View
-            style={[
-              styles.avatar,
-              {
-                backgroundColor: theme.colors.surfaceVariant,
-                borderColor: theme.colors.surface,
-              },
-            ]}
-          >
-            <MaterialCommunityIcons
-              name="paw"
-              size={18}
-              color={theme.colors.onSurfaceVariant}
+        <View style={styles.rightColumn}>
+          <View style={styles.avatarColumn}>
+            <Switch
+              value={event.reminder}
+              onValueChange={(value) => onToggleReminder?.(event, value)}
+              color={eventColor}
+              testID={testID ? `${testID}-reminder-toggle` : undefined}
             />
+          </View>
+          <View style={styles.statusGroup}>
+            <View style={styles.statusRow}>
+              <View
+                style={[
+                  styles.statusDot,
+                  {
+                    backgroundColor: event.reminder
+                      ? theme.colors.secondary
+                      : theme.colors.surfaceDisabled,
+                  },
+                ]}
+              />
+              <Text
+                variant="labelSmall"
+                style={[styles.statusText, { color: theme.colors.onSurfaceVariant }]}
+              >
+                {reminderLabel}
+              </Text>
+            </View>
+            <View style={styles.statusRow}>
+              <View
+                style={[
+                  styles.statusDot,
+                  { backgroundColor: statusColor },
+                ]}
+              />
+              <Text
+                variant="labelSmall"
+                style={[styles.statusText, { color: theme.colors.onSurfaceVariant }]}
+              >
+                {statusLabel}
+              </Text>
+            </View>
           </View>
         </View>
 
@@ -195,21 +241,37 @@ const styles = StyleSheet.create({
   subtitle: {
     marginTop: 2,
   },
+  rightColumn: {
+    marginLeft: 12,
+    alignItems: 'flex-end',
+    justifyContent: 'center',
+  },
   avatarColumn: {
     width: 52,
     alignItems: 'flex-end',
-    marginLeft: 12,
-  },
-  avatar: {
-    width: 44,
-    height: 44,
-    borderRadius: 22,
-    alignItems: 'center',
     justifyContent: 'center',
-    borderWidth: 2,
+  },
+  statusGroup: {
+    marginTop: 8,
+    alignItems: 'flex-end',
+    gap: 4,
+  },
+  statusRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+  },
+  statusDot: {
+    width: 6,
+    height: 6,
+    borderRadius: 3,
+  },
+  statusText: {
+    fontSize: 10,
+    fontWeight: '600',
   },
   chevronContainer: {
-    marginLeft: 4,
+    marginLeft: 8,
   },
 });
 

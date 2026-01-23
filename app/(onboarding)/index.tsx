@@ -1,4 +1,5 @@
-import { View, Text, StyleSheet, Image, Pressable } from 'react-native';
+import { View, Text, StyleSheet, Pressable } from 'react-native';
+import { Image } from 'expo-image';
 import { useRouter } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -8,6 +9,7 @@ import { Gesture, GestureDetector, Directions } from 'react-native-gesture-handl
 import { scheduleOnRN } from 'react-native-worklets';
 import { useTheme } from '@/lib/theme';
 import { useMemo } from 'react';
+import { ONBOARDING_ROUTES } from '@/constants/routes';
 
 export default function OnboardingStep1() {
   const router = useRouter();
@@ -17,7 +19,7 @@ export default function OnboardingStep1() {
   const swipeLeft = Gesture.Fling()
     .direction(Directions.LEFT)
     .onEnd(() => {
-      scheduleOnRN(router.push, '/(onboarding)/step2');
+      scheduleOnRN(router.push, ONBOARDING_ROUTES.step2);
     });
 
   const styles = useMemo(() => StyleSheet.create({
@@ -114,9 +116,9 @@ export default function OnboardingStep1() {
       {/* Background Section with Image */}
       <View style={styles.imageContainer}>
         <Image
-          source={require('../../assets/images/onboarding-hero.jpg')}
+          source={require('../../assets/images/onboarding_1.webp')}
           style={styles.image}
-          resizeMode="cover"
+          contentFit="cover"
         />
         <LinearGradient
           colors={['transparent', 'transparent', theme.colors.background]}
@@ -145,7 +147,7 @@ export default function OnboardingStep1() {
         <View style={styles.buttonContainer}>
           <Pressable
             style={styles.button}
-            onPress={() => router.push('/(onboarding)/step2')}
+            onPress={() => router.push(ONBOARDING_ROUTES.step2)}
           >
             <Text style={styles.buttonText}>{t('onboarding.screen1.button')}</Text>
           </Pressable>

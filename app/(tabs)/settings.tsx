@@ -2,25 +2,32 @@ import React, { useEffect, useMemo, useRef, useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { SubscriptionCard } from "@/components/subscription";
 import { Button, Card, ListItem, Switch, Text } from "@/components/ui";
+import { LargeTitle } from "@/components/LargeTitle";
 import { DateTimePicker } from "@/components/DateTimePicker";
 import { useAuth } from "@/lib/auth";
 import { accountService } from "@/lib/services/accountService";
-import { notificationService, requestNotificationPermissions } from "@/lib/services/notificationService";
+import { notificationService, registerPushTokenWithBackend } from "@/lib/services/notificationService";
 import { useAuthStore } from "@/stores/authStore";
 import { useEventReminderStore } from "@/stores/eventReminderStore";
 import { SupportedCurrency, useUserSettingsStore } from "@/stores/userSettingsStore";
-import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
+import Constants from 'expo-constants';
+import { Ionicons } from "@expo/vector-icons";
+import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import { useRouter } from "expo-router";
 import { useTranslation } from "react-i18next";
-import { Alert, Image, Keyboard, KeyboardAvoidingView, Platform, Pressable, ScrollView, StyleSheet, TextInput, View } from "react-native";
+import { Alert, Keyboard, KeyboardAvoidingView, Platform, Pressable, ScrollView, StyleSheet, TextInput, View } from "react-native";
+import { Image } from "expo-image";
+import { showToast } from "@/lib/toast/showToast";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { LAYOUT } from "@/constants";
 import { useOnboardingStore } from "@/stores/onboardingStore";
 import CurrencyPicker from "@/components/CurrencyPicker";
 import LoadingSpinner from "@/components/LoadingSpinner";
 import { LanguageSettings } from "@/components/LanguageSettings";
-import { NotificationPermissionCard } from "@/components/NotificationPermissionPrompt";
+import NotificationPermissionPrompt, { NotificationPermissionCard } from "@/components/NotificationPermissionPrompt";
 import { subscriptionStyles } from "@/lib/styles/subscription";
+import { useNotifications } from "@/lib/hooks/useNotifications";
+import { AUTH_ROUTES, ONBOARDING_ROUTES, SETTINGS_ROUTES } from "@/constants/routes";
 
 type ModalState = "none" | "contact" | "deleteWarning" | "deleteConfirm";
 
@@ -34,7 +41,6 @@ export default function SettingsScreen() {
   const { resetOnboarding } = useOnboardingStore();
   const isDarkMode = settings?.theme === "dark";
   const [notificationPermissionEnabled, setNotificationPermissionEnabled] = useState(false);
-  const [notificationLoading, setNotificationLoading] = useState(true);
   const quietHoursEnabled = settings?.quietHoursEnabled ?? true;
   const quietHours = useMemo(() => (
     settings?.quietHours ?? {
@@ -55,22 +61,27 @@ export default function SettingsScreen() {
   const [deletingAccount, setDeletingAccount] = useState(false);
   const [permissionRefreshKey, setPermissionRefreshKey] = useState(0);
   const hasSyncedPermission = useRef(false);
+  const [showPermissionModal, setShowPermissionModal] = useState(false);
+
+  // Notifications hook
+  const { requestPermission, isLoading: isNotificationLoading } = useNotifications();
 
   useEffect(() => {
     const fetchPermissionStatus = async () => {
       try {
         const enabled = await notificationService.areNotificationsEnabled();
         setNotificationPermissionEnabled(enabled);
-        
+
         // Sync backend with system permission if they differ
         // Only auto-disable backend if system is disabled (one-time sync)
         if (!hasSyncedPermission.current && !enabled && settings?.notificationsEnabled === true) {
           hasSyncedPermission.current = true;
           await updateSettings({ notificationsEnabled: false });
         }
-      } catch {
-      } finally {
-        setNotificationLoading(false);
+      } catch (error) {
+        if (__DEV__) {
+          console.warn('[Settings] Failed to fetch permission status:', error);
+        }
       }
     };
 
@@ -80,52 +91,57 @@ export default function SettingsScreen() {
   }, [settings, updateSettings]);
 
 
+  React.useEffect(() => {
+    if (error) {
+      showToast({
+        type: 'error',
+        title: t("common.error"),
+        message: error,
+      });
+    }
+  }, [error, t]);
+
   const handleNotificationToggle = async (value: boolean) => {
-    setNotificationLoading(true);
     try {
       if (value) {
         // If user wants to enable, check system permissions first
-        const granted = await requestNotificationPermissions();
+        const granted = await requestPermission();
         setNotificationPermissionEnabled(granted);
         setPermissionRefreshKey((prev) => prev + 1);
-        
-        if (!granted) {
-          Alert.alert(
-            t("settings.notifications"),
-            t("settings.notificationPermissionDenied", "Notifications are blocked at the system level. Please enable them from settings.")
-          );
-          // Ensure backend stays disabled if permission denied
-          await updateSettings({ notificationsEnabled: false });
-        } else {
-          // Permission granted, update backend
+
+        if (granted) {
+          // Permission granted, register push token and update backend
+          void registerPushTokenWithBackend();
           await updateSettings({ notificationsEnabled: true });
+        } else {
+          // Permission denied - show modal
+          setShowPermissionModal(true);
         }
       } else {
         // If user wants to disable, update backend and cancel existing
-        Alert.alert(
-          t("settings.notifications"),
-          t(
-            "settings.notificationDisableInfo",
-            "You can disable notifications from your device settings. We'll stop scheduling new reminders from here."
-          )
-        );
+        showToast({
+          type: 'info',
+          title: t("settings.notifications"),
+          message: t("settings.notificationDisableInfo"),
+        });
         await notificationService.cancelAllNotifications();
         clearAllReminderState();
         await updateSettings({ notificationsEnabled: false });
       }
-    } catch {
-    } finally {
-      setNotificationLoading(false);
+    } catch (error) {
+      if (__DEV__) {
+        console.warn('[Settings] Notification toggle failed:', error);
+      }
     }
   };
 
   const handleBudgetNotificationToggle = async (value: boolean) => {
-    setNotificationLoading(true);
     try {
       await updateSettings({ budgetNotificationsEnabled: value });
-    } catch {
-    } finally {
-      setNotificationLoading(false);
+    } catch (error) {
+      if (__DEV__) {
+        console.warn('[Settings] Budget notification toggle failed:', error);
+      }
     }
   };
 
@@ -142,7 +158,7 @@ export default function SettingsScreen() {
           setLoading(true);
           try {
             await signOut();
-            router.replace("/(auth)/login");
+            router.replace(AUTH_ROUTES.login);
           } catch {
           } finally {
             setLoading(false);
@@ -182,36 +198,32 @@ export default function SettingsScreen() {
     try {
       const result = await accountService.deleteAccount(deleteConfirmText);
       if (result.success) {
-        Alert.alert(
-          t("settings.accountDeletedTitle"),
-          t("settings.accountDeletedMessage"),
-          [
-            {
-              text: t("common.ok"),
-              onPress: async () => {
-                setLoading(true);
-                try {
-                  await signOut();
-                  router.replace("/(auth)/login");
-                } catch {
-                } finally {
-                  setLoading(false);
-                }
-              },
-            },
-          ]
-        );
+        showToast({
+          type: 'success',
+          title: t("settings.accountDeletedTitle"),
+          message: t("settings.accountDeletedMessage"),
+        });
+        setLoading(true);
+        try {
+          await signOut();
+          router.replace(AUTH_ROUTES.login);
+        } catch {
+        } finally {
+          setLoading(false);
+        }
       } else {
-        Alert.alert(
-          t("common.error"),
-          t("settings.accountDeleteError", "Failed to delete account")
-        );
+        showToast({
+          type: 'error',
+          title: t("common.error"),
+          message: t("settings.accountDeleteError"),
+        });
       }
     } catch {
-      Alert.alert(
-        t("common.error"),
-        t("settings.accountDeleteError", "Failed to delete account")
-      );
+      showToast({
+        type: 'error',
+        title: t("common.error"),
+        message: t("settings.accountDeleteError"),
+      });
     } finally {
       setDeletingAccount(false);
       setActiveModal("none");
@@ -255,17 +267,10 @@ export default function SettingsScreen() {
         style={styles.scrollView}
         showsVerticalScrollIndicator={false}
       >
+        <LargeTitle title={t("settings.settings")} />
         {settingsLoading && (
           <View style={styles.loadingContainer}>
             <LoadingSpinner />
-          </View>
-        )}
-
-        {error && (
-          <View style={[styles.errorContainer, { backgroundColor: theme.colors.errorContainer }]}>
-            <Text variant="bodyMedium" style={{ color: theme.colors.onErrorContainer }}>
-              {error}
-            </Text>
           </View>
         )}
 
@@ -391,7 +396,7 @@ export default function SettingsScreen() {
                 <Switch
                   value={notificationsEnabled}
                   onValueChange={handleNotificationToggle}
-                  disabled={notificationLoading || !settings}
+                  disabled={isNotificationLoading || !settings}
                   color={theme.colors.primary}
                 />
               }
@@ -410,7 +415,7 @@ export default function SettingsScreen() {
                 <Switch
                   value={budgetNotificationsEnabled}
                   onValueChange={handleBudgetNotificationToggle}
-                  disabled={notificationLoading || !settings || !notificationsActive}
+                  disabled={isNotificationLoading || !settings || !notificationsActive}
                   color={theme.colors.primary}
                 />
               }
@@ -432,7 +437,7 @@ export default function SettingsScreen() {
                     setQuietHoursEnabled(value);
                     void updateSettings({ quietHoursEnabled: value });
                   }}
-                  disabled={notificationLoading || !notificationsActive}
+                  disabled={isNotificationLoading || !notificationsActive}
                   color={theme.colors.primary}
                 />
               }
@@ -444,14 +449,14 @@ export default function SettingsScreen() {
                   label={t("settings.quietHoursStart")}
                   value={createTimeDate(quietHours.startHour, quietHours.startMinute)}
                   onChange={handleQuietHoursStartChange}
-                  disabled={notificationLoading || !notificationsActive}
+                  disabled={isNotificationLoading || !notificationsActive}
                 />
                 <DateTimePicker
                   mode="time"
                   label={t("settings.quietHoursEnd")}
                   value={createTimeDate(quietHours.endHour, quietHours.endMinute)}
                   onChange={handleQuietHoursEndChange}
-                  disabled={notificationLoading || !notificationsActive}
+                  disabled={isNotificationLoading || !notificationsActive}
                 />
               </View>
             )}
@@ -495,24 +500,6 @@ export default function SettingsScreen() {
               {t("settings.dataPrivacy")}
             </Text>
             <ListItem
-              title={t("settings.dataBackup")}
-              description={t("settings.dataBackupDescription")}
-              left={
-                <MaterialCommunityIcons
-                  name="cloud-upload"
-                  size={24}
-                  color={theme.colors.onSurfaceVariant}
-                />
-              }
-              right={
-                <MaterialCommunityIcons
-                  name="chevron-right"
-                  size={24}
-                  color={theme.colors.onSurfaceVariant}
-                />
-              }
-            />
-            <ListItem
               title={t("settings.deleteAccount")}
               description={t("settings.deleteAccountDescription")}
               left={
@@ -550,7 +537,7 @@ export default function SettingsScreen() {
             </Text>
             <ListItem
               title={t("settings.version")}
-              description={t("settings.versionNumber")}
+              description={Constants.expoConfig?.version || '1.0.0'}
               left={
                 <MaterialCommunityIcons
                   name="information"
@@ -581,6 +568,42 @@ export default function SettingsScreen() {
           </View>
         </Card>
 
+        {/* Recurrence Management */}
+        <Card
+          style={[
+            styles.sectionCard,
+            { backgroundColor: theme.colors.surface },
+          ]}
+        >
+          <View style={styles.cardContent}>
+            <Text
+              variant="titleMedium"
+              style={[styles.sectionTitle, { color: theme.colors.onSurface }]}
+            >
+              {t("recurrence.settings")}
+            </Text>
+            <ListItem
+              title={t("recurrence.manageTitle", "Manage Recurring Rules")}
+              description={t("recurrence.manageDescription", "View and edit your automated routines")}
+              left={
+                <MaterialCommunityIcons
+                  name="repeat"
+                  size={24}
+                  color={theme.colors.onSurfaceVariant}
+                />
+              }
+              onPress={() => router.push(SETTINGS_ROUTES.recurrence)}
+              right={
+                <MaterialCommunityIcons
+                  name="chevron-right"
+                  size={24}
+                  color={theme.colors.onSurfaceVariant}
+                />
+              }
+            />
+          </View>
+        </Card>
+
         {/* Debug / Development */}
         {__DEV__ && (
         <Card
@@ -596,6 +619,24 @@ export default function SettingsScreen() {
             >
               Development
             </Text>
+            <ListItem
+              title="Data Backup"
+              description="Export/import your data (coming soon)"
+              left={
+                <MaterialCommunityIcons
+                  name="cloud-upload"
+                  size={24}
+                  color={theme.colors.onSurfaceVariant}
+                />
+              }
+              right={
+                <MaterialCommunityIcons
+                  name="chevron-right"
+                  size={24}
+                  color={theme.colors.onSurfaceVariant}
+                />
+              }
+            />
             <ListItem
               title="Reset Onboarding"
               description="Unlocks the onboarding flow for testing"
@@ -618,7 +659,7 @@ export default function SettingsScreen() {
                       onPress: () => {
                         resetOnboarding();
                         // Navigate directly to onboarding to avoid race conditions with root redirector
-                        router.replace('/(onboarding)');
+                        router.replace(ONBOARDING_ROUTES.step1);
                       }
                     }
                   ]
@@ -796,6 +837,22 @@ export default function SettingsScreen() {
           </View>
         </KeyboardAvoidingView>
       )}
+
+      <NotificationPermissionPrompt
+        visible={showPermissionModal}
+        onDismiss={() => setShowPermissionModal(false)}
+        onPermissionGranted={async () => {
+          setNotificationPermissionEnabled(true);
+          setPermissionRefreshKey((prev) => prev + 1);
+          void registerPushTokenWithBackend();
+          await updateSettings({ notificationsEnabled: true });
+        }}
+        onPermissionDenied={async () => {
+          setNotificationPermissionEnabled(false);
+          setPermissionRefreshKey((prev) => prev + 1);
+          await updateSettings({ notificationsEnabled: false });
+        }}
+      />
     </SafeAreaView>
   );
 }
@@ -806,7 +863,9 @@ const styles = StyleSheet.create({
   },
   scrollView: {
     flex: 1,
-    padding: 16,
+    paddingHorizontal: 16,
+    paddingTop: 8,
+    paddingBottom: 16,
   },
   sectionCard: {
     marginBottom: 16,
@@ -861,11 +920,7 @@ const styles = StyleSheet.create({
     padding: 20,
     alignItems: 'center',
   },
-  errorContainer: {
-    padding: 16,
-    marginTop: 16,
-    borderRadius: 8,
-  },
+
   modalOverlay: {
     position: 'absolute',
     top: 0,

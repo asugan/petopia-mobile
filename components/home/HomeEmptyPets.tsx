@@ -12,6 +12,7 @@ import {
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 
+import { TAB_ROUTES } from "@/constants/routes";
 import { Text } from "@/components/ui";
 import { useTheme } from "@/lib/theme";
 
@@ -30,7 +31,7 @@ export const HomeEmptyPets: React.FC<HomeEmptyPetsProps> = ({
   const router = useRouter();
 
   // Use provided source or fall back to local asset
-  const imageSource = placeholderImageSource ?? require("@/assets/images/emptypet.png");
+  const imageSource = placeholderImageSource ?? require("@/assets/images/cat_avatar.webp");
 
   // Ripple effect colors - subtle concentric circles behind pet
   const renderRipple = (index: number, size: number) => (
@@ -49,7 +50,7 @@ export const HomeEmptyPets: React.FC<HomeEmptyPetsProps> = ({
   );
 
   const handlePress = () => {
-    router.push("/(tabs)/pets");
+    router.push(TAB_ROUTES.pets);
   };
 
   return (

@@ -1,19 +1,21 @@
-import { Portal, Snackbar } from '@/components/ui';
-import { useTheme } from '@/lib/theme';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { Modal as RNModal, StyleSheet, Text, View } from 'react-native';
+import { useTheme } from '@/lib/theme';
+import { useCreatePet, useUpdatePet } from '@/lib/hooks/usePets';
+import { Modal as RNModal, StyleSheet, Text, View, Platform } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { useCreatePet, useUpdatePet } from '../lib/hooks/usePets';
 import { PetCreateInput, PetCreateFormInput, PetCreateSchema } from '../lib/schemas/petSchema';
 import { Pet } from '../lib/types';
 import { PetForm } from './forms/PetForm';
+import { showToast } from '@/lib/toast/showToast';
+import { usePendingPetStore } from '@/stores/pendingPetStore';
 
 interface PetModalProps {
   visible: boolean;
   pet?: Pet;
   onClose: () => void;
   onSuccess: () => void;
+  isOnboarding?: boolean;
   testID?: string;
 }
 
@@ -22,39 +24,39 @@ export function PetModal({
   pet,
   onClose,
   onSuccess,
+  isOnboarding,
   testID,
 }: PetModalProps) {
   const { t } = useTranslation();
   const { theme } = useTheme();
   const [loading, setLoading] = React.useState(false);
-  const [snackbarVisible, setSnackbarVisible] = React.useState(false);
-  const [snackbarMessage, setSnackbarMessage] = React.useState('');
-  const [snackbarType, setSnackbarType] = React.useState<'success' | 'error'>('success');
+
+  // Store for pending pet during onboarding
+  const { setPendingPet } = usePendingPetStore();
 
   // ✅ React Query hooks for server state
   const createPetMutation = useCreatePet();
   const updatePetMutation = useUpdatePet();
 
-  const showSnackbar = React.useCallback((message: string, type: 'success' | 'error' = 'success') => {
-    setSnackbarMessage(message);
-    setSnackbarType(type);
-    setSnackbarVisible(true);
-  }, []);
 
   const handleSubmit = React.useCallback(async (data: PetCreateFormInput) => {
-    setLoading(true);
     try {
       // Transform form data to API format using the schema transformation
       const apiData: PetCreateInput = PetCreateSchema().parse(data);
 
+      setLoading(true);
       if (pet) {
         // Pet güncelleme
         await updatePetMutation.mutateAsync({ _id: pet._id, data: apiData });
-        showSnackbar(t('pets.updateSuccess'), 'success');
+        showToast({ type: 'success', title: t('pets.updateSuccess') });
+      } else if (isOnboarding) {
+        // Pending store'a kaydet, API login sonrası yapılacak
+        setPendingPet(data);
+        showToast({ type: 'success', title: t('pets.petSavedForAfterLogin') });
       } else {
         // Yeni pet oluşturma
         await createPetMutation.mutateAsync(apiData);
-        showSnackbar(t('pets.saveSuccess'), 'success');
+        showToast({ type: 'success', title: t('pets.saveSuccess') });
       }
 
       onSuccess();
@@ -62,11 +64,11 @@ export function PetModal({
     } catch (error) {
       const fallbackMessage = pet ? t('pets.updateError') : t('pets.createError');
       const errorMessage = error instanceof Error ? error.message : fallbackMessage;
-      showSnackbar(errorMessage, 'error');
+      showToast({ type: 'error', title: fallbackMessage, message: errorMessage });
     } finally {
       setLoading(false);
     }
-  }, [pet, createPetMutation, updatePetMutation, onSuccess, onClose, showSnackbar, t]);
+  }, [pet, createPetMutation, updatePetMutation, onSuccess, onClose, t, isOnboarding, setPendingPet]);
 
   const handleClose = React.useCallback(() => {
     if (!loading) {
@@ -74,16 +76,22 @@ export function PetModal({
     }
   }, [onClose, loading]);
 
-  const handleSnackbarDismiss = React.useCallback(() => {
-    setSnackbarVisible(false);
-  }, []);
+  const animationType = Platform.select({
+    ios: 'slide' as const,
+    android: 'fade' as const,
+  });
+
+  const presentationStyle = Platform.select({
+    ios: 'pageSheet' as const,
+    android: undefined,
+  });
 
   return (
     <>
       <RNModal
         visible={visible}
-        animationType="slide"
-        presentationStyle="pageSheet"
+        animationType={animationType}
+        presentationStyle={presentationStyle}
         onDismiss={handleClose}
         onRequestClose={handleClose}
         testID={testID}
@@ -91,7 +99,12 @@ export function PetModal({
         <SafeAreaView style={[styles.container, { backgroundColor: theme.colors.surface }]}>
           <View style={styles.header}>
             <Text style={[styles.title, { color: theme.colors.onSurface }]}>
-              {pet ? t('pets.editPet') : t('pets.addNewPet')}
+              {isOnboarding
+                ? t('onboarding.screen3.addYourFirstPet')
+                : pet
+                  ? t('pets.editPet')
+                  : t('pets.addNewPet')
+              }
             </Text>
           </View>
 
@@ -104,18 +117,6 @@ export function PetModal({
         </SafeAreaView>
       </RNModal>
 
-      <Portal>
-        <Snackbar
-          visible={snackbarVisible}
-          onDismiss={handleSnackbarDismiss}
-          duration={3000}
-          message={snackbarMessage}
-          style={{
-            ...styles.snackbar,
-            backgroundColor: snackbarType === 'success' ? theme.colors.primary : theme.colors.error
-          }}
-        />
-      </Portal>
     </>
   );
 }
@@ -133,9 +134,6 @@ const styles = StyleSheet.create({
   title: {
     textAlign: 'center',
     fontWeight: '600',
-  },
-  snackbar: {
-    marginBottom: 16,
   },
 });
 

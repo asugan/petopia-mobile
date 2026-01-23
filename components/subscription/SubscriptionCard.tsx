@@ -6,18 +6,20 @@ import { Card, Text, Button, ProgressBar } from '@/components/ui';
 import { useTheme } from '@/lib/theme';
 import { useSubscription } from '@/lib/hooks/useSubscription';
 import { REVENUECAT_CONFIG } from '@/lib/revenuecat/config';
+import { SUBSCRIPTION_ROUTES } from '@/constants/routes';
 
 interface SubscriptionCardProps {
   showManageButton?: boolean;
   compact?: boolean;
   onUpgrade?: () => void | Promise<void>;
+  onTrialStartSuccess?: () => void;
 }
 
 /**
  * SubscriptionCard displays the current subscription status
  * Used in Settings screen and other places where subscription info is needed
  */
-export function SubscriptionCard({ showManageButton = true, compact = false, onUpgrade }: SubscriptionCardProps) {
+export function SubscriptionCard({ showManageButton = true, compact = false, onUpgrade, onTrialStartSuccess }: SubscriptionCardProps) {
   const { t } = useTranslation();
   const { theme } = useTheme();
   const router = useRouter();
@@ -33,6 +35,8 @@ export function SubscriptionCard({ showManageButton = true, compact = false, onU
     willRenew,
     isLoading,
     presentCustomerCenter,
+    canStartTrial,
+    startTrial,
   } = useSubscription();
 
   // Format expiration date
@@ -89,7 +93,7 @@ export function SubscriptionCard({ showManageButton = true, compact = false, onU
       if (onUpgrade) {
         await onUpgrade();
       } else {
-        router.push('/subscription');
+        router.push(SUBSCRIPTION_ROUTES.main);
       }
     } catch (error) {
       console.error('Upgrade error:', error);
@@ -120,7 +124,7 @@ export function SubscriptionCard({ showManageButton = true, compact = false, onU
       if (onUpgrade) {
         await onUpgrade();
       } else {
-        router.push('/subscription');
+        router.push(SUBSCRIPTION_ROUTES.main);
       }
     } catch (error) {
       console.error('Navigation error:', error);
@@ -222,6 +226,16 @@ export function SubscriptionCard({ showManageButton = true, compact = false, onU
           )}
         </View>
 
+        {/* No CC Required Note for Trial */}
+        {canStartTrial && !isProUser && (
+          <View style={styles.noCcNote}>
+            <MaterialCommunityIcons name="credit-card-off" size={14} color={theme.colors.tertiary} />
+            <Text variant="bodySmall" style={{ color: theme.colors.tertiary, marginLeft: 4 }}>
+              {t('subscription.noCreditCardRequired')}
+            </Text>
+          </View>
+        )}
+
         {/* Action Buttons */}
         {showManageButton && (
           <View style={styles.actions}>
@@ -253,6 +267,31 @@ export function SubscriptionCard({ showManageButton = true, compact = false, onU
                   </Button>
                 )}
               </>
+            ) : canStartTrial ? (
+              <Button
+                mode="contained"
+                onPress={() => {
+                  Alert.alert(
+                    t('subscription.confirmStartTrialTitle'),
+                    t('subscription.confirmStartTrialMessage'),
+                    [
+                      { text: t('common.cancel'), style: 'cancel' },
+                      {
+                        text: t('subscription.confirmStartTrialAction'),
+                        onPress: async () => {
+                          await startTrial();
+                          onTrialStartSuccess?.();
+                        },
+                      },
+                    ]
+                  );
+                }}
+                loading={isLoading}
+                disabled={isLoading}
+                style={styles.actionButton}
+              >
+                {t('subscription.startTrial')}
+              </Button>
             ) : (
               <Button
                 mode="contained"
@@ -315,6 +354,13 @@ const styles = StyleSheet.create({
   },
   cancelButton: {
     marginTop: 12,
+  },
+  noCcNote: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 8,
+    marginTop: 4,
   },
   compactContainer: {
     flexDirection: 'row',

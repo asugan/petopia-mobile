@@ -1,11 +1,10 @@
 import { useCallback, useMemo } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 import { usePrefetchData } from './usePrefetchData';
-import { eventKeys } from './useEvents';
-import { feedingScheduleKeys } from './useFeedingSchedules';
+import { eventKeys, feedingScheduleKeys } from './queryKeys';
 import { unwrapApiResponse } from './core/unwrapApiResponse';
 import { toISODateStringWithFallback } from '@/lib/utils/dateConversion';
-import { useSubscriptionQueryEnabled } from './useSubscriptionQueries';
+import { useAuthQueryEnabled } from './useAuthQueryEnabled';
 
 interface PrefetchStrategy {
   priority: 'high' | 'medium' | 'low';
@@ -16,7 +15,7 @@ interface PrefetchStrategy {
 export function useSmartPrefetching() {
   const queryClient = useQueryClient();
   const { prefetchRelatedData } = usePrefetchData();
-  const { enabled } = useSubscriptionQueryEnabled();
+  const { enabled } = useAuthQueryEnabled();
 
   const prefetchStrategies = useMemo<Record<string, PrefetchStrategy>>(() => ({
     // When user spends time on pet list, prefetch details

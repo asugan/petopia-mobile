@@ -1,5 +1,6 @@
 import React from 'react';
-import { View, StyleSheet, Image } from 'react-native';
+import { View, StyleSheet } from 'react-native';
+import { Image } from 'expo-image';
 import { Text } from '@/components/ui';
 
 export function AppLogo() {
@@ -8,7 +9,7 @@ export function AppLogo() {
       <Image
         source={require('@/assets/images/icon.png')}
         style={styles.logo}
-        resizeMode="contain"
+        contentFit="contain"
       />
       <Text variant="titleLarge" style={styles.text}>
         Petopia

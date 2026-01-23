@@ -5,16 +5,18 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useTranslation } from 'react-i18next';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { FAB, SegmentedButtons, Text } from '@/components/ui';
+import { HeaderActions, LargeTitle } from '@/components/LargeTitle';
 import { PetPickerBase } from '@/components/PetPicker';
-import { ProtectedRoute } from '@/components/subscription';
 import { FeedingScheduleCard } from '@/components/feeding/FeedingScheduleCard';
 import { useTheme } from '@/lib/theme';
+import { useSubscription } from '@/lib/hooks/useSubscription';
 import { usePets } from '@/lib/hooks/usePets';
 import { useHealthRecords } from '@/lib/hooks/useHealthRecords';
 import {
   useAllFeedingSchedules,
   useDeleteFeedingSchedule,
   useToggleFeedingSchedule,
+  useToggleFeedingScheduleReminder,
 } from '@/lib/hooks/useFeedingSchedules';
 import LoadingSpinner from '@/components/LoadingSpinner';
 import EmptyState from '@/components/EmptyState';
@@ -24,6 +26,12 @@ import { TURKCE_LABELS, HEALTH_RECORD_COLORS, HEALTH_RECORD_ICONS, LAYOUT } from
 import { useUserSettingsStore } from '@/stores/userSettingsStore';
 import type { HealthRecord, FeedingSchedule } from '@/lib/types';
 import MoneyDisplay from '@/components/ui/MoneyDisplay';
+import { showToast } from '@/lib/toast/showToast';
+import { useNotifications } from '@/lib/hooks/useNotifications';
+import { useRequestDeduplication } from '@/lib/hooks/useRequestCancellation';
+import NotificationPermissionPrompt from '@/components/NotificationPermissionPrompt';
+import { registerPushTokenWithBackend } from '@/lib/services/notificationService';
+import { SUBSCRIPTION_ROUTES, FEATURE_ROUTES } from '@/constants/routes';
 
 
 type CareTabValue = 'health' | 'feeding';
@@ -31,6 +39,7 @@ type CareTabValue = 'health' | 'feeding';
 export default function CareScreen() {
   const { theme } = useTheme();
   const { t } = useTranslation();
+  const { isProUser } = useSubscription();
   const router = useRouter();
   const { settings } = useUserSettingsStore();
   const baseCurrency = settings?.baseCurrency || 'TRY';
@@ -44,6 +53,12 @@ export default function CareScreen() {
   // Feeding state
   const [isFeedingModalVisible, setIsFeedingModalVisible] = useState(false);
   const [selectedSchedule, setSelectedSchedule] = useState<FeedingSchedule | undefined>();
+  const [showPermissionModal, setShowPermissionModal] = useState(false);
+  const [activeSchedule, setActiveSchedule] = useState<FeedingSchedule | undefined>();
+
+  // Notifications
+  const { requestPermission, isLoading: isNotificationLoading } = useNotifications();
+  const { executeWithDeduplication } = useRequestDeduplication();
 
   // Get pets for selection
   const { data: pets = [], isLoading: petsLoading } = usePets();
@@ -63,12 +78,23 @@ export default function CareScreen() {
     refetch: refetchHealth
   } = useHealthRecords(selectedPetId);
 
+  React.useEffect(() => {
+    if (healthError) {
+      showToast({
+        type: 'error',
+        title: t('common.error'),
+        message: t('health.loadingError'),
+      });
+    }
+  }, [healthError, t]);
+
   // Feeding data
   const { data: feedingSchedulesAll = [], isLoading: feedingLoading } = useAllFeedingSchedules();
   
   // Mutations
   const deleteScheduleMutation = useDeleteFeedingSchedule();
   const toggleScheduleMutation = useToggleFeedingSchedule();
+  const toggleReminderMutation = useToggleFeedingScheduleReminder();
 
   // Filter health records by type (all records since we removed type filter)
   const filteredHealthRecords = healthRecords;
@@ -95,7 +121,14 @@ export default function CareScreen() {
 
 
   // Feeding handlers
-  const handleAddSchedule = () => {
+  const activeFeedingSchedules = feedingSchedulesAll.filter((schedule) => schedule.isActive);
+
+  const handleAddSchedule = async () => {
+    if (!isProUser && activeFeedingSchedules.length >= 1) {
+      router.push(SUBSCRIPTION_ROUTES.main);
+      return;
+    }
+
     setSelectedSchedule(undefined);
     setIsFeedingModalVisible(true);
   };
@@ -118,15 +151,43 @@ export default function CareScreen() {
   };
 
   const handleToggleActive = async (schedule: FeedingSchedule, isActive: boolean) => {
+    if (isActive && !schedule.isActive && !isProUser && activeFeedingSchedules.length >= 1) {
+      router.push(SUBSCRIPTION_ROUTES.main);
+      return;
+    }
+
     try {
       await toggleScheduleMutation.mutateAsync({ id: schedule._id, isActive });
     } catch {
     }
   };
 
+  const handleToggleReminder = async (schedule: FeedingSchedule, reminderEnabled: boolean) => {
+    if (reminderEnabled) {
+      const granted = await executeWithDeduplication(
+        `reminder-toggle-${schedule._id}`,
+        async () => await requestPermission()
+      );
+
+      if (granted) {
+        void registerPushTokenWithBackend();
+        await toggleReminderMutation.mutateAsync({ id: schedule._id, enabled: true });
+      } else {
+        setActiveSchedule(schedule);
+        setShowPermissionModal(true);
+      }
+    } else {
+      await toggleReminderMutation.mutateAsync({ id: schedule._id, enabled: false });
+    }
+  };
+
   const handleFeedingModalClose = () => {
     setIsFeedingModalVisible(false);
     setSelectedSchedule(undefined);
+  };
+
+  const handleFeedingUpgradePress = async () => {
+    router.push(SUBSCRIPTION_ROUTES.main);
   };
 
   const renderHealthContent = () => {
@@ -150,17 +211,6 @@ export default function CareScreen() {
       return <LoadingSpinner />;
     }
 
-    if (healthError) {
-      return (
-        <EmptyState
-          title={t('common.error')}
-          description={t('health.loadingError')}
-          icon="alert-circle"
-          buttonText={t('common.retry')}
-          onButtonPress={() => refetchHealth()}
-        />
-      );
-    }
 
     if (filteredHealthRecords.length === 0) {
       return (
@@ -179,7 +229,7 @@ export default function CareScreen() {
         {filteredHealthRecords.map((record: HealthRecord) => (
           <Pressable
             key={record._id}
-            onPress={() => router.push(`/health/${record._id}`)}
+            onPress={() => router.push(FEATURE_ROUTES.petHealth(record._id))}
             style={({ pressed }) => [
               styles.healthCard,
               {
@@ -297,103 +347,141 @@ export default function CareScreen() {
             onEdit={handleEditSchedule}
             onDelete={handleDeleteSchedule}
             onToggleActive={handleToggleActive}
+            onToggleReminder={handleToggleReminder}
+            reminderEnabled={schedule.remindersEnabled ?? false}
+            isReminderLoading={isNotificationLoading}
             showPetInfo={true}
             showActions
             petName={petNameById[schedule.petId]}
           />
         ))}
+        {!isProUser && activeFeedingSchedules.length >= 1 && (
+          <Pressable
+            onPress={handleFeedingUpgradePress}
+            style={({ pressed }) => [
+              styles.feedingLimitBanner,
+              {
+                backgroundColor: theme.colors.primaryContainer,
+                borderColor: theme.colors.primary,
+              },
+              pressed && styles.chipPressed,
+            ]}
+          >
+            <Text variant="bodySmall" style={[styles.feedingLimitText, { color: theme.colors.onPrimaryContainer }]}
+            >
+              {t('limits.care.feedingFooter', { used: activeFeedingSchedules.length, limit: 1 })}
+            </Text>
+          </Pressable>
+        )}
       </View>
     );
   };
 
   return (
-    <ProtectedRoute featureName={t('subscription.features.healthRecords')}>
-      <SafeAreaView style={[styles.container, { backgroundColor: theme.colors.background }]}>
+    <SafeAreaView style={[styles.container, { backgroundColor: theme.colors.background }]}>
+      <View style={styles.header}>
+        <LargeTitle title={t('care.title')} actions={<HeaderActions />} />
+      </View>
+      <View style={styles.segmentedContainer}>
+        <SegmentedButtons
+          value={activeTab}
+          onValueChange={(value) => setActiveTab(value as CareTabValue)}
+          buttons={[
+            {
+              value: 'health',
+              label: t('care.health'),
+              icon: 'heart-pulse'
+            },
+            {
+              value: 'feeding',
+              label: t('care.feeding'),
+              icon: 'food'
+            }
+          ]}
+          density="small"
+          style={StyleSheet.flatten([
+            styles.segmentedButtons,
+            { backgroundColor: theme.colors.surface, borderColor: theme.colors.surfaceVariant },
+          ])}
+        />
+      </View>
 
-        <View style={styles.segmentedContainer}>
-          <SegmentedButtons
-            value={activeTab}
-            onValueChange={(value) => setActiveTab(value as CareTabValue)}
-            buttons={[
-              { 
-                value: 'health', 
-                label: t('care.health'),
-                icon: 'heart-pulse'
-              },
-              { 
-                value: 'feeding', 
-                label: t('care.feeding'),
-                icon: 'food'
-              }
-            ]}
-            density="small"
-            style={StyleSheet.flatten([
-              styles.segmentedButtons,
-              { backgroundColor: theme.colors.surface, borderColor: theme.colors.surfaceVariant },
-            ])}
+      {/* Pet selector */}
+      {!petsLoading && pets.length > 0 && (
+        <View style={styles.petSelector}>
+          <PetPickerBase
+            pets={pets}
+            selectedPetId={selectedPetId}
+            onSelect={(petId) => setSelectedPetId(petId)}
+            onSelectAll={() => setSelectedPetId(undefined)}
+            showAllOption
+            label={t('health.selectPet')}
+            allLabel={t('common.all')}
           />
         </View>
+      )}
 
-        {/* Pet selector */}
-        {!petsLoading && pets.length > 0 && (
-          <View style={styles.petSelector}>
-            <PetPickerBase
-              pets={pets}
-              selectedPetId={selectedPetId}
-              onSelect={(petId) => setSelectedPetId(petId)}
-              onSelectAll={() => setSelectedPetId(undefined)}
-              showAllOption
-              label={t('health.selectPet')}
-              allLabel={t('common.all')}
-            />
-          </View>
-        )}
+      <ScrollView
+        style={styles.content}
+        contentContainerStyle={styles.contentContainer}
+        showsVerticalScrollIndicator={false}
+      >
+        {activeTab === 'health' && renderHealthContent()}
+        {activeTab === 'feeding' && renderFeedingContent()}
+      </ScrollView>
 
-
-        <ScrollView
-          style={styles.content}
-          contentContainerStyle={styles.contentContainer}
-          showsVerticalScrollIndicator={false}
-        >
-          {activeTab === 'health' && renderHealthContent()}
-          {activeTab === 'feeding' && renderFeedingContent()}
-        </ScrollView>
-
-        {/* FABs */}
-        {activeTab === 'health' && (
-          <FAB
-            icon="add"
-            style={{ ...styles.fab, backgroundColor: theme.colors.secondary }}
-            onPress={handleAddHealthRecord}
-          />
-        )}
-
-        {activeTab === 'feeding' && (
-          <FAB
-            icon="add"
-            style={{ ...styles.fab, backgroundColor: theme.colors.primary }}
-            onPress={handleAddSchedule}
-          />
-        )}
-
-        {/* Modals */}
-        <HealthRecordForm
-          key={healthFormKey}
-          visible={isHealthFormVisible}
-          onSuccess={handleHealthFormSuccess}
-          onCancel={handleHealthFormCancel}
+      {/* FABs */}
+      {activeTab === 'health' && (
+        <FAB
+          icon="add"
+          style={{ ...styles.fab, backgroundColor: theme.colors.secondary }}
+          onPress={handleAddHealthRecord}
         />
+      )}
 
-        <FeedingScheduleModal
-          visible={isFeedingModalVisible}
-          schedule={selectedSchedule}
-          initialPetId={selectedPetId || undefined}
-          onClose={handleFeedingModalClose}
-          onSuccess={() => {}}
-          pets={pets}
+      {activeTab === 'feeding' && (
+        <FAB
+          icon="add"
+          style={{ ...styles.fab, backgroundColor: theme.colors.primary }}
+          onPress={handleAddSchedule}
         />
-      </SafeAreaView>
-    </ProtectedRoute>
+      )}
+
+      {/* Modals */}
+      <HealthRecordForm
+        key={healthFormKey}
+        visible={isHealthFormVisible}
+        onSuccess={handleHealthFormSuccess}
+        onCancel={handleHealthFormCancel}
+      />
+
+      <FeedingScheduleModal
+        visible={isFeedingModalVisible}
+        schedule={selectedSchedule}
+        initialPetId={selectedPetId || undefined}
+        onClose={handleFeedingModalClose}
+        onSuccess={() => {}}
+        pets={pets}
+      />
+
+      <NotificationPermissionPrompt
+        visible={showPermissionModal}
+        onDismiss={() => {
+          setShowPermissionModal(false);
+          setActiveSchedule(undefined);
+        }}
+        onPermissionGranted={async () => {
+          if (activeSchedule) {
+            void registerPushTokenWithBackend();
+            await toggleReminderMutation.mutateAsync({ id: activeSchedule._id, enabled: true });
+          }
+          setActiveSchedule(undefined);
+        }}
+        onPermissionDenied={() => {
+          setActiveSchedule(undefined);
+        }}
+      />
+    </SafeAreaView>
   );
 }
 
@@ -402,12 +490,11 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   header: {
-    padding: 16,
-    paddingBottom: 8,
+    paddingHorizontal: 16,
+    paddingTop: 8,
   },
   segmentedContainer: {
     paddingHorizontal: 16,
-    paddingTop: 12,
   },
   segmentedButtons: {
     marginBottom: 0,
@@ -485,6 +572,20 @@ const styles = StyleSheet.create({
     paddingVertical: 4,
     borderRadius: 10,
     alignSelf: 'flex-start',
+  },
+  feedingLimitBanner: {
+    marginTop: 8,
+    paddingVertical: 10,
+    paddingHorizontal: 12,
+    borderRadius: 12,
+    borderWidth: 1,
+  },
+  feedingLimitText: {
+    textAlign: 'center',
+    fontWeight: '600',
+  },
+  chipPressed: {
+    transform: [{ scale: 0.98 }],
   },
   fab: {
     position: 'absolute',

@@ -1,6 +1,6 @@
 import { Avatar, Surface, Text } from '@/components/ui';
-import { FALLBACK_IMAGES } from '@/constants/images';
 import { useTheme } from '@/lib/theme';
+import { getPetTypeAvatar } from '@/lib/utils/petTypeVisuals';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Pressable, StyleSheet, View, ActivityIndicator } from 'react-native';
@@ -72,7 +72,7 @@ const PetCard: React.FC<PetCardProps> = ({
             <View style={[styles.avatarRing, { borderColor: getRingColor(), borderWidth: 2 }]}>
               <Avatar.Image
                 size={56}
-                source={pet.profilePhoto ? { uri: pet.profilePhoto } : FALLBACK_IMAGES.petAvatar}
+                source={pet.profilePhoto ? { uri: pet.profilePhoto } : getPetTypeAvatar(pet.type)}
                 style={styles.avatar}
               />
             </View>

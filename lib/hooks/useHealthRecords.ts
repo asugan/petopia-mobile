@@ -4,11 +4,12 @@ import { petService } from '../services/petService';
 import type { CreateHealthRecordInput, HealthRecord, Pet, UpdateHealthRecordInput } from '../types';
 import { CACHE_TIMES } from '../config/queryConfig';
 import { useCreateResource, useDeleteResource, useUpdateResource } from './useCrud';
-import { createQueryKeys } from './core/createQueryKeys';
 import { useResource } from './core/useResource';
 import { useConditionalQuery } from './core/useConditionalQuery';
-import { useSubscriptionQueryEnabled } from './useSubscriptionQueries';
-import { expenseKeys } from './useExpenses';
+import { useAuthQueryEnabled } from './useAuthQueryEnabled';
+import { expenseKeys, healthRecordKeys } from './queryKeys';
+
+export { healthRecordKeys } from './queryKeys';
 
 // Type-safe filters for health records
 interface HealthRecordFilters {
@@ -18,24 +19,12 @@ interface HealthRecordFilters {
   sortOrder?: 'asc' | 'desc';
 }
 
-// Query keys factory
-const baseHealthRecordKeys = createQueryKeys('health-records');
-
-// Extended query keys with custom keys
-export const healthRecordKeys = {
-  ...baseHealthRecordKeys,
-  list: (petId: string, filters?: HealthRecordFilters) =>
-    [...baseHealthRecordKeys.lists(), petId, filters] as const,
-  byType: (petId: string, type: string) => [...baseHealthRecordKeys.all, 'type', petId, type] as const,
-  byDateRange: (petId: string, dateFrom: string, dateTo: string) =>
-    [...baseHealthRecordKeys.all, 'date-range', petId, dateFrom, dateTo] as const,
-};
 
 // Get all health records for a pet with type-safe filters
 // Note: This hook has complex client-side sorting logic,
 // so it uses useQuery directly instead of generic hooks
 export function useHealthRecords(petId?: string, filters: HealthRecordFilters = {}) {
-  const { enabled } = useSubscriptionQueryEnabled();
+  const { enabled } = useAuthQueryEnabled();
 
   return useQuery({
     queryKey: healthRecordKeys.list(petId || 'all', filters),
@@ -92,7 +81,7 @@ export function useHealthRecords(petId?: string, filters: HealthRecordFilters = 
 
 // Get a single health record by ID
 export function useHealthRecord(id: string) {
-  const { enabled } = useSubscriptionQueryEnabled();
+  const { enabled } = useAuthQueryEnabled();
 
   return useResource<HealthRecord>({
     queryKey: healthRecordKeys.detail(id),
@@ -105,7 +94,7 @@ export function useHealthRecord(id: string) {
 
 // Get all health records for all pets (for homepage overview)
 export function useAllPetsHealthRecords(petIds: string[]) {
-  const { enabled } = useSubscriptionQueryEnabled();
+  const { enabled } = useAuthQueryEnabled();
 
   const queries = useQueries({
     queries: petIds.map(petId => ({
@@ -138,7 +127,7 @@ export function useAllPetsHealthRecords(petIds: string[]) {
 
 // Get health records by type
 export function useHealthRecordsByType(petId: string, type: string) {
-  const { enabled } = useSubscriptionQueryEnabled();
+  const { enabled } = useAuthQueryEnabled();
 
   return useConditionalQuery<HealthRecord[]>({
     queryKey: healthRecordKeys.byType(petId, type),
@@ -152,7 +141,7 @@ export function useHealthRecordsByType(petId: string, type: string) {
 
 // Get health records by date range (using existing service method)
 export function useHealthRecordsByDateRange(petId: string, dateFrom: string, dateTo: string) {
-  const { enabled } = useSubscriptionQueryEnabled();
+  const { enabled } = useAuthQueryEnabled();
 
   return useConditionalQuery<HealthRecord[]>({
     queryKey: healthRecordKeys.byDateRange(petId, dateFrom, dateTo),

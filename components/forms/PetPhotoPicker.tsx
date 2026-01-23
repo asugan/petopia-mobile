@@ -3,22 +3,23 @@ import {
   View,
   StyleSheet,
   TouchableOpacity,
-  Image,
-  Alert,
   ActivityIndicator,
 } from 'react-native';
+import { Image } from 'expo-image';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import * as ImagePicker from 'expo-image-picker';
 import { useTranslation } from 'react-i18next';
 import { Avatar, Button, Surface, Text, Modal, ListItem } from '@/components/ui';
+import { showToast } from '@/lib/toast/showToast';
 import { useTheme } from '@/lib/theme';
 import { getPetTypeColor, getPetTypeIcon } from '@/lib/utils/petTypeVisuals';
-import { Pet } from '../../lib/types';
+import { PET_TYPE_AVATARS } from '@/constants/images';
+import { PetType } from '../../lib/types';
 
 interface PetPhotoPickerProps {
   value?: string;
   onChange: (photoUri: string | undefined) => void;
-  petType?: Pet['type'];
+  petType?: PetType;
   disabled?: boolean;
 }
 
@@ -42,14 +43,11 @@ export const PetPhotoPicker: React.FC<PetPhotoPickerProps> = ({
         cameraPermission.status !== 'granted' ||
         mediaLibraryPermission.status !== 'granted'
       ) {
-        Alert.alert(
-          t('forms.photoPicker.permissionsRequired'),
-          t('forms.photoPicker.permissionsMessage'),
-          [
-            { text: t('forms.photoPicker.cancel'), style: 'cancel' },
-            { text: t('forms.photoPicker.settings'), onPress: () => {/* Settings'e yönlendirme eklenebilir */} },
-          ]
-        );
+        showToast({
+          type: 'warning',
+          title: t('forms.photoPicker.permissionsRequired'),
+          message: t('forms.photoPicker.permissionsMessage'),
+        });
         return false;
       }
       return true;
@@ -80,7 +78,11 @@ export const PetPhotoPicker: React.FC<PetPhotoPickerProps> = ({
         onChange(photoUri);
       }
     } catch {
-      Alert.alert(t('common.error'), t('forms.photoPicker.errorSelectingPhoto'));
+      showToast({
+        type: 'error',
+        title: t('common.error'),
+        message: t('forms.photoPicker.errorSelectingPhoto'),
+      });
     } finally {
       setLoading(false);
     }
@@ -108,7 +110,11 @@ export const PetPhotoPicker: React.FC<PetPhotoPickerProps> = ({
         onChange(photoUri);
       }
     } catch {
-      Alert.alert(t('common.error'), t('forms.photoPicker.errorTakingPhoto'));
+      showToast({
+        type: 'error',
+        title: t('common.error'),
+        message: t('forms.photoPicker.errorTakingPhoto'),
+      });
     } finally {
       setLoading(false);
     }
@@ -147,6 +153,11 @@ export const PetPhotoPicker: React.FC<PetPhotoPickerProps> = ({
                 </View>
               )}
             </>
+          ) : petType && (PET_TYPE_AVATARS as Record<PetType, unknown>)[petType] ? (
+            <Image
+              source={(PET_TYPE_AVATARS as Record<PetType, unknown>)[petType] as import('expo-image').ImageSource}
+              style={styles.photo}
+            />
           ) : (
             <Avatar.Icon
               size={100}
@@ -175,7 +186,7 @@ export const PetPhotoPicker: React.FC<PetPhotoPickerProps> = ({
             <Button
               mode="text"
               onPress={() => onChange(undefined)}
-              textColor="#FF6B6B"
+              textColor={theme.colors.error}
               compact
             >
               {t('forms.photoPicker.removePhoto')}
@@ -230,8 +241,8 @@ export const PetPhotoPicker: React.FC<PetPhotoPickerProps> = ({
                 description={t('forms.photoPicker.removePhotoDescription')}
                 left={<MaterialCommunityIcons name="delete" size={24} color={theme.colors.onSurfaceVariant} />}
                 onPress={removePhoto}
-                style={{ ...styles.modalItem, ...styles.dangerItem }}
-                titleStyle={{ color: '#FF6B6B' }}
+                style={styles.modalItem}
+                titleStyle={{ color: theme.colors.error }}
               />
             )}
           </Surface>
@@ -297,7 +308,6 @@ const styles = StyleSheet.create({
     minWidth: 120,
   },
   modal: {
-    backgroundColor: 'white',
     padding: 20,
     margin: 20,
     borderRadius: 12,
@@ -312,9 +322,6 @@ const styles = StyleSheet.create({
   },
   modalItem: {
     paddingVertical: 4,
-  },
-  dangerItem: {
-    backgroundColor: '#FFE5E5',
   },
   cancelButton: {
     width: '100%',

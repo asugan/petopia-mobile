@@ -1,35 +1,27 @@
 import { feedingScheduleService } from '@/lib/services/feedingScheduleService';
 import { CreateFeedingScheduleInput, FeedingSchedule, UpdateFeedingScheduleInput } from '@/lib/types';
-import { ApiResponse } from '@/lib/api/client';
+import { ApiResponse, api } from '@/lib/api/client';
 import { CACHE_TIMES } from '@/lib/config/queryConfig';
+import { ENV } from '@/lib/config/env';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useCreateResource, useDeleteResource, useUpdateResource } from './useCrud';
-import { createQueryKeys } from './core/createQueryKeys';
 import { useResource } from './core/useResource';
 import { useResources } from './core/useResources';
 import { useConditionalQuery } from './core/useConditionalQuery';
-import { useSubscriptionQueryEnabled } from './useSubscriptionQueries';
+import { useAuthQueryEnabled } from './useAuthQueryEnabled';
+import { feedingScheduleKeys } from './queryKeys';
 import { useMemo } from 'react';
 import { getNextFeedingTime } from '@/lib/schemas/feedingScheduleSchema';
 import { usePets } from './usePets';
 import { formatDistanceToNow } from 'date-fns';
 import { tr, enUS } from 'date-fns/locale';
 
-// Query keys factory
-const baseFeedingScheduleKeys = createQueryKeys('feeding-schedules');
+export { feedingScheduleKeys } from './queryKeys';
 
-// Extended query keys with custom keys
-export const feedingScheduleKeys = {
-  ...baseFeedingScheduleKeys,
-  active: () => [...baseFeedingScheduleKeys.all, 'active'] as const,
-  today: () => [...baseFeedingScheduleKeys.all, 'today'] as const,
-  next: () => [...baseFeedingScheduleKeys.all, 'next'] as const,
-  activeByPet: (petId: string) => [...baseFeedingScheduleKeys.all, 'active', petId] as const,
-};
 
 // Hooks
 export const useFeedingSchedules = (petId: string) => {
-  const { enabled } = useSubscriptionQueryEnabled();
+  const { enabled } = useAuthQueryEnabled();
 
   return useConditionalQuery<FeedingSchedule[]>({
     queryKey: feedingScheduleKeys.list({ petId }),
@@ -41,7 +33,7 @@ export const useFeedingSchedules = (petId: string) => {
 };
 
 export const useFeedingSchedule = (id: string) => {
-  const { enabled } = useSubscriptionQueryEnabled();
+  const { enabled } = useAuthQueryEnabled();
 
   return useResource<FeedingSchedule>({
     queryKey: feedingScheduleKeys.detail(id),
@@ -52,7 +44,7 @@ export const useFeedingSchedule = (id: string) => {
 };
 
 export const useActiveFeedingSchedules = () => {
-  const { enabled } = useSubscriptionQueryEnabled();
+  const { enabled } = useAuthQueryEnabled();
 
   return useResources<FeedingSchedule>({
     queryKey: feedingScheduleKeys.active(),
@@ -64,7 +56,7 @@ export const useActiveFeedingSchedules = () => {
 };
 
 export const useTodayFeedingSchedules = () => {
-  const { enabled } = useSubscriptionQueryEnabled();
+  const { enabled } = useAuthQueryEnabled();
 
   return useResources<FeedingSchedule>({
     queryKey: feedingScheduleKeys.today(),
@@ -76,7 +68,7 @@ export const useTodayFeedingSchedules = () => {
 };
 
 export const useAllFeedingSchedules = () => {
-  const { enabled } = useSubscriptionQueryEnabled();
+  const { enabled } = useAuthQueryEnabled();
 
   return useResources<FeedingSchedule>({
     queryKey: feedingScheduleKeys.lists(),
@@ -87,7 +79,7 @@ export const useAllFeedingSchedules = () => {
 };
 
 export const useNextFeeding = () => {
-  const { enabled } = useSubscriptionQueryEnabled();
+  const { enabled } = useAuthQueryEnabled();
 
   return useConditionalQuery<FeedingSchedule | null>({
     queryKey: feedingScheduleKeys.next(),
@@ -100,7 +92,7 @@ export const useNextFeeding = () => {
 };
 
 export const useActiveFeedingSchedulesByPet = (petId: string) => {
-  const { enabled } = useSubscriptionQueryEnabled();
+  const { enabled } = useAuthQueryEnabled();
 
   return useConditionalQuery<FeedingSchedule[]>({
     queryKey: feedingScheduleKeys.activeByPet(petId),
@@ -291,6 +283,70 @@ export const useToggleFeedingSchedule = () => {
       queryClient.invalidateQueries({ queryKey: feedingScheduleKeys.active() });
       queryClient.invalidateQueries({ queryKey: feedingScheduleKeys.today() });
       queryClient.invalidateQueries({ queryKey: feedingScheduleKeys.next() });
+    },
+  });
+};
+
+interface ReminderToggleResponse {
+  remindersEnabled: boolean;
+  reminderMinutesBefore: number;
+  nextNotificationTime?: string;
+}
+
+/**
+ * Hook for toggling feeding schedule reminder settings
+ * Calls PUT /api/feeding-schedules/:id/reminder endpoint
+ */
+export const useToggleFeedingScheduleReminder = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({ id, enabled, minutesBefore }: { id: string; enabled: boolean; minutesBefore?: number }) => {
+      const response = await api.put<ReminderToggleResponse>(
+        `${ENV.ENDPOINTS.FEEDING_SCHEDULES}/${id}/reminder`,
+        { enabled, minutesBefore }
+      );
+      return response.data;
+    },
+    onMutate: async ({ id, enabled, minutesBefore }) => {
+      await queryClient.cancelQueries({ queryKey: feedingScheduleKeys.detail(id) });
+      await queryClient.cancelQueries({ queryKey: feedingScheduleKeys.lists() });
+
+      const previousSchedule = queryClient.getQueryData(feedingScheduleKeys.detail(id));
+
+      // Optimistically update the schedule
+      queryClient.setQueryData(feedingScheduleKeys.detail(id), (old: FeedingSchedule | undefined) =>
+        old ? {
+          ...old,
+          remindersEnabled: enabled,
+          reminderMinutesBefore: minutesBefore ?? old.reminderMinutesBefore ?? 15,
+          updatedAt: new Date().toISOString(),
+        } : undefined
+      );
+
+      // Update in lists
+      queryClient.setQueriesData({ queryKey: feedingScheduleKeys.lists() }, (old: FeedingSchedule[] | undefined) => {
+        if (!old) return old;
+        return old.map(schedule =>
+          schedule._id === id ? {
+            ...schedule,
+            remindersEnabled: enabled,
+            reminderMinutesBefore: minutesBefore ?? schedule.reminderMinutesBefore ?? 15,
+            updatedAt: new Date().toISOString(),
+          } : schedule
+        );
+      });
+
+      return { previousSchedule };
+    },
+    onError: (err, variables, context) => {
+      if (context?.previousSchedule) {
+        queryClient.setQueryData(feedingScheduleKeys.detail(variables.id), context.previousSchedule);
+      }
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: feedingScheduleKeys.lists() });
+      queryClient.invalidateQueries({ queryKey: feedingScheduleKeys.active() });
     },
   });
 };

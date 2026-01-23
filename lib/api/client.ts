@@ -1,12 +1,20 @@
 import axios, { AxiosInstance, AxiosError, AxiosResponse, InternalAxiosRequestConfig } from 'axios';
+import { Platform } from 'react-native';
+import Constants from 'expo-constants';
+import * as Application from 'expo-application';
 import { ENV } from '../config/env';
 import { ErrorDetails } from '../types';
 import { authClient } from '../auth/client';
 
 let onUnauthorized: (() => void) | undefined;
+let onProRequired: (() => void) | undefined;
 
 export const setOnUnauthorized = (callback: () => void) => {
   onUnauthorized = callback;
+};
+
+export const setOnProRequired = (callback: () => void) => {
+  onProRequired = callback;
 };
 
 // API Response interface
@@ -50,6 +58,14 @@ const authRequestInterceptor = (config: InternalAxiosRequestConfig) => {
   return config;
 };
 
+// Version interceptor - adds app version info to requests
+const versionInterceptor = (config: InternalAxiosRequestConfig) => {
+  config.headers.set('X-App-Version', Constants.expoConfig?.version || '1.0.0');
+  config.headers.set('X-Build-Number', Application.nativeBuildVersion || '1');
+  config.headers.set('X-Platform', Platform.OS);
+  return config;
+};
+
 // Request interceptor for debugging
 const requestInterceptor = (config: InternalAxiosRequestConfig) => config;
 
@@ -82,7 +98,13 @@ const errorInterceptor = (error: AxiosError) => {
   };
 
   const apiData = isApiErrorResponse(data) ? data : { success: false, message: 'Bilinmeyen hata' };
-  const errorInfo = typeof apiData.error === 'object' ? apiData.error : { code: 'UNKNOWN_ERROR', message: apiData.error || apiData.message || 'Bilinmeyen hata' };
+  const errorInfo = typeof apiData.error === 'object'
+    ? apiData.error
+    : { code: 'UNKNOWN_ERROR', message: apiData.error || apiData.message || 'Bilinmeyen hata' };
+
+  if (status === 402 && errorInfo.code === 'PRO_REQUIRED') {
+    onProRequired?.();
+  }
 
   throw new ApiError(
     errorInfo.message,
@@ -106,6 +128,7 @@ const createApiClient = (): AxiosInstance => {
   // Add interceptors
   // Auth interceptor first to add session cookie
   client.interceptors.request.use(authRequestInterceptor);
+  client.interceptors.request.use(versionInterceptor);
   client.interceptors.request.use(requestInterceptor);
   client.interceptors.response.use(responseInterceptor, errorInterceptor);
 

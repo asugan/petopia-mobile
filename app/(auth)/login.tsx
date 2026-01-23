@@ -18,6 +18,7 @@ import { useTheme } from '@/lib/theme';
 import { useAuth } from '@/lib/auth';
 import { useAuthStore } from '@/stores/authStore';
 import { usePublicConfig } from '@/lib/hooks/usePublicConfig';
+import { TAB_ROUTES } from '@/constants/routes';
 import { Text, ActivityIndicator } from '@/components/ui';
 
 const { height } = Dimensions.get('window');
@@ -41,7 +42,7 @@ export default function LoginScreen() {
     if (waitForAuth && isAuthenticated) {
       setWaitForAuth(false);
       setLoading(false);
-      router.replace('/(tabs)');
+      router.replace(TAB_ROUTES.home);
 
       if (timeoutRef.current) {
         clearTimeout(timeoutRef.current);
@@ -151,7 +152,7 @@ export default function LoginScreen() {
           borderRadius: 48,
           backgroundColor: theme.colors.surface + 'F0',
           borderColor: theme.colors.surface,
-          borderWidth: 4,
+          borderWidth: 2,
           justifyContent: 'center',
           alignItems: 'center',
           marginBottom: 16,
@@ -166,14 +167,14 @@ export default function LoginScreen() {
           height: '100%',
           borderRadius: 44,
           overflow: 'hidden',
-          backgroundColor: '#2B1E5A',
+          backgroundColor: '#d3dff1',
           justifyContent: 'center',
           alignItems: 'center',
         },
         logoImage: {
           width: '100%',
           height: '100%',
-          transform: [{ scale: 1.15 }],
+          transform: [{ scale: 1.5 }],
         },
         appName: {
           color: theme.colors.onBackground,
@@ -296,7 +297,7 @@ export default function LoginScreen() {
       
       <View style={[styles.heroContainer, { paddingTop: insets.top + 32 }]}>
         <Image
-          source={require('../../assets/images/login-hero.jpg')}
+          source={require('../../assets/images/login.webp')}
           style={styles.heroImage}
           contentFit="cover"
           transition={1000}

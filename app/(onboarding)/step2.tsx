@@ -9,6 +9,7 @@ import { scheduleOnRN } from 'react-native-worklets';
 import { useTheme } from '@/lib/theme';
 import { useOnboardingStore } from '@/stores/onboardingStore';
 import { useMemo, type ComponentProps } from 'react';
+import { ONBOARDING_ROUTES } from '@/constants/routes';
 
 type MaterialIconName = ComponentProps<typeof MaterialIcons>['name'];
 type FeatureKey = 'tracking' | 'health' | 'events' | 'finance';
@@ -40,18 +41,18 @@ export default function OnboardingStep2() {
   const { skipOnboarding } = useOnboardingStore();
 
   const handleNext = () => {
-    router.push('/(onboarding)/completed');
+    router.push(ONBOARDING_ROUTES.completed);
   };
 
   const handleSkip = () => {
     skipOnboarding();
-    router.push('/(onboarding)/completed');
+    router.push(ONBOARDING_ROUTES.completed);
   };
 
   const swipeLeft = Gesture.Fling()
     .direction(Directions.LEFT)
     .onEnd(() => {
-      scheduleOnRN(router.push, '/(onboarding)/completed');
+      scheduleOnRN(router.push, ONBOARDING_ROUTES.completed);
     });
 
   const swipeRight = Gesture.Fling()

@@ -1,7 +1,8 @@
 import { useTheme } from "@/lib/theme";
 import { Ionicons } from "@expo/vector-icons";
 import React from "react";
-import { Image, ImageSourcePropType, StyleProp, StyleSheet, TextStyle, View, ViewStyle } from "react-native";
+import { ImageSourcePropType, StyleProp, StyleSheet, TextStyle, View, ViewStyle } from "react-native";
+import { Image } from "expo-image";
 import { Text } from "./Text";
 
 export interface AvatarProps {
@@ -48,7 +49,7 @@ const AvatarImage: React.FC<AvatarImageProps> = ({ source, size = 40, style }) =
       <Image
         source={source}
         style={{ width: size, height: size, borderRadius: size / 2 }}
-        resizeMode="cover"
+        contentFit="cover"
       />
     </View>
   );

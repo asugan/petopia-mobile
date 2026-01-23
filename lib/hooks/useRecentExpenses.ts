@@ -2,10 +2,10 @@ import { useQuery } from '@tanstack/react-query';
 import { usePets } from './usePets';
 import { expenseService } from '../services/expenseService';
 import { Expense } from '../types';
-import { useSubscriptionQueryEnabled } from './useSubscriptionQueries';
+import { useAuthQueryEnabled } from './useAuthQueryEnabled';
 
 export const useRecentExpenses = () => {
-  const { enabled } = useSubscriptionQueryEnabled();
+  const { enabled } = useAuthQueryEnabled();
   const { data: pets } = usePets();
 
   // Fetch expenses for all pets at once

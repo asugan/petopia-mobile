@@ -13,11 +13,16 @@ interface FeedingScheduleCardProps {
   onEdit?: (schedule: FeedingSchedule) => void;
   onDelete?: (schedule: FeedingSchedule) => void;
   onToggleActive?: (schedule: FeedingSchedule, isActive: boolean) => void;
+  onToggleReminder?: (schedule: FeedingSchedule, reminderEnabled: boolean) => void;
   showPetInfo?: boolean;
   showActions?: boolean;
   compact?: boolean;
   testID?: string;
   petName?: string;
+  reminderEnabled?: boolean;
+  isReminderScheduled?: boolean;
+  /** Disables the reminder toggle button while a permission request is in progress */
+  isReminderLoading?: boolean;
 }
 
 export function FeedingScheduleCard({
@@ -26,11 +31,15 @@ export function FeedingScheduleCard({
   onEdit,
   onDelete,
   onToggleActive,
+  onToggleReminder,
   showPetInfo = true,
   showActions = true,
   compact = false,
   testID,
   petName,
+  reminderEnabled = false,
+  isReminderScheduled = false,
+  isReminderLoading = false,
 }: FeedingScheduleCardProps) {
   const { t } = useTranslation();
   const { theme } = useTheme();
@@ -132,16 +141,26 @@ export function FeedingScheduleCard({
             </View>
           </View>
 
-          {showActions && onToggleActive && (
-            <View style={styles.switchContainer}>
+          <View style={styles.headerActions}>
+            {showActions && onToggleReminder && (
+              <IconButton
+                icon={reminderEnabled ? 'bell' : 'bell-off'}
+                size={20}
+                iconColor={reminderEnabled ? theme.colors.primary : theme.colors.surfaceDisabled}
+                onPress={() => onToggleReminder(schedule, !reminderEnabled)}
+                disabled={isReminderLoading}
+                testID={`${testID}-reminder-toggle`}
+              />
+            )}
+            {showActions && onToggleActive && (
               <Switch
                 value={schedule.isActive}
                 onValueChange={handleToggleActive}
                 color={foodTypeColor}
                 testID={`${testID}-toggle`}
               />
-            </View>
-          )}
+            )}
+          </View>
         </View>
 
         <View style={styles.detailsRow}>
@@ -156,6 +175,14 @@ export function FeedingScheduleCard({
               <MaterialCommunityIcons name="paw" size={16} color={theme.colors.onSurfaceVariant} />
               <Text variant="bodyMedium" style={{ color: theme.colors.onSurfaceVariant }}>
                 {petName ? `${t('feedingSchedule.forPet')} ${petName}` : t('feedingSchedule.forPet')}
+              </Text>
+            </View>
+          )}
+          {reminderEnabled && isReminderScheduled && (
+            <View style={styles.detailItem}>
+              <MaterialCommunityIcons name="clock-outline" size={16} color={theme.colors.primary} />
+              <Text variant="bodyMedium" style={{ color: theme.colors.primary }}>
+                {t('feedingSchedule.reminderScheduled')}
               </Text>
             </View>
           )}
@@ -316,6 +343,11 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     marginTop: 4,
   },
+  headerActions: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+  },
   switchContainer: {
     marginLeft: 8,
   },
@@ -324,6 +356,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: 16,
     marginBottom: 12,
+    flexWrap: 'wrap',
   },
   detailItem: {
     flexDirection: 'row',

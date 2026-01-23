@@ -1,7 +1,9 @@
-import React, { useState, useEffect } from 'react';
-import { View, StyleSheet, ActivityIndicator, FlatList } from 'react-native';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
+import { View, StyleSheet } from 'react-native';
 import { useRouter, useLocalSearchParams } from 'expo-router';
-import { Text, FAB } from '@/components/ui';
+
+import { FAB } from '@/components/ui';
+import { HeaderActions, LargeTitle } from '@/components/LargeTitle';
 import { useTheme } from '@/lib/theme';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useTranslation } from 'react-i18next';
@@ -9,12 +11,14 @@ import { addMonths, subMonths, addWeeks, subWeeks } from 'date-fns';
 import { MonthView } from '@/components/calendar/MonthView';
 import { toISODateString } from '@/lib/utils/dateConversion';
 import { WeekView } from '@/components/calendar/WeekView';
+import { EventsBottomSheet, EventsBottomSheetRef } from '@/components/calendar/EventsBottomSheet';
 import { EventModal } from '@/components/EventModal';
-import { useUpcomingEvents, useCalendarEvents, useEvent } from '@/lib/hooks/useEvents';
+import { useUpcomingEvents, useCalendarEvents, useEvent, useUpdateEvent } from '@/lib/hooks/useEvents';
+import { eventKeys } from '@/lib/hooks/queryKeys';
 import { Event } from '@/lib/types';
-import { LAYOUT } from '@/constants';
-import { ProtectedRoute } from '@/components/subscription';
-import { CalendarEventCard } from '@/components/calendar/CalendarEventCard';
+import { useQueryClient } from '@tanstack/react-query';
+import { showToast } from '@/lib/toast/showToast';
+import { FEATURE_ROUTES } from '@/constants/routes';
 
 type CalendarViewType = 'month' | 'week';
 
@@ -22,15 +26,18 @@ export default function CalendarScreen() {
   const { theme } = useTheme();
   const { t } = useTranslation();
   const router = useRouter();
-  const { petId, action, editEventId } = useLocalSearchParams<{ petId?: string; action?: string; editEventId?: string }>();
+  const queryClient = useQueryClient();
+  const { petId, action, editEventId, editType } = useLocalSearchParams<{ petId?: string; action?: string; editEventId?: string; editType?: string }>();
 
   const [viewType, setViewType] = useState<CalendarViewType>('week');
   const [currentDate, setCurrentDate] = useState(new Date());
   const [modalVisible, setModalVisible] = useState(false);
   const [initialPetId, setInitialPetId] = useState<string | undefined>(undefined);
   const [selectedEvent, setSelectedEvent] = useState<Event | undefined>(undefined);
+  const bottomSheetRef = useRef<EventsBottomSheetRef>(null);
 
   const { data: eventToEdit } = useEvent(editEventId);
+  const updateEventMutation = useUpdateEvent();
 
   useEffect(() => {
     if (action === 'create') {
@@ -50,6 +57,16 @@ export default function CalendarScreen() {
     isLoading: isLoadingSelected,
     error: errorSelected,
   } = useCalendarEvents(formattedDate);
+
+  useEffect(() => {
+    if (errorSelected) {
+      showToast({
+        type: 'error',
+        title: t('errors.loadingFailed'),
+        message: errorSelected.message,
+      });
+    }
+  }, [errorSelected, t]);
 
   const handlePrevious = () => {
     switch (viewType) {
@@ -74,18 +91,59 @@ export default function CalendarScreen() {
   };
 
   const handleToggleView = () => {
-    setViewType((prev) => (prev === 'month' ? 'week' : 'month'));
+    const newViewType = viewType === 'month' ? 'week' : 'month';
+    setViewType(newViewType);
+    // Collapse bottom sheet when expanding to month view
+    if (newViewType === 'month') {
+      bottomSheetRef.current?.snapToIndex(0);
+    } else {
+      bottomSheetRef.current?.snapToIndex(1);
+    }
   };
 
   const handleDayPress = (date: Date) => {
     setCurrentDate(date);
   };
 
-  const handleEventPress = (event: Event) => {
-    router.push(`/event/${event._id}`);
-  };
+  const handleEventPress = useCallback((event: Event) => {
+    router.push(FEATURE_ROUTES.petEvent(event._id));
+  }, [router]);
 
-  const handleAddEvent = () => {
+  const handleToggleReminder = useCallback(async (event: Event, nextValue: boolean) => {
+    const eventDate =
+      toISODateString(new Date(event.startTime)) ??
+      event.startTime.split('T')[0];
+
+    queryClient.setQueryData<Event[]>(eventKeys.calendar(eventDate), (old) =>
+      old?.map((item) =>
+        item._id === event._id ? { ...item, reminder: nextValue } : item
+      )
+    );
+
+    queryClient.setQueryData<Event[]>(eventKeys.list({ petId: 'all' }), (old) =>
+      old?.map((item) =>
+        item._id === event._id ? { ...item, reminder: nextValue } : item
+      )
+    );
+
+    try {
+      await updateEventMutation.mutateAsync({
+        _id: event._id,
+        data: {
+          reminder: nextValue,
+          reminderPreset: event.reminderPreset,
+          startTime: event.startTime,
+        },
+      });
+      queryClient.invalidateQueries({ queryKey: eventKeys.calendar(eventDate) });
+      queryClient.invalidateQueries({ queryKey: eventKeys.list({ petId: 'all' }) });
+    } catch {
+      queryClient.invalidateQueries({ queryKey: eventKeys.calendar(eventDate) });
+      queryClient.invalidateQueries({ queryKey: eventKeys.list({ petId: 'all' }) });
+    }
+  }, [queryClient, updateEventMutation]);
+
+  const handleAddEvent = async () => {
     setInitialPetId(undefined);
     setSelectedEvent(undefined);
     setModalVisible(true);
@@ -143,94 +201,50 @@ export default function CalendarScreen() {
   };
 
   return (
-    <ProtectedRoute featureName={t('subscription.features.calendar')}>
-      <SafeAreaView
-        style={[styles.container, { backgroundColor: theme.colors.background }]}
-      >
-        <View style={styles.calendarContainer}>
-          {renderCalendarView()}
-          <View
-            style={[
-              styles.eventsWrapper,
-              { backgroundColor: theme.colors.surfaceVariant },
-            ]}
-          >
-            <FlatList
-              data={selectedDateEvents}
-              keyExtractor={(item) => item._id}
-              renderItem={({ item }) => (
-                <CalendarEventCard
-                  event={item}
-                  onPress={handleEventPress}
-                  testID={`calendar-event-${item._id}`}
-                />
-              )}
-              contentContainerStyle={styles.eventsContent}
-              ListEmptyComponent={
-                isLoadingSelected ? (
-                  <View style={styles.loadingContainer}>
-                    <ActivityIndicator size="small" color={theme.colors.primary} />
-                    <Text
-                      variant="bodyMedium"
-                      style={[styles.loadingText, { color: theme.colors.onSurface }]}
-                    >
-                      {t('common.loading')}
-                    </Text>
-                  </View>
-                ) : errorSelected ? (
-                  <View style={styles.errorContainer}>
-                    <Text
-                      variant="bodyLarge"
-                      style={[styles.errorText, { color: theme.colors.error }]}
-                    >
-                      {t('errors.loadingFailed')}
-                    </Text>
-                    <Text
-                      variant="bodySmall"
-                      style={[styles.errorMessage, { color: theme.colors.onSurfaceVariant }]}
-                    >
-                      {errorSelected.message}
-                    </Text>
-                  </View>
-                ) : (
-                  <View style={styles.emptyContainer}>
-                    <Text
-                      variant="bodyMedium"
-                      style={[styles.emptyText, { color: theme.colors.onSurfaceVariant }]}
-                    >
-                      {t('calendar.noEvents')}
-                    </Text>
-                  </View>
-                )
-              }
-              showsVerticalScrollIndicator={false}
-            />
-          </View>
-        </View>
+    <SafeAreaView
+      style={[styles.container, { backgroundColor: theme.colors.background }]}
+    >
+      <View style={styles.header}>
+        <LargeTitle title={t('calendar.calendar')} actions={<HeaderActions />} />
+      </View>
+      
+      <View style={styles.calendarContainer}>
+        {renderCalendarView()}
+      </View>
 
-        <FAB
-          icon="add"
-          style={{
-            ...styles.fab,
-            backgroundColor: theme.colors.primary,
-            width: 56,
-            height: 56,
-            borderRadius: 28,
-          }}
-          onPress={handleAddEvent}
-          testID="calendar-add-event-fab"
-        />
+      <EventsBottomSheet
+        ref={bottomSheetRef}
+        events={selectedDateEvents}
+        isLoading={isLoadingSelected}
+        selectedDate={currentDate}
+        onEventPress={handleEventPress}
+        onToggleReminder={handleToggleReminder}
+        testID="calendar-events-bottom-sheet"
+      />
 
-        <EventModal
-          visible={modalVisible}
-          event={selectedEvent}
-          initialPetId={initialPetId}
-          onClose={handleModalClose}
-          onSuccess={handleModalSuccess}
-          testID="calendar-event-modal"
-        />
-      </SafeAreaView>
-    </ProtectedRoute>
+      <FAB
+        icon="add"
+        style={{
+          ...styles.fab,
+          backgroundColor: theme.colors.primary,
+          width: 56,
+          height: 56,
+          borderRadius: 28,
+        }}
+        onPress={handleAddEvent}
+        testID="calendar-add-event-fab"
+      />
+
+      <EventModal
+        visible={modalVisible}
+        event={selectedEvent}
+        editType={editType as 'single' | 'series'}
+        initialPetId={initialPetId}
+        onClose={handleModalClose}
+        onSuccess={handleModalSuccess}
+        testID="calendar-event-modal"
+      />
+    </SafeAreaView>
   );
 }
 
@@ -238,47 +252,12 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
-  calendarContainer: {
-    flex: 1,
-  },
-  eventsWrapper: {
-    flex: 1,
-    marginTop: 16,
-    borderTopLeftRadius: 28,
-    borderTopRightRadius: 28,
-    paddingTop: 16,
-  },
-  eventsContent: {
+  header: {
     paddingHorizontal: 16,
-    paddingBottom: LAYOUT.FAB_OFFSET + 24,
+    paddingTop: 8,
   },
-  loadingContainer: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingVertical: 32,
-  },
-  loadingText: {
-    marginTop: 12,
-  },
-  errorContainer: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    padding: 32,
-  },
-  errorText: {
-    textAlign: 'center',
-    marginBottom: 8,
-  },
-  errorMessage: {
-    textAlign: 'center',
-  },
-  emptyContainer: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingVertical: 32,
-  },
-  emptyText: {
-    textAlign: 'center',
+  calendarContainer: {
+    paddingBottom: 16,
   },
   fab: {
     position: 'absolute',

@@ -86,6 +86,53 @@ export function DateTimePicker({
     }
   };
 
+  // iOS: use compact display which handles its own button UI
+  if (Platform.OS === 'ios') {
+    return (
+      <View style={styles.container}>
+        {label && (
+          <Text style={[
+            styles.label,
+            { color: error ? theme.colors.error : theme.colors.onSurface }
+          ]}>
+            {label}
+          </Text>
+        )}
+
+        <View
+          style={[
+            styles.iosCompactContainer,
+            {
+              borderColor: error
+                ? theme.colors.error
+                : theme.colors.outline,
+              backgroundColor: disabled
+                ? theme.colors.surfaceDisabled
+                : theme.colors.surface,
+            }
+          ]}
+        >
+          <ReactNativeDateTimePicker
+            mode={mode}
+            display="compact"
+            value={value}
+            onChange={handlePickerChange}
+            minimumDate={minimumDate}
+            maximumDate={maximumDate}
+            disabled={disabled}
+          />
+        </View>
+
+        {error && errorText && (
+          <Text style={[styles.errorText, { color: theme.colors.error }]}>
+            {errorText}
+          </Text>
+        )}
+      </View>
+    );
+  }
+
+  // Android: use TouchableOpacity with native picker dialog
   return (
     <View style={styles.container}>
       {label && (
@@ -151,6 +198,14 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: '500',
     marginBottom: 8,
+  },
+  iosCompactContainer: {
+    borderWidth: 1,
+    borderRadius: 4,
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    minHeight: 56,
+    justifyContent: 'center',
   },
   datePicker: {
     borderWidth: 1,

@@ -11,6 +11,7 @@ import { usePublicConfig } from '@/lib/hooks/usePublicConfig';
 import { SubscriptionCard } from '@/components/subscription';
 import { SuccessSubscriptionModal } from '@/components/subscription/SuccessSubscriptionModal';
 import { subscriptionStyles } from '@/lib/styles/subscription';
+import { TAB_ROUTES } from '@/constants/routes';
 
 /**
  * Subscription screen with RevenueCat paywall
@@ -21,8 +22,9 @@ export default function SubscriptionScreen() {
   const { theme } = useTheme();
   const router = useRouter();
   const [modalVisible, setModalVisible] = useState(false);
+  const [isTrialSuccess, setIsTrialSuccess] = useState(false);
   const {
-    isSubscribed,
+    isPaidSubscription,
     isLoading,
     restorePurchases,
     presentPaywall,
@@ -43,9 +45,15 @@ export default function SubscriptionScreen() {
     }
   };
 
+  const handleTrialStartSuccess = () => {
+    setIsTrialSuccess(true);
+    setModalVisible(true);
+  };
+
   const handleModalClose = () => {
     setModalVisible(false);
-    router.replace('/(tabs)');
+    setIsTrialSuccess(false);
+    router.replace(TAB_ROUTES.home);
   };
 
   const handleTerms = () => {
@@ -76,9 +84,14 @@ export default function SubscriptionScreen() {
       description: t('subscription.features.unlimitedDesc'),
     },
     {
-      icon: 'heart-pulse' as const,
-      title: t('subscription.features.advanced'),
-      description: t('subscription.features.advancedDesc'),
+      icon: 'silverware-fork-knife' as const,
+      title: t('subscription.features.feedingSchedules'),
+      description: t('subscription.features.feedingSchedulesDesc'),
+    },
+    {
+      icon: 'wallet' as const,
+      title: t('subscription.features.budgetTracking'),
+      description: t('subscription.features.budgetTrackingDesc'),
     },
     {
       icon: 'export' as const,
@@ -110,7 +123,7 @@ export default function SubscriptionScreen() {
 
       <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
         {/* Current Status Card */}
-        <SubscriptionCard onUpgrade={handlePresentPaywall} />
+        <SubscriptionCard onUpgrade={handlePresentPaywall} onTrialStartSuccess={handleTrialStartSuccess} />
 
         {/* Subscription Note */}
         <Text
@@ -123,8 +136,8 @@ export default function SubscriptionScreen() {
           {t('subscription.note')}
         </Text>
 
-        {/* Features List - Show if not subscribed */}
-        {!isSubscribed && (
+        {/* Features List - Show if not paid */}
+        {!isPaidSubscription && (
           <Card style={[styles.featuresCard, { backgroundColor: theme.colors.surface }]}>
             <View style={styles.cardContent}>
               <Text variant="titleMedium" style={[styles.featuresTitle, { color: theme.colors.onSurface }]}>
@@ -192,6 +205,7 @@ export default function SubscriptionScreen() {
       <SuccessSubscriptionModal
         visible={modalVisible}
         onClose={handleModalClose}
+        isTrial={isTrialSuccess}
       />
     </SafeAreaView>
   );

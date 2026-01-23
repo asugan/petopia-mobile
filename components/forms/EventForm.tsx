@@ -1,13 +1,15 @@
 import React from 'react';
-import { Alert, Linking, ScrollView, StyleSheet, View } from 'react-native';
+import { Alert, StyleSheet, View } from 'react-native';
 import { FormProvider, useWatch } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
-import { Button, Text } from '@/components/ui';
+import { Button, Text, KeyboardAwareView } from '@/components/ui';
 import { useEventForm } from '@/hooks/useEventForm';
+import { useRequestDeduplication } from '@/lib/hooks/useRequestCancellation';
 import { useTheme } from '@/lib/theme';
 import { REMINDER_PRESETS, ReminderPresetKey } from '@/constants/reminders';
-import { requestNotificationPermissions } from '@/lib/services/notificationService';
-import { useUserSettingsStore } from '@/stores/userSettingsStore';
+import { registerPushTokenWithBackend } from '@/lib/services/notificationService';
+import { useNotifications } from '@/lib/hooks/useNotifications';
+import NotificationPermissionPrompt from '@/components/NotificationPermissionPrompt';
 import { type EventFormData } from '../../lib/schemas/eventSchema';
 import { Event, Pet } from '../../lib/types';
 import { FormSection } from './FormSection';
@@ -18,9 +20,12 @@ import { SmartInput } from './SmartInput';
 import { SmartPetPicker } from './SmartPetPicker';
 import { SmartSwitch } from './SmartSwitch';
 import { StepHeader } from './StepHeader';
+import { RecurrenceSettings } from './RecurrenceSettings';
+import { showToast } from '@/lib/toast/showToast';
 
 interface EventFormProps {
   event?: Event;
+  editType?: 'single' | 'series';
   onSubmit: (data: EventFormData) => void | Promise<void>;
   onCancel: () => void;
   loading?: boolean;
@@ -31,6 +36,7 @@ interface EventFormProps {
 
 export function EventForm({
   event,
+  editType,
   onSubmit,
   onCancel,
   loading = false,
@@ -40,12 +46,11 @@ export function EventForm({
 }: EventFormProps) {
   const { t } = useTranslation();
   const { theme } = useTheme();
-  const notificationsEnabled = useUserSettingsStore(
-    (state) => state.settings?.notificationsEnabled ?? true
-  );
+  const { requestPermission, isLoading: isNotificationLoading } = useNotifications();
+  const { executeWithDeduplication: executePermissionRequest } = useRequestDeduplication();
   const [isSubmitting, setIsSubmitting] = React.useState(false);
   const [currentStep, setCurrentStep] = React.useState(0);
-  const [showStepError, setShowStepError] = React.useState(false);
+  const [showPermissionModal, setShowPermissionModal] = React.useState(false);
 
   // Use the custom hook for form management
   const { form, control, handleSubmit, isDirty } = useEventForm(event, initialPetId);
@@ -68,43 +73,23 @@ export function EventForm({
     return t(`eventForm.suggestions.${eventType || 'default'}`);
   };
 
-  React.useEffect(() => {
-    const ensureNotificationAccess = async () => {
-      if (!reminderEnabled) {
-        return;
-      }
-
-      if (!notificationsEnabled) {
+  const handleReminderToggle = async (value: boolean) => {
+    if (value) {
+      const granted = await executePermissionRequest('permission-request', async () => {
+        const result = await requestPermission();
+        return result;
+      });
+      if (granted) {
+        form.setValue('reminder', true);
+        void registerPushTokenWithBackend();
+      } else {
         form.setValue('reminder', false);
-        Alert.alert(
-          t('settings.notifications'),
-          t('settings.notificationDisabled', 'Notifications are turned off in settings.')
-        );
-        return;
+        setShowPermissionModal(true);
       }
-
-      const granted = await requestNotificationPermissions();
-      if (!granted) {
-        form.setValue('reminder', false);
-        Alert.alert(
-          t('settings.notifications'),
-          t(
-            'settings.notificationPermissionDenied',
-            'Notifications are blocked at the system level. Please enable them from settings.'
-          ),
-          [
-            { text: t('common.cancel'), style: 'cancel' },
-            {
-              text: t('notifications.openSettings', 'Open Settings'),
-              onPress: () => Linking.openSettings(),
-            },
-          ]
-        );
-      }
-    };
-
-    void ensureNotificationAccess();
-  }, [form, notificationsEnabled, reminderEnabled, t]);
+    } else {
+      form.setValue('reminder', false);
+    }
+  };
 
   // Handle form submission
   const onFormSubmit = React.useCallback(
@@ -114,7 +99,11 @@ export function EventForm({
 
         await onSubmit(data);
       } catch {
-        Alert.alert(t('common.error'), t('events.saveError'));
+        showToast({
+          type: 'error',
+          title: t('common.error'),
+          message: t('events.saveError'),
+        });
       } finally {
         setIsSubmitting(false);
       }
@@ -173,7 +162,7 @@ export function EventForm({
       {
         key: 'schedule',
         title: t('events.steps.schedule'),
-        fields: ['startDate', 'startTime', 'endDate', 'endTime', 'location'] as (keyof EventFormData)[],
+        fields: ['startDate', 'startTime', 'endDate', 'endTime', 'location', 'isRecurring'] as (keyof EventFormData)[],
       },
       {
         key: 'options',
@@ -189,34 +178,38 @@ export function EventForm({
   const handleNextStep = React.useCallback(async () => {
     const isStepValid = await form.trigger(steps[currentStep].fields);
     if (!isStepValid) {
-      setShowStepError(true);
+      showToast({
+        type: 'error',
+        title: t('common.error'),
+        message: t('pets.pleaseFillRequiredFields'),
+      });
       return;
     }
-    setShowStepError(false);
     setCurrentStep((prev) => Math.min(prev + 1, totalSteps - 1));
-  }, [form, steps, currentStep, totalSteps]);
+  }, [form, steps, currentStep, totalSteps, t]);
 
   const handleBackStep = React.useCallback(() => {
-    setShowStepError(false);
     setCurrentStep((prev) => Math.max(prev - 1, 0));
   }, []);
 
   const handleFinalSubmit = React.useCallback(async () => {
     const isFormValid = await form.trigger();
     if (!isFormValid) {
-      setShowStepError(true);
+      showToast({
+        type: 'error',
+        title: t('common.error'),
+        message: t('pets.pleaseFillRequiredFields'),
+      });
       return;
     }
-    setShowStepError(false);
     handleSubmit(onFormSubmit)();
-  }, [form, handleSubmit, onFormSubmit]);
+  }, [form, handleSubmit, onFormSubmit, t]);
 
   return (
     <FormProvider {...form}>
-      <ScrollView
+      <KeyboardAwareView
         style={[styles.container, { backgroundColor: theme.colors.background }]}
         contentContainerStyle={styles.contentContainer}
-        keyboardShouldPersistTaps="handled"
         testID={testID}
       >
         <StepHeader
@@ -361,6 +354,26 @@ export function EventForm({
           </FormSection>
         )}
 
+        {/* Recurrence Settings - Step 2 */}
+        {currentStep === 2 && (
+          <>
+            {isEditMode && editType === 'single' && (
+              <View style={[styles.recurrenceWarningBox, { backgroundColor: theme.colors.tertiaryContainer }]}>
+                <Text
+                  variant="bodySmall"
+                  style={[styles.recurrenceWarningText, { color: theme.colors.onTertiaryContainer }]}
+                >
+                  {t('events.singleEditWarning', 'This change will only affect this occurrence. Recurrence settings are disabled.')}
+                </Text>
+              </View>
+            )}
+            <RecurrenceSettings
+              disabled={loading || isSubmitting || (isEditMode && editType === 'single')}
+              testID={`${testID}-recurrence`}
+            />
+          </>
+        )}
+
         {currentStep === 3 && (
           <FormSection title={t('common.additionalOptions')}>
             {/* Reminder Switch */}
@@ -368,7 +381,9 @@ export function EventForm({
               name="reminder"
               label={t('events.enableReminder')}
               description={t('events.reminderDescription')}
-              disabled={loading || isSubmitting || !notificationsEnabled}
+              disabled={loading || isSubmitting}
+              loading={isNotificationLoading}
+              onValueChange={handleReminderToggle}
               testID={`${testID}-reminder`}
             />
 
@@ -449,14 +464,19 @@ export function EventForm({
           )}
         </View>
 
-        {!showStepError ? null : (
-          <View style={[styles.statusContainer, { backgroundColor: theme.colors.errorContainer }]}>
-            <Text style={[styles.statusText, { color: theme.colors.onErrorContainer }]}>
-              {t('pets.pleaseFillRequiredFields')}
-            </Text>
-          </View>
-        )}
-      </ScrollView>
+      </KeyboardAwareView>
+
+      <NotificationPermissionPrompt
+        visible={showPermissionModal}
+        onDismiss={() => setShowPermissionModal(false)}
+        onPermissionGranted={() => {
+          form.setValue('reminder', true);
+          void registerPushTokenWithBackend();
+        }}
+        onPermissionDenied={() => {
+          form.setValue('reminder', false);
+        }}
+      />
     </FormProvider>
   );
 }
@@ -484,6 +504,14 @@ const styles = StyleSheet.create({
   reminderHelper: {
     lineHeight: 16,
   },
+  recurrenceWarningBox: {
+    padding: 12,
+    borderRadius: 8,
+    marginBottom: 12,
+  },
+  recurrenceWarningText: {
+    lineHeight: 18,
+  },
   actions: {
     flexDirection: 'row',
     gap: 12,
@@ -491,16 +519,6 @@ const styles = StyleSheet.create({
   },
   actionButton: {
     flex: 1,
-  },
-  statusContainer: {
-    padding: 12,
-    borderRadius: 8,
-    marginTop: 16,
-  },
-  statusText: {
-    fontSize: 14,
-    textAlign: 'center',
-    fontFamily: 'System',
   },
 });
 

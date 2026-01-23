@@ -6,6 +6,13 @@ export const LAYOUT = {
   FAB_OFFSET: 80, // Height needed for FAB clearance (includes padding)
 } as const;
 
+// Bottom Sheet Constants
+export const BOTTOM_SHEET = {
+  SNAP_POINTS: ['20%', '50%', '90%'] as const,
+  DEFAULT_INDEX: 1, // Start at 50%
+  HANDLE_HEIGHT: 24,
+} as const;
+
 // Pet Types
 export const PET_TYPES = {
   DOG: 'dog',

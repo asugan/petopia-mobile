@@ -4,24 +4,33 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { StatusBar } from 'expo-status-bar';
 import * as Notifications from 'expo-notifications';
-import { Stack, useRouter } from "expo-router";
+import * as SplashScreen from 'expo-splash-screen';
+import { Stack, useRouter, useSegments } from "expo-router";
 import { QueryClient, QueryClientProvider, focusManager } from '@tanstack/react-query';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import Toast from 'react-native-toast-message';
 import { ApiErrorBoundary } from "@/lib/components/ApiErrorBoundary";
 import { MOBILE_QUERY_CONFIG } from "@/lib/config/queryConfig";
 import { useAuth } from '@/lib/auth';
-import { setOnUnauthorized } from '@/lib/api/client';
+import { setOnUnauthorized, setOnProRequired } from '@/lib/api/client';
 import { notificationService } from '@/lib/services/notificationService';
 import { useOnlineManager } from "@/lib/hooks/useOnlineManager";
+import { useSubscription } from '@/lib/hooks/useSubscription';
+import { useDowngradeStatus } from '@/lib/hooks/useDowngrade';
 import { NetworkStatus } from "@/lib/components/NetworkStatus";
 import { LanguageProvider } from "@/providers/LanguageProvider";
+import { PostHogProviderWrapper } from "@/providers/PostHogProvider";
 import { AuthProvider } from "@/providers/AuthProvider";
 import { SubscriptionProvider } from "@/providers/SubscriptionProvider";
 import { useUserSettingsStore } from '@/stores/userSettingsStore';
 import { useEventReminderStore } from '@/stores/eventReminderStore';
 import { useUpcomingEvents } from '@/lib/hooks/useEvents';
 import { useReminderScheduler } from '@/hooks/useReminderScheduler';
+import { createToastConfig } from '@/lib/toast/toastConfig';
+import { SUBSCRIPTION_ROUTES, TAB_ROUTES } from '@/constants/routes';
+import { LAYOUT } from '@/constants';
 import "../lib/i18n";
+import { AnimatedSplashScreen } from '@/components/SplashScreen/AnimatedSplashScreen';
 
 // Enhanced QueryClient with better configuration
 const queryClient = new QueryClient(MOBILE_QUERY_CONFIG);
@@ -36,12 +45,62 @@ function onAppStateChange(status: AppStateStatus) {
 }
 
 // Enhanced App Providers with better state management
+function SubscriptionGate({ children }: { children: React.ReactNode }) {
+  const { presentPaywall } = useSubscription();
+
+  useEffect(() => {
+    setOnProRequired(() => {
+      queryClient.invalidateQueries({ predicate: (query) => query.queryKey[0] === 'subscription' });
+      void presentPaywall();
+    });
+  }, [presentPaywall]);
+
+  return <>{children}</>;
+}
+
+function DowngradeGate({ children }: { children: React.ReactNode }) {
+  const router = useRouter();
+  const segments = useSegments();
+  const { isAuthenticated } = useAuth();
+  const { isProUser, isLoading: isSubscriptionLoading } = useSubscription();
+  const { data: downgradeStatus, isLoading: isDowngradeLoading } = useDowngradeStatus();
+  const hasRedirectedRef = useRef(false);
+
+  useEffect(() => {
+    // Only check downgrade when user is authenticated, not pro, and data is loaded
+    if (!isAuthenticated || isSubscriptionLoading || isDowngradeLoading) {
+      return;
+    }
+
+    // If user is pro, no need to check downgrade
+    if (isProUser) {
+      hasRedirectedRef.current = false;
+      return;
+    }
+
+    const isOnDowngradePage = segments.includes('downgrade' as never);
+    const requiresDowngrade = downgradeStatus?.requiresDowngrade ?? false;
+
+    if (requiresDowngrade && !isOnDowngradePage && !hasRedirectedRef.current) {
+      hasRedirectedRef.current = true;
+      router.replace(SUBSCRIPTION_ROUTES.downgrade);
+    } else if (!requiresDowngrade && isOnDowngradePage) {
+      hasRedirectedRef.current = false;
+      router.replace(TAB_ROUTES.home);
+    }
+  }, [isAuthenticated, isProUser, isSubscriptionLoading, isDowngradeLoading, downgradeStatus, segments, router]);
+
+  return <>{children}</>;
+}
+
 function AppProviders({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     setOnUnauthorized(() => {
       queryClient.clear();
     });
   }, []);
+
+
 
   useEffect(() => {
     const receivedSubscription = Notifications.addNotificationReceivedListener(
@@ -61,20 +120,25 @@ function AppProviders({ children }: { children: React.ReactNode }) {
     <QueryClientProvider client={queryClient}>
       <OnlineManagerProvider>
         <NetworkStatus>
-          <LanguageProvider>
-            <ApiErrorBoundary>
-              <AuthProvider>
-                <SubscriptionProvider>
-                  {children}
-                </SubscriptionProvider>
-              </AuthProvider>
-            </ApiErrorBoundary>
-          </LanguageProvider>
+          <PostHogProviderWrapper>
+            <LanguageProvider>
+              <ApiErrorBoundary>
+                <AuthProvider>
+                  <SubscriptionProvider>
+                    <SubscriptionGate>
+                      <DowngradeGate>{children}</DowngradeGate>
+                    </SubscriptionGate>
+                  </SubscriptionProvider>
+                </AuthProvider>
+              </ApiErrorBoundary>
+            </LanguageProvider>
+          </PostHogProviderWrapper>
         </NetworkStatus>
       </OnlineManagerProvider>
     </QueryClientProvider>
   );
 }
+
 
 // Separate component for online management to ensure QueryClient context is available
 function OnlineManagerProvider({ children }: { children: React.ReactNode }) {
@@ -209,18 +273,40 @@ function RootLayoutContent() {
             presentation: 'modal',
           }}
         />
+        <Stack.Screen
+          name="downgrade"
+          options={{
+            headerShown: false,
+            presentation: 'fullScreenModal',
+            gestureEnabled: false,
+          }}
+        />
       </Stack>
+      <Toast
+        position="bottom"
+        bottomOffset={LAYOUT.TAB_BAR_HEIGHT + 12}
+        config={createToastConfig(theme)}
+      />
     </>
   );
 }
+
+// Prevent splash screen from auto-hiding before font loading
+SplashScreen.preventAutoHideAsync();
+SplashScreen.setOptions({
+  duration: 1000,
+  fade: true,
+});
 
 export default function RootLayout() {
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <SafeAreaProvider>
-        <AppProviders>
-          <RootLayoutContent />
-        </AppProviders>
+        <AnimatedSplashScreen>
+          <AppProviders>
+            <RootLayoutContent />
+          </AppProviders>
+        </AnimatedSplashScreen>
       </SafeAreaProvider>
     </GestureHandlerRootView>
   );

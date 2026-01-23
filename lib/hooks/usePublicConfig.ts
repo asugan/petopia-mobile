@@ -12,6 +12,10 @@ export type PublicConfig = {
     privacyUrl: string | null;
     termsUrl: string | null;
   };
+  posthog: {
+    apiKey: string;
+    host: string;
+  };
 };
 
 const PUBLIC_CONFIG_QUERY_KEY = ['public-config'] as const;

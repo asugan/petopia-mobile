@@ -167,6 +167,13 @@ export function MonthView({
           onPress={onNext}
           testID={`${testID}-next`}
         />
+        <IconButton
+          icon="fullscreen-exit"
+          size={18}
+          iconColor={theme.colors.onSurfaceVariant}
+          onPress={onToggleView}
+          testID={`${testID}-toggle`}
+        />
       </View>
 
       <View style={styles.weekRow}>
@@ -195,14 +202,6 @@ export function MonthView({
           { backgroundColor: theme.colors.surfaceVariant },
         ]}
       />
-      <IconButton
-        icon="fullscreen-exit"
-        size={18}
-        iconColor={theme.colors.onSurfaceVariant}
-        onPress={onToggleView}
-        style={styles.toggleButton}
-        testID={`${testID}-toggle`}
-      />
     </View>
   );
 }
@@ -215,7 +214,7 @@ const styles = StyleSheet.create({
     borderRadius: 28,
     borderWidth: 1,
     marginHorizontal: 16,
-    marginTop: 12,
+    marginTop: 0,
     elevation: 4,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 10 },
@@ -278,11 +277,6 @@ const styles = StyleSheet.create({
     width: 40,
     height: 4,
     borderRadius: 2,
-  },
-  toggleButton: {
-    position: 'absolute',
-    bottom: 2,
-    right: 8,
   },
 });
 

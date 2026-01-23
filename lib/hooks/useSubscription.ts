@@ -9,7 +9,7 @@ import { useTranslation } from 'react-i18next';
 import { useSubscriptionStore } from '@/stores/subscriptionStore';
 import { useComputedSubscriptionStatus, useRefetchSubscriptionStatus, useStartTrial } from './useSubscriptionQueries';
 import { getRevenueCatEntitlementIdOptional } from '@/lib/revenuecat/config';
-import { showAlert } from '@/lib/utils/alert';
+import { showToast } from '@/lib/toast/showToast';
 
 export type SubscriptionStatusType = 'pro' | 'trial' | 'free';
 
@@ -107,10 +107,11 @@ export function useSubscription(): UseSubscriptionReturn {
     } catch {
     }
 
-    showAlert(
-      'Error',
-      t('subscription.notInitialized', 'Subscription system is not ready yet.')
-    );
+    showToast({
+      type: 'error',
+      title: t('common.error'),
+      message: t('subscription.notInitialized', 'Subscription system is not ready yet.'),
+    });
     return false;
   }, [isInitialized, t]);
 
@@ -133,7 +134,11 @@ export function useSubscription(): UseSubscriptionReturn {
             return false;
 
           case PAYWALL_RESULT.ERROR:
-            showAlert(t('common.error'), t('subscription.paywallError'));
+            showToast({
+              type: 'error',
+              title: t('common.error'),
+              message: t('subscription.paywallError'),
+            });
             return false;
 
           case PAYWALL_RESULT.NOT_PRESENTED:
@@ -143,7 +148,11 @@ export function useSubscription(): UseSubscriptionReturn {
             return false;
         }
       } catch (error) {
-        showAlert(t('common.error'), (error as Error).message);
+        showToast({
+          type: 'error',
+          title: t('common.error'),
+          message: (error as Error).message,
+        });
         return false;
       }
     },
@@ -155,7 +164,11 @@ export function useSubscription(): UseSubscriptionReturn {
       if (!(await ensureRevenueCatReady())) return false;
 
       if (!entitlementId) {
-        showAlert(t('common.error'), t('subscription.notInitialized', 'Subscription system is not ready yet.'));
+        showToast({
+          type: 'error',
+          title: t('common.error'),
+          message: t('subscription.notInitialized', 'Subscription system is not ready yet.'),
+        });
         return false;
       }
 
@@ -173,8 +186,12 @@ export function useSubscription(): UseSubscriptionReturn {
 
       return false;
     } catch (error) {
-      showAlert(t('common.error'), (error as Error).message);
-      return false;
+        showToast({
+          type: 'error',
+          title: t('common.error'),
+          message: (error as Error).message,
+        });
+        return false;
     }
   }, [ensureRevenueCatReady, refetchStatusMutation, t, entitlementId]);
 
@@ -189,7 +206,11 @@ export function useSubscription(): UseSubscriptionReturn {
           onRestoreCompleted: async ({ customerInfo }) => {
           },
           onRestoreFailed: ({ error }) => {
-            showAlert(t('common.error'), error.message);
+            showToast({
+              type: 'error',
+              title: t('common.error'),
+              message: error.message,
+            });
           },
           onShowingManageSubscriptions: () => {
           },
@@ -198,7 +219,11 @@ export function useSubscription(): UseSubscriptionReturn {
         },
       });
     } catch (error) {
-      showAlert(t('common.error'), (error as Error).message);
+      showToast({
+        type: 'error',
+        title: t('common.error'),
+        message: (error as Error).message,
+      });
     }
   }, [ensureRevenueCatReady, t]);
 
@@ -216,7 +241,11 @@ export function useSubscription(): UseSubscriptionReturn {
       await startTrialMutation.mutateAsync();
       refetchStatusMutation.mutate();
     } catch (error) {
-      showAlert(t('common.error'), t('subscription.startTrialError', 'Failed to start trial.'));
+      showToast({
+        type: 'error',
+        title: t('common.error'),
+        message: t('subscription.startTrialError'),
+      });
       throw error;
     }
   }, [startTrialMutation, refetchStatusMutation, t]);

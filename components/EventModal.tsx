@@ -1,19 +1,22 @@
 import React from 'react';
-import { View, StyleSheet, Modal as RNModal } from 'react-native';
+import { View, StyleSheet, Modal as RNModal, Platform } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useTranslation } from 'react-i18next';
-import { Portal, Snackbar, Text, Button } from '@/components/ui';
+import { Text, Button } from '@/components/ui';
 import { useTheme } from '@/lib/theme';
 import { Event } from '../lib/types';
-import { EventFormData, transformFormDataToAPI } from '../lib/schemas/eventSchema';
+import { EventFormData, transformFormDataToAPI, transformFormDataToRecurrenceRule } from '../lib/schemas/eventSchema';
 import { EventForm } from './forms/EventForm';
 import { useCreateEvent, useUpdateEvent } from '../lib/hooks/useEvents';
+import { useCreateRecurrenceRule, useUpdateRecurrenceRule } from '../lib/hooks/useRecurrence';
 import { usePets } from '../lib/hooks/usePets';
 import { ReminderPresetKey } from '@/constants/reminders';
+import { showToast } from '@/lib/toast/showToast';
 
 interface EventModalProps {
   visible: boolean;
   event?: Event;
+  editType?: 'single' | 'series';
   initialPetId?: string;
   onClose: () => void;
   onSuccess: () => void;
@@ -23,6 +26,7 @@ interface EventModalProps {
 export function EventModal({
   visible,
   event,
+  editType,
   initialPetId,
   onClose,
   onSuccess,
@@ -31,51 +35,72 @@ export function EventModal({
   const { t } = useTranslation();
   const { theme } = useTheme();
   const [loading, setLoading] = React.useState(false);
-  const [snackbarVisible, setSnackbarVisible] = React.useState(false);
-  const [snackbarMessage, setSnackbarMessage] = React.useState('');
-  const [snackbarType, setSnackbarType] = React.useState<'success' | 'error'>('success');
 
   // React Query hooks for server state
   const createEventMutation = useCreateEvent();
   const updateEventMutation = useUpdateEvent();
+  const createRecurrenceRuleMutation = useCreateRecurrenceRule();
+  const updateRecurrenceRuleMutation = useUpdateRecurrenceRule();
   const { data: pets = [] } = usePets();
 
-  const showSnackbar = React.useCallback((message: string, type: 'success' | 'error' = 'success') => {
-    setSnackbarMessage(message);
-    setSnackbarType(type);
-    setSnackbarVisible(true);
-  }, []);
 
   const handleSubmit = React.useCallback(async (data: EventFormData) => {
-    setLoading(true);
     try {
-      // Transform form data to API format (combines date+time into ISO datetime)
-      const apiData = transformFormDataToAPI(data);
       const reminderPresetKey: ReminderPresetKey = data.reminderPreset || 'standard';
+      const reminderEnabled = data.reminder === true;
 
-      if (event) {
+      setLoading(true);
+
+      // Check if this is a recurring event
+      if (data.isRecurring && data.recurrence && !event) {
+        // Create a recurrence rule instead of a single event
+        const ruleData = transformFormDataToRecurrenceRule(data, reminderEnabled, reminderPresetKey);
+        await createRecurrenceRuleMutation.mutateAsync(ruleData);
+        showToast({ type: 'success', title: t('serviceResponse.recurrence.createSuccess') });
+      } else if (event) {
         // Event güncelleme
-        await updateEventMutation.mutateAsync({
-          _id: event._id,
-          data: { ...apiData, reminderPresetKey }
-        });
-        showSnackbar(t('serviceResponse.event.updateSuccess'), 'success');
+        if (editType === 'series' && event.recurrenceRuleId) {
+          // Edit the whole recurrence rule
+          const ruleData = transformFormDataToRecurrenceRule(data, reminderEnabled, reminderPresetKey);
+          await updateRecurrenceRuleMutation.mutateAsync({
+            id: event.recurrenceRuleId,
+            data: ruleData
+          });
+          showToast({ type: 'success', title: t('serviceResponse.recurrence.updateSuccess') });
+        } else {
+          // Edit single event (normal behavior or editType === 'single')
+          const apiData = transformFormDataToAPI(data);
+          await updateEventMutation.mutateAsync({
+            _id: event._id,
+            data: { ...apiData, reminderPresetKey, reminder: reminderEnabled }
+          });
+          showToast({ type: 'success', title: t('serviceResponse.event.updateSuccess') });
+        }
       } else {
-        // Yeni event oluşturma
-        await createEventMutation.mutateAsync({ ...apiData, reminderPresetKey });
-        showSnackbar(t('serviceResponse.event.createSuccess'), 'success');
+        // Yeni tek seferlik event oluşturma
+        const apiData = transformFormDataToAPI(data);
+        await createEventMutation.mutateAsync({
+          ...apiData,
+          reminderPresetKey,
+          reminder: reminderEnabled,
+        });
+        showToast({ type: 'success', title: t('serviceResponse.event.createSuccess') });
       }
 
       onSuccess();
       onClose();
     } catch (error) {
-      const fallbackMessage = event ? t('serviceResponse.event.updateError') : t('serviceResponse.event.createError');
+      const fallbackMessage = event 
+        ? t('serviceResponse.event.updateError') 
+        : data.isRecurring 
+          ? t('serviceResponse.recurrence.createError') 
+          : t('serviceResponse.event.createError');
       const errorMessage = error instanceof Error ? error.message : fallbackMessage;
-      showSnackbar(errorMessage, 'error');
+      showToast({ type: 'error', title: fallbackMessage, message: errorMessage });
     } finally {
       setLoading(false);
     }
-  }, [event, createEventMutation, updateEventMutation, onSuccess, onClose, showSnackbar, t]);
+  }, [event, editType, createEventMutation, updateEventMutation, createRecurrenceRuleMutation, updateRecurrenceRuleMutation, onSuccess, onClose, t]);
 
   const handleClose = React.useCallback(() => {
     if (!loading) {
@@ -83,16 +108,22 @@ export function EventModal({
     }
   }, [onClose, loading]);
 
-  const handleSnackbarDismiss = React.useCallback(() => {
-    setSnackbarVisible(false);
-  }, []);
+  const animationType = Platform.select({
+    ios: 'slide' as const,
+    android: 'fade' as const,
+  });
+
+  const presentationStyle = Platform.select({
+    ios: 'pageSheet' as const,
+    android: undefined,
+  });
 
   return (
     <>
       <RNModal
         visible={visible}
-        animationType="slide"
-        presentationStyle="pageSheet"
+        animationType={animationType}
+        presentationStyle={presentationStyle}
         onDismiss={handleClose}
         onRequestClose={handleClose}
         testID={testID}
@@ -114,6 +145,7 @@ export function EventModal({
 
           <EventForm
             event={event}
+            editType={editType}
             onSubmit={handleSubmit}
             onCancel={handleClose}
             initialPetId={initialPetId}
@@ -123,18 +155,6 @@ export function EventModal({
         </SafeAreaView>
       </RNModal>
 
-      <Portal>
-        <Snackbar
-          visible={snackbarVisible}
-          onDismiss={handleSnackbarDismiss}
-          duration={3000}
-          message={snackbarMessage}
-          style={{
-            ...styles.snackbar,
-            backgroundColor: snackbarType === 'success' ? theme.colors.primary : theme.colors.error
-          }}
-        />
-      </Portal>
     </>
   );
 }
@@ -155,9 +175,6 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 18,
     fontWeight: '600',
-  },
-  snackbar: {
-    marginBottom: 16,
   },
 });
 

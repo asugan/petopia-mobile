@@ -8,6 +8,7 @@ import { useTheme } from '@/lib/theme';
 interface SuccessSubscriptionModalProps {
   visible: boolean;
   onClose: () => void;
+  isTrial?: boolean;
 }
 
 /**
@@ -16,11 +17,15 @@ interface SuccessSubscriptionModalProps {
  */
 const MODAL_VERTICAL_MARGIN = 48;
 
-export function SuccessSubscriptionModal({ visible, onClose }: SuccessSubscriptionModalProps) {
+export function SuccessSubscriptionModal({ visible, onClose, isTrial = false }: SuccessSubscriptionModalProps) {
   const { t } = useTranslation();
   const { theme } = useTheme();
   const { height } = useWindowDimensions();
   const insets = useSafeAreaInsets();
+
+  const title = isTrial ? t('subscription.trialSuccess.title') : t('subscription.success.title');
+  const message = isTrial ? t('subscription.trialSuccess.message') : t('subscription.success.message');
+  const buttonText = isTrial ? t('subscription.trialSuccess.button') : t('subscription.success.button');
 
   const handleClose = () => {
     onClose();
@@ -53,12 +58,12 @@ export function SuccessSubscriptionModal({ visible, onClose }: SuccessSubscripti
 
                 {/* Title */}
                 <Text variant="headlineSmall" style={[styles.title, { color: theme.colors.onSurface }]}>
-                  {t('subscription.success.title')}
+                  {title}
                 </Text>
 
                 {/* Message */}
                 <Text variant="bodyMedium" style={[styles.message, { color: theme.colors.onSurfaceVariant }]}>
-                  {t('subscription.success.message')}
+                  {message}
                 </Text>
 
                 {/* Action Button */}
@@ -67,7 +72,7 @@ export function SuccessSubscriptionModal({ visible, onClose }: SuccessSubscripti
                   onPress={handleClose}
                   style={styles.button}
                 >
-                  {t('subscription.success.button')}
+                  {buttonText}
                 </Button>
                 </View>
               </ScrollView>

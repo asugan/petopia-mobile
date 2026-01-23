@@ -1,11 +1,10 @@
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
-import React from "react";
+import React, { useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { ScrollView, StyleSheet, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-import { ProtectedRoute } from "@/components/subscription";
 import EmptyState from "@/components/EmptyState";
 import HealthOverview from "@/components/HealthOverview";
 import LoadingSpinner from "@/components/LoadingSpinner";
@@ -14,29 +13,49 @@ import { UpcomingEventsSection } from "@/components/UpcomingEventsSection";
 import { NextFeedingWidget } from "@/components/feeding/NextFeedingWidget";
 import { FinancialOverview } from "@/components/home/FinancialOverview";
 import { HomeEmptyPets } from "@/components/home/HomeEmptyPets";
-import { HomeHeader } from "@/components/home/HomeHeader";
+import { HeaderActions, LargeTitle } from "@/components/LargeTitle";
 import { Text } from "@/components/ui";
 import { useHomeData } from "@/lib/hooks/useHomeData";
+import { usePendingPet } from "@/lib/hooks/usePendingPet";
+import { useSubscription } from "@/lib/hooks/useSubscription";
 import { useTheme } from "@/lib/theme";
 import { LAYOUT } from "@/constants";
+import { showToast } from "@/lib/toast/showToast";
+import { SUBSCRIPTION_ROUTES, FEATURE_ROUTES } from "@/constants/routes";
 
 export default function HomeScreen() {
-  const { t } = useTranslation();
-
-  return (
-    <ProtectedRoute featureName={t("navigation.home")}>
-      <HomeScreenContent />
-    </ProtectedRoute>
-  );
+  return <HomeScreenContent />;
 }
 
 function HomeScreenContent() {
   const { theme } = useTheme();
   const { t } = useTranslation();
   const router = useRouter();
+  const { isProUser, isInitialized } = useSubscription();
+  const { processPendingPet } = usePendingPet();
 
   // Tüm mantık useHomeData hook'unda toplandı
-  const { user, layout, data, status, financial } = useHomeData();
+  const { layout, data, status, financial } = useHomeData();
+
+  // Login sonrası pending pet kontrolü
+  useEffect(() => {
+    processPendingPet(data.pets?.length ?? 0);
+  }, [processPendingPet, data.pets?.length, isInitialized]);
+
+  const handleUpgradePress = async () => {
+    router.push(SUBSCRIPTION_ROUTES.main);
+  };
+
+  // Hook must be called unconditionally before any early returns
+  useEffect(() => {
+    if (status.error) {
+      showToast({
+        type: 'error',
+        title: t("common.error"),
+        message: t("common.loadingError"),
+      });
+    }
+  }, [status.error, t]);
 
   if (status.isLoading) {
     return (
@@ -73,7 +92,7 @@ function HomeScreenContent() {
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
       >
-        <HomeHeader user={user} />
+        <LargeTitle title={t("navigation.home")} actions={<HeaderActions />} />
 
         {/* My Pets Section */}
         <View style={styles.section}>
@@ -84,42 +103,41 @@ function HomeScreenContent() {
                   <PetCard
                     pet={pet}
                     petId={pet._id}
-                    onPress={() => router.push(`/pet/${pet._id}`)}
+                    onPress={() => router.push(FEATURE_ROUTES.petDetail(pet._id))}
                     showActions={false}
                   />
                 </View>
               ))}
 
-              {/* Add Pet Button */}
-              <TouchableOpacity
-                onPress={() => router.push("/(tabs)/pets")}
-                style={[
-                  styles.addPetButton,
-                  {
-                    backgroundColor: theme.colors.surface,
-                    borderColor: theme.colors.outlineVariant,
-                  },
-                ]}
-              >
-                <View
+              {!isProUser && data.pets.length >= 1 && (
+                <TouchableOpacity
+                  onPress={handleUpgradePress}
                   style={[
-                    styles.addPetIconContainer,
-                    { backgroundColor: theme.colors.surfaceVariant },
+                    styles.upgradeCard,
+                    {
+                      borderColor: theme.colors.primary,
+                      backgroundColor: theme.colors.surface,
+                    },
                   ]}
+                  activeOpacity={0.85}
                 >
-                  <Ionicons
-                    name="add"
-                    size={24}
-                    color={theme.colors.onSurfaceVariant}
-                  />
-                </View>
-                <Text
-                  variant="titleMedium"
-                  style={{ color: theme.colors.onSurfaceVariant }}
-                >
-                  {t("pets.addNewPet")}
-                </Text>
-              </TouchableOpacity>
+                  <View style={[styles.upgradeIconWrap, { backgroundColor: theme.colors.primaryContainer }]}>
+                    <Ionicons name="lock-closed" size={20} color={theme.colors.primary} />
+                  </View>
+                  <Text variant="titleMedium" style={[styles.upgradeTitle, { color: theme.colors.onSurface }]}
+                  >
+                    {t("limits.pets.title")}
+                  </Text>
+                  <Text variant="bodySmall" style={[styles.upgradeSubtitle, { color: theme.colors.onSurfaceVariant }]}
+                  >
+                    {t("limits.pets.subtitle")}
+                  </Text>
+                  <Text variant="labelLarge" style={[styles.upgradeCta, { color: theme.colors.primary }]}
+                  >
+                    {t("limits.pets.cta")}
+                  </Text>
+                </TouchableOpacity>
+              )}
             </View>
           ) : (
             <HomeEmptyPets />
@@ -133,14 +151,20 @@ function HomeScreenContent() {
               <NextFeedingWidget />
             </View>
 
-            <UpcomingEventsSection />
+            <View style={styles.section}>
+              <UpcomingEventsSection />
+            </View>
 
-            <FinancialOverview
-              budgetStatus={financial.budgetStatus || undefined}
-              recentExpenses={data.recentExpenses}
-            />
+            <View style={styles.section}>
+              <FinancialOverview
+                budgetStatus={financial.budgetStatus || undefined}
+                recentExpenses={data.recentExpenses}
+              />
+            </View>
 
-            <HealthOverview healthRecords={data.allHealthRecords || []} />
+            <View style={styles.section}>
+              <HealthOverview healthRecords={data.allHealthRecords || []} />
+            </View>
           </>
         )}
       </ScrollView>
@@ -155,24 +179,35 @@ const styles = StyleSheet.create({
   statsScrollView: { marginBottom: 24 },
   statsContainer: { gap: 12, paddingHorizontal: 0 },
   statsGrid: { flexDirection: "row", gap: 12, marginBottom: 24 },
-  section: { marginBottom: 24 },
+  section: { marginBottom: 16 },
   sectionTitle: { fontWeight: "600", marginBottom: 16 },
   petList: { gap: 12 },
   petCardWrapper: { width: "100%" },
-  addPetButton: {
-    flexDirection: "row",
-    alignItems: "center",
-    padding: 12,
-    borderRadius: 12,
+  upgradeCard: {
     borderWidth: 1,
     borderStyle: "dashed",
-    gap: 16,
-  },
-  addPetIconContainer: {
-    width: 56,
-    height: 56,
-    borderRadius: 28,
-    justifyContent: "center",
+    borderRadius: 16,
+    paddingVertical: 16,
+    paddingHorizontal: 16,
     alignItems: "center",
+    gap: 6,
+    opacity: 0.85,
+  },
+  upgradeIconWrap: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  upgradeTitle: {
+    fontWeight: "700",
+    textAlign: "center",
+  },
+  upgradeSubtitle: {
+    textAlign: "center",
+  },
+  upgradeCta: {
+    fontWeight: "700",
   },
 });

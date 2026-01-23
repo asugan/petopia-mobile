@@ -4,6 +4,8 @@ import { combineDateTimeToISO } from '@/lib/utils/dateConversion';
 import { utcDateStringSchema } from '@/lib/schemas/core/dateSchemas';
 import { t } from '@/lib/schemas/core/i18n';
 import { objectIdSchema } from '@/lib/schemas/core/validators';
+import { recurrenceSettingsSchema, type RecurrenceRuleData } from '@/lib/schemas/recurrenceSchema';
+import type { ReminderPresetKey } from '@/constants/reminders';
 
 // Re-export constants for convenience
 export { EVENT_TYPES };
@@ -95,6 +97,11 @@ export const eventFormSchema = () =>
         .string()
         .optional()
         .transform((val) => val?.trim() || undefined),
+
+      // Recurrence fields
+      isRecurring: z.boolean().default(false),
+
+      recurrence: recurrenceSettingsSchema().optional(),
     })
     .superRefine((data, ctx) => {
       // Validate end time is provided completely if either endDate or endTime is provided
@@ -231,6 +238,24 @@ export const eventFormSchema = () =>
           });
         }
       }
+
+      // Validate recurrence fields when isRecurring is true
+      if (data.isRecurring) {
+        if (!data.recurrence?.frequency) {
+          ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            message: t('forms.validation.recurrence.frequencyInvalid'),
+            path: ['recurrence', 'frequency'],
+          });
+        }
+        if (!data.recurrence?.timezone) {
+          ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            message: t('forms.validation.recurrence.timezoneRequired'),
+            path: ['recurrence', 'timezone'],
+          });
+        }
+      }
     });
 
 // Type inference from the form schema
@@ -280,6 +305,9 @@ export const EventSchema = () =>
   eventSchema().extend({
     _id: objectIdSchema(),
     status: z.enum(['upcoming', 'completed', 'cancelled', 'missed']).default('upcoming'),
+    // Recurrence fields - present when event is part of a recurring series
+    recurrenceRuleId: objectIdSchema().optional(),
+    seriesIndex: z.number().int().min(0).optional(),
     createdAt: z.string().datetime(),
     updatedAt: z.string().datetime(),
   });
@@ -383,6 +411,7 @@ export const defaultEventFormValues: Partial<EventFormData> = {
   reminderPreset: 'standard',
   notes: '',
   location: '',
+  isRecurring: false,
 };
 
 // Event type specific validation rules
@@ -464,5 +493,68 @@ export const transformFormDataToAPI = (formData: EventFormData): EventData => {
     medicationName: formData.medicationName || undefined,
     dosage: formData.dosage || undefined,
     frequency: formData.frequency || undefined,
+  };
+};
+
+/**
+ * Transform form data to RecurrenceRuleData format for creating recurring events.
+ * This maps the EventFormData structure to the API's expected RecurrenceRuleData format.
+ */
+export const transformFormDataToRecurrenceRule = (
+  formData: EventFormData,
+  reminderEnabled: boolean,
+  reminderPresetKey: ReminderPresetKey
+): RecurrenceRuleData => {
+  if (!formData.recurrence) {
+    throw new Error('Recurrence settings are required for recurring events');
+  }
+
+  // Calculate event duration in minutes if end time is provided
+  let eventDurationMinutes: number | undefined;
+  if (formData.endDate && formData.endTime) {
+    const startTime = combineDateTimeToISO(formData.startDate, formData.startTime);
+    const endTime = combineDateTimeToISO(formData.endDate, formData.endTime);
+    const durationMs = new Date(endTime).getTime() - new Date(startTime).getTime();
+    eventDurationMinutes = Math.round(durationMs / 60000);
+  }
+
+  // Build start date from form date (use the date part only, time comes from recurrence settings)
+  const startDate = new Date(formData.startDate);
+  startDate.setHours(0, 0, 0, 0);
+
+  return {
+    petId: formData.petId,
+    title: formData.title,
+    description: formData.description || undefined,
+    type: formData.type,
+    location: formData.location || undefined,
+    notes: formData.notes || undefined,
+    reminder: reminderEnabled,
+    reminderPreset: reminderEnabled ? reminderPresetKey : undefined,
+
+    // Medication/Vaccination fields
+    vaccineName: formData.vaccineName || undefined,
+    vaccineManufacturer: formData.vaccineManufacturer || undefined,
+    batchNumber: formData.batchNumber || undefined,
+    medicationName: formData.medicationName || undefined,
+    dosage: formData.dosage || undefined,
+
+    // Recurrence settings
+    frequency: formData.recurrence.frequency!,
+    interval: formData.recurrence.interval ?? 1,
+    daysOfWeek: formData.recurrence.daysOfWeek,
+    dayOfMonth: formData.recurrence.dayOfMonth,
+    timesPerDay: formData.recurrence.timesPerDay,
+    dailyTimes: formData.recurrence.dailyTimes ?? [formData.startTime],
+    eventDurationMinutes,
+
+    // Timezone
+    timezone: formData.recurrence.timezone!,
+
+    // Date boundaries
+    startDate: startDate.toISOString(),
+    endDate: formData.recurrence.endDate 
+      ? new Date(formData.recurrence.endDate).toISOString() 
+      : undefined,
   };
 };

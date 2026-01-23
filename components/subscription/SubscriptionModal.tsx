@@ -7,6 +7,7 @@ import { Text, Button, Card } from '@/components/ui';
 import { useTheme } from '@/lib/theme';
 import { useSubscription } from '@/lib/hooks/useSubscription';
 import { SubscriptionCard } from './SubscriptionCard';
+import { SUBSCRIPTION_ROUTES } from '@/constants/routes';
 
 interface SubscriptionModalProps {
   visible: boolean;
@@ -30,7 +31,7 @@ export function SubscriptionModal({ visible, onClose, featureName }: Subscriptio
 
   const handleUpgrade = () => {
     onClose();
-    router.push('/subscription');
+    router.push(SUBSCRIPTION_ROUTES.main);
   };
 
   const handleClose = () => {

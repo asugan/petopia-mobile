@@ -4,10 +4,12 @@ import type { CreatePetInput, Pet, QueryFilters, UpdatePetInput } from '../types
 import { CACHE_TIMES } from '../config/queryConfig';
 import { ENV } from '../config/env';
 import { useCreateResource, useDeleteResource, useUpdateResource } from './useCrud';
-import { createQueryKeys } from './core/createQueryKeys';
 import { useResource } from './core/useResource';
 import { useConditionalQuery } from './core/useConditionalQuery';
-import { useSubscriptionQueryEnabled } from './useSubscriptionQueries';
+import { useAuthQueryEnabled } from './useAuthQueryEnabled';
+import { downgradeKeys, eventKeys, expenseKeys, feedingScheduleKeys, healthRecordKeys, petKeys } from './queryKeys';
+
+export { petKeys } from './queryKeys';
 
 interface PetFilters extends QueryFilters {
   search?: string;
@@ -18,17 +20,8 @@ interface PetFilters extends QueryFilters {
   limit?: number;
 }
 
-const basePetKeys = createQueryKeys('pets');
-
-export const petKeys = {
-  ...basePetKeys,
-  stats: () => [...basePetKeys.all, 'stats'] as const,
-  byType: (type: string) => [...basePetKeys.all, 'type', type] as const,
-  infinite: (filters?: Omit<PetFilters, 'page'>) => [...basePetKeys.all, 'infinite', filters] as const,
-};
-
 export function usePets(filters: PetFilters = {}) {
-  const { enabled } = useSubscriptionQueryEnabled();
+  const { enabled } = useAuthQueryEnabled();
 
   return useConditionalQuery<Pet[]>({
     queryKey: petKeys.list(filters),
@@ -52,7 +45,7 @@ export function usePets(filters: PetFilters = {}) {
 }
 
 export function useSearchPets(query: string) {
-  const { enabled } = useSubscriptionQueryEnabled();
+  const { enabled } = useAuthQueryEnabled();
 
   return useConditionalQuery<Pet[]>({
     queryKey: petKeys.search(query),
@@ -65,7 +58,7 @@ export function useSearchPets(query: string) {
 }
 
 export function usePetsByType(type: string) {
-  const { enabled } = useSubscriptionQueryEnabled();
+  const { enabled } = useAuthQueryEnabled();
 
   return useConditionalQuery<Pet[]>({
     queryKey: petKeys.byType(type),
@@ -78,7 +71,7 @@ export function usePetsByType(type: string) {
 }
 
 export function usePet(id: string) {
-  const { enabled } = useSubscriptionQueryEnabled();
+  const { enabled } = useAuthQueryEnabled();
 
   return useResource<Pet>({
     queryKey: petKeys.detail(id),
@@ -90,7 +83,7 @@ export function usePet(id: string) {
 }
 
 export function usePetStats() {
-  const { enabled } = useSubscriptionQueryEnabled();
+  const { enabled } = useAuthQueryEnabled();
 
   return useQuery({
     queryKey: petKeys.stats(),
@@ -110,6 +103,8 @@ export function useCreatePet() {
       listQueryKey: petKeys.lists(),
       onSettled: () => {
         queryClient.invalidateQueries({ queryKey: petKeys.all });
+        // Invalidate downgrade status as pet count changed
+        queryClient.invalidateQueries({ queryKey: downgradeKeys.all });
       },
     }
   );
@@ -138,8 +133,71 @@ export function useDeletePet() {
     {
       listQueryKey: petKeys.lists(),
       detailQueryKey: petKeys.detail,
-      onSettled: () => {
+      onSuccess: (_data, petId) => {
+        queryClient.removeQueries({ queryKey: petKeys.detail(petId) });
+        queryClient.removeQueries({ queryKey: feedingScheduleKeys.activeByPet(petId) });
+        queryClient.removeQueries({ queryKey: eventKeys.list({ petId }) });
+        queryClient.removeQueries({
+          predicate: (query) =>
+            Array.isArray(query.queryKey) &&
+            query.queryKey[0] === healthRecordKeys.all[0] &&
+            query.queryKey[1] === 'list' &&
+            query.queryKey[2] === petId,
+        });
+      },
+      onSettled: (_data, _error, petId) => {
         queryClient.invalidateQueries({ queryKey: petKeys.all });
+        queryClient.invalidateQueries({ queryKey: healthRecordKeys.all });
+        queryClient.invalidateQueries({ queryKey: eventKeys.all });
+        queryClient.invalidateQueries({ queryKey: feedingScheduleKeys.all });
+        queryClient.invalidateQueries({ queryKey: expenseKeys.all });
+        queryClient.invalidateQueries({ queryKey: healthRecordKeys.list('all') });
+        queryClient.invalidateQueries({ queryKey: feedingScheduleKeys.lists() });
+        queryClient.invalidateQueries({ queryKey: feedingScheduleKeys.active() });
+        queryClient.invalidateQueries({ queryKey: feedingScheduleKeys.today() });
+        queryClient.invalidateQueries({ queryKey: feedingScheduleKeys.next() });
+        queryClient.invalidateQueries({ queryKey: eventKeys.lists() });
+        queryClient.invalidateQueries({ queryKey: eventKeys.upcoming() });
+        queryClient.invalidateQueries({ queryKey: eventKeys.today() });
+        queryClient.invalidateQueries({
+          predicate: (query) =>
+            Array.isArray(query.queryKey) &&
+            query.queryKey[0] === eventKeys.all[0] &&
+            query.queryKey[1] === 'calendar',
+        });
+        queryClient.invalidateQueries({
+          predicate: (query) =>
+            Array.isArray(query.queryKey) &&
+            query.queryKey[0] === healthRecordKeys.all[0] &&
+            query.queryKey[1] === 'list',
+        });
+        queryClient.invalidateQueries({
+          predicate: (query) =>
+            Array.isArray(query.queryKey) &&
+            query.queryKey[0] === feedingScheduleKeys.all[0] &&
+            query.queryKey[1] === 'list',
+        });
+        queryClient.invalidateQueries({
+          predicate: (query) =>
+            Array.isArray(query.queryKey) &&
+            query.queryKey[0] === expenseKeys.all[0] &&
+            query.queryKey[1] === 'list' &&
+            ((query.queryKey[2] as { petId?: string } | undefined)?.petId === petId ||
+              typeof (query.queryKey[2] as { petId?: string } | undefined)?.petId === 'undefined'),
+        });
+        queryClient.invalidateQueries({
+          predicate: (query) =>
+            Array.isArray(query.queryKey) &&
+            query.queryKey[0] === expenseKeys.all[0] &&
+            query.queryKey[1] === 'infinite',
+        });
+        queryClient.invalidateQueries({
+          predicate: (query) =>
+            Array.isArray(query.queryKey) &&
+            query.queryKey[0] === feedingScheduleKeys.all[0] &&
+            query.queryKey[1] === 'active' &&
+            query.queryKey[2] === petId,
+        });
       },
     }
   );
@@ -162,7 +220,7 @@ export function useUploadPetPhoto() {
 
 export function useInfinitePets(filters?: Omit<PetFilters, 'page'>) {
   const defaultLimit = ENV.DEFAULT_LIMIT || 20;
-  const { enabled } = useSubscriptionQueryEnabled();
+  const { enabled } = useAuthQueryEnabled();
 
   return useInfiniteQuery({
     queryKey: petKeys.infinite(filters),

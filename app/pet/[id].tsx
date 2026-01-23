@@ -1,5 +1,6 @@
 import React, { useMemo, useState } from 'react';
-import { View, StyleSheet, ScrollView, Image, TouchableOpacity, Dimensions, Share, Alert } from 'react-native';
+import { View, StyleSheet, ScrollView, TouchableOpacity, Dimensions, Share, Alert } from 'react-native';
+import { Image } from 'expo-image';
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -9,7 +10,7 @@ import { tr, enUS } from 'date-fns/locale';
 import { Ionicons, MaterialCommunityIcons, MaterialIcons } from '@expo/vector-icons';
 
 import { Text, ActivityIndicator } from '@/components/ui';
-import { FALLBACK_IMAGES } from '@/constants/images';
+import { FALLBACK_IMAGES, PET_TYPE_AVATARS } from '@/constants/images';
 import { useTheme } from '@/lib/theme';
 import { usePet, useDeletePet } from '@/lib/hooks/usePets';
 import { useEvents } from '@/lib/hooks/useEvents';
@@ -17,6 +18,8 @@ import { useHealthRecords } from '@/lib/hooks/useHealthRecords';
 import { useActiveFeedingSchedulesByPet } from '@/lib/hooks/useFeedingSchedules';
 import { formatTimeForDisplay, getNextFeedingTime, getPreviousFeedingTime } from '@/lib/schemas/feedingScheduleSchema';
 import { PetModal } from '@/components/PetModal';
+import { showToast } from '@/lib/toast/showToast';
+import { TAB_ROUTES } from '@/constants/routes';
 
 const { width } = Dimensions.get('window');
 
@@ -203,20 +206,11 @@ export default function PetDetailScreen() {
         await deletePetMutation.mutateAsync(pet._id);
         router.back();
       } catch {
-        Alert.alert(
-          t('common.error'),
-          t('pets.deleteError'),
-          [
-            {
-              text: t('common.cancel'),
-              style: 'cancel',
-            },
-            {
-              text: t('common.retry'),
-              onPress: performDelete,
-            },
-          ]
-        );
+        showToast({
+          type: 'error',
+          title: t('common.error'),
+          message: t('pets.deleteError'),
+        });
       }
     };
 
@@ -275,7 +269,7 @@ export default function PetDetailScreen() {
 
   const heroSource = pet.profilePhoto
     ? { uri: pet.profilePhoto }
-    : FALLBACK_IMAGES.petHero;
+    : PET_TYPE_AVATARS[pet.type.toLowerCase() as keyof typeof PET_TYPE_AVATARS] ?? FALLBACK_IMAGES.petHero;
 
   return (
     <View style={[styles.container, { backgroundColor: theme.colors.background }]}>
@@ -285,7 +279,7 @@ export default function PetDetailScreen() {
         showsVerticalScrollIndicator={false}
       >
         <View style={styles.heroContainer}>
-          <Image source={heroSource} style={styles.heroImage} resizeMode="cover" />
+          <Image source={heroSource} style={styles.heroImage} contentFit="cover" />
           <LinearGradient
             colors={['transparent', theme.colors.scrim, theme.colors.background]}
             style={styles.heroGradient}
@@ -296,7 +290,7 @@ export default function PetDetailScreen() {
             <View style={styles.heroActions}>
               <TouchableOpacity
                 style={[styles.heroActionButton, { backgroundColor: theme.colors.primary, shadowColor: theme.colors.primary }]}
-                onPress={() => router.push({ pathname: '/(tabs)/calendar', params: { petId: pet._id, action: 'create' } })}
+                onPress={() => router.push({ pathname: TAB_ROUTES.calendar, params: { petId: pet._id, action: 'create' } })}
                 accessibilityLabel={t('events.addEvent')}
                 accessibilityRole="button"
               >
@@ -467,6 +461,7 @@ export default function PetDetailScreen() {
             <View style={styles.sectionHeader}>
               <Text style={[styles.sectionTitle, { color: theme.colors.onSurface }]}>{t('pets.healthStatus')}</Text>
               <TouchableOpacity
+                onPress={() => router.push(TAB_ROUTES.care)}
                 accessibilityLabel={t('pets.viewHealthDetails')}
                 accessibilityRole="button"
               >

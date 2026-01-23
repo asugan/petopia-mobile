@@ -14,6 +14,8 @@ export * from "./useEvents";
 export * from "./useFeedingSchedules";
 export * from "./useExpenses";
 export * from "./useUserBudget";
+export * from "./usePendingPet";
+export * from "./useOnboardingCompletion";
 
 // CRUD mutation hooks
 export * from "./useCrud";

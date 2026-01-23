@@ -1,5 +1,5 @@
 import React from 'react';
-import { Modal as RNModal, View, StyleSheet } from 'react-native';
+import { Modal as RNModal, View, StyleSheet, Platform } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Text, Button } from '@/components/ui';
 import { useTheme } from '@/lib/theme';
@@ -25,11 +25,21 @@ const ExpenseFormModal: React.FC<ExpenseFormModalProps> = ({
 }) => {
   const { theme } = useTheme();
 
+  const animationType = Platform.select({
+    ios: 'slide' as const,
+    android: 'fade' as const,
+  });
+
+  const presentationStyle = Platform.select({
+    ios: 'pageSheet' as const,
+    android: undefined,
+  });
+
   return (
     <RNModal
       visible={visible}
-      animationType="slide"
-      presentationStyle="pageSheet"
+      animationType={animationType}
+      presentationStyle={presentationStyle}
       onRequestClose={onDismiss}
     >
       <SafeAreaView style={[styles.container, { backgroundColor: theme.colors.surface }]}>

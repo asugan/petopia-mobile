@@ -57,6 +57,7 @@ export const useEventForm = (event?: Event, initialPetId?: string): UseEventForm
       medicationName: event?.medicationName || undefined,
       dosage: event?.dosage || undefined,
       frequency: event?.frequency || undefined,
+      isRecurring: false,
     };
   }, [event, initialPetId, presetSelections]);
 

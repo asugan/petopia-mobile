@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, StyleSheet, Linking, Platform } from 'react-native';
+import { View, StyleSheet, Linking, Platform, ActivityIndicator } from 'react-native';
 import { Text, Button, Card, Portal, Dialog } from '@/components/ui';
 import { useTheme } from '@/lib/theme';
 import { useTranslation } from 'react-i18next';
@@ -7,7 +7,7 @@ import { MaterialCommunityIcons } from '@expo/vector-icons';
 import * as Notifications from 'expo-notifications';
 import { useNotifications } from '@/lib/hooks/useNotifications';
 
-interface NotificationPermissionPromptProps {
+export interface NotificationPermissionPromptProps {
   visible: boolean;
   onDismiss: () => void;
   onPermissionGranted?: () => void;
@@ -22,7 +22,34 @@ export default function NotificationPermissionPrompt({
 }: NotificationPermissionPromptProps) {
   const { theme } = useTheme();
   const { t } = useTranslation();
-  const { requestPermission, isLoading } = useNotifications();
+  const { requestPermission, isLoading, permissions } = useNotifications();
+
+  // Check if permission is permanently denied
+  const isPermanentlyDenied = React.useMemo(() => {
+    if (!permissions) return false;
+
+    if (Platform.OS === 'ios') {
+      const iosStatus = permissions.ios?.status;
+      return iosStatus === Notifications.IosAuthorizationStatus.DENIED;
+    }
+
+    if (Platform.OS === 'android') {
+      // Android: if status is DENIED, user must go to settings
+      return permissions.status === Notifications.PermissionStatus.DENIED;
+    }
+
+    return false;
+  }, [permissions]);
+
+  const handleOpenSettings = () => {
+    if (Platform.OS === 'ios') {
+      Linking.openURL('app-settings:');
+    } else {
+      Linking.openSettings();
+    }
+    onPermissionDenied?.();
+    onDismiss();
+  };
 
   const handleRequestPermission = async () => {
     const granted = await requestPermission();
@@ -41,70 +68,84 @@ export default function NotificationPermissionPrompt({
         <Dialog.Content>
           <View style={styles.iconContainer}>
             <MaterialCommunityIcons
-              name="bell-ring"
+              name={isPermanentlyDenied ? 'bell-off' : 'bell-ring'}
               size={64}
               color={theme.colors.primary}
             />
           </View>
 
           <Text variant="headlineSmall" style={[styles.title, { color: theme.colors.onSurface }]}>
-            {t('notifications.enableTitle')}
+            {isPermanentlyDenied ? t('notifications.permissionDeniedTitle') : t('notifications.enableTitle')}
           </Text>
 
           <Text variant="bodyMedium" style={[styles.description, { color: theme.colors.onSurfaceVariant }]}>
-            {t('notifications.enableDescription')}
+            {isPermanentlyDenied
+              ? t('notifications.permissionDeniedDescription')
+              : t('notifications.enableDescription')}
           </Text>
 
-          <View style={styles.benefitsList}>
-            <View style={styles.benefitItem}>
-              <MaterialCommunityIcons
-                name="calendar-clock"
-                size={24}
-                color={theme.colors.primary}
-                style={styles.benefitIcon}
-              />
-              <Text variant="bodyMedium" style={{ color: theme.colors.onSurface }}>
-                {t('notifications.benefit1')}
-              </Text>
-            </View>
+          {!isPermanentlyDenied && (
+            <View style={styles.benefitsList}>
+              <View style={styles.benefitItem}>
+                <MaterialCommunityIcons
+                  name="calendar-clock"
+                  size={24}
+                  color={theme.colors.primary}
+                  style={styles.benefitIcon}
+                />
+                <Text variant="bodyMedium" style={{ color: theme.colors.onSurface }}>
+                  {t('notifications.benefit1')}
+                </Text>
+              </View>
 
-            <View style={styles.benefitItem}>
-              <MaterialCommunityIcons
-                name="medical-bag"
-                size={24}
-                color={theme.colors.secondary}
-                style={styles.benefitIcon}
-              />
-              <Text variant="bodyMedium" style={{ color: theme.colors.onSurface }}>
-                {t('notifications.benefit2')}
-              </Text>
-            </View>
+              <View style={styles.benefitItem}>
+                <MaterialCommunityIcons
+                  name="medical-bag"
+                  size={24}
+                  color={theme.colors.secondary}
+                  style={styles.benefitIcon}
+                />
+                <Text variant="bodyMedium" style={{ color: theme.colors.onSurface }}>
+                  {t('notifications.benefit2')}
+                </Text>
+              </View>
 
-            <View style={styles.benefitItem}>
-              <MaterialCommunityIcons
-                name="food-apple"
-                size={24}
-                color={theme.colors.tertiary}
-                style={styles.benefitIcon}
-              />
-              <Text variant="bodyMedium" style={{ color: theme.colors.onSurface }}>
-                {t('notifications.benefit3')}
-              </Text>
+              <View style={styles.benefitItem}>
+                <MaterialCommunityIcons
+                  name="food-apple"
+                  size={24}
+                  color={theme.colors.tertiary}
+                  style={styles.benefitIcon}
+                />
+                <Text variant="bodyMedium" style={{ color: theme.colors.onSurface }}>
+                  {t('notifications.benefit3')}
+                </Text>
+              </View>
             </View>
-          </View>
+          )}
         </Dialog.Content>
 
         <Dialog.Actions>
           <Button onPress={onDismiss}>
             {t('common.cancel')}
           </Button>
-          <Button
-            mode="contained"
-            onPress={handleRequestPermission}
-            disabled={isLoading}
-          >
-            {t('notifications.enable')}
-          </Button>
+          {isPermanentlyDenied ? (
+            <Button
+              mode="contained"
+              onPress={handleOpenSettings}
+              disabled={isLoading}
+            >
+              {t('notifications.openSettings')}
+            </Button>
+          ) : (
+            <Button
+              mode="contained"
+              onPress={handleRequestPermission}
+              disabled={isLoading}
+            >
+              {t('notifications.enable')}
+            </Button>
+          )}
         </Dialog.Actions>
       </Dialog>
     </Portal>
@@ -114,7 +155,7 @@ export default function NotificationPermissionPrompt({
 /**
  * Inline notification permission card (for settings page)
  */
-interface NotificationPermissionCardProps {
+export interface NotificationPermissionCardProps {
   refreshKey?: number;
 }
 
@@ -147,7 +188,19 @@ export function NotificationPermissionCard({ refreshKey }: NotificationPermissio
   };
 
   if (permissions === null || hookLoading) {
-    return null;
+    return (
+      <Card style={[styles.card, { backgroundColor: theme.colors.surfaceVariant }]}>
+        <View style={styles.cardContainer}>
+          <View style={styles.cardHeaderRow}>
+            <ActivityIndicator size="small" />
+            <View style={styles.cardText}>
+              <View style={[styles.skeletonTitle, { backgroundColor: theme.colors.surface }]} />
+              <View style={[styles.skeletonSubtitle, { backgroundColor: theme.colors.surface }]} />
+            </View>
+          </View>
+        </View>
+      </Card>
+    );
   }
 
   if (isEnabled) {
@@ -241,6 +294,7 @@ const styles = StyleSheet.create({
   iconContainer: {
     alignItems: 'center',
     marginBottom: 16,
+    marginTop: 8,
   },
   title: {
     textAlign: 'center',
@@ -254,6 +308,7 @@ const styles = StyleSheet.create({
   },
   benefitsList: {
     gap: 16,
+    paddingBottom: 8,
   },
   benefitItem: {
     flexDirection: 'row',
@@ -279,5 +334,16 @@ const styles = StyleSheet.create({
   },
   settingsButton: {
     marginTop: 12,
+  },
+  skeletonTitle: {
+    height: 16,
+    width: '60%',
+    borderRadius: 4,
+    marginBottom: 4,
+  },
+  skeletonSubtitle: {
+    height: 12,
+    width: '80%',
+    borderRadius: 4,
   },
 });

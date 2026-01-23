@@ -4,6 +4,7 @@ import { Text, Card, ProgressBar, Button } from "@/components/ui";
 import { useTheme } from "@/lib/theme";
 import { useTranslation } from "react-i18next";
 import { useRouter } from "expo-router";
+import { TAB_ROUTES } from "@/constants/routes";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import {
   useUserBudget,
@@ -58,7 +59,7 @@ export const SimpleBudgetOverview = ({
     if (onPress) {
       onPress();
     } else {
-      router.push("/(tabs)/finance");
+      router.push(TAB_ROUTES.finance);
     }
   };
 

@@ -1,15 +1,24 @@
-import { Switch, Text } from '@/components/ui';
+import { ActivityIndicator, Switch, Text } from '@/components/ui';
 import { useTheme } from '@/lib/theme';
 import React from 'react';
 import { Controller, useFormContext } from 'react-hook-form';
 import { StyleSheet, View } from 'react-native';
 
 interface SmartSwitchProps {
+  /** The form field name (must be registered in react-hook-form) */
   name: string;
+  /** The label text to display next to the switch */
   label: string;
+  /** Optional description text displayed below the label */
   description?: string;
+  /** When true, the switch is disabled and cannot be toggled */
   disabled?: boolean;
+  /** When true, shows an ActivityIndicator instead of the switch */
+  loading?: boolean;
+  /** Test ID for automated testing */
   testID?: string;
+  /** Callback fired when the value changes (in addition to form submission) */
+  onValueChange?: (value: boolean) => void;
 }
 
 /**
@@ -21,10 +30,16 @@ export const SmartSwitch = ({
   label,
   description,
   disabled,
+  loading,
   testID,
-}: SmartSwitchProps) => {
+  onValueChange,
+}: SmartSwitchProps): React.ReactElement => {
   const { control } = useFormContext();
   const { theme } = useTheme();
+
+  const handleValueChange = (value: boolean): void => {
+    onValueChange?.(value);
+  };
 
   return (
     <Controller
@@ -40,12 +55,19 @@ export const SmartSwitch = ({
               </Text>
             )}
           </View>
-          <Switch
-            value={value}
-            onValueChange={onChange}
-            disabled={disabled}
-            testID={testID}
-          />
+          {loading ? (
+            <ActivityIndicator size="small" />
+          ) : (
+            <Switch
+              value={value}
+              onValueChange={(val) => {
+                onChange(val);
+                handleValueChange(val);
+              }}
+              disabled={disabled}
+              testID={testID}
+            />
+          )}
         </View>
       )}
     />

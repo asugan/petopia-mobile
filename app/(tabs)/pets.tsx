@@ -4,8 +4,9 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
 import { useRouter } from 'expo-router';
-import { Button, FAB, Portal, Snackbar, Text } from '@/components/ui';
-import { ProtectedRoute } from '@/components/subscription';
+import { useSubscription } from '@/lib/hooks/useSubscription';
+import { Button, FAB, Text } from '@/components/ui';
+import { HeaderActions, LargeTitle } from '@/components/LargeTitle';
 import PetListCard from '@/components/PetListCard';
 import { useTheme } from '@/lib/theme';
 import { PetCardSkeleton } from '@/components/PetCardSkeleton';
@@ -13,11 +14,16 @@ import { PetModal } from '@/components/PetModal';
 import { LAYOUT } from '@/constants';
 import { Pet } from '@/lib/types';
 import { useInfinitePets } from '@/lib/hooks/usePets';
+import { showToast } from '@/lib/toast/showToast';
+import { usePendingPet } from '@/lib/hooks/usePendingPet';
+import { SUBSCRIPTION_ROUTES, FEATURE_ROUTES } from '@/constants/routes';
 
 export default function PetsScreen() {
   const { theme } = useTheme();
   const { t } = useTranslation();
   const router = useRouter();
+  const { isProUser, isInitialized } = useSubscription();
+  const { processPendingPet } = usePendingPet();
 
   // React Query infinite query for pets
   const {
@@ -39,40 +45,48 @@ export default function PetsScreen() {
 
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedPet, setSelectedPetState] = useState<Pet | undefined>();
-  const [snackbarVisible, setSnackbarVisible] = useState(false);
-  const [snackbarMessage, setSnackbarMessage] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
   const [activeFilter, setActiveFilter] = useState<'all' | 'dog' | 'cat' | 'urgent'>('all');
   const [urgentStatus, setUrgentStatus] = useState<Record<string, { urgent: boolean; loading: boolean }>>({});
 
+  // Login sonrası pending pet kontrolü
+  useEffect(() => {
+    processPendingPet(allPets.length);
+  }, [processPendingPet, allPets.length, isInitialized]);
+
   useEffect(() => {
     if (error) {
-      setSnackbarMessage(error.message || t('common.error'));
-      setSnackbarVisible(true);
+      showToast({
+        type: 'error',
+        title: t('common.error'),
+        message: error.message || t('common.error'),
+      });
     }
   }, [error, t]);
 
-  const showSnackbar = React.useCallback((message: string) => {
-    setSnackbarMessage(message);
-    setSnackbarVisible(true);
-  }, []);
-
-  const handleAddPet = () => {
+  const handleAddPet = async () => {
+    if (!isProUser && allPets.length >= 1) {
+      router.push(SUBSCRIPTION_ROUTES.main);
+      return;
+    }
     setSelectedPetState(undefined);
     setModalVisible(true);
   };
 
-  const handleModalSuccess = () => {
-    // React Query handles cache invalidation automatically
-    showSnackbar(t('pets.saveSuccess'));
+  const handleUpgradePress = async () => {
+    router.push(SUBSCRIPTION_ROUTES.main);
   };
 
-  const handleSnackbarDismiss = () => {
-    setSnackbarVisible(false);
+  const handleModalSuccess = () => {
+    // React Query handles cache invalidation automatically
+    showToast({
+      type: 'success',
+      title: t('pets.saveSuccess'),
+    });
   };
 
   const handleViewPet = (pet: Pet) => {
-    router.push(`/pet/${pet._id}`);
+    router.push(FEATURE_ROUTES.petDetail(pet._id));
   };
 
   const handleLoadMore = () => {
@@ -160,127 +174,177 @@ export default function PetsScreen() {
   };
 
   return (
-    <ProtectedRoute featureName={t('subscription.features.petManagement')}>
-      <SafeAreaView style={[styles.container, { backgroundColor: theme.colors.background }]}>
-        <ScrollView
-          style={styles.scrollView}
-          contentContainerStyle={styles.scrollContent}
-          showsVerticalScrollIndicator={false}
-          keyboardShouldPersistTaps="handled"
-          refreshControl={
-            <RefreshControl
-              refreshing={isRefetching}
-              onRefresh={handleRefresh}
-              colors={[theme.colors.primary]}
-              tintColor={theme.colors.primary}
+    <SafeAreaView style={[styles.container, { backgroundColor: theme.colors.background }]}>
+      <ScrollView
+        style={styles.scrollView}
+        contentContainerStyle={styles.scrollContent}
+        showsVerticalScrollIndicator={false}
+        keyboardShouldPersistTaps="handled"
+        refreshControl={
+          <RefreshControl
+            refreshing={isRefetching}
+            onRefresh={handleRefresh}
+            colors={[theme.colors.primary]}
+            tintColor={theme.colors.primary}
+          />
+        }
+      >
+        <LargeTitle title={t('navigation.pets')} actions={<HeaderActions />} />
+        <View style={styles.searchWrapper}>
+          <View
+            style={[
+              styles.searchBar,
+              {
+                backgroundColor: theme.colors.surface,
+                borderColor: theme.colors.outlineVariant,
+              },
+            ]}
+          >
+            <Ionicons name="search" size={18} color={theme.colors.onSurfaceVariant} style={styles.searchIcon} />
+            <TextInput
+              value={searchQuery}
+              onChangeText={setSearchQuery}
+              placeholder={t('pets.searchPlaceholder')}
+              placeholderTextColor={theme.colors.onSurfaceVariant}
+              selectionColor={theme.colors.primary}
+              style={[styles.searchInput, { color: theme.colors.onSurface }]}
+              autoCapitalize="none"
+              autoCorrect={false}
             />
-          }
+          </View>
+        </View>
+
+        <ScrollView
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          contentContainerStyle={styles.chipsContainer}
         >
-          <View style={styles.searchWrapper}>
+          {chipItems.map((chip) => {
+            const isSelected = activeFilter === chip.key;
+            const chipBackground = isSelected ? theme.colors.primary : theme.colors.surface;
+            const chipBorder = isSelected ? theme.colors.primary : theme.colors.outlineVariant;
+            const chipTextColor = isSelected ? theme.colors.onPrimary : theme.colors.onSurfaceVariant;
+            const iconColor = isSelected ? theme.colors.onPrimary : theme.colors.error;
+
+            return (
+              <Pressable
+                key={chip.key}
+                onPress={() => setActiveFilter(chip.key)}
+                style={({ pressed }) => [
+                  styles.chip,
+                  {
+                    backgroundColor: chipBackground,
+                    borderColor: chipBorder,
+                  },
+                  pressed && styles.chipPressed,
+                ]}
+              >
+                <View style={styles.chipContent}>
+                  {chip.icon && (
+                    <Ionicons
+                      name={chip.icon}
+                      size={14}
+                      color={iconColor}
+                      style={styles.chipIcon}
+                    />
+                  )}
+                  <Text variant="labelMedium" style={[styles.chipLabel, { color: chipTextColor }]}>
+                    {chip.label}
+                  </Text>
+                </View>
+              </Pressable>
+            );
+          })}
+        </ScrollView>
+
+        <View style={styles.listSection}>
+          {isLoading && allPets.length === 0 ? (
+            renderLoadingSkeleton()
+          ) : allPets.length === 0 ? (
             <View
               style={[
-                styles.searchBar,
-                {
-                  backgroundColor: theme.colors.surface,
-                  borderColor: theme.colors.outlineVariant,
-                },
+                styles.emptyStateCard,
+                { borderColor: theme.colors.outlineVariant, backgroundColor: theme.colors.surface },
               ]}
             >
-              <Ionicons name="search" size={18} color={theme.colors.onSurfaceVariant} style={styles.searchIcon} />
-              <TextInput
-                value={searchQuery}
-                onChangeText={setSearchQuery}
-                placeholder={t('pets.searchPlaceholder')}
-                placeholderTextColor={theme.colors.onSurfaceVariant}
-                selectionColor={theme.colors.primary}
-                style={[styles.searchInput, { color: theme.colors.onSurface }]}
-                autoCapitalize="none"
-                autoCorrect={false}
-              />
+              <View style={[styles.emptyStateIcon, { backgroundColor: theme.colors.primaryContainer }]}
+              >
+                <Ionicons name="paw" size={24} color={theme.colors.primary} />
+              </View>
+              <Text variant="titleMedium" style={[styles.emptyStateTitle, { color: theme.colors.onSurface }]}>
+                {t('pets.emptyTitle')}
+              </Text>
+              <Text variant="bodySmall" style={[styles.emptyStateDescription, { color: theme.colors.onSurfaceVariant }]}>
+                {t('pets.emptyDescription')}
+              </Text>
+              <Button mode="contained" onPress={handleAddPet} style={styles.emptyStateCta}>
+                {t('pets.emptyCta')}
+              </Button>
             </View>
-          </View>
+          ) : (
+            filteredPets.map((pet) => (
+              <PetListCard
+                key={pet._id}
+                pet={pet}
+                petId={pet._id}
+                onPress={() => handleViewPet(pet)}
+                filterMode={activeFilter === 'urgent' ? 'urgent' : 'all'}
+                onUrgencyChange={handleUrgencyChange}
+              />
+            ))
+          )}
 
-          <ScrollView
-            horizontal
-            showsHorizontalScrollIndicator={false}
-            contentContainerStyle={styles.chipsContainer}
-          >
-            {chipItems.map((chip) => {
-              const isSelected = activeFilter === chip.key;
-              const chipBackground = isSelected ? theme.colors.primary : theme.colors.surface;
-              const chipBorder = isSelected ? theme.colors.primary : theme.colors.outlineVariant;
-              const chipTextColor = isSelected ? theme.colors.onPrimary : theme.colors.onSurfaceVariant;
-              const iconColor = isSelected ? theme.colors.onPrimary : theme.colors.error;
-
-              return (
-                <Pressable
-                  key={chip.key}
-                  onPress={() => setActiveFilter(chip.key)}
-                  style={({ pressed }) => [
-                    styles.chip,
-                    {
-                      backgroundColor: chipBackground,
-                      borderColor: chipBorder,
-                    },
-                    pressed && styles.chipPressed,
-                  ]}
-                >
-                  <View style={styles.chipContent}>
-                    {chip.icon && (
-                      <Ionicons
-                        name={chip.icon}
-                        size={14}
-                        color={iconColor}
-                        style={styles.chipIcon}
-                      />
-                    )}
-                    <Text variant="labelMedium" style={[styles.chipLabel, { color: chipTextColor }]}>
-                      {chip.label}
-                    </Text>
-                  </View>
-                </Pressable>
-              );
-            })}
-          </ScrollView>
-
-          <View style={styles.listSection}>
-            {isLoading && allPets.length === 0 ? (
-              renderLoadingSkeleton()
-            ) : (
-              filteredPets.map((pet) => (
-                <PetListCard
-                  key={pet._id}
-                  pet={pet}
-                  petId={pet._id}
-                  onPress={() => handleViewPet(pet)}
-                  filterMode={activeFilter === 'urgent' ? 'urgent' : 'all'}
-                  onUrgencyChange={handleUrgencyChange}
-                />
-              ))
-            )}
-
-            {activeFilter === 'urgent' && allPets.length > 0 && !hasNextPage && !urgentSummary.isLoading && !urgentSummary.hasUrgent && (
-              <View style={styles.emptyUrgent}>
-                <Ionicons name="alert-circle-outline" size={16} color={theme.colors.onSurfaceVariant} />
-                <Text variant="bodySmall" style={[styles.emptyUrgentText, { color: theme.colors.onSurfaceVariant }]}>
-                  {t('pets.filters.emptyUrgent')}
-                </Text>
+          {!isProUser && allPets.length >= 1 && (
+            <Pressable
+              onPress={handleUpgradePress}
+              style={({ pressed }) => [
+                styles.upgradeCard,
+                { borderColor: theme.colors.primary },
+                pressed && styles.chipPressed,
+              ]}
+            >
+              <View style={[styles.upgradeIconWrap, { backgroundColor: theme.colors.primaryContainer }]}
+              >
+                <Ionicons name="lock-closed" size={18} color={theme.colors.primary} />
               </View>
-            )}
+              <Text variant="labelLarge" style={[styles.upgradeTitle, { color: theme.colors.onSurface }]}
+              >
+                {t('limits.pets.title')}
+              </Text>
+              <Text variant="bodySmall" style={[styles.upgradeSubtitle, { color: theme.colors.onSurfaceVariant }]}
+              >
+                {t('limits.pets.subtitle')}
+              </Text>
+              <Text variant="labelLarge" style={[styles.upgradeCta, { color: theme.colors.primary }]}
+              >
+                {t('limits.pets.cta')}
+              </Text>
+            </Pressable>
+          )}
 
-            {hasNextPage && allPets.length > 0 && (
-              <View style={styles.loadMoreContainer}>
-                <Button
-                  mode="outlined"
-                  onPress={handleLoadMore}
-                  disabled={isFetchingNextPage}
-                  style={styles.loadMoreButton}
-                >
-                  {isFetchingNextPage ? t('common.loading') : t('common.loadMore')}
-                </Button>
-              </View>
-            )}
+          {activeFilter === 'urgent' && allPets.length > 0 && !hasNextPage && !urgentSummary.isLoading && !urgentSummary.hasUrgent && (
+            <View style={styles.emptyUrgent}>
+              <Ionicons name="alert-circle-outline" size={16} color={theme.colors.onSurfaceVariant} />
+              <Text variant="bodySmall" style={[styles.emptyUrgentText, { color: theme.colors.onSurfaceVariant }]}>
+                {t('pets.filters.emptyUrgent')}
+              </Text>
+            </View>
+          )}
 
+          {hasNextPage && allPets.length > 0 && (
+            <View style={styles.loadMoreContainer}>
+              <Button
+                mode="outlined"
+                onPress={handleLoadMore}
+                disabled={isFetchingNextPage}
+                style={styles.loadMoreButton}
+              >
+                {isFetchingNextPage ? t('common.loading') : t('common.loadMore')}
+              </Button>
+            </View>
+          )}
+
+          {isProUser && allPets.length > 0 && (
             <Pressable
               onPress={handleAddPet}
               style={({ pressed }) => [
@@ -289,49 +353,38 @@ export default function PetsScreen() {
                 pressed && styles.chipPressed,
               ]}
             >
-              <View style={[styles.addIconWrap, { backgroundColor: theme.colors.primaryContainer }]}>
+              <View style={[styles.addIconWrap, { backgroundColor: theme.colors.primaryContainer }]}
+              >
                 <Ionicons name="paw" size={20} color={theme.colors.primary} />
               </View>
-              <Text variant="bodySmall" style={[styles.addPrompt, { color: theme.colors.onSurfaceVariant }]}>
+              <Text variant="bodySmall" style={[styles.addPrompt, { color: theme.colors.onSurfaceVariant }]}
+              >
                 {t('pets.addAnotherPrompt')}
               </Text>
-              <Text variant="labelLarge" style={[styles.addCta, { color: theme.colors.primary }]}>
+              <Text variant="labelLarge" style={[styles.addCta, { color: theme.colors.primary }]}
+              >
                 {t('pets.addAnotherCta')}
               </Text>
             </Pressable>
-          </View>
-        </ScrollView>
+          )}
+        </View>
+      </ScrollView>
 
-        <FAB
-          icon="add"
-          style={{ ...styles.fab, backgroundColor: theme.colors.primary }}
-          onPress={handleAddPet}
-        />
+      <FAB
+        icon="add"
+        style={{ ...styles.fab, backgroundColor: theme.colors.primary }}
+        onPress={handleAddPet}
+      />
 
-        <PetModal
-          visible={modalVisible}
-          pet={selectedPet}
-          onClose={() => setModalVisible(false)}
-          onSuccess={handleModalSuccess}
-          testID="pet-modal"
-        />
+      <PetModal
+        visible={modalVisible}
+        pet={selectedPet}
+        onClose={() => setModalVisible(false)}
+        onSuccess={handleModalSuccess}
+        testID="pet-modal"
+      />
 
-        <Portal>
-          <Snackbar
-            visible={snackbarVisible}
-            onDismiss={handleSnackbarDismiss}
-            duration={3000}
-            message={snackbarMessage}
-            style={{
-              ...styles.snackbar,
-              backgroundColor: snackbarMessage.includes(t('pets.saveSuccess')) || snackbarMessage.includes(t('pets.deleteSuccess'))
-                ? theme.colors.primary
-                : theme.colors.error
-            }}
-          />
-        </Portal>
-      </SafeAreaView>
-    </ProtectedRoute>
+    </SafeAreaView>
   );
 }
 
@@ -435,6 +488,64 @@ const styles = StyleSheet.create({
     marginTop: 6,
     fontWeight: '700',
   },
+  emptyStateCard: {
+    borderWidth: 1,
+    borderStyle: 'dashed',
+    borderRadius: 22,
+    paddingVertical: 28,
+    paddingHorizontal: 20,
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 8,
+    marginBottom: 16,
+  },
+  emptyStateIcon: {
+    width: 52,
+    height: 52,
+    borderRadius: 26,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  emptyStateTitle: {
+    textAlign: 'center',
+  },
+  emptyStateDescription: {
+    textAlign: 'center',
+  },
+  emptyStateCta: {
+    marginTop: 6,
+  },
+  upgradeCard: {
+    borderWidth: 1,
+    borderStyle: 'dashed',
+    borderRadius: 18,
+    paddingVertical: 18,
+    paddingHorizontal: 16,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 12,
+    opacity: 0.8,
+  },
+  upgradeIconWrap: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  upgradeTitle: {
+    marginTop: 10,
+    fontWeight: '700',
+    textAlign: 'center',
+  },
+  upgradeSubtitle: {
+    marginTop: 4,
+    textAlign: 'center',
+  },
+  upgradeCta: {
+    marginTop: 10,
+    fontWeight: '700',
+  },
   loadMoreContainer: {
     paddingVertical: 16,
     alignItems: 'center',
@@ -447,8 +558,5 @@ const styles = StyleSheet.create({
     margin: 16,
     right: 0,
     bottom: 0,
-  },
-  snackbar: {
-    marginBottom: 16,
   },
 });

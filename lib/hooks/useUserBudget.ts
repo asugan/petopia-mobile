@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useCallback, useState } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import type {
@@ -10,7 +10,7 @@ import type {
 } from "../types";
 import { CACHE_TIMES } from "../config/queryConfig";
 import { userBudgetService } from "../services/userBudgetService";
-import { notificationService } from "../services/notificationService";
+import { notificationService, isPushTokenRegistered } from "../services/notificationService";
 import { useUserSettingsStore } from "@/stores/userSettingsStore";
 import { createQueryKeys } from "./core/createQueryKeys";
 import { useConditionalQuery } from "./core/useConditionalQuery";
@@ -284,6 +284,7 @@ export function useBudgetSummary() {
 
 /**
  * Hook that bridges budget alerts to local notifications
+ * Uses backend push notifications when available, falls back to local notifications
  */
 export function useBudgetAlertNotifications() {
   const { data: alert } = useBudgetAlerts();
@@ -295,10 +296,31 @@ export function useBudgetAlertNotifications() {
     (state) => state.settings?.budgetNotificationsEnabled ?? true
   );
   const notifiedCache = useRef<Record<string, boolean>>({});
+  const [pushTokenRegistered, setPushTokenRegistered] = useState(false);
+
+  // Check if push token is registered with backend
+  const checkPushTokenStatus = useCallback(async () => {
+    try {
+      const registered = await isPushTokenRegistered();
+      setPushTokenRegistered(registered);
+    } catch {
+      setPushTokenRegistered(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    checkPushTokenStatus();
+  }, [checkPushTokenStatus]);
 
   useEffect(() => {
     const handleAlertNotification = async () => {
       if (!notificationsEnabled || !budgetNotificationsEnabled) {
+        return;
+      }
+
+      // If push token is registered with backend, skip local notifications
+      // Backend will handle push notifications
+      if (pushTokenRegistered) {
         return;
       }
 
@@ -342,7 +364,7 @@ export function useBudgetAlertNotifications() {
     };
 
     void handleAlertNotification();
-  }, [alert, budget, budgetNotificationsEnabled, notificationsEnabled]);
+  }, [alert, budget, budgetNotificationsEnabled, notificationsEnabled, pushTokenRegistered]);
 }
 
 // Export types for external use

@@ -1,15 +1,12 @@
 import { useQueryClient } from '@tanstack/react-query';
-import { petKeys } from './usePets';
-import { healthRecordKeys } from './useHealthRecords';
-import { eventKeys } from './useEvents';
-import { feedingScheduleKeys } from './useFeedingSchedules';
+import { eventKeys, feedingScheduleKeys, healthRecordKeys, petKeys } from './queryKeys';
 import { unwrapApiResponse } from './core/unwrapApiResponse';
 import { toISODateStringWithFallback } from '@/lib/utils/dateConversion';
-import { useSubscriptionQueryEnabled } from './useSubscriptionQueries';
+import { useAuthQueryEnabled } from './useAuthQueryEnabled';
 
 export function usePrefetchData() {
   const queryClient = useQueryClient();
-  const { enabled } = useSubscriptionQueryEnabled();
+  const { enabled } = useAuthQueryEnabled();
 
   const prefetchPetDetails = (petId: string) => {
     if (!enabled) return;

@@ -203,6 +203,55 @@ export const SmartDatePicker = ({
           setPickerVisible(true);
         };
 
+        // iOS: compact display handles its own button UI, no need for TouchableOpacity
+        if (Platform.OS === 'ios') {
+          return (
+            <View style={styles.container}>
+              {label && (
+                <Text
+                  style={[
+                    styles.label,
+                    { color: error ? theme.colors.error : theme.colors.onSurface },
+                  ]}
+                >
+                  {label}
+                  {required && ' *'}
+                </Text>
+              )}
+
+              <View
+                style={[
+                  styles.iosCompactContainer,
+                  {
+                    borderColor: error ? theme.colors.error : theme.colors.outline,
+                    backgroundColor: disabled
+                      ? theme.colors.surfaceDisabled
+                      : theme.colors.surface,
+                  },
+                ]}
+              >
+                <DateTimePicker
+                  mode={mode}
+                  display="compact"
+                  value={displayDate ?? new Date()}
+                  onChange={handlePickerChange(onChange)}
+                  minimumDate={minimumDate}
+                  maximumDate={maximumDate}
+                  locale={iosLocale}
+                  disabled={disabled}
+                />
+              </View>
+
+              {error && (
+                <Text style={[styles.errorText, { color: theme.colors.error }]}>
+                  {error.message}
+                </Text>
+              )}
+            </View>
+          );
+        }
+
+        // Android: use TouchableOpacity with native picker dialog
         return (
           <View style={styles.container}>
             {label && (
@@ -246,20 +295,18 @@ export const SmartDatePicker = ({
             </TouchableOpacity>
 
             {error && (
-              <Text style={[styles.errorText, { color: theme.colors.error }]}
-              >
+              <Text style={[styles.errorText, { color: theme.colors.error }]}>
                 {error.message}
               </Text>
             )}
 
-            {isPickerVisible && !(Platform.OS === 'android' && mode === 'datetime') && (
+            {isPickerVisible && (
               <DateTimePicker
                 mode={mode}
                 value={displayDate ?? new Date()}
                 onChange={handlePickerChange(onChange)}
                 minimumDate={minimumDate}
                 maximumDate={maximumDate}
-                locale={Platform.OS === 'ios' ? iosLocale : undefined}
               />
             )}
           </View>
@@ -277,6 +324,14 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: '500',
     marginBottom: 8,
+  },
+  iosCompactContainer: {
+    borderWidth: 1,
+    borderRadius: 4,
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    minHeight: 56,
+    justifyContent: 'center',
   },
   datePicker: {
     borderWidth: 1,

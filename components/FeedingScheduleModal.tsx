@@ -1,7 +1,8 @@
 import React from 'react';
-import { View, StyleSheet, Modal as RNModal } from 'react-native';
+import { View, StyleSheet, Modal as RNModal, Platform } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Portal, Snackbar, Text, Button } from '@/components/ui';
+import { useRouter } from 'expo-router';
+import { Text, Button } from '@/components/ui';
 import { useTheme } from '@/lib/theme';
 import { useTranslation } from 'react-i18next';
 import { FeedingSchedule, Pet } from '../lib/types';
@@ -10,7 +11,11 @@ import { type FeedingScheduleFormData, transformFormDataToAPI } from '../lib/sch
 import {
   useCreateFeedingSchedule,
   useUpdateFeedingSchedule,
+  useAllFeedingSchedules,
 } from '../lib/hooks/useFeedingSchedules';
+import { useSubscription } from '@/lib/hooks/useSubscription';
+import { showToast } from '@/lib/toast/showToast';
+import { SUBSCRIPTION_ROUTES } from '@/constants/routes';
 
 interface FeedingScheduleModalProps {
   visible: boolean;
@@ -33,47 +38,58 @@ export function FeedingScheduleModal({
 }: FeedingScheduleModalProps) {
   const { theme } = useTheme();
   const { t } = useTranslation();
+  const router = useRouter();
   const [loading, setLoading] = React.useState(false);
-  const [snackbarVisible, setSnackbarVisible] = React.useState(false);
-  const [snackbarMessage, setSnackbarMessage] = React.useState('');
-  const [snackbarType, setSnackbarType] = React.useState<'success' | 'error'>('success');
+
+  const { isProUser } = useSubscription();
+  const { data: feedingSchedulesAll = [] } = useAllFeedingSchedules();
+  const activeFeedingSchedules = feedingSchedulesAll.filter((schedule) => schedule.isActive);
 
   // React Query hooks for server state
   const createMutation = useCreateFeedingSchedule();
   const updateMutation = useUpdateFeedingSchedule();
 
-  const showSnackbar = React.useCallback((message: string, type: 'success' | 'error' = 'success') => {
-    setSnackbarMessage(message);
-    setSnackbarType(type);
-    setSnackbarVisible(true);
-  }, []);
 
   const handleSubmit = React.useCallback(async (data: FeedingScheduleFormData) => {
-    setLoading(true);
     try {
       const apiData = transformFormDataToAPI(data);
+      const willBeActive = apiData.isActive !== false;
+
       if (schedule) {
         // Update existing schedule
+        if (willBeActive && !schedule.isActive && !isProUser && activeFeedingSchedules.length >= 1) {
+          router.push(SUBSCRIPTION_ROUTES.main);
+          return;
+        }
+      } else {
+        // Create new schedule
+        if (willBeActive && !isProUser && activeFeedingSchedules.length >= 1) {
+          router.push(SUBSCRIPTION_ROUTES.main);
+          return;
+        }
+      }
+
+      setLoading(true);
+      if (schedule) {
         await updateMutation.mutateAsync({
           _id: schedule._id,
           data: apiData,
         });
-        showSnackbar(t('feedingSchedule.updateSuccess'), 'success');
+        showToast({ type: 'success', title: t('feedingSchedule.updateSuccess') });
       } else {
-        // Create new schedule
         await createMutation.mutateAsync(apiData);
-        showSnackbar(t('feedingSchedule.createSuccess'), 'success');
+        showToast({ type: 'success', title: t('feedingSchedule.createSuccess') });
       }
 
       onSuccess();
       onClose();
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : t('feedingSchedule.errors.submitFailed');
-      showSnackbar(errorMessage, 'error');
+      showToast({ type: 'error', title: t('feedingSchedule.errors.submitFailed'), message: errorMessage });
     } finally {
       setLoading(false);
     }
-  }, [schedule, createMutation, updateMutation, onSuccess, onClose, showSnackbar, t]);
+  }, [schedule, createMutation, updateMutation, onSuccess, onClose, t, activeFeedingSchedules.length, isProUser, router]);
 
   const handleClose = React.useCallback(() => {
     if (!loading) {
@@ -81,16 +97,22 @@ export function FeedingScheduleModal({
     }
   }, [onClose, loading]);
 
-  const handleSnackbarDismiss = React.useCallback(() => {
-    setSnackbarVisible(false);
-  }, []);
+  const animationType = Platform.select({
+    ios: 'slide' as const,
+    android: 'fade' as const,
+  });
+
+  const presentationStyle = Platform.select({
+    ios: 'pageSheet' as const,
+    android: undefined,
+  });
 
   return (
     <>
       <RNModal
         visible={visible}
-        animationType="slide"
-        presentationStyle="pageSheet"
+        animationType={animationType}
+        presentationStyle={presentationStyle}
         onDismiss={handleClose}
         onRequestClose={handleClose}
         testID={testID}
@@ -121,18 +143,6 @@ export function FeedingScheduleModal({
         </SafeAreaView>
       </RNModal>
 
-      <Portal>
-        <Snackbar
-          visible={snackbarVisible}
-          onDismiss={handleSnackbarDismiss}
-          duration={3000}
-          message={snackbarMessage}
-          style={{
-            ...styles.snackbar,
-            backgroundColor: snackbarType === 'success' ? theme.colors.primary : theme.colors.error
-          }}
-        />
-      </Portal>
     </>
   );
 }
@@ -153,9 +163,6 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 18,
     fontWeight: '600',
-  },
-  snackbar: {
-    marginBottom: 16,
   },
 });
 

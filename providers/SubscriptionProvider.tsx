@@ -3,7 +3,7 @@ import Purchases, { CustomerInfo } from 'react-native-purchases';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useAuth } from '@/lib/auth';
 import { useSubscriptionStore } from '@/stores/subscriptionStore';
-import { useSubscriptionStatus, useStartTrial, useRefetchSubscriptionStatus } from '@/lib/hooks/useSubscriptionQueries';
+import { useSubscriptionStatus, useRefetchSubscriptionStatus } from '@/lib/hooks/useSubscriptionQueries';
 import { usePublicConfig } from '@/lib/hooks/usePublicConfig';
 import {
   initializeRevenueCat,
@@ -32,7 +32,6 @@ export function SubscriptionProvider({ children }: SubscriptionProviderProps) {
   } = useSubscriptionStore();
 
   const { data: subscriptionStatus, isLoading: isStatusLoading } = useSubscriptionStatus();
-  const startTrialMutation = useStartTrial();
   const refetchStatusMutation = useRefetchSubscriptionStatus();
   const {
     data: publicConfig,
@@ -41,35 +40,19 @@ export function SubscriptionProvider({ children }: SubscriptionProviderProps) {
   } = usePublicConfig();
 
   const trialInitRef = useRef(false);
-  const isActivatingTrialRef = useRef(false);
   const syncedUserIdRef = useRef<string | null>(null);
   const initializeStatusRef = useRef<(() => Promise<void>) | null>(null);
   const handleUserLoginRef = useRef<(() => Promise<void>) | null>(null);
   const handleUserLogoutRef = useRef<(() => Promise<void>) | null>(null);
   const subscriptionStatusRef = useRef(subscriptionStatus);
-  const startTrialMutateAsyncRef = useRef(startTrialMutation.mutateAsync);
 
+  // Simple initialization - no automatic trial activation
   const initializeSubscriptionStatus = useCallback(async () => {
     if (trialInitRef.current || !isAuthenticated || isPending) {
       return;
     }
     trialInitRef.current = true;
-
-    try {
-
-      const canStartTrial = subscriptionStatusRef.current?.canStartTrial ?? false;
-
-      if (canStartTrial && !isActivatingTrialRef.current) {
-        isActivatingTrialRef.current = true;
-
-        await startTrialMutateAsyncRef.current();
-
-        isActivatingTrialRef.current = false;
-      }
-    } catch {
-      isActivatingTrialRef.current = false;
-      trialInitRef.current = false;
-    }
+    // Trial must be started manually by user from subscription page
   }, [isAuthenticated, isPending]);
 
   const initializeSDK = useCallback(async () => {
@@ -170,10 +153,6 @@ export function SubscriptionProvider({ children }: SubscriptionProviderProps) {
   useEffect(() => {
     subscriptionStatusRef.current = subscriptionStatus;
   }, [subscriptionStatus]);
-
-  useEffect(() => {
-    startTrialMutateAsyncRef.current = startTrialMutation.mutateAsync;
-  }, [startTrialMutation.mutateAsync]);
 
   useEffect(() => {
     initializeStatusRef.current = initializeSubscriptionStatus;

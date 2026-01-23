@@ -1,34 +1,34 @@
 import { View, Text, StyleSheet, Pressable } from 'react-native';
+import { Image } from 'expo-image';
 import { useRouter } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { MaterialIcons } from '@expo/vector-icons';
-import { useOnboardingStore } from '@/stores/onboardingStore';
 import { useTranslation } from 'react-i18next';
 import { Gesture, GestureDetector, Directions } from 'react-native-gesture-handler';
 import { scheduleOnRN } from 'react-native-worklets';
 import { useTheme } from '@/lib/theme';
-import { useAuth } from '@/lib/auth/useAuth';
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
+import { PetModal } from '@/components/PetModal';
+import { useOnboardingCompletion } from '@/lib/hooks/useOnboardingCompletion';
 
 export default function OnboardingCompleted() {
   const router = useRouter();
-  const { setHasSeenOnboarding } = useOnboardingStore();
   const { t } = useTranslation();
   const { theme } = useTheme();
-  const { isAuthenticated } = useAuth();
+  const [modalVisible, setModalVisible] = useState(false);
+  const { completeOnboarding, skipPetAndComplete } = useOnboardingCompletion();
 
+  const handleAddPet = () => {
+    setModalVisible(true);
+  };
 
-  const handleComplete = async () => {
-    // Mark onboarding as seen
-    setHasSeenOnboarding(true);
+  const handleSkipPet = () => {
+    skipPetAndComplete();
+  };
 
-    // Navigate based on authentication state
-    if (isAuthenticated) {
-      router.replace('/(tabs)');
-    } else {
-      router.replace('/(auth)/login');
-    }
+  const handlePetFormSuccess = () => {
+    // Pet is already saved to pending store, just complete onboarding
+    completeOnboarding();
   };
 
   const swipeRight = Gesture.Fling()
@@ -54,21 +54,34 @@ export default function OnboardingCompleted() {
     heroContainer: {
       marginBottom: 32,
     },
-    outerCircle: {
-      width: 160,
-      height: 160,
-      borderRadius: 80,
-      backgroundColor: theme.colors.primary + '33',
+    logoCircle: {
+      width: 96,
+      height: 96,
+      borderRadius: 48,
+      backgroundColor: theme.colors.surface + 'F0',
+      borderColor: theme.colors.surface,
+      borderWidth: 2,
+      justifyContent: 'center',
+      alignItems: 'center',
+      elevation: 12,
+      shadowColor: '#000',
+      shadowOffset: { width: 0, height: 4 },
+      shadowOpacity: 0.2,
+      shadowRadius: 8,
+    },
+    logoMask: {
+      width: '100%',
+      height: '100%',
+      borderRadius: 44,
+      overflow: 'hidden',
+      backgroundColor: '#d3dff1',
       justifyContent: 'center',
       alignItems: 'center',
     },
-    innerCircle: {
-      width: 128,
-      height: 128,
-      borderRadius: 64,
-      backgroundColor: theme.colors.primary + '4D',
-      justifyContent: 'center',
-      alignItems: 'center',
+    logoImage: {
+      width: '100%',
+      height: '100%',
+      transform: [{ scale: 1.5 }],
     },
     title: {
       fontSize: 32,
@@ -107,19 +120,28 @@ export default function OnboardingCompleted() {
       fontWeight: '600',
       textAlign: 'center',
     },
-    button: {
+    addPetButton: {
       backgroundColor: theme.colors.primary,
-      height: 48,
+      height: 56,
       borderRadius: theme.roundness / 2,
       width: '100%',
       maxWidth: 480,
       alignItems: 'center',
       justifyContent: 'center',
     },
-    buttonText: {
+    addPetButtonText: {
       color: theme.colors.onPrimary,
       fontSize: 16,
       fontWeight: '700',
+    },
+    skipButton: {
+      marginTop: 12,
+    },
+    skipButtonText: {
+      color: theme.colors.onSurfaceVariant,
+      fontSize: 14,
+      fontWeight: '600',
+      textAlign: 'center',
     },
   }), [theme]);
 
@@ -132,9 +154,13 @@ export default function OnboardingCompleted() {
           
           {/* Hero Icon */}
           <View style={styles.heroContainer}>
-            <View style={styles.outerCircle}>
-              <View style={styles.innerCircle}>
-                <MaterialIcons name="pets" size={64} color={theme.colors.primary} />
+            <View style={styles.logoCircle}>
+              <View style={styles.logoMask}>
+                <Image
+                  source={require('../../assets/images/foreground.png')}
+                  style={styles.logoImage}
+                  contentFit="cover"
+                />
               </View>
             </View>
           </View>
@@ -152,14 +178,33 @@ export default function OnboardingCompleted() {
           <View style={styles.trialNotice}>
             <Text style={styles.trialNoticeText}>{t('onboarding.screen3.trialNotice')}</Text>
           </View>
-          <Pressable 
-            style={styles.button}
-            onPress={handleComplete}
+
+          <Pressable
+            style={styles.addPetButton}
+            onPress={handleAddPet}
           >
-            <Text style={styles.buttonText}>{t('onboarding.screen3.button')}</Text>
+            <Text style={styles.addPetButtonText}>
+              {t('onboarding.screen3.addPet')}
+            </Text>
+          </Pressable>
+
+          <Pressable
+            style={styles.skipButton}
+            onPress={handleSkipPet}
+          >
+            <Text style={styles.skipButtonText}>
+              {t('onboarding.screen3.skipPet')}
+            </Text>
           </Pressable>
         </View>
       </SafeAreaView>
+
+      <PetModal
+        visible={modalVisible}
+        onClose={() => setModalVisible(false)}
+        onSuccess={handlePetFormSuccess}
+        isOnboarding={true}
+      />
       </View>
     </GestureDetector>
   );

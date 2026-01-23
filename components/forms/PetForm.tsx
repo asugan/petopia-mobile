@@ -1,8 +1,8 @@
 import React from 'react';
-import { ScrollView, StyleSheet, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import { FormProvider } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
-import { Button, Text } from '@/components/ui';
+import { Button, KeyboardAwareView } from '@/components/ui';
 import { useTheme } from '@/lib/theme';
 import { usePetForm } from '../../hooks/usePetForm';
 import { PetCreateFormInput } from '../../lib/schemas/petSchema';
@@ -15,6 +15,7 @@ import { SmartInput } from './SmartInput';
 import { SmartPetPhotoPicker } from './SmartPetPhotoPicker';
 import { SmartPetTypePicker } from './SmartPetTypePicker';
 import { StepHeader } from './StepHeader';
+import { showToast } from '@/lib/toast/showToast';
 
 interface PetFormProps {
   pet?: Pet;
@@ -35,16 +36,13 @@ export function PetForm({
 }: PetFormProps) {
   const { t } = useTranslation();
   const { theme } = useTheme();
-  const { form, handleSubmit, isValid } = usePetForm(pet);
+  const { form, handleSubmit } = usePetForm(pet);
 
   const [currentStep, setCurrentStep] = React.useState(0);
-  const [showStepError, setShowStepError] = React.useState(false);
-  const [submitError, setSubmitError] = React.useState<string | null>(null);
 
   const onFormSubmit = React.useCallback(
     async (data: PetCreateFormInput) => {
       try {
-        setSubmitError(null);
         const result = await onSubmit(data);
 
         if (result === false) {
@@ -52,7 +50,11 @@ export function PetForm({
           if (__DEV__) {
             console.error('Pet form submit failed', submitError);
           }
-          setSubmitError(t('errors.generalError'));
+          showToast({
+            type: 'error',
+            title: t('common.error'),
+            message: t('errors.generalError'),
+          });
           onError?.(submitError);
           throw submitError;
         }
@@ -60,7 +62,11 @@ export function PetForm({
         if (__DEV__) {
           console.error('Pet form submit failed', error);
         }
-        setSubmitError(t('errors.generalError'));
+        showToast({
+          type: 'error',
+          title: t('common.error'),
+          message: t('errors.generalError'),
+        });
         onError?.(error);
         throw error;
       }
@@ -97,39 +103,38 @@ export function PetForm({
   const handleNextStep = React.useCallback(async () => {
     const isStepValid = await form.trigger(steps[currentStep].fields);
     if (!isStepValid) {
-      setShowStepError(true);
+      showToast({
+        type: 'error',
+        title: t('common.error'),
+        message: t('pets.pleaseFillRequiredFields'),
+      });
       return;
     }
-    setShowStepError(false);
     setCurrentStep((prev) => Math.min(prev + 1, totalSteps - 1));
-  }, [form, steps, currentStep, totalSteps]);
+  }, [form, steps, currentStep, totalSteps, t]);
 
   const handleBackStep = React.useCallback(() => {
-    setShowStepError(false);
     setCurrentStep((prev) => Math.max(prev - 1, 0));
   }, []);
 
   const handleFinalSubmit = React.useCallback(async () => {
     const isFormValid = await form.trigger();
     if (!isFormValid) {
-      setShowStepError(true);
+      showToast({
+        type: 'error',
+        title: t('common.error'),
+        message: t('pets.pleaseFillRequiredFields'),
+      });
       return;
     }
-    setShowStepError(false);
-    try {
-      await handleSubmit(onFormSubmit)();
-    } catch {
-      return false;
-    }
-    return true;
-  }, [form, handleSubmit, onFormSubmit]);
+    handleSubmit(onFormSubmit)();
+  }, [form, handleSubmit, onFormSubmit, t]);
 
   return (
     <FormProvider {...form}>
-      <ScrollView
+      <KeyboardAwareView
         style={[styles.container, { backgroundColor: theme.colors.background }]}
         contentContainerStyle={styles.contentContainer}
-        keyboardShouldPersistTaps="handled"
         testID={testID}
       >
         <StepHeader
@@ -255,21 +260,7 @@ export function PetForm({
         </View>
 
         {/* Form Status */}
-        {!isValid && showStepError && (
-          <View style={[styles.statusContainer, { backgroundColor: theme.colors.errorContainer }]}>
-            <Text style={[styles.statusText, { color: theme.colors.onErrorContainer }]}>
-              {t('pets.pleaseFillRequiredFields')}
-            </Text>
-          </View>
-        )}
-        {submitError && (
-          <View style={[styles.statusContainer, { backgroundColor: theme.colors.errorContainer }]}>
-            <Text style={[styles.statusText, { color: theme.colors.onErrorContainer }]}>
-              {submitError}
-            </Text>
-          </View>
-        )}
-      </ScrollView>
+      </KeyboardAwareView>
     </FormProvider>
   );
 }
@@ -289,16 +280,6 @@ const styles = StyleSheet.create({
   },
   actionButton: {
     flex: 1,
-  },
-  statusContainer: {
-    padding: 12,
-    borderRadius: 8,
-    marginTop: 16,
-  },
-  statusText: {
-    fontSize: 14,
-    textAlign: 'center',
-    fontFamily: 'System',
   },
 });
 

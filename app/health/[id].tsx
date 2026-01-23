@@ -4,7 +4,6 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import React, { useState, useMemo } from 'react';
 import {
   Alert,
-  Image,
   ImageBackground,
   ScrollView,
   Share,
@@ -16,6 +15,7 @@ import {
   Dimensions,
   StatusBar,
 } from 'react-native';
+import { Image } from 'expo-image';
 import { useTranslation } from 'react-i18next';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useTheme } from '@/lib/theme';
@@ -24,11 +24,12 @@ import { usePet } from '@/lib/hooks/usePets';
 import { useEvent } from '@/lib/hooks/useEvents';
 import { formatCurrency } from '@/lib/utils/currency';
 import { useUserSettingsStore } from '@/stores/userSettingsStore';
+import { showToast } from '@/lib/toast/showToast';
 import { HealthRecordForm } from '@/components/forms/HealthRecordForm';
 import LoadingSpinner from '@/components/LoadingSpinner';
 import EmptyState from '@/components/EmptyState';
 import { TURKCE_LABELS } from '@/constants';
-import { FALLBACK_IMAGES } from '@/constants/images';
+import { FALLBACK_IMAGES, PET_TYPE_AVATARS } from '@/constants/images';
 import MoneyDisplay from '@/components/ui/MoneyDisplay';
 
 const { width } = Dimensions.get('window');
@@ -348,18 +349,6 @@ export default function HealthRecordDetailScreen() {
       color: theme.colors.outline,
       fontSize: 14,
     },
-    nextVisitErrorRow: {
-      marginTop: 8,
-      flexDirection: 'row',
-      alignItems: 'center',
-      gap: 8,
-      flexWrap: 'wrap',
-    },
-    nextVisitErrorText: {
-      flexShrink: 1,
-      color: theme.colors.error,
-      fontSize: 12,
-    },
     nextVisitRetryText: {
       color: theme.colors.primary,
       fontSize: 12,
@@ -469,9 +458,23 @@ export default function HealthRecordDetailScreen() {
       await deleteMutation.mutateAsync(id as string);
       router.back();
     } catch (error) {
-      Alert.alert(t('common.error'), error instanceof Error ? error.message : t('healthRecords.deleteError'));
+      showToast({
+        type: 'error',
+        title: t('common.error'),
+        message: error instanceof Error ? error.message : t('healthRecords.deleteError'),
+      });
     }
   };
+
+  React.useEffect(() => {
+    if (isEventError) {
+      showToast({
+        type: 'error',
+        title: t('common.error'),
+        message: t('events.fetchError'),
+      });
+    }
+  }, [isEventError, t]);
 
   const handleShare = async () => {
     if (!healthRecord) return;
@@ -544,13 +547,15 @@ ${healthRecord.notes ? `${t('common.notes')}: ${healthRecord.notes}` : ''}
 
   const heroSource = pet?.profilePhoto
     ? { uri: pet.profilePhoto }
-    : FALLBACK_IMAGES.petHero;
+    : pet?.type
+      ? (PET_TYPE_AVATARS[pet.type.toLowerCase() as keyof typeof PET_TYPE_AVATARS] ?? FALLBACK_IMAGES.petHero)
+      : FALLBACK_IMAGES.petHero;
 
   return (
     <View style={styles.container}>
       <Stack.Screen options={{ headerShown: false }} />
       <ScrollView
-        contentContainerStyle={{ paddingBottom: FOOTER_HEIGHT + insets.bottom }}
+        contentContainerStyle={{ paddingBottom: FOOTER_HEIGHT + insets.bottom + 24 }}
         showsVerticalScrollIndicator={false}
         bounces={false}
       >
@@ -611,7 +616,11 @@ ${healthRecord.notes ? `${t('common.notes')}: ${healthRecord.notes}` : ''}
               </View>
               <View style={styles.petImageContainer}>
                 <Image 
-                  source={pet?.profilePhoto ? { uri: pet.profilePhoto } : FALLBACK_IMAGES.petAvatar} 
+                  source={pet?.profilePhoto 
+                    ? { uri: pet.profilePhoto } 
+                    : pet?.type 
+                      ? (PET_TYPE_AVATARS[pet.type.toLowerCase() as keyof typeof PET_TYPE_AVATARS] ?? FALLBACK_IMAGES.petAvatar)
+                      : FALLBACK_IMAGES.petAvatar} 
                   style={styles.petImage} 
                 />
               </View>
@@ -759,21 +768,9 @@ ${healthRecord.notes ? `${t('common.notes')}: ${healthRecord.notes}` : ''}
                    {nextVisitDate && <Text style={styles.nextVisitTime}>{nextVisitTime}</Text>}
 
                    {isEventError && (
-                     <View style={styles.nextVisitErrorRow}>
-                       <MaterialCommunityIcons
-                         name="alert-circle-outline"
-                         size={16}
-                         color={theme.colors.error}
-                       />
-                       <Text style={styles.nextVisitErrorText}>{t('events.fetchError')}</Text>
-                       <TouchableOpacity
-                         onPress={() => {
-                           void refetchNextVisitEvent();
-                         }}
-                       >
-                         <Text style={styles.nextVisitRetryText}>{t('common.retry')}</Text>
-                       </TouchableOpacity>
-                     </View>
+                     <Text style={styles.nextVisitRetryText} onPress={() => void refetchNextVisitEvent()}>
+                       {t('common.retry')}
+                     </Text>
                    )}
                  </View>
                  <View style={styles.alarmButton}>
