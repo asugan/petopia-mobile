@@ -81,6 +81,7 @@ export interface ThemeColors {
 export interface FontVariant {
   fontSize: number;
   fontWeight: "400" | "500" | "600" | "700" | "800" | "900";
+  fontFamily?: string;
   lineHeight?: number;
 }
 
