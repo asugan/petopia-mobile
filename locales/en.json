@@ -1418,6 +1418,8 @@
     "trialExpired": "Trial Expired",
     "trialPrompt": "Your trial ends in {{days}} days",
     "upgradeToPro": "Upgrade to Pro",
+    "startTrial": "Try 14 Days Free",
+    "noCreditCardRequired": "No credit card required",
     "upgrade": "Upgrade to Pro",
     "upgradePrompt": "Unlock all features with Pro",
     "upgradeBeforeTrialEnds": "Upgrade Before Trial Ends",

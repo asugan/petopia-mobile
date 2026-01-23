@@ -34,6 +34,8 @@ export function SubscriptionCard({ showManageButton = true, compact = false, onU
     willRenew,
     isLoading,
     presentCustomerCenter,
+    canStartTrial,
+    startTrial,
   } = useSubscription();
 
   // Format expiration date
@@ -223,6 +225,16 @@ export function SubscriptionCard({ showManageButton = true, compact = false, onU
           )}
         </View>
 
+        {/* No CC Required Note for Trial */}
+        {canStartTrial && !isProUser && (
+          <View style={styles.noCcNote}>
+            <MaterialCommunityIcons name="credit-card-off" size={14} color={theme.colors.tertiary} />
+            <Text variant="bodySmall" style={{ color: theme.colors.tertiary, marginLeft: 4 }}>
+              {t('subscription.noCreditCardRequired')}
+            </Text>
+          </View>
+        )}
+
         {/* Action Buttons */}
         {showManageButton && (
           <View style={styles.actions}>
@@ -254,6 +266,16 @@ export function SubscriptionCard({ showManageButton = true, compact = false, onU
                   </Button>
                 )}
               </>
+            ) : canStartTrial ? (
+              <Button
+                mode="contained"
+                onPress={startTrial}
+                loading={isLoading}
+                disabled={isLoading}
+                style={styles.actionButton}
+              >
+                {t('subscription.startTrial')}
+              </Button>
             ) : (
               <Button
                 mode="contained"
@@ -316,6 +338,13 @@ const styles = StyleSheet.create({
   },
   cancelButton: {
     marginTop: 12,
+  },
+  noCcNote: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 8,
+    marginTop: 4,
   },
   compactContainer: {
     flexDirection: 'row',

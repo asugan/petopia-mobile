@@ -1393,6 +1393,8 @@
     "trialExpired": "Deneme Süresi Doldu",
     "trialPrompt": "Denemeniz {{days}} gün içinde sona eriyor",
     "upgradeToPro": "Pro'ya Yükselt",
+    "startTrial": "14 Gün Ücretsiz Dene",
+    "noCreditCardRequired": "Kredi kartı gerekmez",
     "upgrade": "Pro'ya Yükselt",
     "upgradePrompt": "Tüm özellikleri Pro ile açın",
     "upgradeBeforeTrialEnds": "Deneme Bitmeden Yükseltin",
