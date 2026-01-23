@@ -54,11 +54,11 @@ export default function OnboardingCompleted() {
     heroContainer: {
       marginBottom: 32,
     },
-    outerCircle: {
-      width: 160,
-      height: 160,
-      borderRadius: 80,
-      backgroundColor: '#d3dff1',
+    logoCircle: {
+      width: 96,
+      height: 96,
+      borderRadius: 48,
+      backgroundColor: theme.colors.surface + 'F0',
       borderColor: theme.colors.surface,
       borderWidth: 2,
       justifyContent: 'center',
@@ -69,10 +69,11 @@ export default function OnboardingCompleted() {
       shadowOpacity: 0.2,
       shadowRadius: 8,
     },
-    innerCircle: {
-      width: 128,
-      height: 128,
-      borderRadius: 64,
+    logoMask: {
+      width: '100%',
+      height: '100%',
+      borderRadius: 44,
+      overflow: 'hidden',
       backgroundColor: '#d3dff1',
       justifyContent: 'center',
       alignItems: 'center',
@@ -153,8 +154,8 @@ export default function OnboardingCompleted() {
           
           {/* Hero Icon */}
           <View style={styles.heroContainer}>
-            <View style={styles.outerCircle}>
-              <View style={styles.innerCircle}>
+            <View style={styles.logoCircle}>
+              <View style={styles.logoMask}>
                 <Image
                   source={require('../../assets/images/foreground.png')}
                   style={styles.logoImage}
