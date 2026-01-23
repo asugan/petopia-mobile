@@ -1,5 +1,6 @@
 import { useEffect, useRef, ReactNode } from 'react';
 import { View, StyleSheet, Animated, Easing, Platform } from 'react-native';
+import { Image } from 'expo-image';
 import { useSplashAnimation } from '@/hooks/useSplashAnimation';
 import { useFonts } from 'expo-font';
 import * as SplashScreen from 'expo-splash-screen';
@@ -55,6 +56,19 @@ export function AnimatedSplashScreen({
 
   return (
     <View style={styles.container}>
+      {/* Logo */}
+      <View style={styles.logoContainer}>
+        <View style={styles.logoCircle}>
+          <View style={styles.logoMask}>
+            <Image
+              source={require('../../assets/images/foreground.png')}
+              style={styles.logoImage}
+              contentFit="cover"
+            />
+          </View>
+        </View>
+      </View>
+
       {/* Loading bar */}
       <View style={styles.loadingBarContainer}>
         <Animated.View
@@ -91,11 +105,56 @@ const styles = StyleSheet.create({
     right: 0,
     bottom: 0,
     backgroundColor: '#D3DFF1',
-    justifyContent: 'flex-end',
+    justifyContent: 'center',
     alignItems: 'center',
-    paddingBottom: 80,
+  },
+  logoContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  logoCircle: {
+    width: 96,
+    height: 96,
+    borderRadius: 48,
+    backgroundColor: '#ffffff',
+    borderWidth: 2,
+    borderColor: '#ffffff',
+    justifyContent: 'center',
+    alignItems: 'center',
+    ...Platform.select({
+      ios: {
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.2,
+        shadowRadius: 8,
+      },
+      android: {
+        elevation: 12,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.2,
+        shadowRadius: 8,
+      },
+    }),
+  },
+  logoMask: {
+    width: 88,
+    height: 88,
+    borderRadius: 44,
+    overflow: 'hidden',
+    backgroundColor: '#d3dff1',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  logoImage: {
+    width: '100%',
+    height: '100%',
+    transform: [{ scale: 1.5 }],
   },
   loadingBarContainer: {
+    position: 'absolute',
+    bottom: 80,
     width: 180,
     height: 4,
     backgroundColor: 'rgba(0, 0, 0, 0.1)',
