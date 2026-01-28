@@ -561,7 +561,11 @@
       "japanese": "Giapponese",
       "korean": "Coreano",
       "russian": "Russo",
-      "arabic": "Arabo"
+      "arabic": "Arabo",
+      "hindi": "Hindi",
+      "thai": "Tailandese",
+      "vietnamese": "Vietnamita",
+      "malay": "Malese"
     }
   },
   "common": {

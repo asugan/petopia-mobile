@@ -537,7 +537,11 @@
       "japanese": "Japonca",
       "korean": "Korece",
       "russian": "Rusça",
-      "arabic": "Arapça"
+      "arabic": "Arapça",
+      "hindi": "Hintçe",
+      "thai": "Tayca",
+      "vietnamese": "Vietnamca",
+      "malay": "Malayca"
     }
   },
   "common": {

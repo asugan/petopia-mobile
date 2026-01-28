@@ -286,10 +286,10 @@ export const useUserSettingsStore = create<UserSettingsState & UserSettingsActio
   )
 );
 
-export const getSupportedLanguages = (): SupportedLanguage[] => ['tr', 'en', 'it', 'de', 'fr', 'es', 'pt', 'ja', 'ko', 'ru', 'ar'];
+export const getSupportedLanguages = (): SupportedLanguage[] => ['tr', 'en', 'it', 'de', 'fr', 'es', 'pt', 'ja', 'ko', 'ru', 'ar', 'hi', 'th', 'vi', 'ms'];
 
 export const isLanguageSupported = (language: string): language is SupportedLanguage => {
-  return ['tr', 'en', 'it', 'de', 'fr', 'es', 'pt', 'ja', 'ko', 'ru', 'ar'].includes(language);
+  return ['tr', 'en', 'it', 'de', 'fr', 'es', 'pt', 'ja', 'ko', 'ru', 'ar', 'hi', 'th', 'vi', 'ms'].includes(language);
 };
 
 export const getLanguageDirection = (language: SupportedLanguage): 'ltr' | 'rtl' => {
@@ -309,6 +309,10 @@ export const getLanguageDisplayName = (language: SupportedLanguage): string => {
     ko: 'Korean',
     ru: 'Russian',
     ar: 'Arabic',
+    hi: 'Hindi',
+    th: 'Thai',
+    vi: 'Vietnamese',
+    ms: 'Malay',
   };
   return displayNames[language] || language;
 };
@@ -326,6 +330,10 @@ export const getLanguageNativeName = (language: SupportedLanguage): string => {
     ko: '한국어',
     ru: 'Русский',
     ar: 'العربية',
+    hi: 'हिन्दी',
+    th: 'ไทย',
+    vi: 'Tiếng Việt',
+    ms: 'Bahasa Melayu',
   };
   return nativeNames[language] || language;
 };
