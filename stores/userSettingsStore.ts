@@ -21,6 +21,7 @@ export type {
   UserSettingsUpdate,
 } from '@/lib/types';
 
+// Trigger lint refresh
 interface UserSettingsState {
   settings: UserSettings | null;
   isLoading: boolean;
@@ -67,8 +68,8 @@ const deriveTheme = (themeMode: ThemeMode): Theme => {
   return themeMode === 'light' ? lightTheme : darkTheme;
 };
 
-const deriveRTL = (_language: SupportedLanguage): boolean => {
-  return false;
+const deriveRTL = (language: SupportedLanguage): boolean => {
+  return language === 'ar';
 };
 
 export const useUserSettingsStore = create<UserSettingsState & UserSettingsActions>()(
@@ -285,14 +286,14 @@ export const useUserSettingsStore = create<UserSettingsState & UserSettingsActio
   )
 );
 
-export const getSupportedLanguages = (): SupportedLanguage[] => ['tr', 'en', 'it', 'de', 'fr', 'es', 'pt', 'ja'];
+export const getSupportedLanguages = (): SupportedLanguage[] => ['tr', 'en', 'it', 'de', 'fr', 'es', 'pt', 'ja', 'ko', 'ru', 'ar'];
 
 export const isLanguageSupported = (language: string): language is SupportedLanguage => {
-  return ['tr', 'en', 'it', 'de', 'fr', 'es', 'pt', 'ja'].includes(language);
+  return ['tr', 'en', 'it', 'de', 'fr', 'es', 'pt', 'ja', 'ko', 'ru', 'ar'].includes(language);
 };
 
-export const getLanguageDirection = (_language: SupportedLanguage): 'ltr' | 'rtl' => {
-  return 'ltr';
+export const getLanguageDirection = (language: SupportedLanguage): 'ltr' | 'rtl' => {
+  return language === 'ar' ? 'rtl' : 'ltr';
 };
 
 export const getLanguageDisplayName = (language: SupportedLanguage): string => {
@@ -305,6 +306,9 @@ export const getLanguageDisplayName = (language: SupportedLanguage): string => {
     es: 'Español',
     pt: 'Português',
     ja: '日本語',
+    ko: 'Korean',
+    ru: 'Russian',
+    ar: 'Arabic',
   };
   return displayNames[language] || language;
 };
@@ -319,6 +323,9 @@ export const getLanguageNativeName = (language: SupportedLanguage): string => {
     es: 'Español',
     pt: 'Português',
     ja: '日本語',
+    ko: '한국어',
+    ru: 'Русский',
+    ar: 'العربية',
   };
   return nativeNames[language] || language;
 };

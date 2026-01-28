@@ -534,7 +534,10 @@
       "french": "Fransızca",
       "spanish": "İspanyolca",
       "portuguese": "Portekizce",
-      "japanese": "Japonca"
+      "japanese": "Japonca",
+      "korean": "Korece",
+      "russian": "Rusça",
+      "arabic": "Arapça"
     }
   },
   "common": {

@@ -558,7 +558,10 @@
       "french": "Français",
       "spanish": "Español",
       "portuguese": "Português",
-      "japanese": "日本語"
+      "japanese": "日本語",
+      "korean": "韓国語",
+      "russian": "ロシア語",
+      "arabic": "アラビア語"
     }
   },
   "common": {

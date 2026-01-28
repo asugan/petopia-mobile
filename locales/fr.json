@@ -558,7 +558,10 @@
       "french": "Français",
       "spanish": "Espagnol",
       "portuguese": "Portugais",
-      "japanese": "Japonais"
+      "japanese": "Japonais",
+      "korean": "Coréen",
+      "russian": "Russe",
+      "arabic": "Arabe"
     }
   },
   "common": {

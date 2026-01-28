@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { View, ScrollView, StyleSheet, TouchableOpacity } from 'react-native';
 import { useTheme } from '@/lib/theme';
-import { useUserSettingsStore, getLanguageNativeName, SupportedLanguage } from '@/stores/userSettingsStore';
+import { useUserSettingsStore, getLanguageNativeName } from '@/stores/userSettingsStore';
+import type { SupportedLanguage } from '@/stores/userSettingsStore';
 import { useTranslation } from 'react-i18next';
 import { ListItem } from '@/components/ui/List';
 import { Modal } from '@/components/ui/Modal';
@@ -23,6 +24,9 @@ const languageFlags: Record<SupportedLanguage, string> = {
   es: '🇪🇸',
   pt: '🇵🇹',
   ja: '🇯🇵',
+  ko: '🇰🇷',
+  ru: '🇷🇺',
+  ar: '🇸🇦',
 };
 
 export function LanguageSettings({
@@ -35,7 +39,7 @@ export function LanguageSettings({
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const currentLanguage = settings?.language || 'en';
-  const supportedLanguages: SupportedLanguage[] = ['tr', 'en', 'it', 'de', 'fr', 'es', 'pt', 'ja'];
+  const supportedLanguages: SupportedLanguage[] = ['tr', 'en', 'it', 'de', 'fr', 'es', 'pt', 'ja', 'ko', 'ru', 'ar'];
 
   const handleLanguageSelect = (language: SupportedLanguage) => {
     updateSettings({ language });
