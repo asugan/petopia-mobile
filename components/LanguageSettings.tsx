@@ -1,13 +1,29 @@
-import React from 'react';
-import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import React, { useState } from 'react';
+import { View, ScrollView, StyleSheet, TouchableOpacity } from 'react-native';
 import { useTheme } from '@/lib/theme';
 import { useUserSettingsStore, getLanguageNativeName, SupportedLanguage } from '@/stores/userSettingsStore';
 import { useTranslation } from 'react-i18next';
+import { ListItem } from '@/components/ui/List';
+import { Modal } from '@/components/ui/Modal';
+import { Text } from '@/components/ui/Text';
+import { Ionicons } from '@expo/vector-icons';
 
 interface LanguageSettingsProps {
   showDeviceInfo?: boolean;
   variant?: 'card' | 'embedded';
 }
+
+// Dil bayrakları
+const languageFlags: Record<SupportedLanguage, string> = {
+  tr: '🇹🇷',
+  en: '🇬🇧',
+  it: '🇮🇹',
+  de: '🇩🇪',
+  fr: '🇫🇷',
+  es: '🇪🇸',
+  pt: '🇵🇹',
+  ja: '🇯🇵',
+};
 
 export function LanguageSettings({
   showDeviceInfo = false,
@@ -16,12 +32,14 @@ export function LanguageSettings({
   const { theme } = useTheme();
   const { t } = useTranslation();
   const { settings, updateSettings, isLoading } = useUserSettingsStore();
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   const currentLanguage = settings?.language || 'en';
   const supportedLanguages: SupportedLanguage[] = ['tr', 'en', 'it', 'de', 'fr', 'es', 'pt', 'ja'];
 
   const handleLanguageSelect = (language: SupportedLanguage) => {
     updateSettings({ language });
+    setIsModalOpen(false);
   };
 
   if (isLoading) {
@@ -42,49 +60,81 @@ export function LanguageSettings({
         { backgroundColor: variant === 'embedded' ? 'transparent' : theme.colors.surface },
       ]}
     >
-      {/* Current Language Info */}
-      <View style={styles.section}>
-        <Text style={[styles.sectionTitle, { color: theme.colors.primary }]}>
-          {t('settings.currentLanguage')}
-        </Text>
-        <Text style={[styles.currentLanguage, { color: theme.colors.onSurface }]}>
-          {getLanguageNativeName(currentLanguage)}
-        </Text>
-      </View>
+      {/* Kapalı Durum - Tıklanabilir ListItem */}
+      <ListItem
+        title={t('settings.language', 'Language')}
+        description={`${languageFlags[currentLanguage]} ${getLanguageNativeName(currentLanguage)}`}
+        left={
+          <Ionicons
+            name="language"
+            size={24}
+            color={theme.colors.onSurfaceVariant}
+          />
+        }
+        right={
+          <Ionicons
+            name="chevron-down"
+            size={20}
+            color={theme.colors.onSurfaceVariant}
+          />
+        }
+        onPress={() => setIsModalOpen(true)}
+      />
 
-      {/* Language Selection */}
-      <View style={styles.section}>
-        <Text style={[styles.sectionTitle, { color: theme.colors.primary }]}>
-          {t('settings.selectLanguage')}
-        </Text>
-        {supportedLanguages.map((language) => (
-          <TouchableOpacity
-            key={language}
-            style={[
-              styles.languageOption,
-              {
-                backgroundColor: currentLanguage === language ? theme.colors.primaryContainer : 'transparent',
-                borderColor: theme.colors.outline,
-              },
-            ]}
-            onPress={() => handleLanguageSelect(language)}
-          >
-            <Text
-              style={[
-                styles.languageText,
-                {
-                  color: currentLanguage === language ? theme.colors.onPrimaryContainer : theme.colors.onSurface,
-                },
-              ]}
-            >
-              {getLanguageNativeName(language)}
+      {/* Modal - Dil Seçimi */}
+      <Modal
+        visible={isModalOpen}
+        onDismiss={() => setIsModalOpen(false)}
+      >
+        <View style={[styles.modalContent, { backgroundColor: theme.colors.surface }]}>
+          {/* Modal Header */}
+          <View style={styles.modalHeader}>
+            <Text variant="titleLarge" style={{ color: theme.colors.onSurface }}>
+              {t('settings.selectLanguage', 'Select Language')}
             </Text>
-            {currentLanguage === language && (
-              <Text style={[styles.checkmark, { color: theme.colors.primary }]}>✓</Text>
-            )}
-          </TouchableOpacity>
-        ))}
-      </View>
+            <TouchableOpacity onPress={() => setIsModalOpen(false)}>
+              <Ionicons name="close" size={24} color={theme.colors.onSurfaceVariant} />
+            </TouchableOpacity>
+          </View>
+
+          {/* Dil Listesi */}
+          <ScrollView style={styles.languageList} showsVerticalScrollIndicator={false}>
+            {supportedLanguages.map((language, index) => {
+              const isSelected = currentLanguage === language;
+              return (
+                <TouchableOpacity
+                  key={language}
+                  style={[
+                    styles.languageOption,
+                    {
+                      backgroundColor: isSelected ? theme.colors.primaryContainer : 'transparent',
+                      borderBottomWidth: index < supportedLanguages.length - 1 ? 1 : 0,
+                      borderBottomColor: theme.colors.surfaceVariant,
+                    },
+                  ]}
+                  onPress={() => handleLanguageSelect(language)}
+                >
+                  <View style={styles.languageContent}>
+                    <Text style={styles.flag}>{languageFlags[language]}</Text>
+                    <Text
+                      variant="bodyLarge"
+                      style={{
+                        color: isSelected ? theme.colors.onPrimaryContainer : theme.colors.onSurface,
+                        fontWeight: isSelected ? '600' : '400',
+                      }}
+                    >
+                      {getLanguageNativeName(language)}
+                    </Text>
+                  </View>
+                  {isSelected && (
+                    <Ionicons name="checkmark" size={24} color={theme.colors.primary} />
+                  )}
+                </TouchableOpacity>
+              );
+            })}
+          </ScrollView>
+        </View>
+      </Modal>
     </View>
   );
 }
@@ -100,37 +150,39 @@ const styles = StyleSheet.create({
     margin: 0,
     borderRadius: 0,
   },
-  section: {
-    marginBottom: 24,
-  },
-  sectionTitle: {
-    fontSize: 18,
-    fontWeight: '600',
-    marginBottom: 8,
-  },
-  currentLanguage: {
-    fontSize: 16,
-    fontWeight: '500',
-    marginBottom: 4,
-  },
   loadingText: {
     fontSize: 16,
     textAlign: 'center',
+  },
+  modalContent: {
+    borderRadius: 16,
+    overflow: 'hidden',
+    maxHeight: 480,
+    width: '100%',
+  },
+  modalHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    padding: 20,
+    borderBottomWidth: 1,
+    borderBottomColor: 'rgba(0, 0, 0, 0.1)',
+  },
+  languageList: {
+    maxHeight: 400,
   },
   languageOption: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    padding: 12,
-    borderRadius: 8,
-    borderWidth: 1,
-    marginBottom: 8,
+    padding: 16,
   },
-  languageText: {
-    fontSize: 16,
+  languageContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
   },
-  checkmark: {
-    fontSize: 18,
-    fontWeight: 'bold',
+  flag: {
+    fontSize: 24,
   },
 });
