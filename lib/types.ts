@@ -187,7 +187,7 @@ export interface BudgetAlert {
 // ============================================================================
 // USER SETTINGS TYPES
 // ============================================================================
-export type SupportedLanguage = "tr" | "en" | "it" | "de" | "fr" | "es" | "pt" | "ja" | "ko" | "ru" | "ar" | "he" | "ro" | "nl" | "sv" | "da" | "no" | "fi" | "cs" | "hu" | "hi" | "th" | "vi" | "ms" | "zh" | "zh-TW" | "pl" | "el";
+export type SupportedLanguage = "tr" | "en" | "it" | "de" | "fr" | "es" | "pt" | "ja" | "ko" | "ru" | "ar" | "he" | "ro" | "nl" | "sv" | "da" | "no" | "fi" | "cs" | "hu" | "sk" | "ca" | "hi" | "th" | "vi" | "ms" | "zh" | "zh-TW" | "pl" | "el";
 export type SupportedCurrency = "TRY" | "USD" | "EUR" | "GBP";
 
 export interface UserSettings {
