@@ -574,7 +574,10 @@
       "greek": "Griego",
       "swedish": "Sueco",
       "danish": "Danés",
-      "norwegian": "Noruego"
+      "norwegian": "Noruego",
+      "finnish": "Finlandés",
+      "czech": "Checo",
+      "hungarian": "Húngaro"
     }
   },
   "common": {

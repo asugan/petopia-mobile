@@ -575,7 +575,10 @@
       "greek": "Greek",
       "swedish": "Svensk",
       "danish": "Danish",
-      "norwegian": "Norwegian"
+      "norwegian": "Norway",
+      "finnish": "Finland",
+      "czech": "Czech",
+      "hungarian": "Hungary"
     }
   },
   "common": {

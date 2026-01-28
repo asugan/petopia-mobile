@@ -551,7 +551,10 @@
       "greek": "Греческий",
       "swedish": "Шведский",
       "danish": "Датский",
-      "norwegian": "Норвежский"
+      "norwegian": "Норвежский",
+      "finnish": "Финский",
+      "czech": "Чешский",
+      "hungarian": "Венгерский"
     }
   },
   "common": {

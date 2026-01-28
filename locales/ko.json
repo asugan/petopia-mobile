@@ -550,7 +550,10 @@
       "greek": "그리스어",
       "swedish": "스웨덴어",
       "danish": "덴마크어",
-      "norwegian": "노르웨이어"
+      "norwegian": "노르웨이어",
+      "finnish": "핀란드어",
+      "czech": "체코어",
+      "hungarian": "헝가리어"
     }
   },
   "common": {

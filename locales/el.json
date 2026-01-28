@@ -575,7 +575,10 @@
       "greek": "Ελληνικά",
       "swedish": "Σουηδικά",
       "danish": "Δανικά",
-      "norwegian": "Νορβηγικά"
+      "norwegian": "Νορβηγικά",
+      "finnish": "Φινλανδικά",
+      "czech": "Τσεχικά",
+      "hungarian": "Ουγγρικά"
     }
   },
   "common": {
