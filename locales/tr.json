@@ -528,7 +528,13 @@
     "enIndicator": "EN",
     "languages": {
       "turkish": "Türkçe",
-      "english": "English"
+      "english": "English",
+      "italian": "İtalyanca",
+      "german": "Almanca",
+      "french": "Fransızca",
+      "spanish": "İspanyolca",
+      "portuguese": "Portekizce",
+      "japanese": "Japonca"
     }
   },
   "common": {

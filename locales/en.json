@@ -553,7 +553,13 @@
     "enIndicator": "EN",
     "languages": {
       "turkish": "Türkçe",
-      "english": "English"
+      "english": "English",
+      "italian": "Italiano",
+      "german": "German",
+      "french": "French",
+      "spanish": "Spanish",
+      "portuguese": "Portuguese",
+      "japanese": "Japanese"
     }
   },
   "common": {

@@ -18,7 +18,7 @@ export function LanguageSettings({
   const { settings, updateSettings, isLoading } = useUserSettingsStore();
 
   const currentLanguage = settings?.language || 'en';
-  const supportedLanguages: SupportedLanguage[] = ['tr', 'en'];
+  const supportedLanguages: SupportedLanguage[] = ['tr', 'en', 'it', 'de', 'fr', 'es', 'pt', 'ja'];
 
   const handleLanguageSelect = (language: SupportedLanguage) => {
     updateSettings({ language });

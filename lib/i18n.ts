@@ -5,6 +5,12 @@ import * as Localization from 'expo-localization';
 // Import translation files
 import en from '../locales/en.json';
 import tr from '../locales/tr.json';
+import it from '../locales/it.json';
+import de from '../locales/de.json';
+import fr from '../locales/fr.json';
+import es from '../locales/es.json';
+import pt from '../locales/pt.json';
+import ja from '../locales/ja.json';
 
 // Define resources
 const resources = {
@@ -14,6 +20,24 @@ const resources = {
   tr: {
     translation: tr,
   },
+  it: {
+    translation: it,
+  },
+  de: {
+    translation: de,
+  },
+  fr: {
+    translation: fr,
+  },
+  es: {
+    translation: es,
+  },
+  pt: {
+    translation: pt,
+  },
+  ja: {
+    translation: ja,
+  },
 };
 
 // Get device language or fallback to English
@@ -21,7 +45,14 @@ const getDeviceLanguage = () => {
   try {
     const locales = Localization.getLocales();
     const languageCode = locales[0]?.languageCode?.toLowerCase() || 'en';
-    return languageCode === 'tr' ? 'tr' : 'en';
+    if (languageCode === 'tr') return 'tr';
+    if (languageCode === 'it') return 'it';
+    if (languageCode === 'de') return 'de';
+    if (languageCode === 'fr') return 'fr';
+    if (languageCode === 'es') return 'es';
+    if (languageCode === 'pt') return 'pt';
+    if (languageCode === 'ja') return 'ja';
+    return 'en';
   } catch {
     return 'en';
   }
@@ -35,7 +66,7 @@ i18n
     lng: getDeviceLanguage(), // Use device language as default
     fallbackLng: 'en', // Fallback to English
     debug: __DEV__, // Enable debug in development
-    supportedLngs: ['en', 'tr'],
+    supportedLngs: ['en', 'tr', 'it', 'de', 'fr', 'es', 'pt', 'ja'],
 
     interpolation: {
       escapeValue: false, // React Native already safe from XSS

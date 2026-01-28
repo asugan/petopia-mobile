@@ -285,10 +285,10 @@ export const useUserSettingsStore = create<UserSettingsState & UserSettingsActio
   )
 );
 
-export const getSupportedLanguages = (): SupportedLanguage[] => ['tr', 'en'];
+export const getSupportedLanguages = (): SupportedLanguage[] => ['tr', 'en', 'it', 'de', 'fr', 'es', 'pt', 'ja'];
 
 export const isLanguageSupported = (language: string): language is SupportedLanguage => {
-  return ['tr', 'en'].includes(language);
+  return ['tr', 'en', 'it', 'de', 'fr', 'es', 'pt', 'ja'].includes(language);
 };
 
 export const getLanguageDirection = (_language: SupportedLanguage): 'ltr' | 'rtl' => {
@@ -299,6 +299,12 @@ export const getLanguageDisplayName = (language: SupportedLanguage): string => {
   const displayNames: Record<SupportedLanguage, string> = {
     tr: 'Türkçe',
     en: 'English',
+    it: 'Italiano',
+    de: 'Deutsch',
+    fr: 'Français',
+    es: 'Español',
+    pt: 'Português',
+    ja: '日本語',
   };
   return displayNames[language] || language;
 };
@@ -307,6 +313,12 @@ export const getLanguageNativeName = (language: SupportedLanguage): string => {
   const nativeNames: Record<SupportedLanguage, string> = {
     tr: 'Türkçe',
     en: 'English',
+    it: 'Italiano',
+    de: 'Deutsch',
+    fr: 'Français',
+    es: 'Español',
+    pt: 'Português',
+    ja: '日本語',
   };
   return nativeNames[language] || language;
 };
