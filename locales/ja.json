@@ -565,7 +565,11 @@
       "hindi": "ヒンディー語",
       "thai": "タイ語",
       "vietnamese": "ベトナム語",
-      "malay": "マレー語"
+      "malay": "Malay",
+      "chinese": "中国語",
+      "traditional_chinese": "中國語（繁體字）",
+      "polish": "ポーランド語",
+      "greek": "ギリシャ語"
     }
   },
   "common": {

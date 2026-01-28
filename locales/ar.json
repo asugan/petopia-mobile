@@ -541,7 +541,11 @@
       "hindi": "الهندية",
       "thai": "التايلاندية",
       "vietnamese": "الفيتنامية",
-      "malay": "الملايوية"
+      "malay": "Malay",
+      "chinese": "الصينية",
+      "traditional_chinese": "الصينية التقليدية",
+      "polish": "البولندية",
+      "greek": "اليونانية"
     }
   },
   "common": {

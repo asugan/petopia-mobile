@@ -563,7 +563,11 @@
       "korean": "कोरियाई",
       "russian": "रूसी",
       "arabic": "अरबी",
-      "hindi": "हिन्दी"
+      "malay": "Malay",
+      "chinese": "चीनी",
+      "traditional_chinese": "पारंपरिक चीनी",
+      "polish": "पोलिश",
+      "greek": "यूनानी"
     }
   },
   "common": {

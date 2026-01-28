@@ -18,6 +18,10 @@ import hi from '../locales/hi.json';
 import th from '../locales/th.json';
 import vi from '../locales/vi.json';
 import ms from '../locales/ms.json';
+import zh from '../locales/zh.json';
+import zhTW from '../locales/zh-TW.json';
+import pl from '../locales/pl.json';
+import el from '../locales/el.json';
 
 // Define resources
 const resources = {
@@ -66,6 +70,18 @@ const resources = {
   ms: {
     translation: ms,
   },
+  zh: {
+    translation: zh,
+  },
+  'zh-TW': {
+    translation: zhTW,
+  },
+  pl: {
+    translation: pl,
+  },
+  el: {
+    translation: el,
+  },
 };
 
 // Get device language or fallback to English
@@ -73,6 +89,8 @@ const getDeviceLanguage = () => {
   try {
     const locales = Localization.getLocales();
     const languageCode = locales[0]?.languageCode?.toLowerCase() || 'en';
+    const regionCode = locales[0]?.regionCode?.toUpperCase();
+
     if (languageCode === 'tr') return 'tr';
     if (languageCode === 'it') return 'it';
     if (languageCode === 'de') return 'de';
@@ -87,6 +105,14 @@ const getDeviceLanguage = () => {
     if (languageCode === 'th') return 'th';
     if (languageCode === 'vi') return 'vi';
     if (languageCode === 'ms') return 'ms';
+    if (languageCode === 'pl') return 'pl';
+    if (languageCode === 'el') return 'el';
+    if (languageCode === 'zh') {
+      if (regionCode === 'TW' || regionCode === 'HK' || regionCode === 'MO') {
+        return 'zh-TW';
+      }
+      return 'zh';
+    }
     return 'en';
   } catch {
     return 'en';
@@ -101,7 +127,7 @@ i18n
     lng: getDeviceLanguage(), // Use device language as default
     fallbackLng: 'en', // Fallback to English
     debug: __DEV__, // Enable debug in development
-    supportedLngs: ['en', 'tr', 'it', 'de', 'fr', 'es', 'pt', 'ja', 'ko', 'ru', 'ar', 'hi', 'th', 'vi', 'ms'],
+    supportedLngs: ['en', 'tr', 'it', 'de', 'fr', 'es', 'pt', 'ja', 'ko', 'ru', 'ar', 'hi', 'th', 'vi', 'ms', 'zh', 'zh-TW', 'pl', 'el'],
 
     interpolation: {
       escapeValue: false, // React Native already safe from XSS

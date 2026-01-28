@@ -286,10 +286,10 @@ export const useUserSettingsStore = create<UserSettingsState & UserSettingsActio
   )
 );
 
-export const getSupportedLanguages = (): SupportedLanguage[] => ['tr', 'en', 'it', 'de', 'fr', 'es', 'pt', 'ja', 'ko', 'ru', 'ar', 'hi', 'th', 'vi', 'ms'];
+export const getSupportedLanguages = (): SupportedLanguage[] => ['tr', 'en', 'it', 'de', 'fr', 'es', 'pt', 'ja', 'ko', 'ru', 'ar', 'hi', 'th', 'vi', 'ms', 'zh', 'zh-TW', 'pl', 'el'];
 
 export const isLanguageSupported = (language: string): language is SupportedLanguage => {
-  return ['tr', 'en', 'it', 'de', 'fr', 'es', 'pt', 'ja', 'ko', 'ru', 'ar', 'hi', 'th', 'vi', 'ms'].includes(language);
+  return ['tr', 'en', 'it', 'de', 'fr', 'es', 'pt', 'ja', 'ko', 'ru', 'ar', 'hi', 'th', 'vi', 'ms', 'zh', 'zh-TW', 'pl', 'el'].includes(language);
 };
 
 export const getLanguageDirection = (language: SupportedLanguage): 'ltr' | 'rtl' => {
@@ -313,6 +313,10 @@ export const getLanguageDisplayName = (language: SupportedLanguage): string => {
     th: 'Thai',
     vi: 'Vietnamese',
     ms: 'Malay',
+    zh: 'Chinese',
+    'zh-TW': 'Traditional Chinese',
+    pl: 'Polish',
+    el: 'Greek',
   };
   return displayNames[language] || language;
 };
@@ -334,6 +338,10 @@ export const getLanguageNativeName = (language: SupportedLanguage): string => {
     th: 'ไทย',
     vi: 'Tiếng Việt',
     ms: 'Bahasa Melayu',
+    zh: '简体中文',
+    'zh-TW': '繁體中文',
+    pl: 'Polski',
+    el: 'Ελληνικά',
   };
   return nativeNames[language] || language;
 };

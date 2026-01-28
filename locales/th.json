@@ -563,7 +563,11 @@
       "russian": "รัสเซีย",
       "arabic": "อาหรับ",
       "hindi": "ฮินดี",
-      "thai": "ไทย"
+      "thai": "ไทย",
+      "chinese": "จีน",
+      "traditional_chinese": "จีนตัวเต็ม",
+      "polish": "โปแลนด์",
+      "greek": "กรีก"
     }
   },
   "common": {

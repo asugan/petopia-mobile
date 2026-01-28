@@ -540,7 +540,11 @@
       "hindi": "힌디어",
       "thai": "태국어",
       "vietnamese": "베트남어",
-      "malay": "말레이어"
+      "malay": "Malay",
+      "chinese": "중국어",
+      "traditional_chinese": "중국어(번체)",
+      "polish": "폴란드어",
+      "greek": "그리스어"
     }
   },
   "common": {

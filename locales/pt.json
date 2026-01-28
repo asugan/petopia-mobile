@@ -564,7 +564,11 @@
       "hindi": "Hindi",
       "thai": "Tailandês",
       "vietnamese": "Vietnamita",
-      "malay": "Malaio"
+      "malay": "Malay",
+      "chinese": "Chinês",
+      "traditional_chinese": "Chinês Tradicional",
+      "polish": "Polonês",
+      "greek": "Grego"
     }
   },
   "common": {

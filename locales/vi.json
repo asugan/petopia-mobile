@@ -564,7 +564,11 @@
       "arabic": "Tiếng Ả Rập",
       "hindi": "Tiếng Hindi",
       "thai": "Tiếng Thái",
-      "vietnamese": "Tiếng Việt"
+      "malay": "Bahasa Mã Lai",
+      "chinese": "Tiếng Trung",
+      "traditional_chinese": "Tiếng Trung phồn thể",
+      "polish": "Tiếng Ba Lan",
+      "greek": "Tiếng Hy Lạp"
     }
   },
   "common": {
