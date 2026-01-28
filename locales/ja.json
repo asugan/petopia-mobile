@@ -572,7 +572,10 @@
       "chinese": "中国語",
       "traditional_chinese": "中國語（繁體字）",
       "polish": "ポーランド語",
-      "greek": "ギリシャ語"
+      "greek": "ギリシャ語",
+      "swedish": "スウェーデン語",
+      "danish": "デンマーク語",
+      "norwegian": "ノルウェー語"
     }
   },
   "common": {

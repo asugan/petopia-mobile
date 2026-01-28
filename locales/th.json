@@ -569,8 +569,11 @@
       "thai": "ไทย",
       "chinese": "จีน",
       "traditional_chinese": "จีนตัวเต็ม",
-      "polish": "โปแลนด์",
-      "greek": "กรีก"
+      "polish": "ภาษาโปแลนด์",
+      "greek": "ภาษากรีก",
+      "swedish": "ภาษาสวีเดน",
+      "danish": "ภาษาเดนมาร์ก",
+      "norwegian": "ภาษานอร์เวย์"
     }
   },
   "common": {

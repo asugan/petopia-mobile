@@ -572,7 +572,10 @@
       "chinese": "Κινεζικά",
       "traditional_chinese": "Παραδοσιακά Κινεζικά",
       "polish": "Πολωνικά",
-      "greek": "Ελληνικά"
+      "greek": "Ελληνικά",
+      "swedish": "Σουηδικά",
+      "danish": "Δανικά",
+      "norwegian": "Νορβηγικά"
     }
   },
   "common": {

@@ -571,7 +571,11 @@
       "malay": "Malajski",
       "chinese": "Chiński",
       "traditional_chinese": "Chiński tradycyjny",
-      "polish": "Polski"
+      "polish": "Polski",
+      "greek": "Grecki",
+      "swedish": "Szwedzki",
+      "danish": "Duński",
+      "norwegian": "Norweski"
     }
   },
   "common": {

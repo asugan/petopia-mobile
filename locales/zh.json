@@ -571,7 +571,10 @@
       "chinese": "简体中文",
       "traditional_chinese": "繁体中文",
       "polish": "波兰语",
-      "greek": "希腊语"
+      "greek": "希腊语",
+      "swedish": "瑞典语",
+      "danish": "丹麦语",
+      "norwegian": "挪威语"
     }
   },
   "common": {

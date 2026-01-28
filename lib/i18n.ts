@@ -25,6 +25,9 @@ import el from '../locales/el.json';
 import he from '../locales/he.json';
 import ro from '../locales/ro.json';
 import nl from '../locales/nl.json';
+import sv from '../locales/sv.json';
+import da from '../locales/da.json';
+import no from '../locales/no.json';
 
 // Define resources
 const resources = {
@@ -69,6 +72,15 @@ const resources = {
   },
   nl: {
     translation: nl,
+  },
+  sv: {
+    translation: sv,
+  },
+  da: {
+    translation: da,
+  },
+  no: {
+    translation: no,
   },
   hi: {
     translation: hi,
@@ -116,6 +128,9 @@ const getDeviceLanguage = () => {
     if (languageCode === 'he') return 'he';
     if (languageCode === 'ro') return 'ro';
     if (languageCode === 'nl') return 'nl';
+    if (languageCode === 'sv') return 'sv';
+    if (languageCode === 'da') return 'da';
+    if (languageCode === 'no') return 'no';
     if (languageCode === 'hi') return 'hi';
     if (languageCode === 'th') return 'th';
     if (languageCode === 'vi') return 'vi';
@@ -142,7 +157,7 @@ i18n
     lng: getDeviceLanguage(), // Use device language as default
     fallbackLng: 'en', // Fallback to English
     debug: __DEV__, // Enable debug in development
-    supportedLngs: ['en', 'tr', 'it', 'de', 'fr', 'es', 'pt', 'ja', 'ko', 'ru', 'ar', 'he', 'ro', 'nl', 'hi', 'th', 'vi', 'ms', 'zh', 'zh-TW', 'pl', 'el'],
+    supportedLngs: ['en', 'tr', 'it', 'de', 'fr', 'es', 'pt', 'ja', 'ko', 'ru', 'ar', 'he', 'ro', 'nl', 'sv', 'da', 'no', 'hi', 'th', 'vi', 'ms', 'zh', 'zh-TW', 'pl', 'el'],
 
     interpolation: {
       escapeValue: false, // React Native already safe from XSS

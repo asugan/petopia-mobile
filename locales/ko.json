@@ -547,7 +547,10 @@
       "chinese": "중국어",
       "traditional_chinese": "중국어(번체)",
       "polish": "폴란드어",
-      "greek": "그리스어"
+      "greek": "그리스어",
+      "swedish": "스웨덴어",
+      "danish": "덴마크어",
+      "norwegian": "노르웨이어"
     }
   },
   "common": {

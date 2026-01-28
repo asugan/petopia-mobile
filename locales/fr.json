@@ -572,7 +572,10 @@
       "chinese": "Chinois",
       "traditional_chinese": "Chinois Traditionnel",
       "polish": "Polonais",
-      "greek": "Grec"
+      "greek": "Grec",
+      "swedish": "Suédois",
+      "danish": "Danois",
+      "norwegian": "Norvégien"
     }
   },
   "common": {
