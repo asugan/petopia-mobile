@@ -69,7 +69,7 @@ const deriveTheme = (themeMode: ThemeMode): Theme => {
 };
 
 const deriveRTL = (language: SupportedLanguage): boolean => {
-  return language === 'ar';
+  return language === 'ar' || language === 'he';
 };
 
 export const useUserSettingsStore = create<UserSettingsState & UserSettingsActions>()(
@@ -286,14 +286,14 @@ export const useUserSettingsStore = create<UserSettingsState & UserSettingsActio
   )
 );
 
-export const getSupportedLanguages = (): SupportedLanguage[] => ['tr', 'en', 'it', 'de', 'fr', 'es', 'pt', 'ja', 'ko', 'ru', 'ar', 'hi', 'th', 'vi', 'ms', 'zh', 'zh-TW', 'pl', 'el'];
+export const getSupportedLanguages = (): SupportedLanguage[] => ['tr', 'en', 'it', 'de', 'fr', 'es', 'pt', 'ja', 'ko', 'ru', 'ar', 'he', 'ro', 'nl', 'hi', 'th', 'vi', 'ms', 'zh', 'zh-TW', 'pl', 'el'];
 
 export const isLanguageSupported = (language: string): language is SupportedLanguage => {
-  return ['tr', 'en', 'it', 'de', 'fr', 'es', 'pt', 'ja', 'ko', 'ru', 'ar', 'hi', 'th', 'vi', 'ms', 'zh', 'zh-TW', 'pl', 'el'].includes(language);
+  return ['tr', 'en', 'it', 'de', 'fr', 'es', 'pt', 'ja', 'ko', 'ru', 'ar', 'he', 'ro', 'nl', 'hi', 'th', 'vi', 'ms', 'zh', 'zh-TW', 'pl', 'el'].includes(language);
 };
 
 export const getLanguageDirection = (language: SupportedLanguage): 'ltr' | 'rtl' => {
-  return language === 'ar' ? 'rtl' : 'ltr';
+  return language === 'ar' || language === 'he' ? 'rtl' : 'ltr';
 };
 
 export const getLanguageDisplayName = (language: SupportedLanguage): string => {
@@ -309,6 +309,9 @@ export const getLanguageDisplayName = (language: SupportedLanguage): string => {
     ko: 'Korean',
     ru: 'Russian',
     ar: 'Arabic',
+    he: 'Hebrew',
+    ro: 'Romanian',
+    nl: 'Dutch',
     hi: 'Hindi',
     th: 'Thai',
     vi: 'Vietnamese',
@@ -334,6 +337,9 @@ export const getLanguageNativeName = (language: SupportedLanguage): string => {
     ko: '한국어',
     ru: 'Русский',
     ar: 'العربية',
+    he: 'עברית',
+    ro: 'Română',
+    nl: 'Nederlands',
     hi: 'हिन्दी',
     th: 'ไทย',
     vi: 'Tiếng Việt',
