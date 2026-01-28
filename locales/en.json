@@ -510,6 +510,7 @@
     "currentLanguage": "Current Language",
     "deviceLanguage": "Device Language",
     "selectLanguage": "Select Language",
+    "selectCurrency": "Select Currency",
     "languageExplicitlySet": "Language explicitly set by user",
     "notSupported": "Not supported",
     "willAutoDetect": "Will auto-detect on app start",

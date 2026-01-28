@@ -485,6 +485,7 @@
     "currentLanguage": "Mevcut Dil",
     "deviceLanguage": "Cihaz Dili",
     "selectLanguage": "Dil Seç",
+    "selectCurrency": "Para Birimi Seç",
     "languageExplicitlySet": "Dil kullanıcı tarafından belirlendi",
     "notSupported": "Desteklenmiyor",
     "willAutoDetect": "Uygulama başlangıcında otomatik algılanacak",
