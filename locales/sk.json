@@ -290,19 +290,18 @@
       "day": "Deň"
     }
   },
-    "events": {
-      "recurrence": {
-        "editTitle": "Opakujúca sa udalosť",
-        "editDescription": "Ako si želáte upraviť túto udalosť?",
-        "editSingle": "Iba túto udalosť",
-        "editSeries": "Všetky udalosti v sérii",
-        "deleteTitle": "Vymazať udalosť",
-        "deleteDescription": "Ako si želáte vymazať túto opakujúcu sa udalosť?",
-        "deleteSingle": "Iba túto udalosť",
-        "deleteSeries": "Všetky udalosti v sérii"
-      },
-      "status": "Stav",
-
+  "events": {
+    "recurrence": {
+      "editTitle": "Opakujúca sa udalosť",
+      "editDescription": "Ako si želáte upraviť túto udalosť?",
+      "editSingle": "Iba túto udalosť",
+      "editSeries": "Všetky udalosti v sérii",
+      "deleteTitle": "Vymazať udalosť",
+      "deleteDescription": "Ako si želáte vymazať túto opakujúcu sa udalosť?",
+      "deleteSingle": "Iba túto udalosť",
+      "deleteSeries": "Všetky udalosti v sérii"
+    },
+    "status": "Stav",
     "upcoming": "Nadchádzajúce udalosti",
     "past": "Minulé",
     "today": "Dnes",
@@ -552,36 +551,37 @@
     "trIndicator": "TR",
     "enIndicator": "EN",
     "languages": {
-      "turkish": "Turečtina",
-      "english": "Angličtina",
-      "italian": "Taliančina",
-      "german": "Nemčina",
-      "french": "Francúzština",
-      "spanish": "Španielčina",
-      "portuguese": "Portugalčina",
-      "japanese": "Japončina",
-      "korean": "Kórejčina",
-      "russian": "Ruština",
-      "arabic": "Arabčina",
-      "hebrew": "Hebrejčina",
-      "romanian": "Rumunčina",
-      "dutch": "Holandčina",
-      "hindi": "Hindčina",
-      "thai": "Thajčina",
-      "vietnamese": "Vietnamčina",
-      "malay": "Malajčina",
-      "chinese": "Čínština",
-      "traditional_chinese": "Tradičná čínština",
-      "polish": "Poľština",
-      "greek": "Gréčtina",
-      "swedish": "Švédčina",
-      "danish": "Dánčina",
-      "norwegian": "Nórčina",
-      "finnish": "Fínčina",
-      "czech": "Čeština",
-      "hungarian": "Maďarčina",
-      "slovak": "Slovenčina",
-      "croatian": "Chorvátčina"
+      "turkish": "Türkçe",
+      "english": "English",
+      "italian": "Italiano",
+      "german": "German",
+      "french": "French",
+      "spanish": "Spanish",
+      "portuguese": "Portuguese",
+      "japanese": "Japanese",
+      "korean": "Korean",
+      "russian": "Russian",
+      "arabic": "Arabic",
+      "hebrew": "Hebrew",
+      "romanian": "Romanian",
+      "dutch": "Dutch",
+      "hindi": "Hindi",
+      "thai": "Thai",
+      "vietnamese": "Vietnamese",
+      "malay": "Malay",
+      "chinese": "Chinese",
+      "traditional_chinese": "Traditional Chinese",
+      "polish": "Polish",
+      "greek": "Greek",
+      "swedish": "Swedish",
+      "danish": "Danish",
+      "norwegian": "Norwegian",
+      "finnish": "Finnish",
+      "czech": "Czech",
+      "hungarian": "Hungarian",
+      "slovak": "Slovak",
+      "catalan": "Catalan",
+      "croatian": "Croatian"
     }
   },
   "common": {
@@ -1111,7 +1111,6 @@
       "cancel": "Zrušiť"
     }
   },
-
   "expenses": {
     "title": "Výdavky",
     "selectPetFirst": "Najprv prosím vyberte zvieratko",

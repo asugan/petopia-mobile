@@ -275,19 +275,18 @@
       "day": "Gün"
     }
   },
-    "events": {
-      "recurrence": {
-        "editTitle": "Tekrarlanan Etkinlik",
-        "editDescription": "Bu etkinliği nasıl düzenlemek istersiniz?",
-        "editSingle": "Sadece bu etkinlik",
-        "editSeries": "Tüm seri",
-        "deleteTitle": "Etkinliği Sil",
-        "deleteDescription": "Bu tekrarlanan etkinliği nasıl silmek istersiniz?",
-        "deleteSingle": "Sadece bu etkinlik",
-        "deleteSeries": "Tüm seri"
-      },
-      "status": "Durum",
-
+  "events": {
+    "recurrence": {
+      "editTitle": "Tekrarlanan Etkinlik",
+      "editDescription": "Bu etkinliği nasıl düzenlemek istersiniz?",
+      "editSingle": "Sadece bu etkinlik",
+      "editSeries": "Tüm seri",
+      "deleteTitle": "Etkinliği Sil",
+      "deleteDescription": "Bu tekrarlanan etkinliği nasıl silmek istersiniz?",
+      "deleteSingle": "Sadece bu etkinlik",
+      "deleteSeries": "Tüm seri"
+    },
+    "status": "Durum",
     "upcoming": "Yaklaşan Etkinlikler",
     "past": "Geçmiş",
     "today": "Bugün",
@@ -530,35 +529,35 @@
     "languages": {
       "turkish": "Türkçe",
       "english": "English",
-      "italian": "İtalyanca",
-      "german": "Almanca",
-      "french": "Fransızca",
-      "spanish": "İspanyolca",
-      "portuguese": "Portekizce",
-      "japanese": "Japonca",
-      "korean": "Korece",
-      "russian": "Rusça",
-      "arabic": "Arapça",
-      "hebrew": "İbranice",
-      "romanian": "Rumence",
-      "dutch": "Felemenkçe",
-      "hindi": "Hintçe",
-      "thai": "Tayca",
-      "vietnamese": "Vietnamca",
+      "italian": "Italiano",
+      "german": "German",
+      "french": "French",
+      "spanish": "Spanish",
+      "portuguese": "Portuguese",
+      "japanese": "Japanese",
+      "korean": "Korean",
+      "russian": "Russian",
+      "arabic": "Arabic",
+      "hebrew": "Hebrew",
+      "romanian": "Romanian",
+      "dutch": "Dutch",
+      "hindi": "Hindi",
+      "thai": "Thai",
+      "vietnamese": "Vietnamese",
       "malay": "Malay",
-      "chinese": "Çince",
-      "traditional_chinese": "Geleneksel Çince",
-      "polish": "Lehçe",
-      "greek": "Yunanca",
-      "swedish": "İsveççe",
-      "danish": "Danca",
-      "norwegian": "Norveççe",
-      "finnish": "Fince",
-      "czech": "Çekçe",
-      "hungarian": "Macarca",
-      "slovak": "Slovakça",
-      "catalan": "Katalonca",
-      "croatian": "Hırvatça"
+      "chinese": "Chinese",
+      "traditional_chinese": "Traditional Chinese",
+      "polish": "Polish",
+      "greek": "Greek",
+      "swedish": "Swedish",
+      "danish": "Danish",
+      "norwegian": "Norwegian",
+      "finnish": "Finnish",
+      "czech": "Czech",
+      "hungarian": "Hungarian",
+      "slovak": "Slovak",
+      "catalan": "Catalan",
+      "croatian": "Croatian"
     }
   },
   "common": {
@@ -1085,7 +1084,6 @@
       "cancel": "İptal"
     }
   },
-
   "expenses": {
     "title": "Harcamalar",
     "selectPetFirst": "Lütfen önce bir evcil hayvan seçin",
