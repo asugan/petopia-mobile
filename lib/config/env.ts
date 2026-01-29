@@ -2,6 +2,7 @@
 export const ENV = {
   // API Base URL - required for all API calls
   API_BASE_URL: process.env.EXPO_PUBLIC_API_URL ?? '',
+  API_BASE_PATH: process.env.EXPO_PUBLIC_API_BASEPATH ?? '/auth',
 
   // Auth configuration
   AUTH: {

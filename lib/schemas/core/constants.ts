@@ -13,7 +13,11 @@ export const VALIDATION_LIMITS = {
   timeFormat: /^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/,
 } as const;
 
-export const CURRENCIES = ['TRY', 'USD', 'EUR', 'GBP'] as const;
+export const CURRENCIES = [
+  'TRY', 'USD', 'EUR', 'GBP', 'AUD', 'BRL', 'CAD', 'CHF', 'CNY', 'CZK', 'DKK',
+  'HKD', 'HUF', 'IDR', 'ILS', 'INR', 'ISK', 'JPY', 'KRW', 'MXN', 'MYR', 'NOK',
+  'NZD', 'PHP', 'PLN', 'RON', 'SEK', 'SGD', 'THB', 'ZAR',
+] as const;
 export const PAYMENT_METHODS = ['cash', 'credit_card', 'debit_card', 'bank_transfer'] as const;
 export const PET_TYPES = ['dog', 'cat', 'bird', 'rabbit', 'hamster', 'fish', 'reptile', 'other'] as const;
 export const PET_GENDERS = ['male', 'female', 'other'] as const;

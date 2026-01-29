@@ -1,68 +1,43 @@
 import React, { useState } from 'react';
 import { View, ScrollView, StyleSheet, TouchableOpacity } from 'react-native';
 import { useTheme } from '@/lib/theme';
-import { useUserSettingsStore, getLanguageNativeName } from '@/stores/userSettingsStore';
-import type { SupportedLanguage } from '@/stores/userSettingsStore';
+import {
+  useUserSettingsStore,
+  getCurrencyDisplayName,
+  getCurrencyFlag,
+  getCurrencySymbol,
+} from '@/stores/userSettingsStore';
+import type { SupportedCurrency } from '@/stores/userSettingsStore';
 import { useTranslation } from 'react-i18next';
 import { ListItem } from '@/components/ui/List';
 import { Modal } from '@/components/ui/Modal';
 import { Text } from '@/components/ui/Text';
 import { Ionicons } from '@expo/vector-icons';
+import { CURRENCIES } from '@/lib/schemas/core/constants';
 
-interface LanguageSettingsProps {
-  showDeviceInfo?: boolean;
+interface CurrencySettingsProps {
   variant?: 'card' | 'embedded';
+  onSelect?: (currency: SupportedCurrency) => void;
+  selectedCurrency?: SupportedCurrency;
 }
 
-// Dil bayrakları
-const languageFlags: Record<SupportedLanguage, string> = {
-  tr: '🇹🇷',
-  en: '🇬🇧',
-  it: '🇮🇹',
-  de: '🇩🇪',
-  fr: '🇫🇷',
-  es: '🇪🇸',
-  pt: '🇵🇹',
-  ja: '🇯🇵',
-  ko: '🇰🇷',
-  ru: '🇷🇺',
-  ar: '🇸🇦',
-  he: '🇮🇱',
-  ro: '🇷🇴',
-  nl: '🇳🇱',
-  sv: '🇸🇪',
-  da: '🇩🇰',
-  no: '🇳🇴',
-  fi: '🇫🇮',
-  cs: '🇨🇿',
-  hu: '🇭🇺',
-  sk: '🇸🇰',
-  ca: '🏴󠁥󠁳󠁣󠁴󠁿',
-  hr: '🇭🇷',
-  hi: '🇮🇳',
-  th: '🇹🇭',
-  vi: '🇻🇳',
-  ms: '🇲🇾',
-  zh: '🇨🇳',
-  'zh-TW': '🇹🇼',
-  pl: '🇵🇱',
-  el: '🇬🇷',
-};
-
-export function LanguageSettings({
-  showDeviceInfo = false,
+export function CurrencySettings({
   variant = 'card',
-}: LanguageSettingsProps) {
+  onSelect,
+  selectedCurrency: externalSelectedCurrency,
+}: CurrencySettingsProps) {
   const { theme } = useTheme();
   const { t } = useTranslation();
-  const { settings, updateSettings, isLoading } = useUserSettingsStore();
+  const { settings, isLoading } = useUserSettingsStore();
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  const currentLanguage = settings?.language || 'en';
-  const supportedLanguages: SupportedLanguage[] = ['tr', 'en', 'it', 'de', 'fr', 'es', 'pt', 'ja', 'ko', 'ru', 'ar', 'he', 'ro', 'nl', 'sv', 'da', 'no', 'fi', 'cs', 'hu', 'sk', 'ca', 'hr', 'hi', 'th', 'vi', 'ms', 'zh', 'zh-TW', 'pl', 'el'];
+  const currentCurrency = externalSelectedCurrency || settings?.baseCurrency || 'TRY';
+  const supportedCurrencies: SupportedCurrency[] = [...CURRENCIES];
 
-  const handleLanguageSelect = (language: SupportedLanguage) => {
-    updateSettings({ language });
+  const handleCurrencySelect = (currency: SupportedCurrency) => {
+    if (onSelect) {
+      onSelect(currency);
+    }
     setIsModalOpen(false);
   };
 
@@ -86,11 +61,11 @@ export function LanguageSettings({
     >
       {/* Kapalı Durum - Tıklanabilir ListItem */}
       <ListItem
-        title={t('settings.language', 'Language')}
-        description={`${languageFlags[currentLanguage]} ${getLanguageNativeName(currentLanguage)}`}
+        title={t('settings.currency', 'Currency')}
+        description={`${getCurrencyFlag(currentCurrency)} ${getCurrencyDisplayName(currentCurrency)} (${getCurrencySymbol(currentCurrency)})`}
         left={
           <Ionicons
-            name="language"
+            name="cash-outline"
             size={24}
             color={theme.colors.onSurfaceVariant}
           />
@@ -105,7 +80,7 @@ export function LanguageSettings({
         onPress={() => setIsModalOpen(true)}
       />
 
-      {/* Modal - Dil Seçimi */}
+      {/* Modal - Para Birimi Seçimi */}
       <Modal
         visible={isModalOpen}
         onDismiss={() => setIsModalOpen(false)}
@@ -114,41 +89,51 @@ export function LanguageSettings({
           {/* Modal Header */}
           <View style={styles.modalHeader}>
             <Text variant="titleLarge" style={{ color: theme.colors.onSurface }}>
-              {t('settings.selectLanguage', 'Select Language')}
+              {t('settings.selectCurrency', 'Select Currency')}
             </Text>
             <TouchableOpacity onPress={() => setIsModalOpen(false)}>
               <Ionicons name="close" size={24} color={theme.colors.onSurfaceVariant} />
             </TouchableOpacity>
           </View>
 
-          {/* Dil Listesi */}
-          <ScrollView style={styles.languageList} showsVerticalScrollIndicator={false}>
-            {supportedLanguages.map((language, index) => {
-              const isSelected = currentLanguage === language;
+          {/* Para Birimi Listesi */}
+          <ScrollView style={styles.currencyList} showsVerticalScrollIndicator={false}>
+            {supportedCurrencies.map((currency, index) => {
+              const isSelected = currentCurrency === currency;
               return (
                 <TouchableOpacity
-                  key={language}
+                  key={currency}
                   style={[
-                    styles.languageOption,
+                    styles.currencyOption,
                     {
                       backgroundColor: isSelected ? theme.colors.primaryContainer : 'transparent',
-                      borderBottomWidth: index < supportedLanguages.length - 1 ? 1 : 0,
+                      borderBottomWidth: index < supportedCurrencies.length - 1 ? 1 : 0,
                       borderBottomColor: theme.colors.surfaceVariant,
                     },
                   ]}
-                  onPress={() => handleLanguageSelect(language)}
+                  onPress={() => handleCurrencySelect(currency)}
                 >
-                  <View style={styles.languageContent}>
-                    <Text style={styles.flag}>{languageFlags[language]}</Text>
-                    <Text
-                      variant="bodyLarge"
-                      style={{
-                        color: isSelected ? theme.colors.onPrimaryContainer : theme.colors.onSurface,
-                        fontWeight: isSelected ? '600' : '400',
-                      }}
-                    >
-                      {getLanguageNativeName(language)}
-                    </Text>
+                  <View style={styles.currencyContent}>
+                    <Text style={styles.flag}>{getCurrencyFlag(currency)}</Text>
+                    <View style={styles.currencyInfo}>
+                      <Text
+                        variant="bodyLarge"
+                        style={{
+                          color: isSelected ? theme.colors.onPrimaryContainer : theme.colors.onSurface,
+                          fontWeight: isSelected ? '600' : '400',
+                        }}
+                      >
+                        {getCurrencyDisplayName(currency)}
+                      </Text>
+                      <Text
+                        variant="bodySmall"
+                        style={{
+                          color: isSelected ? theme.colors.onPrimaryContainer : theme.colors.onSurfaceVariant,
+                        }}
+                      >
+                        {currency} • {getCurrencySymbol(currency)}
+                      </Text>
+                    </View>
                   </View>
                   {isSelected && (
                     <Ionicons name="checkmark" size={24} color={theme.colors.primary} />
@@ -181,7 +166,7 @@ const styles = StyleSheet.create({
   modalContent: {
     borderRadius: 16,
     overflow: 'hidden',
-    maxHeight: 480,
+    maxHeight: 400,
     width: '100%',
   },
   modalHeader: {
@@ -192,19 +177,23 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: 'rgba(0, 0, 0, 0.1)',
   },
-  languageList: {
-    maxHeight: 400,
+  currencyList: {
+    maxHeight: 320,
   },
-  languageOption: {
+  currencyOption: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
     padding: 16,
   },
-  languageContent: {
+  currencyContent: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 12,
+  },
+  currencyInfo: {
+    flexDirection: 'column',
+    gap: 2,
   },
   flag: {
     fontSize: 24,

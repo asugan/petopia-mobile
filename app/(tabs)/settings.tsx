@@ -21,9 +21,9 @@ import { showToast } from "@/lib/toast/showToast";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { LAYOUT } from "@/constants";
 import { useOnboardingStore } from "@/stores/onboardingStore";
-import CurrencyPicker from "@/components/CurrencyPicker";
 import LoadingSpinner from "@/components/LoadingSpinner";
 import { LanguageSettings } from "@/components/LanguageSettings";
+import { CurrencySettings } from "@/components/CurrencySettings";
 import NotificationPermissionPrompt, { NotificationPermissionCard } from "@/components/NotificationPermissionPrompt";
 import { subscriptionStyles } from "@/lib/styles/subscription";
 import { useNotifications } from "@/lib/hooks/useNotifications";
@@ -333,6 +333,38 @@ export default function SettingsScreen() {
           {t('subscription.note')}
         </Text>
 
+        {/* Language & Currency Settings */}
+        <Card
+          style={[
+            styles.sectionCard,
+            { backgroundColor: theme.colors.surface },
+          ]}
+        >
+          <View style={styles.cardContent}>
+            <Text
+              variant="titleMedium"
+              style={[styles.sectionTitle, { color: theme.colors.onSurface }]}
+            >
+              {t("settings.appSettings")}
+            </Text>
+            <LanguageSettings variant="embedded" />
+
+            <View style={styles.currencyPickerContainer}>
+              <CurrencySettings
+                variant="embedded"
+                selectedCurrency={settings?.baseCurrency || 'TRY'}
+                onSelect={(currency: SupportedCurrency) => handleCurrencySelect(currency)}
+              />
+              <Text
+                variant="bodySmall"
+                style={[styles.currencyWarning, { color: theme.colors.onSurfaceVariant }]}
+              >
+                {t("settings.currencyWarning")}
+              </Text>
+            </View>
+          </View>
+        </Card>
+
         {/* Theme Settings */}
         <Card
           style={[
@@ -380,7 +412,7 @@ export default function SettingsScreen() {
               variant="titleMedium"
               style={[styles.sectionTitle, { color: theme.colors.onSurface }]}
             >
-              {t("settings.appSettings")}
+              {t("settings.notifications")}
             </Text>
             <ListItem
               title={t("settings.notifications")}
@@ -461,27 +493,6 @@ export default function SettingsScreen() {
               </View>
             )}
             <NotificationPermissionCard refreshKey={permissionRefreshKey} />
-            <LanguageSettings variant="embedded" />
-
-            <View style={styles.currencyPickerContainer}>
-              <Text
-                variant="titleMedium"
-                style={[styles.sectionTitle, { color: theme.colors.onSurface }]}
-              >
-                {t("settings.currency")}
-              </Text>
-              <CurrencyPicker
-                selectedCurrency={settings?.baseCurrency || 'TRY'}
-                onSelect={(currency) => handleCurrencySelect(currency as SupportedCurrency)}
-                label={t("settings.defaultCurrency")}
-              />
-              <Text
-                variant="bodySmall"
-                style={[styles.currencyWarning, { color: theme.colors.onSurfaceVariant }]}
-              >
-                {t("settings.currencyWarning")}
-              </Text>
-            </View>
           </View>
         </Card>
 

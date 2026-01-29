@@ -21,6 +21,7 @@ export type {
   UserSettingsUpdate,
 } from '@/lib/types';
 
+// Trigger lint refresh
 interface UserSettingsState {
   settings: UserSettings | null;
   isLoading: boolean;
@@ -67,8 +68,8 @@ const deriveTheme = (themeMode: ThemeMode): Theme => {
   return themeMode === 'light' ? lightTheme : darkTheme;
 };
 
-const deriveRTL = (_language: SupportedLanguage): boolean => {
-  return false;
+const deriveRTL = (language: SupportedLanguage): boolean => {
+  return language === 'ar' || language === 'he';
 };
 
 export const useUserSettingsStore = create<UserSettingsState & UserSettingsActions>()(
@@ -285,20 +286,49 @@ export const useUserSettingsStore = create<UserSettingsState & UserSettingsActio
   )
 );
 
-export const getSupportedLanguages = (): SupportedLanguage[] => ['tr', 'en'];
+export const getSupportedLanguages = (): SupportedLanguage[] => ['tr', 'en', 'it', 'de', 'fr', 'es', 'pt', 'ja', 'ko', 'ru', 'ar', 'he', 'ro', 'nl', 'sv', 'da', 'no', 'fi', 'cs', 'hu', 'sk', 'ca', 'hr', 'hi', 'th', 'vi', 'ms', 'zh', 'zh-TW', 'pl', 'el'];
 
 export const isLanguageSupported = (language: string): language is SupportedLanguage => {
-  return ['tr', 'en'].includes(language);
+  return ['tr', 'en', 'it', 'de', 'fr', 'es', 'pt', 'ja', 'ko', 'ru', 'ar', 'he', 'ro', 'nl', 'sv', 'da', 'no', 'fi', 'cs', 'hu', 'sk', 'ca', 'hr', 'hi', 'th', 'vi', 'ms', 'zh', 'zh-TW', 'pl', 'el'].includes(language);
 };
 
-export const getLanguageDirection = (_language: SupportedLanguage): 'ltr' | 'rtl' => {
-  return 'ltr';
+export const getLanguageDirection = (language: SupportedLanguage): 'ltr' | 'rtl' => {
+  return language === 'ar' || language === 'he' ? 'rtl' : 'ltr';
 };
 
 export const getLanguageDisplayName = (language: SupportedLanguage): string => {
   const displayNames: Record<SupportedLanguage, string> = {
     tr: 'Türkçe',
     en: 'English',
+    it: 'Italiano',
+    de: 'Deutsch',
+    fr: 'Français',
+    es: 'Español',
+    pt: 'Português',
+    ja: '日本語',
+    ko: 'Korean',
+    ru: 'Russian',
+    ar: 'Arabic',
+    he: 'Hebrew',
+    ro: 'Romanian',
+    nl: 'Dutch',
+    sv: 'Swedish',
+    da: 'Danish',
+    no: 'Norwegian',
+    fi: 'Finnish',
+    cs: 'Czech',
+    hu: 'Hungarian',
+    sk: 'Slovak',
+    ca: 'Catalan',
+    hr: 'Croatian',
+    hi: 'Hindi',
+    th: 'Thai',
+    vi: 'Vietnamese',
+    ms: 'Malay',
+    zh: 'Chinese',
+    'zh-TW': 'Traditional Chinese',
+    pl: 'Polish',
+    el: 'Greek',
   };
   return displayNames[language] || language;
 };
@@ -307,11 +337,44 @@ export const getLanguageNativeName = (language: SupportedLanguage): string => {
   const nativeNames: Record<SupportedLanguage, string> = {
     tr: 'Türkçe',
     en: 'English',
+    it: 'Italiano',
+    de: 'Deutsch',
+    fr: 'Français',
+    es: 'Español',
+    pt: 'Português',
+    ja: '日本語',
+    ko: '한국어',
+    ru: 'Русский',
+    ar: 'العربية',
+    he: 'עברית',
+    ro: 'Română',
+    nl: 'Nederlands',
+    sv: 'Svenska',
+    da: 'Dansk',
+    no: 'Norsk',
+    fi: 'Suomi',
+    cs: 'Čeština',
+    hu: 'Magyar',
+    sk: 'Slovenčina',
+    ca: 'Català',
+    hr: 'Hrvatski',
+    hi: 'हिन्दी',
+    th: 'ไทย',
+    vi: 'Tiếng Việt',
+    ms: 'Bahasa Melayu',
+    zh: '简体中文',
+    'zh-TW': '繁體中文',
+    pl: 'Polski',
+    el: 'Ελληνικά',
   };
   return nativeNames[language] || language;
 };
 
-export const getSupportedCurrencies = (): SupportedCurrency[] => ['TRY', 'USD', 'EUR', 'GBP'];
+export const getSupportedCurrencies = (): SupportedCurrency[] => [
+  'TRY', 'USD', 'EUR', 'GBP', 'AUD', 'BRL', 'CAD', 'CHF', 'CNY', 'CZK', 'DKK',
+  'HKD', 'HUF', 'IDR', 'ILS', 'INR', 'ISK', 'JPY', 'KRW', 'MXN', 'MYR', 'NOK',
+  'NZD', 'PHP', 'PLN', 'RON', 'SEK', 'SGD', 'THB', 'ZAR',
+];
 
 export const getCurrencyDisplayName = (currency: SupportedCurrency): string => {
   const displayNames: Record<SupportedCurrency, string> = {
@@ -319,6 +382,32 @@ export const getCurrencyDisplayName = (currency: SupportedCurrency): string => {
     USD: 'US Dollar',
     EUR: 'Euro',
     GBP: 'British Pound',
+    AUD: 'Australian Dollar',
+    BRL: 'Brazilian Real',
+    CAD: 'Canadian Dollar',
+    CHF: 'Swiss Franc',
+    CNY: 'Chinese Yuan',
+    CZK: 'Czech Koruna',
+    DKK: 'Danish Krone',
+    HKD: 'Hong Kong Dollar',
+    HUF: 'Hungarian Forint',
+    IDR: 'Indonesian Rupiah',
+    ILS: 'Israeli New Shekel',
+    INR: 'Indian Rupee',
+    ISK: 'Icelandic Króna',
+    JPY: 'Japanese Yen',
+    KRW: 'South Korean Won',
+    MXN: 'Mexican Peso',
+    MYR: 'Malaysian Ringgit',
+    NOK: 'Norwegian Krone',
+    NZD: 'New Zealand Dollar',
+    PHP: 'Philippine Peso',
+    PLN: 'Polish Złoty',
+    RON: 'Romanian Leu',
+    SEK: 'Swedish Krona',
+    SGD: 'Singapore Dollar',
+    THB: 'Thai Baht',
+    ZAR: 'South African Rand',
   };
   return displayNames[currency] || currency;
 };
@@ -329,6 +418,32 @@ export const getCurrencyFlag = (currency: SupportedCurrency): string => {
     USD: '🇺🇸',
     EUR: '🇪🇺',
     GBP: '🇬🇧',
+    AUD: '🇦🇺',
+    BRL: '🇧🇷',
+    CAD: '🇨🇦',
+    CHF: '🇨🇭',
+    CNY: '🇨🇳',
+    CZK: '🇨🇿',
+    DKK: '🇩🇰',
+    HKD: '🇭🇰',
+    HUF: '🇭🇺',
+    IDR: '🇮🇩',
+    ILS: '🇮🇱',
+    INR: '🇮🇳',
+    ISK: '🇮🇸',
+    JPY: '🇯🇵',
+    KRW: '🇰🇷',
+    MXN: '🇲🇽',
+    MYR: '🇲🇾',
+    NOK: '🇳🇴',
+    NZD: '🇳🇿',
+    PHP: '🇵🇭',
+    PLN: '🇵🇱',
+    RON: '🇷🇴',
+    SEK: '🇸🇪',
+    SGD: '🇸🇬',
+    THB: '🇹🇭',
+    ZAR: '🇿🇦',
   };
   return flags[currency] || '💱';
 };
