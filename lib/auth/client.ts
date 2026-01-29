@@ -9,6 +9,7 @@ import { ENV } from '../config/env';
  */
 export const authClient = createAuthClient({
   baseURL: ENV.API_BASE_URL,
+  basePath: ENV.API_BASE_PATH,
   plugins: [
     expoClient({
       scheme: ENV.AUTH.SCHEME,
