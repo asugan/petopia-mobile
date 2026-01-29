@@ -370,7 +370,11 @@ export const getLanguageNativeName = (language: SupportedLanguage): string => {
   return nativeNames[language] || language;
 };
 
-export const getSupportedCurrencies = (): SupportedCurrency[] => ['TRY', 'USD', 'EUR', 'GBP'];
+export const getSupportedCurrencies = (): SupportedCurrency[] => [
+  'TRY', 'USD', 'EUR', 'GBP', 'AUD', 'BRL', 'CAD', 'CHF', 'CNY', 'CZK', 'DKK',
+  'HKD', 'HUF', 'IDR', 'ILS', 'INR', 'ISK', 'JPY', 'KRW', 'MXN', 'MYR', 'NOK',
+  'NZD', 'PHP', 'PLN', 'RON', 'SEK', 'SGD', 'THB', 'ZAR',
+];
 
 export const getCurrencyDisplayName = (currency: SupportedCurrency): string => {
   const displayNames: Record<SupportedCurrency, string> = {
@@ -378,6 +382,32 @@ export const getCurrencyDisplayName = (currency: SupportedCurrency): string => {
     USD: 'US Dollar',
     EUR: 'Euro',
     GBP: 'British Pound',
+    AUD: 'Australian Dollar',
+    BRL: 'Brazilian Real',
+    CAD: 'Canadian Dollar',
+    CHF: 'Swiss Franc',
+    CNY: 'Chinese Yuan',
+    CZK: 'Czech Koruna',
+    DKK: 'Danish Krone',
+    HKD: 'Hong Kong Dollar',
+    HUF: 'Hungarian Forint',
+    IDR: 'Indonesian Rupiah',
+    ILS: 'Israeli New Shekel',
+    INR: 'Indian Rupee',
+    ISK: 'Icelandic Króna',
+    JPY: 'Japanese Yen',
+    KRW: 'South Korean Won',
+    MXN: 'Mexican Peso',
+    MYR: 'Malaysian Ringgit',
+    NOK: 'Norwegian Krone',
+    NZD: 'New Zealand Dollar',
+    PHP: 'Philippine Peso',
+    PLN: 'Polish Złoty',
+    RON: 'Romanian Leu',
+    SEK: 'Swedish Krona',
+    SGD: 'Singapore Dollar',
+    THB: 'Thai Baht',
+    ZAR: 'South African Rand',
   };
   return displayNames[currency] || currency;
 };
@@ -388,6 +418,32 @@ export const getCurrencyFlag = (currency: SupportedCurrency): string => {
     USD: '🇺🇸',
     EUR: '🇪🇺',
     GBP: '🇬🇧',
+    AUD: '🇦🇺',
+    BRL: '🇧🇷',
+    CAD: '🇨🇦',
+    CHF: '🇨🇭',
+    CNY: '🇨🇳',
+    CZK: '🇨🇿',
+    DKK: '🇩🇰',
+    HKD: '🇭🇰',
+    HUF: '🇭🇺',
+    IDR: '🇮🇩',
+    ILS: '🇮🇱',
+    INR: '🇮🇳',
+    ISK: '🇮🇸',
+    JPY: '🇯🇵',
+    KRW: '🇰🇷',
+    MXN: '🇲🇽',
+    MYR: '🇲🇾',
+    NOK: '🇳🇴',
+    NZD: '🇳🇿',
+    PHP: '🇵🇭',
+    PLN: '🇵🇱',
+    RON: '🇷🇴',
+    SEK: '🇸🇪',
+    SGD: '🇸🇬',
+    THB: '🇹🇭',
+    ZAR: '🇿🇦',
   };
   return flags[currency] || '💱';
 };
