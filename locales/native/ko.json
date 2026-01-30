@@ -1,0 +1,6 @@
+{
+  "CFBundleDisplayName": "Petopia",
+  "NSPhotoLibraryUsageDescription": "Petopia가 사진에 접근하도록 허용합니다.",
+  "NSCameraUsageDescription": "Petopia가 사진을 촬영하도록 허용합니다.",
+  "NSUserNotificationUsageDescription": "반려동물 돌봄 활동을 알리기 위해 알림을 사용합니다."
+}

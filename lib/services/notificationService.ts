@@ -505,7 +505,7 @@ export class NotificationService {
       const notificationBody = i18n.t('notifications.feedingReminderBody', {
         foodType: foodTypeLabel,
         amount: schedule.amount,
-        time: i18n.t('time.atTime', { time: feedingTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) }),
+        time: i18n.t('events.time.atTime', { time: feedingTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) }),
       });
 
       await this.ensureNotificationChannel();
