@@ -1,0 +1,6 @@
+{
+  "CFBundleDisplayName": "Petopia",
+  "NSPhotoLibraryUsageDescription": "Salli Petopian käyttää valokuviasi.",
+  "NSCameraUsageDescription": "Salli Petopian ottaa valokuvia.",
+  "NSUserNotificationUsageDescription": "Käytämme ilmoituksia muistuttaaksemme sinua lemmikkien hoitoon liittyvistä toiminnoista."
+}

@@ -1,0 +1,6 @@
+{
+  "CFBundleDisplayName": "Petopia",
+  "NSPhotoLibraryUsageDescription": "Sta Petopia toe om toegang te krijgen tot je foto's.",
+  "NSCameraUsageDescription": "Sta Petopia toe om foto's te maken.",
+  "NSUserNotificationUsageDescription": "We gebruiken meldingen om je te herinneren aan huisdierverzorgingsactiviteiten."
+}
