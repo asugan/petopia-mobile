@@ -26,7 +26,7 @@
       "sk": "./locales/native/sk.json",
       "ro": "./locales/native/ro.json",
       "pl": "./locales/native/pl.json",
-      "nb": "./locales/native/nb.json",
+      "no": "./locales/native/no.json",
       "nl-NL": "./locales/native/nl-NL.json",
       "ms": "./locales/native/ms.json",
       "hu": "./locales/native/hu.json",
@@ -38,7 +38,11 @@
       "da": "./locales/native/da.json",
       "cs": "./locales/native/cs.json",
       "ca": "./locales/native/ca.json",
-      "id-ID": "./locales/native/id-ID.json"
+      "id": "./locales/native/id.json",
+      "en-AU": "./locales/native/en-AU.json",
+      "en-CA": "./locales/native/en-CA.json",
+      "fr-CA": "./locales/native/fr-CA.json",
+      "es-MX": "./locales/native/es-MX.json"
     },
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
@@ -68,12 +72,12 @@
           "zh-Hant",
           "sv",
           "th",
-          "uk-UA",
+          "uk",
           "vi",
           "sk",
           "ro",
           "pl",
-          "nb",
+          "no",
           "nl-NL",
           "ms",
           "hu",
@@ -85,7 +89,11 @@
           "da",
           "cs",
           "ca",
-          "id-ID"
+          "en-AU",
+          "en-CA",
+          "id",
+          "fr-CA",
+          "es-MX"
         ]
       }
     },
