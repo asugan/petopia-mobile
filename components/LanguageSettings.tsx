@@ -47,6 +47,7 @@ const languageFlags: Record<SupportedLanguage, string> = {
   'zh-TW': '🇹🇼',
   pl: '🇵🇱',
   el: '🇬🇷',
+  uk: '🇺🇦',
 };
 
 export function LanguageSettings({
@@ -59,7 +60,7 @@ export function LanguageSettings({
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const currentLanguage = settings?.language || 'en';
-  const supportedLanguages: SupportedLanguage[] = ['tr', 'en', 'it', 'de', 'fr', 'es', 'pt', 'ja', 'ko', 'ru', 'ar', 'he', 'ro', 'nl', 'sv', 'da', 'no', 'fi', 'cs', 'hu', 'sk', 'ca', 'hr', 'hi', 'th', 'vi', 'ms', 'zh', 'zh-TW', 'pl', 'el'];
+  const supportedLanguages: SupportedLanguage[] = ['tr', 'en', 'it', 'de', 'fr', 'es', 'pt', 'ja', 'ko', 'ru', 'ar', 'he', 'ro', 'nl', 'sv', 'da', 'no', 'fi', 'cs', 'hu', 'sk', 'ca', 'hr', 'hi', 'th', 'vi', 'ms', 'zh', 'zh-TW', 'pl', 'el', 'uk'];
 
   const handleLanguageSelect = (language: SupportedLanguage) => {
     updateSettings({ language });

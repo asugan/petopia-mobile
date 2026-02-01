@@ -187,7 +187,7 @@ export interface BudgetAlert {
 // ============================================================================
 // USER SETTINGS TYPES
 // ============================================================================
-export type SupportedLanguage = "tr" | "en" | "it" | "de" | "fr" | "es" | "pt" | "ja" | "ko" | "ru" | "ar" | "he" | "ro" | "nl" | "sv" | "da" | "no" | "fi" | "cs" | "hu" | "sk" | "ca" | "hr" | "hi" | "th" | "vi" | "ms" | "zh" | "zh-TW" | "pl" | "el";
+export type SupportedLanguage = "tr" | "en" | "it" | "de" | "fr" | "es" | "pt" | "ja" | "ko" | "ru" | "ar" | "he" | "ro" | "nl" | "sv" | "da" | "no" | "fi" | "cs" | "hu" | "sk" | "ca" | "hr" | "hi" | "th" | "vi" | "ms" | "zh" | "zh-TW" | "pl" | "el" | "uk";
 export type SupportedCurrency = "TRY" | "USD" | "EUR" | "GBP" | "AUD" | "BRL" | "CAD" | "CHF" | "CNY" | "CZK" | "DKK" | "HKD" | "HUF" | "IDR" | "ILS" | "INR" | "ISK" | "JPY" | "KRW" | "MXN" | "MYR" | "NOK" | "NZD" | "PHP" | "PLN" | "RON" | "SEK" | "SGD" | "THB" | "ZAR";
 
 export interface UserSettings {
