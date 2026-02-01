@@ -310,7 +310,6 @@
     "eventDetails": "Esemény részletei",
     "eventNotFound": "Esemény nem található",
     "deleteEvent": "Esemény törlése",
-    "deleteConfirmation": "Biztosan törölni szeretné a(z) „{{title}}” eseményt?",
     "eventDeleted": "Esemény sikeresen törölve",
     "singleEditWarning": "Ez a változtatás csak ezt az alkalmat érinti. Az ismétlődési beállítások le vannak tiltva.",
     "deleteEventError": "Hiba az esemény törlésekor",
@@ -609,6 +608,7 @@
       "slovak": "Slovak",
       "catalan": "Catalan",
       "croatian": "Croatian",
+      "ukrainian": "Ukrán",
       "indonesian": "Bahasa Indonesia"
     }
   },

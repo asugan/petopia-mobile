@@ -412,7 +412,7 @@
       "bath": "洗澡對於寵物的清潔是必要的。根據寵物類型調整頻率。",
       "other": "其他活動也可以從提醒中受益。添加詳細信息使其具有可操作性。",
       "default": "這項活動對您寵物的健康和幸福很重要。定期安排。",
-      "vetVisit": "獸醫就診對於維持寵物健康至關重要。不要忘記定期檢查。",
+      "vetVisit": "獸醫就診對於維持寵物健康至關重要。不要忘記定期檢查。"
     }
   },
   "eventList": {
@@ -607,6 +607,7 @@
       "slovak": "Slovak",
       "catalan": "Catalan",
       "croatian": "Croatian",
+      "ukrainian": "烏克蘭語",
       "indonesian": "Bahasa Indonesia"
     },
     "selectCurrency": "選擇貨幣"
