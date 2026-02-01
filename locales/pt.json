@@ -411,7 +411,8 @@
       "training": "Treinos educam e divertem. Use paciência e recompensas positivas.",
       "bath": "O banho mantém a pele saudável. Evite excessos para não tirar a proteção natural.",
       "other": "Outros eventos importantes. Adicione detalhes para não esquecer.",
-      "default": "Esta atividade faz bem ao seu pet. Mantenha a constância."
+      "default": "Esta atividade faz bem ao seu pet. Mantenha a constância.",
+      "vetVisit": "Visitas ao veterinário são essenciais para manter a saúde do seu pet. Não esqueça os checkups regulares."
     }
   },
   "eventList": {
@@ -605,8 +606,10 @@
       "hungarian": "Hungarian",
       "slovak": "Slovak",
       "catalan": "Catalan",
-      "croatian": "Croatian"
-    }
+      "croatian": "Croatian",
+      "indonesian": "Bahasa Indonesia"
+    },
+    "selectCurrency": "Selecionar moeda"
   },
   "common": {
     "loading": "Carregando...",

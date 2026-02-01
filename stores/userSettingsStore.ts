@@ -286,10 +286,10 @@ export const useUserSettingsStore = create<UserSettingsState & UserSettingsActio
   )
 );
 
-export const getSupportedLanguages = (): SupportedLanguage[] => ['tr', 'en', 'it', 'de', 'fr', 'es', 'pt', 'ja', 'ko', 'ru', 'ar', 'he', 'ro', 'nl', 'sv', 'da', 'no', 'fi', 'cs', 'hu', 'sk', 'ca', 'hr', 'hi', 'th', 'vi', 'ms', 'zh', 'zh-TW', 'pl', 'el', 'uk'];
+export const getSupportedLanguages = (): SupportedLanguage[] => ['tr', 'en', 'it', 'de', 'fr', 'es', 'pt', 'ja', 'ko', 'ru', 'ar', 'he', 'ro', 'nl', 'sv', 'da', 'no', 'fi', 'cs', 'hu', 'sk', 'ca', 'hr', 'hi', 'th', 'vi', 'ms', 'zh', 'zh-TW', 'pl', 'el', 'uk', 'id'];
 
 export const isLanguageSupported = (language: string): language is SupportedLanguage => {
-  return ['tr', 'en', 'it', 'de', 'fr', 'es', 'pt', 'ja', 'ko', 'ru', 'ar', 'he', 'ro', 'nl', 'sv', 'da', 'no', 'fi', 'cs', 'hu', 'sk', 'ca', 'hr', 'hi', 'th', 'vi', 'ms', 'zh', 'zh-TW', 'pl', 'el', 'uk'].includes(language);
+  return ['tr', 'en', 'it', 'de', 'fr', 'es', 'pt', 'ja', 'ko', 'ru', 'ar', 'he', 'ro', 'nl', 'sv', 'da', 'no', 'fi', 'cs', 'hu', 'sk', 'ca', 'hr', 'hi', 'th', 'vi', 'ms', 'zh', 'zh-TW', 'pl', 'el', 'uk', 'id'].includes(language);
 };
 
 export const getLanguageDirection = (language: SupportedLanguage): 'ltr' | 'rtl' => {
@@ -330,6 +330,7 @@ export const getLanguageDisplayName = (language: SupportedLanguage): string => {
     pl: 'Polish',
     el: 'Greek',
     uk: 'Ukrainian',
+    id: 'Indonesian',
   };
   return displayNames[language] || language;
 };
@@ -368,6 +369,7 @@ export const getLanguageNativeName = (language: SupportedLanguage): string => {
     pl: 'Polski',
     el: 'Ελληνικά',
     uk: 'Українська',
+    id: 'Bahasa Indonesia',
   };
   return nativeNames[language] || language;
 };

@@ -396,7 +396,8 @@
     },
     "shareEvent": "Chia sẻ sự kiện",
     "shareEventHint": "Chia sẻ sự kiện này với người khác",
-    "editEventHint": "Sửa chi tiết sự kiện"
+    "editEventHint": "Sửa chi tiết sự kiện",
+    "deleteEventConfirmation": "Bạn có chắc chắn muốn xóa \"{{title}}\" không?"
   },
   "eventForm": {
     "suggestions": {
@@ -606,8 +607,10 @@
       "hungarian": "Hungarian",
       "slovak": "Slovak",
       "catalan": "Catalan",
-      "croatian": "Croatian"
-    }
+      "croatian": "Croatian",
+      "indonesian": "Bahasa Indonesia"
+    },
+    "selectCurrency": "Chọn tiền tệ"
   },
   "common": {
     "loading": "Đang tải...",

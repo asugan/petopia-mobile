@@ -396,7 +396,8 @@
     },
     "shareEvent": "Esemény megosztása",
     "shareEventHint": "Megosztja ezt az eseményt másokkal",
-    "editEventHint": "Szerkeszti az esemény részleteit"
+    "editEventHint": "Szerkeszti az esemény részleteit",
+    "deleteEventConfirmation": "Biztosan törölni szeretné ezt: \"{{title}}\"?"
   },
   "eventForm": {
     "suggestions": {
@@ -607,7 +608,8 @@
       "hungarian": "Hungarian",
       "slovak": "Slovak",
       "catalan": "Catalan",
-      "croatian": "Croatian"
+      "croatian": "Croatian",
+      "indonesian": "Bahasa Indonesia"
     }
   },
   "common": {

@@ -606,8 +606,10 @@
       "hungarian": "Hungarian",
       "slovak": "Slovak",
       "catalan": "Catalan",
-      "croatian": "Croatian"
-    }
+      "croatian": "Croatian",
+      "indonesian": "Bahasa Indonesia"
+    },
+    "selectCurrency": "Pilih mata wang"
   },
   "common": {
     "loading": "Memuatkan...",

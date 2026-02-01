@@ -411,7 +411,8 @@
       "training": "訓練課程對寵物的學習和社交很重要。帶著耐心和獎勵進行。",
       "bath": "洗澡對於寵物的清潔是必要的。根據寵物類型調整頻率。",
       "other": "其他活動也可以從提醒中受益。添加詳細信息使其具有可操作性。",
-      "default": "這項活動對您寵物的健康和幸福很重要。定期安排。"
+      "default": "這項活動對您寵物的健康和幸福很重要。定期安排。",
+      "vetVisit": "獸醫就診對於維持寵物健康至關重要。不要忘記定期檢查。",
     }
   },
   "eventList": {
@@ -605,8 +606,10 @@
       "hungarian": "Hungarian",
       "slovak": "Slovak",
       "catalan": "Catalan",
-      "croatian": "Croatian"
-    }
+      "croatian": "Croatian",
+      "indonesian": "Bahasa Indonesia"
+    },
+    "selectCurrency": "選擇貨幣"
   },
   "common": {
     "loading": "加載中...",
@@ -708,7 +711,8 @@
     "bath": "洗澡",
     "vaccination": "接種疫苗",
     "medication": "用藥",
-    "other": "其他"
+    "other": "其他",
+    "vet_visit": "獸醫就診"
   },
   "recurrence": {
     "settings": "重複設置",

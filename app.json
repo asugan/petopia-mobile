@@ -37,7 +37,8 @@
       "fi": "./locales/native/fi.json",
       "da": "./locales/native/da.json",
       "cs": "./locales/native/cs.json",
-      "ca": "./locales/native/ca.json"
+      "ca": "./locales/native/ca.json",
+      "id-ID": "./locales/native/id-ID.json"
     },
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
@@ -83,7 +84,8 @@
           "fi",
           "da",
           "cs",
-          "ca"
+          "ca",
+          "id-ID"
         ]
       }
     },
