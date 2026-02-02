@@ -1,0 +1,6 @@
+{
+  "CFBundleDisplayName": "Petopia",
+  "NSPhotoLibraryUsageDescription": "Permitir que Petopia acceda a tus fotos.",
+  "NSCameraUsageDescription": "Permitir que Petopia tome fotos.",
+  "NSUserNotificationUsageDescription": "Usamos notificaciones para recordarte sobre las actividades de cuidado de mascotas."
+}

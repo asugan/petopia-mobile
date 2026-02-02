@@ -310,7 +310,6 @@
     "eventDetails": "Chi tiết sự kiện",
     "eventNotFound": "Không tìm thấy sự kiện",
     "deleteEvent": "Xóa sự kiện",
-    "deleteConfirmation": "Bạn có chắc muốn xóa \"{{title}}\"?",
     "eventDeleted": "Đã xóa sự kiện thành công",
     "singleEditWarning": "Thay đổi này chỉ ảnh hưởng đến lần lặp này. Các cài đặt lặp lại đã bị vô hiệu hóa.",
     "deleteEventError": "Lỗi khi xóa sự kiện",
@@ -396,7 +395,8 @@
     },
     "shareEvent": "Chia sẻ sự kiện",
     "shareEventHint": "Chia sẻ sự kiện này với người khác",
-    "editEventHint": "Sửa chi tiết sự kiện"
+    "editEventHint": "Sửa chi tiết sự kiện",
+    "deleteEventConfirmation": "Bạn có chắc chắn muốn xóa \"{{title}}\" không?"
   },
   "eventForm": {
     "suggestions": {
@@ -606,8 +606,11 @@
       "hungarian": "Hungarian",
       "slovak": "Slovak",
       "catalan": "Catalan",
-      "croatian": "Croatian"
-    }
+      "croatian": "Croatian",
+      "ukrainian": "Tiếng Ukraina",
+      "indonesian": "Bahasa Indonesia"
+    },
+    "selectCurrency": "Chọn tiền tệ"
   },
   "common": {
     "loading": "Đang tải...",

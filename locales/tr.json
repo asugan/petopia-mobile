@@ -161,7 +161,15 @@
     "petSavedForAfterLogin": "Pet kaydedildi! Giriş yaptığında oluşturulacak.",
     "pendingPetCreated": "Petin başarıyla eklendi!",
     "pendingPetError": "Pet kaydedilemedi. Lütfen manuel olarak ekleyin.",
-    "pendingPetSkipped": "Zaten petleriniz var. Bekleyen pet atlandı."
+    "pendingPetSkipped": "Zaten petleriniz var. Bekleyen pet atlandı.",
+    "createError": "Pet oluşturulamadı. Lütfen bilgileri kontrol edip tekrar deneyin.",
+    "fetchError": "Petler alınamadı. Lütfen internet bağlantınızı kontrol edin.",
+    "notFoundUpdate": "Güncellenecek pet bulunamadı",
+    "notFoundDelete": "Silinecek pet bulunamadı",
+    "updateError": "Pet güncellenemedi. Lütfen bilgileri kontrol edip tekrar deneyin.",
+    "searchError": "Arama sırasında bir hata oluştu. Lütfen tekrar deneyin.",
+    "uploadError": "Pet fotoğrafı yüklenemedi. Lütfen tekrar deneyin.",
+    "statsError": "İstatistikler yüklenemedi. Lütfen tekrar deneyin."
   },
   "limits": {
     "pets": {
@@ -256,7 +264,13 @@
     "nextVisitDescription": "Bir sonraki kontrol için otomatik hatırlatıcı oluşturun",
     "editRecordHint": "Sağlık kaydı detaylarını düzenler",
     "shareRecord": "Sağlık Kaydını Paylaş",
-    "shareRecordHint": "Bu sağlık kaydını başkalarıyla paylaşır"
+    "shareRecordHint": "Bu sağlık kaydını başkalarıyla paylaşır",
+    "createError": "Sağlık kaydı oluşturulamadı. Lütfen bilgileri kontrol edip tekrar deneyin.",
+    "fetchError": "Sağlık kayıtları alınamadı. Lütfen internet bağlantınızı kontrol edin.",
+    "notFoundUpdate": "Güncellenecek sağlık kaydı bulunamadı",
+    "notFoundDelete": "Silinecek sağlık kaydı bulunamadı",
+    "updateError": "Sağlık kaydı güncellenemedi. Lütfen bilgileri kontrol edip tekrar deneyin.",
+    "fetchByTypeError": "Sağlık kayıtları türe göre alınamadı. Lütfen tekrar deneyin."
   },
   "calendar": {
     "calendar": "Takvim",
@@ -273,7 +287,8 @@
       "month": "Ay",
       "week": "Hafta",
       "day": "Gün"
-    }
+    },
+    "eventCount_other": "{{count}} etkinlik"
   },
   "events": {
     "recurrence": {
@@ -372,7 +387,16 @@
     },
     "shareEvent": "Etkinliği Paylaş",
     "shareEventHint": "Bu etkinliği başkalarıyla paylaşır",
-    "editEventHint": "Etkinlik detaylarını düzenler"
+    "editEventHint": "Etkinlik detaylarını düzenler",
+    "createError": "Etkinlik oluşturulamadı. Lütfen bilgileri kontrol edip tekrar deneyin.",
+    "fetchError": "Etkinlikler alınamadı. Lütfen internet bağlantınızı kontrol edin.",
+    "notFound": "Etkinlik bulunamadı",
+    "notFoundUpdate": "Güncellenecek etkinlik bulunamadı",
+    "notFoundDelete": "Silinecek etkinlik bulunamadı",
+    "updateError": "Etkinlik güncellenemedi. Lütfen bilgileri kontrol edip tekrar deneyin.",
+    "fetchByDateError": "Bu tarihe ait etkinlikler alınamadı. Lütfen tekrar deneyin.",
+    "fetchUpcomingError": "Yaklaşan etkinlikler alınamadı. Lütfen tekrar deneyin.",
+    "fetchTodayError": "Bugünkü etkinlikler alınamadı. Lütfen tekrar deneyin."
   },
   "eventForm": {
     "suggestions": {
@@ -583,7 +607,9 @@
       "hungarian": "Hungarian",
       "slovak": "Slovak",
       "catalan": "Catalan",
-      "croatian": "Croatian"
+      "croatian": "Croatian",
+      "ukrainian": "Ukrayna Dili",
+      "indonesian": "Bahasa Indonesia"
     }
   },
   "common": {

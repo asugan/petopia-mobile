@@ -310,7 +310,6 @@
     "eventDetails": "Esemény részletei",
     "eventNotFound": "Esemény nem található",
     "deleteEvent": "Esemény törlése",
-    "deleteConfirmation": "Biztosan törölni szeretné a(z) „{{title}}” eseményt?",
     "eventDeleted": "Esemény sikeresen törölve",
     "singleEditWarning": "Ez a változtatás csak ezt az alkalmat érinti. Az ismétlődési beállítások le vannak tiltva.",
     "deleteEventError": "Hiba az esemény törlésekor",
@@ -396,7 +395,8 @@
     },
     "shareEvent": "Esemény megosztása",
     "shareEventHint": "Megosztja ezt az eseményt másokkal",
-    "editEventHint": "Szerkeszti az esemény részleteit"
+    "editEventHint": "Szerkeszti az esemény részleteit",
+    "deleteEventConfirmation": "Biztosan törölni szeretné ezt: \"{{title}}\"?"
   },
   "eventForm": {
     "suggestions": {
@@ -607,7 +607,9 @@
       "hungarian": "Hungarian",
       "slovak": "Slovak",
       "catalan": "Catalan",
-      "croatian": "Croatian"
+      "croatian": "Croatian",
+      "ukrainian": "Ukrán",
+      "indonesian": "Bahasa Indonesia"
     }
   },
   "common": {

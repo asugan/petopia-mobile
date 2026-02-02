@@ -161,7 +161,15 @@
     "petSavedForAfterLogin": "반려동물이 저장되었습니다! 로그인하면 생성됩니다.",
     "pendingPetCreated": "반려동물이 성공적으로 추가되었습니다!",
     "pendingPetError": "반려동물을 저장할 수 없습니다. 수동으로 추가하세요.",
-    "pendingPetSkipped": "이미 반려동물이 있습니다. 대기 중인 반려동물을 건너뛰었습니다."
+    "pendingPetSkipped": "이미 반려동물이 있습니다. 대기 중인 반려동물을 건너뛰었습니다.",
+    "createError": "반려동물 생성에 실패했습니다. 정보를 확인하고 다시 시도하세요.",
+    "fetchError": "반려동물 목록을 불러오지 못했습니다. 인터넷 연결을 확인하세요.",
+    "notFoundUpdate": "수정할 반려동물을 찾을 수 없습니다",
+    "notFoundDelete": "삭제할 반려동물을 찾을 수 없습니다",
+    "updateError": "반려동물 정보 업데이트에 실패했습니다. 정보를 확인하고 다시 시도하세요.",
+    "searchError": "검색 중 오류가 발생했습니다. 다시 시도하세요.",
+    "uploadError": "반려동물 사진 업로드에 실패했습니다. 다시 시도하세요.",
+    "statsError": "통계를 불러오지 못했습니다. 다시 시도하세요."
   },
   "limits": {
     "pets": {
@@ -256,7 +264,13 @@
     "nextVisitDescription": "다음 방문을 위한 자동 알림 생성",
     "editRecordHint": "건강 기록 상세 정보 수정",
     "shareRecord": "건강 기록 공유",
-    "shareRecordHint": "이 건강 기록을 다른 사람과 공유"
+    "shareRecordHint": "이 건강 기록을 다른 사람과 공유",
+    "createError": "건강 기록 생성에 실패했습니다. 정보를 확인하고 다시 시도하세요.",
+    "fetchError": "건강 기록을 불러오지 못했습니다. 인터넷 연결을 확인하세요.",
+    "notFoundUpdate": "수정할 건강 기록을 찾을 수 없습니다",
+    "notFoundDelete": "삭제할 건강 기록을 찾을 수 없습니다",
+    "updateError": "건강 기록 업데이트에 실패했습니다. 정보를 확인하고 다시 시도하세요.",
+    "fetchByTypeError": "유형별 건강 기록을 불러오지 못했습니다. 다시 시도하세요."
   },
   "calendar": {
     "calendar": "캘린더",
@@ -273,7 +287,8 @@
       "month": "월",
       "week": "주",
       "day": "일"
-    }
+    },
+    "eventCount_other": "{{count}}개의 이벤트"
   },
   "events": {
     "recurrence": {
@@ -372,7 +387,16 @@
     },
     "shareEvent": "이벤트 공유",
     "shareEventHint": "이 이벤트를 다른 사람과 공유",
-    "editEventHint": "이벤트 상세 정보 수정"
+    "editEventHint": "이벤트 상세 정보 수정",
+    "createError": "이벤트 생성에 실패했습니다. 정보를 확인하고 다시 시도하세요.",
+    "fetchError": "이벤트를 불러오지 못했습니다. 인터넷 연결을 확인하세요.",
+    "notFound": "이벤트를 찾을 수 없습니다",
+    "notFoundUpdate": "수정할 이벤트를 찾을 수 없습니다",
+    "notFoundDelete": "삭제할 이벤트를 찾을 수 없습니다",
+    "updateError": "이벤트 업데이트에 실패했습니다. 정보를 확인하고 다시 시도하세요.",
+    "fetchByDateError": "이 날짜의 이벤트를 불러오지 못했습니다. 다시 시도하세요.",
+    "fetchUpcomingError": "예정된 이벤트를 불러오지 못했습니다. 다시 시도하세요.",
+    "fetchTodayError": "오늘의 이벤트를 불러오지 못했습니다. 다시 시도하세요."
   },
   "eventForm": {
     "suggestions": {
@@ -582,8 +606,11 @@
       "hungarian": "Hungarian",
       "slovak": "Slovak",
       "catalan": "Catalan",
-      "croatian": "Croatian"
-    }
+      "croatian": "Croatian",
+      "ukrainian": "우크라이나어",
+      "indonesian": "Bahasa Indonesia"
+    },
+    "selectCurrency": "통화 선택"
   },
   "common": {
     "loading": "불러오는 중...",

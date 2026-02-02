@@ -411,7 +411,8 @@
       "training": "训练课程对宠物的学习和社交很重要。带着耐心和奖励进行。",
       "bath": "洗澡对于宠物的清洁是必要的。根据宠物类型调整频率。",
       "other": "其他活动也可以从提醒中受益。添加详细信息使其具有可操作性。",
-      "default": "这项活动对您宠物的健康和幸福很重要。定期安排。"
+      "default": "这项活动对您宠物的健康和幸福很重要。定期安排。",
+      "vetVisit": "兽医就诊对于维护宠物健康至关重要。不要忘记定期检查。"
     }
   },
   "eventList": {
@@ -605,8 +606,11 @@
       "hungarian": "Hungarian",
       "slovak": "Slovak",
       "catalan": "Catalan",
-      "croatian": "Croatian"
-    }
+      "croatian": "Croatian",
+      "ukrainian": "乌克兰语",
+      "indonesian": "Bahasa Indonesia"
+    },
+    "selectCurrency": "选择货币"
   },
   "common": {
     "loading": "加载中...",
@@ -704,11 +708,13 @@
     "play": "游戏",
     "training": "训练",
     "vetVisit": "就医",
+    "vet_visit": "兽医就诊",
     "walk": "遛弯",
     "bath": "洗澡",
     "vaccination": "接种疫苗",
     "medication": "用药",
-    "other": "其他"
+    "other": "其他",
+    "vet_visit": "Vet Visit"
   },
   "recurrence": {
     "settings": "重复设置",
@@ -1195,7 +1201,10 @@
       "credit_card": "信用卡",
       "debit_card": "借记卡",
       "bank_transfer": "银行转账"
-    }
+    },
+    "createError": "创建支出失败",
+    "updateError": "更新支出失败",
+    "deleteError": "删除支出失败"
   },
   "budgets": {
     "title": "预算",

@@ -607,7 +607,9 @@
       "hungarian": "Hungarian",
       "slovak": "Slovak",
       "catalan": "Catalan",
-      "croatian": "Croatian"
+      "croatian": "Croatian",
+      "ukrainian": "Ukrajinčina",
+      "indonesian": "Bahasa Indonesia"
     }
   },
   "common": {
@@ -812,11 +814,8 @@
     },
     "suggestions": {
       "dryFood": "Odporúčané: 2-3 krát denne. Merajte porcie podľa hmotnosti a veku zvieratka.",
-      "dry_food": "Odporúčané: 2-3 krát denne. Merajte porcie podľa hmotnosti a veku zvieratka.",
       "wetFood": "Odporúčané: 1-2 krát denne. Otvorené konzervy uchovávajte v chladničke.",
-      "wet_food": "Odporúčané: 1-2 krát denne. Otvorené konzervy uchovávajte v chladničke.",
       "rawFood": "Odporúčané: 1-2 krát denne. Zabezpečte správnu manipuláciu a skladovanie.",
-      "raw_food": "Odporúčané: 1-2 krát denne. Zabezpečte správnu manipuláciu a skladovanie.",
       "homemade": "Odporúčané: O vyváženej výžive sa poraďte s veterinárom. Porcia podľa receptu.",
       "treats": "Odporúčané: Maximálne 10% denných kalórií. Používajte na tréning.",
       "supplements": "Odporúčané: Dodržiavajte pokyny veterinára ohľadom dávkovania a načasovania.",

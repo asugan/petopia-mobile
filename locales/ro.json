@@ -606,8 +606,11 @@
       "hungarian": "Hungarian",
       "slovak": "Slovak",
       "catalan": "Catalan",
-      "croatian": "Croatian"
-    }
+      "croatian": "Croatian",
+      "ukrainian": "Ucraineană",
+      "indonesian": "Bahasa Indonesia"
+    },
+    "selectCurrency": "Selectați moneda"
   },
   "common": {
     "loading": "Se încarcă...",

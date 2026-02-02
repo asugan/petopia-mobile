@@ -606,8 +606,11 @@
       "hungarian": "Hungarian",
       "slovak": "Slovak",
       "catalan": "Catalan",
-      "croatian": "Croatian"
-    }
+      "croatian": "Croatian",
+      "ukrainian": "Ucraniano",
+      "indonesian": "Bahasa Indonesia"
+    },
+    "selectCurrency": "Seleccionar moneda"
   },
   "common": {
     "loading": "Cargando...",
@@ -1552,5 +1555,10 @@
     "confirmDelete": "Sí, borrar otros",
     "cancel": "Cancelar",
     "error": "Error al procesar."
+  },
+  "gender": {
+    "male": "Masculino",
+    "female": "Femenino",
+    "other": "Otro"
   }
 }

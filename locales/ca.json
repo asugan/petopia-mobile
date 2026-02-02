@@ -411,7 +411,8 @@
       "training": "Les sessions d'entrenament són importants per a l'aprenentatge i la socialització de la teva mascota. Progressa amb paciència i recompenses.",
       "bath": "Banyar-la és necessari per a la neteja de la mascota. Ajusta la freqüència segons el tipus de mascota.",
       "other": "Altres activitats també es poden beneficiar dels recordatoris. Afegeix detalls perquè siguin útils.",
-      "default": "Aquesta activitat és important per a la salut i la felicitat de la teva mascota. Programa-la regularment."
+      "default": "Aquesta activitat és important per a la salut i la felicitat de la teva mascota. Programa-la regularment.",
+      "vetVisit": "Les visites al veterinari són essencials per mantenir la salut de la teva mascota. No oblidis les revisions regulars."
     }
   },
   "eventList": {
@@ -606,7 +607,9 @@
       "hungarian": "Hungarian",
       "slovak": "Slovak",
       "catalan": "Catalan",
-      "croatian": "Croatian"
+      "croatian": "Croatian",
+      "ukrainian": "Ucraïnès",
+      "indonesian": "Bahasa Indonesia"
     }
   },
   "common": {

@@ -606,8 +606,11 @@
       "hungarian": "Hungarian",
       "slovak": "Slovak",
       "catalan": "Catalan",
-      "croatian": "Croatian"
-    }
+      "croatian": "Croatian",
+      "ukrainian": "Ουκρανικά",
+      "indonesian": "Bahasa Indonesia"
+    },
+    "selectCurrency": "Επιλογή νομίσματος"
   },
   "common": {
     "loading": "Φόρτωση...",
