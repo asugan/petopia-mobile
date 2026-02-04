@@ -15,9 +15,11 @@ import {
   isSameDay,
 } from "date-fns";
 import { tr, enUS } from "date-fns/locale";
+import { toZonedTime } from "date-fns-tz";
 import { Event } from "../../lib/types";
 import { getEventColor } from "@/lib/utils/eventColors";
 import { toISODateString } from "@/lib/utils/dateConversion";
+import { useUserTimezone } from "@/lib/hooks/useUserTimezone";
 
 interface MonthViewProps {
   currentDate: Date;
@@ -43,6 +45,7 @@ export function MonthView({
   const { i18n } = useTranslation();
   const { theme } = useTheme();
   const locale = i18n.language === "tr" ? tr : enUS;
+  const userTimezone = useUserTimezone();
 
   const calendarDays = useMemo(() => {
     const monthStart = startOfMonth(currentDate);
@@ -58,7 +61,8 @@ export function MonthView({
     if (!dayStr) return [];
 
     return events.filter((event) => {
-      const eventDateStr = toISODateString(new Date(event.startTime));
+      const zonedDate = toZonedTime(event.startTime, userTimezone);
+      const eventDateStr = toISODateString(zonedDate);
       return eventDateStr === dayStr;
     });
   };
