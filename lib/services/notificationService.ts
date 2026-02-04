@@ -9,6 +9,8 @@ import { REMINDER_PRESETS, QUIET_HOURS_WINDOW } from '@/constants/reminders';
 import i18n from '@/lib/i18n';
 import * as SecureStore from 'expo-secure-store';
 import { api } from '../api/client';
+import { useUserSettingsStore } from '@/stores/userSettingsStore';
+import { toZonedTime, fromZonedTime } from 'date-fns-tz';
 
 /**
  * Notification Service - Handles all push notification operations
@@ -693,12 +695,18 @@ export class NotificationService {
    * Push triggers out of quiet hours (22:00–08:00)
    */
   private adjustForQuietHours(triggerDate: Date): Date {
-    const adjusted = new Date(triggerDate);
-    const triggerMinutes = triggerDate.getHours() * 60 + triggerDate.getMinutes();
+    const settings = useUserSettingsStore.getState().settings;
+    const timezone = settings?.timezone || Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC';
+    
+    // Convert absolute trigger time to user's wall-clock time
+    const zonedTrigger = toZonedTime(triggerDate, timezone);
+    const triggerMinutes = zonedTrigger.getHours() * 60 + zonedTrigger.getMinutes();
+    
     const startMinutes =
       this.quietHours.startHour * 60 + this.quietHours.startMinute;
     const endMinutes =
       this.quietHours.endHour * 60 + this.quietHours.endMinute;
+      
     const crossesMidnight = startMinutes > endMinutes;
     const inQuietHours = startMinutes === endMinutes
       ? false
@@ -710,12 +718,17 @@ export class NotificationService {
       return triggerDate;
     }
 
+    // Clone zonedTrigger to modify it
+    const adjustedZoned = new Date(zonedTrigger);
+
     if (crossesMidnight && triggerMinutes >= startMinutes) {
-      adjusted.setDate(adjusted.getDate() + 1);
+      adjustedZoned.setDate(adjustedZoned.getDate() + 1);
     }
 
-    adjusted.setHours(this.quietHours.endHour, this.quietHours.endMinute, 0, 0);
-    return adjusted;
+    adjustedZoned.setHours(this.quietHours.endHour, this.quietHours.endMinute, 0, 0);
+    
+    // Convert back to absolute timestamp
+    return fromZonedTime(adjustedZoned, timezone);
   }
 
   /**

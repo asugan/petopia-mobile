@@ -9,6 +9,8 @@ import { tr, enUS } from 'date-fns/locale';
 import { Event } from '@/lib/types';
 import { getEventColor } from '@/lib/utils/eventColors';
 import { getEventTypeIcon, getEventTypeLabel } from '@/constants/eventIcons';
+import { useUserTimezone } from '@/lib/hooks/useUserTimezone';
+import { formatInTimeZone } from '@/lib/utils/date';
 
 interface CalendarEventCardProps {
   event: Event;
@@ -26,6 +28,7 @@ export function CalendarEventCard({
   const { theme } = useTheme();
   const { t, i18n } = useTranslation();
   const locale = i18n.language === 'tr' ? tr : enUS;
+  const userTimezone = useUserTimezone();
 
   const eventColor = getEventColor(event.type, theme);
   const eventTypeLabel = getEventTypeLabel(event.type, t);
@@ -102,7 +105,7 @@ export function CalendarEventCard({
             variant="titleSmall"
             style={[styles.time, { color: theme.colors.onSurface }]}
           >
-            {format(new Date(event.startTime), 'p', { locale })}
+            {formatInTimeZone(event.startTime, userTimezone, 'p', { locale })}
           </Text>
           <Text
             variant="bodyMedium"

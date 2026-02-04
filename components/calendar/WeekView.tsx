@@ -1,19 +1,20 @@
-import React, { useMemo } from 'react';
-import { View, StyleSheet, Pressable } from 'react-native';
-import { Text, IconButton } from '@/components/ui';
-import { useTheme } from '@/lib/theme';
-import { useTranslation } from 'react-i18next';
+import React, { useMemo } from "react";
+import { View, StyleSheet, Pressable } from "react-native";
+import { Text, IconButton } from "@/components/ui";
+import { useTheme } from "@/lib/theme";
+import { useTranslation } from "react-i18next";
 import {
   startOfWeek,
   endOfWeek,
   eachDayOfInterval,
   format,
   isSameDay,
-} from 'date-fns';
-import { tr, enUS } from 'date-fns/locale';
-import { Event } from '../../lib/types';
-import { getEventColor } from '@/lib/utils/eventColors';
-import { toISODateString } from '@/lib/utils/dateConversion';
+} from "date-fns";
+import { tr, enUS } from "date-fns/locale";
+import { Event } from "../../lib/types";
+import { getEventColor } from "@/lib/utils/eventColors";
+import { toISODateString } from "@/lib/utils/dateConversion";
+import { useUserTimezone } from "@/lib/hooks/useUserTimezone";
 
 interface WeekViewProps {
   currentDate: Date;
@@ -38,7 +39,7 @@ export function WeekView({
 }: WeekViewProps) {
   const { i18n } = useTranslation();
   const { theme } = useTheme();
-  const locale = i18n.language === 'tr' ? tr : enUS;
+  const locale = i18n.language === "tr" ? tr : enUS;
 
   const weekDays = useMemo(() => {
     const weekStart = startOfWeek(currentDate, { weekStartsOn: 1 });
@@ -60,7 +61,10 @@ export function WeekView({
     <View
       style={[
         styles.container,
-        { backgroundColor: theme.colors.surface, borderColor: theme.colors.surfaceVariant },
+        {
+          backgroundColor: theme.colors.surface,
+          borderColor: theme.colors.surfaceVariant,
+        },
       ]}
       testID={testID}
     >
@@ -76,7 +80,7 @@ export function WeekView({
           variant="titleMedium"
           style={[styles.title, { color: theme.colors.onSurface }]}
         >
-          {format(currentDate, 'MMMM yyyy', { locale })}
+          {format(currentDate, "MMMM yyyy", { locale })}
         </Text>
         <IconButton
           icon="chevron-right"
@@ -96,7 +100,9 @@ export function WeekView({
 
       <View style={styles.weekRow}>
         {weekDays.map((day) => {
-          const isSelected = selectedDate ? isSameDay(day, selectedDate) : false;
+          const isSelected = selectedDate
+            ? isSameDay(day, selectedDate)
+            : false;
           const dayEvents = getEventsForDay(day);
           const hasEvents = dayEvents.length > 0;
           const dotColor = hasEvents
@@ -108,7 +114,7 @@ export function WeekView({
               key={day.toISOString()}
               style={styles.dayCell}
               onPress={() => onDayPress(day)}
-              testID={`${testID}-day-${format(day, 'yyyy-MM-dd')}`}
+              testID={`${testID}-day-${format(day, "yyyy-MM-dd")}`}
             >
               <Text
                 variant="labelSmall"
@@ -121,7 +127,9 @@ export function WeekView({
                   },
                 ]}
               >
-                {format(day, 'EEE', { locale }).toLocaleUpperCase(i18n.language)}
+                {format(day, "EEE", { locale }).toLocaleUpperCase(
+                  i18n.language,
+                )}
               </Text>
               {isSelected ? (
                 <View
@@ -132,9 +140,9 @@ export function WeekView({
                 >
                   <Text
                     variant="titleSmall"
-                    style={{ color: theme.colors.onPrimary, fontWeight: '700' }}
+                    style={{ color: theme.colors.onPrimary, fontWeight: "700" }}
                   >
-                    {format(day, 'd')}
+                    {format(day, "d")}
                   </Text>
                 </View>
               ) : (
@@ -142,7 +150,7 @@ export function WeekView({
                   variant="titleSmall"
                   style={[styles.dayNumber, { color: theme.colors.onSurface }]}
                 >
-                  {format(day, 'd')}
+                  {format(day, "d")}
                 </Text>
               )}
               <View
@@ -181,48 +189,48 @@ const styles = StyleSheet.create({
     marginHorizontal: 16,
     marginTop: 0,
     elevation: 4,
-    shadowColor: '#000',
+    shadowColor: "#000",
     shadowOffset: { width: 0, height: 10 },
     shadowOpacity: 0.08,
     shadowRadius: 16,
   },
   headerRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
     marginBottom: 12,
   },
   title: {
-    fontWeight: '700',
-    textTransform: 'capitalize',
+    fontWeight: "700",
+    textTransform: "capitalize",
   },
   weekRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
+    flexDirection: "row",
+    justifyContent: "space-between",
   },
   dayCell: {
     flex: 1,
-    alignItems: 'center',
+    alignItems: "center",
     paddingVertical: 4,
   },
   weekDayLabel: {
-    fontWeight: '600',
+    fontWeight: "600",
     fontSize: 12,
     marginBottom: 6,
   },
   dayNumber: {
-    fontWeight: '600',
+    fontWeight: "600",
     marginBottom: 6,
   },
   selectedDay: {
     width: 40,
     height: 40,
     borderRadius: 20,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
     marginBottom: 6,
     elevation: 4,
-    shadowColor: '#000',
+    shadowColor: "#000",
     shadowOffset: { width: 0, height: 6 },
     shadowOpacity: 0.2,
     shadowRadius: 8,
@@ -233,9 +241,9 @@ const styles = StyleSheet.create({
     borderRadius: 3,
   },
   bottomIndicator: {
-    position: 'absolute',
+    position: "absolute",
     bottom: 8,
-    left: '45%',
+    left: "45%",
     width: 40,
     height: 4,
     borderRadius: 2,

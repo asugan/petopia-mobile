@@ -1,8 +1,8 @@
-import React, { useMemo } from 'react';
-import { View, StyleSheet, Pressable } from 'react-native';
-import { Text, IconButton } from '@/components/ui';
-import { useTheme } from '@/lib/theme';
-import { useTranslation } from 'react-i18next';
+import React, { useMemo } from "react";
+import { View, StyleSheet, Pressable } from "react-native";
+import { Text, IconButton } from "@/components/ui";
+import { useTheme } from "@/lib/theme";
+import { useTranslation } from "react-i18next";
 import {
   startOfMonth,
   endOfMonth,
@@ -13,11 +13,11 @@ import {
   isSameMonth,
   isToday,
   isSameDay,
-} from 'date-fns';
-import { tr, enUS } from 'date-fns/locale';
-import { Event } from '../../lib/types';
-import { getEventColor } from '@/lib/utils/eventColors';
-import { toISODateString } from '@/lib/utils/dateConversion';
+} from "date-fns";
+import { tr, enUS } from "date-fns/locale";
+import { Event } from "../../lib/types";
+import { getEventColor } from "@/lib/utils/eventColors";
+import { toISODateString } from "@/lib/utils/dateConversion";
 
 interface MonthViewProps {
   currentDate: Date;
@@ -42,7 +42,7 @@ export function MonthView({
 }: MonthViewProps) {
   const { i18n } = useTranslation();
   const { theme } = useTheme();
-  const locale = i18n.language === 'tr' ? tr : enUS;
+  const locale = i18n.language === "tr" ? tr : enUS;
 
   const calendarDays = useMemo(() => {
     const monthStart = startOfMonth(currentDate);
@@ -69,7 +69,9 @@ export function MonthView({
     for (let i = 0; i < 7; i++) {
       const day = new Date(startDate);
       day.setDate(day.getDate() + i);
-      days.push(format(day, 'EEE', { locale }).toLocaleUpperCase(i18n.language));
+      days.push(
+        format(day, "EEE", { locale }).toLocaleUpperCase(i18n.language),
+      );
     }
     return days;
   }, [i18n.language, locale]);
@@ -80,27 +82,28 @@ export function MonthView({
     const isTodayDate = isToday(day);
     const isSelected = selectedDate ? isSameDay(day, selectedDate) : false;
     const hasEvents = dayEvents.length > 0;
-    const dayNumber = format(day, 'd');
+    const dayNumber = format(day, "d");
 
     const dotColor = hasEvents
       ? getEventColor(dayEvents[0].type, theme)
-      : 'transparent';
+      : "transparent";
 
     return (
       <Pressable
         key={day.toISOString()}
         style={styles.dayCell}
         onPress={() => onDayPress(day)}
-        testID={`${testID}-day-${format(day, 'yyyy-MM-dd')}`}
+        testID={`${testID}-day-${format(day, "yyyy-MM-dd")}`}
       >
         <View
           style={[
             styles.dayContent,
             isSelected && { backgroundColor: theme.colors.primary },
-            !isSelected && isTodayDate && {
-              borderWidth: 1,
-              borderColor: theme.colors.primary,
-            },
+            !isSelected &&
+              isTodayDate && {
+                borderWidth: 1,
+                borderColor: theme.colors.primary,
+              },
           ]}
         >
           <Text
@@ -114,7 +117,7 @@ export function MonthView({
                     : theme.colors.onSurface
                   : theme.colors.onSurfaceVariant,
                 opacity: isCurrentMonth ? 1 : 0.4,
-                fontWeight: isSelected ? '700' : '500',
+                fontWeight: isSelected ? "700" : "500",
               },
             ]}
           >
@@ -126,9 +129,7 @@ export function MonthView({
             style={[
               styles.eventDot,
               {
-                backgroundColor: isSelected
-                  ? theme.colors.onPrimary
-                  : dotColor,
+                backgroundColor: isSelected ? theme.colors.onPrimary : dotColor,
                 opacity: hasEvents ? 1 : 0,
               },
             ]}
@@ -142,7 +143,10 @@ export function MonthView({
     <View
       style={[
         styles.container,
-        { backgroundColor: theme.colors.surface, borderColor: theme.colors.surfaceVariant },
+        {
+          backgroundColor: theme.colors.surface,
+          borderColor: theme.colors.surfaceVariant,
+        },
       ]}
       testID={testID}
     >
@@ -158,7 +162,7 @@ export function MonthView({
           variant="titleMedium"
           style={[styles.title, { color: theme.colors.onSurface }]}
         >
-          {format(currentDate, 'MMMM yyyy', { locale })}
+          {format(currentDate, "MMMM yyyy", { locale })}
         </Text>
         <IconButton
           icon="chevron-right"
@@ -216,50 +220,50 @@ const styles = StyleSheet.create({
     marginHorizontal: 16,
     marginTop: 0,
     elevation: 4,
-    shadowColor: '#000',
+    shadowColor: "#000",
     shadowOffset: { width: 0, height: 10 },
     shadowOpacity: 0.08,
     shadowRadius: 16,
   },
   headerRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
     marginBottom: 12,
   },
   title: {
-    fontWeight: '700',
-    textTransform: 'capitalize',
+    fontWeight: "700",
+    textTransform: "capitalize",
   },
   weekRow: {
-    flexDirection: 'row',
+    flexDirection: "row",
     marginBottom: 10,
   },
   weekDayCell: {
     flex: 1,
-    alignItems: 'center',
+    alignItems: "center",
   },
   weekDayText: {
-    fontWeight: '600',
+    fontWeight: "600",
     fontSize: 12,
   },
   calendarGrid: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
+    flexDirection: "row",
+    flexWrap: "wrap",
   },
   dayCell: {
     width: `${100 / 7}%`,
     aspectRatio: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
     marginBottom: 4,
   },
   dayContent: {
     width: 36,
     height: 36,
     borderRadius: 18,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
   },
   dayNumber: {
     fontSize: 14,
@@ -271,9 +275,9 @@ const styles = StyleSheet.create({
     marginTop: 6,
   },
   bottomIndicator: {
-    position: 'absolute',
+    position: "absolute",
     bottom: 8,
-    left: '45%',
+    left: "45%",
     width: 40,
     height: 4,
     borderRadius: 2,

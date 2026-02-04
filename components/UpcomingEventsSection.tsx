@@ -8,6 +8,8 @@ import { TAB_ROUTES } from '@/constants/routes';
 import { useUpcomingEvents, useRecentPastEvents } from '@/lib/hooks/useEvents';
 import { usePets } from '@/lib/hooks/usePets';
 import { useRouter } from 'expo-router';
+import { useUserTimezone } from '@/lib/hooks/useUserTimezone';
+import { formatInTimeZone } from '@/lib/utils/date';
 
 // Event type to icon mapping
 const getEventIcon = (type: string): keyof typeof Ionicons.glyphMap => {
@@ -64,21 +66,12 @@ export function UpcomingEventsSection() {
   const { data: events, isLoading } = useUpcomingEvents();
   const { data: pastEvents, isLoading: isPastLoading } = useRecentPastEvents();
   const { data: pets } = usePets();
+  const userTimezone = useUserTimezone();
 
   // Get pet name by id
   const getPetName = (petId: string) => {
     const pet = pets?.find(p => p._id === petId);
     return pet?.name || '';
-  };
-
-  // Format date to DD.MM - HH:mm
-  const formatDateTime = (dateString: string) => {
-    const date = new Date(dateString);
-    const day = date.getDate().toString().padStart(2, '0');
-    const month = (date.getMonth() + 1).toString().padStart(2, '0');
-    const hours = date.getHours().toString().padStart(2, '0');
-    const minutes = date.getMinutes().toString().padStart(2, '0');
-    return `${day}.${month} - ${hours}:${minutes}`;
   };
 
   if (isLoading || isPastLoading) {
@@ -201,7 +194,7 @@ export function UpcomingEventsSection() {
                       {event.title}
                     </Text>
                     <Text variant="bodySmall" style={{ color: theme.colors.onSurfaceVariant }}>
-                      {formatDateTime(event.startTime)}
+                      {formatInTimeZone(event.startTime, userTimezone, 'dd.MM - HH:mm')}
                     </Text>
                   </View>
                   <Text variant="bodySmall" style={{ color: theme.colors.onSurfaceVariant }}>

@@ -1,46 +1,64 @@
-import React, { useState, useEffect, useCallback, useRef } from 'react';
-import { View, StyleSheet } from 'react-native';
-import { useRouter, useLocalSearchParams } from 'expo-router';
+import React, { useState, useEffect, useCallback, useRef } from "react";
+import { View, StyleSheet } from "react-native";
+import { useRouter, useLocalSearchParams } from "expo-router";
 
-import { FAB } from '@/components/ui';
-import { HeaderActions, LargeTitle } from '@/components/LargeTitle';
-import { useTheme } from '@/lib/theme';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { useTranslation } from 'react-i18next';
-import { addMonths, subMonths, addWeeks, subWeeks } from 'date-fns';
-import { MonthView } from '@/components/calendar/MonthView';
-import { toISODateString } from '@/lib/utils/dateConversion';
-import { WeekView } from '@/components/calendar/WeekView';
-import { EventsBottomSheet, EventsBottomSheetRef } from '@/components/calendar/EventsBottomSheet';
-import { EventModal } from '@/components/EventModal';
-import { useUpcomingEvents, useCalendarEvents, useEvent, useUpdateEvent } from '@/lib/hooks/useEvents';
-import { eventKeys } from '@/lib/hooks/queryKeys';
-import { Event } from '@/lib/types';
-import { useQueryClient } from '@tanstack/react-query';
-import { showToast } from '@/lib/toast/showToast';
-import { FEATURE_ROUTES } from '@/constants/routes';
+import { FAB } from "@/components/ui";
+import { HeaderActions, LargeTitle } from "@/components/LargeTitle";
+import { useTheme } from "@/lib/theme";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { useTranslation } from "react-i18next";
+import { addMonths, subMonths, addWeeks, subWeeks } from "date-fns";
+import { MonthView } from "@/components/calendar/MonthView";
+import { toISODateString } from "@/lib/utils/dateConversion";
+import { WeekView } from "@/components/calendar/WeekView";
+import {
+  EventsBottomSheet,
+  EventsBottomSheetRef,
+} from "@/components/calendar/EventsBottomSheet";
+import { EventModal } from "@/components/EventModal";
+import {
+  useUpcomingEvents,
+  useCalendarEvents,
+  useEvent,
+  useUpdateEvent,
+} from "@/lib/hooks/useEvents";
+import { useUserTimezone } from "@/lib/hooks/useUserTimezone";
+import { eventKeys } from "@/lib/hooks/queryKeys";
+import { Event } from "@/lib/types";
+import { useQueryClient } from "@tanstack/react-query";
+import { showToast } from "@/lib/toast/showToast";
+import { FEATURE_ROUTES } from "@/constants/routes";
 
-type CalendarViewType = 'month' | 'week';
+type CalendarViewType = "month" | "week";
 
 export default function CalendarScreen() {
   const { theme } = useTheme();
   const { t } = useTranslation();
   const router = useRouter();
   const queryClient = useQueryClient();
-  const { petId, action, editEventId, editType } = useLocalSearchParams<{ petId?: string; action?: string; editEventId?: string; editType?: string }>();
+  const { petId, action, editEventId, editType } = useLocalSearchParams<{
+    petId?: string;
+    action?: string;
+    editEventId?: string;
+    editType?: string;
+  }>();
 
-  const [viewType, setViewType] = useState<CalendarViewType>('week');
+  const [viewType, setViewType] = useState<CalendarViewType>("week");
   const [currentDate, setCurrentDate] = useState(new Date());
   const [modalVisible, setModalVisible] = useState(false);
-  const [initialPetId, setInitialPetId] = useState<string | undefined>(undefined);
-  const [selectedEvent, setSelectedEvent] = useState<Event | undefined>(undefined);
+  const [initialPetId, setInitialPetId] = useState<string | undefined>(
+    undefined,
+  );
+  const [selectedEvent, setSelectedEvent] = useState<Event | undefined>(
+    undefined,
+  );
   const bottomSheetRef = useRef<EventsBottomSheetRef>(null);
 
   const { data: eventToEdit } = useEvent(editEventId);
   const updateEventMutation = useUpdateEvent();
 
   useEffect(() => {
-    if (action === 'create') {
+    if (action === "create") {
       setInitialPetId(petId);
       setSelectedEvent(undefined);
       setModalVisible(true);
@@ -51,18 +69,19 @@ export default function CalendarScreen() {
   }, [action, petId, editEventId, eventToEdit]);
 
   const { data: upcomingEvents = [] } = useUpcomingEvents();
-  const formattedDate = toISODateString(currentDate) ?? '';
+  const userTimezone = useUserTimezone();
+  const formattedDate = toISODateString(currentDate) ?? "";
   const {
     data: selectedDateEvents = [],
     isLoading: isLoadingSelected,
     error: errorSelected,
-  } = useCalendarEvents(formattedDate);
+  } = useCalendarEvents(formattedDate, { timezone: userTimezone });
 
   useEffect(() => {
     if (errorSelected) {
       showToast({
-        type: 'error',
-        title: t('errors.loadingFailed'),
+        type: "error",
+        title: t("errors.loadingFailed"),
         message: errorSelected.message,
       });
     }
@@ -70,10 +89,10 @@ export default function CalendarScreen() {
 
   const handlePrevious = () => {
     switch (viewType) {
-      case 'month':
+      case "month":
         setCurrentDate((prev) => subMonths(prev, 1));
         break;
-      case 'week':
+      case "week":
         setCurrentDate((prev) => subWeeks(prev, 1));
         break;
     }
@@ -81,20 +100,20 @@ export default function CalendarScreen() {
 
   const handleNext = () => {
     switch (viewType) {
-      case 'month':
+      case "month":
         setCurrentDate((prev) => addMonths(prev, 1));
         break;
-      case 'week':
+      case "week":
         setCurrentDate((prev) => addWeeks(prev, 1));
         break;
     }
   };
 
   const handleToggleView = () => {
-    const newViewType = viewType === 'month' ? 'week' : 'month';
+    const newViewType = viewType === "month" ? "week" : "month";
     setViewType(newViewType);
     // Collapse bottom sheet when expanding to month view
-    if (newViewType === 'month') {
+    if (newViewType === "month") {
       bottomSheetRef.current?.snapToIndex(0);
     } else {
       bottomSheetRef.current?.snapToIndex(1);
@@ -105,43 +124,59 @@ export default function CalendarScreen() {
     setCurrentDate(date);
   };
 
-  const handleEventPress = useCallback((event: Event) => {
-    router.push(FEATURE_ROUTES.petEvent(event._id));
-  }, [router]);
+  const handleEventPress = useCallback(
+    (event: Event) => {
+      router.push(FEATURE_ROUTES.petEvent(event._id));
+    },
+    [router],
+  );
 
-  const handleToggleReminder = useCallback(async (event: Event, nextValue: boolean) => {
-    const eventDate =
-      toISODateString(new Date(event.startTime)) ??
-      event.startTime.split('T')[0];
+  const handleToggleReminder = useCallback(
+    async (event: Event, nextValue: boolean) => {
+      const eventDate =
+        toISODateString(new Date(event.startTime)) ??
+        event.startTime.split("T")[0];
 
-    queryClient.setQueryData<Event[]>(eventKeys.calendar(eventDate), (old) =>
-      old?.map((item) =>
-        item._id === event._id ? { ...item, reminder: nextValue } : item
-      )
-    );
+      queryClient.setQueryData<Event[]>(eventKeys.calendar(eventDate), (old) =>
+        old?.map((item) =>
+          item._id === event._id ? { ...item, reminder: nextValue } : item,
+        ),
+      );
 
-    queryClient.setQueryData<Event[]>(eventKeys.list({ petId: 'all' }), (old) =>
-      old?.map((item) =>
-        item._id === event._id ? { ...item, reminder: nextValue } : item
-      )
-    );
+      queryClient.setQueryData<Event[]>(
+        eventKeys.list({ petId: "all" }),
+        (old) =>
+          old?.map((item) =>
+            item._id === event._id ? { ...item, reminder: nextValue } : item,
+          ),
+      );
 
-    try {
-      await updateEventMutation.mutateAsync({
-        _id: event._id,
-        data: {
-          reminder: nextValue,
-          reminderPreset: event.reminderPreset,
-          startTime: event.startTime,
-        },
-      });
-      queryClient.invalidateQueries({ queryKey: eventKeys.calendar(eventDate) });
-      queryClient.invalidateQueries({ queryKey: eventKeys.list({ petId: 'all' }) });
-    } catch {
-      queryClient.invalidateQueries({ queryKey: eventKeys.calendar(eventDate) });
-      queryClient.invalidateQueries({ queryKey: eventKeys.list({ petId: 'all' }) });
-    }
-  }, [queryClient, updateEventMutation]);
+      try {
+        await updateEventMutation.mutateAsync({
+          _id: event._id,
+          data: {
+            reminder: nextValue,
+            reminderPreset: event.reminderPreset,
+            startTime: event.startTime,
+          },
+        });
+        queryClient.invalidateQueries({
+          queryKey: eventKeys.calendar(eventDate),
+        });
+        queryClient.invalidateQueries({
+          queryKey: eventKeys.list({ petId: "all" }),
+        });
+      } catch {
+        queryClient.invalidateQueries({
+          queryKey: eventKeys.calendar(eventDate),
+        });
+        queryClient.invalidateQueries({
+          queryKey: eventKeys.list({ petId: "all" }),
+        });
+      }
+    },
+    [queryClient, updateEventMutation],
+  );
 
   const handleAddEvent = async () => {
     setInitialPetId(undefined);
@@ -169,7 +204,7 @@ export default function CalendarScreen() {
 
   const renderCalendarView = () => {
     switch (viewType) {
-      case 'month':
+      case "month":
         return (
           <MonthView
             currentDate={currentDate}
@@ -182,7 +217,7 @@ export default function CalendarScreen() {
             testID="calendar-month-view"
           />
         );
-      case 'week':
+      case "week":
         return (
           <WeekView
             currentDate={currentDate}
@@ -205,12 +240,13 @@ export default function CalendarScreen() {
       style={[styles.container, { backgroundColor: theme.colors.background }]}
     >
       <View style={styles.header}>
-        <LargeTitle title={t('calendar.calendar')} actions={<HeaderActions />} />
+        <LargeTitle
+          title={t("calendar.calendar")}
+          actions={<HeaderActions />}
+        />
       </View>
-      
-      <View style={styles.calendarContainer}>
-        {renderCalendarView()}
-      </View>
+
+      <View style={styles.calendarContainer}>{renderCalendarView()}</View>
 
       <EventsBottomSheet
         ref={bottomSheetRef}
@@ -238,7 +274,7 @@ export default function CalendarScreen() {
       <EventModal
         visible={modalVisible}
         event={selectedEvent}
-        editType={editType as 'single' | 'series'}
+        editType={editType as "single" | "series"}
         initialPetId={initialPetId}
         onClose={handleModalClose}
         onSuccess={handleModalSuccess}
@@ -260,7 +296,7 @@ const styles = StyleSheet.create({
     paddingBottom: 16,
   },
   fab: {
-    position: 'absolute',
+    position: "absolute",
     margin: 16,
     right: 0,
     bottom: 0,
