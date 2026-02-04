@@ -1,6 +1,6 @@
-import { api, ApiError, ApiResponse } from '../api/client';
-import { ENV } from '../config/env';
-import type { Event, CreateEventInput, UpdateEventInput } from '../types';
+import { api, ApiError, ApiResponse } from "../api/client";
+import { ENV } from "../config/env";
+import type { Event, CreateEventInput, UpdateEventInput } from "../types";
 
 /**
  * Event Service - Tüm event API operasyonlarını yönetir
@@ -16,23 +16,23 @@ export class EventService {
       return {
         success: true,
         data: response.data!,
-        message: 'serviceResponse.event.createSuccess',
+        message: "serviceResponse.event.createSuccess",
       };
     } catch (error) {
       if (error instanceof ApiError) {
-      return {
-        success: false,
-        error: {
-          code: 'FETCH_ERROR',
-          message: 'serviceResponse.event.fetchError',
-        },
-      };
+        return {
+          success: false,
+          error: {
+            code: "FETCH_ERROR",
+            message: "serviceResponse.event.fetchError",
+          },
+        };
       }
       return {
         success: false,
         error: {
-          code: 'CREATE_ERROR',
-          message: 'serviceResponse.event.createError',
+          code: "CREATE_ERROR",
+          message: "serviceResponse.event.createError",
         },
       };
     }
@@ -48,14 +48,14 @@ export class EventService {
       return {
         success: true,
         data: response.data || [],
-        message: 'event.fetchSuccess',
+        message: "event.fetchSuccess",
       };
     } catch (error) {
       if (error instanceof ApiError) {
         return {
           success: false,
           error: {
-            code: error.code || 'FETCH_ERROR',
+            code: error.code || "FETCH_ERROR",
             message: error.message,
           },
         };
@@ -63,8 +63,8 @@ export class EventService {
       return {
         success: false,
         error: {
-          code: 'FETCH_ERROR',
-          message: 'event.fetchError',
+          code: "FETCH_ERROR",
+          message: "event.fetchError",
         },
       };
     }
@@ -75,19 +75,21 @@ export class EventService {
    */
   async getEventsByPetId(petId: string): Promise<ApiResponse<Event[]>> {
     try {
-      const response = await api.get<Event[]>(ENV.ENDPOINTS.EVENTS_BY_PET(petId));
+      const response = await api.get<Event[]>(
+        ENV.ENDPOINTS.EVENTS_BY_PET(petId),
+      );
 
       return {
         success: true,
         data: response.data || [],
-        message: 'event.fetchSuccess',
+        message: "event.fetchSuccess",
       };
     } catch (error) {
       if (error instanceof ApiError) {
         return {
           success: false,
           error: {
-            code: error.code || 'FETCH_ERROR',
+            code: error.code || "FETCH_ERROR",
             message: error.message,
           },
         };
@@ -95,8 +97,8 @@ export class EventService {
       return {
         success: false,
         error: {
-          code: 'FETCH_ERROR',
-          message: 'event.fetchError',
+          code: "FETCH_ERROR",
+          message: "event.fetchError",
         },
       };
     }
@@ -112,7 +114,7 @@ export class EventService {
       return {
         success: true,
         data: response.data!,
-        message: 'serviceResponse.event.fetchOneSuccess',
+        message: "serviceResponse.event.fetchOneSuccess",
       };
     } catch (error) {
       if (error instanceof ApiError) {
@@ -120,15 +122,15 @@ export class EventService {
           return {
             success: false,
             error: {
-              code: 'NOT_FOUND',
-              message: 'serviceResponse.event.notFound',
+              code: "NOT_FOUND",
+              message: "serviceResponse.event.notFound",
             },
           };
         }
         return {
           success: false,
           error: {
-            code: error.code || 'FETCH_ERROR',
+            code: error.code || "FETCH_ERROR",
             message: error.message,
           },
         };
@@ -136,8 +138,8 @@ export class EventService {
       return {
         success: false,
         error: {
-          code: 'FETCH_ERROR',
-          message: 'event.fetchError',
+          code: "FETCH_ERROR",
+          message: "event.fetchError",
         },
       };
     }
@@ -146,14 +148,20 @@ export class EventService {
   /**
    * Event bilgilerini günceller
    */
-  async updateEvent(id: string, data: UpdateEventInput): Promise<ApiResponse<Event>> {
+  async updateEvent(
+    id: string,
+    data: UpdateEventInput,
+  ): Promise<ApiResponse<Event>> {
     try {
-      const response = await api.put<Event>(ENV.ENDPOINTS.EVENT_BY_ID(id), data);
+      const response = await api.put<Event>(
+        ENV.ENDPOINTS.EVENT_BY_ID(id),
+        data,
+      );
 
       return {
         success: true,
         data: response.data!,
-        message: 'serviceResponse.event.updateSuccess',
+        message: "serviceResponse.event.updateSuccess",
       };
     } catch (error) {
       if (error instanceof ApiError) {
@@ -161,15 +169,15 @@ export class EventService {
           return {
             success: false,
             error: {
-              code: 'NOT_FOUND',
-              message: 'serviceResponse.event.notFoundUpdate',
+              code: "NOT_FOUND",
+              message: "serviceResponse.event.notFoundUpdate",
             },
           };
         }
         return {
           success: false,
           error: {
-            code: error.code || 'UPDATE_ERROR',
+            code: error.code || "UPDATE_ERROR",
             message: error.message,
           },
         };
@@ -177,8 +185,8 @@ export class EventService {
       return {
         success: false,
         error: {
-          code: 'UPDATE_ERROR',
-          message: 'serviceResponse.event.updateError',
+          code: "UPDATE_ERROR",
+          message: "serviceResponse.event.updateError",
         },
       };
     }
@@ -193,7 +201,7 @@ export class EventService {
 
       return {
         success: true,
-        message: 'serviceResponse.event.deleteSuccess',
+        message: "serviceResponse.event.deleteSuccess",
       };
     } catch (error) {
       if (error instanceof ApiError) {
@@ -201,15 +209,15 @@ export class EventService {
           return {
             success: false,
             error: {
-              code: 'NOT_FOUND',
-              message: 'serviceResponse.event.notFoundDelete',
+              code: "NOT_FOUND",
+              message: "serviceResponse.event.notFoundDelete",
             },
           };
         }
         return {
           success: false,
           error: {
-            code: error.code || 'DELETE_ERROR',
+            code: error.code || "DELETE_ERROR",
             message: error.message,
           },
         };
@@ -217,8 +225,8 @@ export class EventService {
       return {
         success: false,
         error: {
-          code: 'DELETE_ERROR',
-          message: 'serviceResponse.event.deleteError',
+          code: "DELETE_ERROR",
+          message: "serviceResponse.event.deleteError",
         },
       };
     }
@@ -227,21 +235,28 @@ export class EventService {
   /**
    * Tarihe göre calendar eventlerini getirir
    */
-  async getEventsByDate(date: string): Promise<ApiResponse<Event[]>> {
+  async getEventsByDate(
+    date: string,
+    timezone?: string,
+  ): Promise<ApiResponse<Event[]>> {
     try {
-      const response = await api.get<Event[]>(ENV.ENDPOINTS.EVENTS_BY_DATE(date));
+      const endpoint = timezone
+        ? `${ENV.ENDPOINTS.EVENTS_BY_DATE(date)}?timezone=${encodeURIComponent(timezone)}`
+        : ENV.ENDPOINTS.EVENTS_BY_DATE(date);
+
+      const response = await api.get<Event[]>(endpoint);
 
       return {
         success: true,
         data: response.data || [],
-        message: 'serviceResponse.event.fetchTodaySuccess',
+        message: "serviceResponse.event.fetchTodaySuccess",
       };
     } catch (error) {
       if (error instanceof ApiError) {
         return {
           success: false,
           error: {
-            code: error.code || 'FETCH_ERROR',
+            code: error.code || "FETCH_ERROR",
             message: error.message,
           },
         };
@@ -249,8 +264,8 @@ export class EventService {
       return {
         success: false,
         error: {
-          code: 'FETCH_ERROR',
-          message: 'serviceResponse.event.fetchByDateError',
+          code: "FETCH_ERROR",
+          message: "serviceResponse.event.fetchByDateError",
         },
       };
     }
@@ -266,14 +281,14 @@ export class EventService {
       return {
         success: true,
         data: response.data || [],
-        message: 'serviceResponse.event.fetchUpcomingSuccess',
+        message: "serviceResponse.event.fetchUpcomingSuccess",
       };
     } catch (error) {
       if (error instanceof ApiError) {
         return {
           success: false,
           error: {
-            code: error.code || 'FETCH_ERROR',
+            code: error.code || "FETCH_ERROR",
             message: error.message,
           },
         };
@@ -281,8 +296,8 @@ export class EventService {
       return {
         success: false,
         error: {
-          code: 'FETCH_ERROR',
-          message: 'serviceResponse.event.fetchUpcomingError',
+          code: "FETCH_ERROR",
+          message: "serviceResponse.event.fetchUpcomingError",
         },
       };
     }
@@ -298,14 +313,14 @@ export class EventService {
       return {
         success: true,
         data: response.data || [],
-        message: 'serviceResponse.event.fetchByDateSuccess',
+        message: "serviceResponse.event.fetchByDateSuccess",
       };
     } catch (error) {
       if (error instanceof ApiError) {
         return {
           success: false,
           error: {
-            code: error.code || 'FETCH_ERROR',
+            code: error.code || "FETCH_ERROR",
             message: error.message,
           },
         };
@@ -313,8 +328,8 @@ export class EventService {
       return {
         success: false,
         error: {
-          code: 'FETCH_ERROR',
-          message: 'serviceResponse.event.fetchTodayError',
+          code: "FETCH_ERROR",
+          message: "serviceResponse.event.fetchTodayError",
         },
       };
     }

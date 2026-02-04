@@ -1,25 +1,25 @@
-import { create } from 'zustand';
-import { persist, createJSONStorage } from 'zustand/middleware';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import i18n from '@/lib/i18n';
-import { lightTheme, darkTheme } from '@/lib/theme/themes';
-import { userSettingsService } from '@/lib/services/userSettingsService';
-import { getCurrencySymbol as getCurrencySymbolUtil } from '@/lib/utils/currency';
-import type { Theme, ThemeMode } from '@/lib/theme/types';
+import { create } from "zustand";
+import { persist, createJSONStorage } from "zustand/middleware";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import i18n from "@/lib/i18n";
+import { lightTheme, darkTheme } from "@/lib/theme/themes";
+import { userSettingsService } from "@/lib/services/userSettingsService";
+import { getCurrencySymbol as getCurrencySymbolUtil } from "@/lib/utils/currency";
+import type { Theme, ThemeMode } from "@/lib/theme/types";
 import type {
   SupportedCurrency,
   SupportedLanguage,
   UserSettings,
   UserSettingsUpdate,
-} from '@/lib/types';
-import { useEventReminderStore } from '@/stores/eventReminderStore';
+} from "@/lib/types";
+import { useEventReminderStore } from "@/stores/eventReminderStore";
 
 export type {
   SupportedCurrency,
   SupportedLanguage,
   UserSettings,
   UserSettingsUpdate,
-} from '@/lib/types';
+} from "@/lib/types";
 
 // Trigger lint refresh
 interface UserSettingsState {
@@ -41,15 +41,15 @@ interface UserSettingsActions {
   setAuthenticated: (isAuthenticated: boolean) => void;
 }
 
-const USER_SETTINGS_STORAGE_KEY = 'user-settings-storage';
+const USER_SETTINGS_STORAGE_KEY = "user-settings-storage";
 
 const defaultSettings: UserSettings = {
-  id: '',
-  userId: '',
-  baseCurrency: 'USD',
-  timezone: 'Europe/Istanbul',
-  language: 'en',
-  theme: 'dark',
+  id: "",
+  userId: "",
+  baseCurrency: "USD",
+  timezone: Intl.DateTimeFormat().resolvedOptions().timeZone || "UTC",
+  language: "en",
+  theme: "dark",
   notificationsEnabled: true,
   budgetNotificationsEnabled: true,
   feedingRemindersEnabled: true,
@@ -65,14 +65,16 @@ const defaultSettings: UserSettings = {
 };
 
 const deriveTheme = (themeMode: ThemeMode): Theme => {
-  return themeMode === 'light' ? lightTheme : darkTheme;
+  return themeMode === "light" ? lightTheme : darkTheme;
 };
 
 const deriveRTL = (language: SupportedLanguage): boolean => {
-  return language === 'ar' || language === 'he';
+  return language === "ar" || language === "he";
 };
 
-export const useUserSettingsStore = create<UserSettingsState & UserSettingsActions>()(
+export const useUserSettingsStore = create<
+  UserSettingsState & UserSettingsActions
+>()(
   persist(
     (set, get) => ({
       settings: null,
@@ -96,14 +98,27 @@ export const useUserSettingsStore = create<UserSettingsState & UserSettingsActio
           const response = await userSettingsService.getSettings();
 
           if (response.success && response.data) {
-            const settings = response.data;
-            const { setQuietHours, setQuietHoursEnabled } = useEventReminderStore.getState();
+            let settings = response.data;
+            const { setQuietHours, setQuietHoursEnabled } =
+              useEventReminderStore.getState();
 
             if (settings.quietHours) {
               setQuietHours(settings.quietHours);
             }
-            if (typeof settings.quietHoursEnabled === 'boolean') {
+            if (typeof settings.quietHoursEnabled === "boolean") {
               setQuietHoursEnabled(settings.quietHoursEnabled);
+            }
+
+            const deviceTimezone =
+              Intl.DateTimeFormat().resolvedOptions().timeZone || "UTC";
+
+            if (!settings.timezone || settings.timezone === "UTC") {
+              const updateResponse = await userSettingsService.updateSettings({
+                timezone: deviceTimezone,
+              });
+              if (updateResponse.success && updateResponse.data) {
+                settings = updateResponse.data;
+              }
             }
 
             set({
@@ -112,18 +127,18 @@ export const useUserSettingsStore = create<UserSettingsState & UserSettingsActio
               error: null,
               isRTL: deriveRTL(settings.language),
               theme: deriveTheme(settings.theme),
-              isDark: settings.theme === 'dark',
+              isDark: settings.theme === "dark",
             });
 
             if (i18n.language !== settings.language) {
               i18n.changeLanguage(settings.language);
             }
-
           } else {
-            throw new Error(response.message || 'Failed to fetch settings');
+            throw new Error(response.message || "Failed to fetch settings");
           }
         } catch (error) {
-          const errorMessage = error instanceof Error ? error.message : 'Failed to fetch settings';
+          const errorMessage =
+            error instanceof Error ? error.message : "Failed to fetch settings";
 
           set({
             isLoading: false,
@@ -146,12 +161,13 @@ export const useUserSettingsStore = create<UserSettingsState & UserSettingsActio
 
           if (response.success && response.data) {
             const updatedSettings = response.data;
-            const { setQuietHours, setQuietHoursEnabled } = useEventReminderStore.getState();
+            const { setQuietHours, setQuietHoursEnabled } =
+              useEventReminderStore.getState();
 
             if (updatedSettings.quietHours) {
               setQuietHours(updatedSettings.quietHours);
             }
-            if (typeof updatedSettings.quietHoursEnabled === 'boolean') {
+            if (typeof updatedSettings.quietHoursEnabled === "boolean") {
               setQuietHoursEnabled(updatedSettings.quietHoursEnabled);
             }
 
@@ -170,15 +186,17 @@ export const useUserSettingsStore = create<UserSettingsState & UserSettingsActio
               const newTheme = deriveTheme(updatedSettings.theme);
               set({
                 theme: newTheme,
-                isDark: updatedSettings.theme === 'dark',
+                isDark: updatedSettings.theme === "dark",
               });
             }
-
           } else {
-            throw new Error(response.message || 'Failed to update settings');
+            throw new Error(response.message || "Failed to update settings");
           }
         } catch (error) {
-          const errorMessage = error instanceof Error ? error.message : 'Failed to update settings';
+          const errorMessage =
+            error instanceof Error
+              ? error.message
+              : "Failed to update settings";
 
           set({
             isLoading: false,
@@ -199,7 +217,8 @@ export const useUserSettingsStore = create<UserSettingsState & UserSettingsActio
         set({ isLoading: true, error: null });
 
         try {
-          const response = await userSettingsService.updateBaseCurrency(currency);
+          const response =
+            await userSettingsService.updateBaseCurrency(currency);
 
           if (response.success && response.data) {
             const updatedSettings = response.data;
@@ -209,12 +228,16 @@ export const useUserSettingsStore = create<UserSettingsState & UserSettingsActio
               isLoading: false,
               error: null,
             });
-
           } else {
-            throw new Error(response.message || 'Failed to update base currency');
+            throw new Error(
+              response.message || "Failed to update base currency",
+            );
           }
         } catch (error) {
-          const errorMessage = error instanceof Error ? error.message : 'Failed to update base currency';
+          const errorMessage =
+            error instanceof Error
+              ? error.message
+              : "Failed to update base currency";
 
           set({
             isLoading: false,
@@ -265,10 +288,11 @@ export const useUserSettingsStore = create<UserSettingsState & UserSettingsActio
       onRehydrateStorage: () => (state) => {
         if (state && state.settings) {
           const { settings } = state;
-          const { setQuietHours, setQuietHoursEnabled } = useEventReminderStore.getState();
+          const { setQuietHours, setQuietHoursEnabled } =
+            useEventReminderStore.getState();
           state.isRTL = deriveRTL(settings.language);
           state.theme = deriveTheme(settings.theme);
-          state.isDark = settings.theme === 'dark';
+          state.isDark = settings.theme === "dark";
 
           if (i18n.language !== settings.language) {
             i18n.changeLanguage(settings.language);
@@ -276,180 +300,278 @@ export const useUserSettingsStore = create<UserSettingsState & UserSettingsActio
           if (settings.quietHours) {
             setQuietHours(settings.quietHours);
           }
-          if (typeof settings.quietHoursEnabled === 'boolean') {
+          if (typeof settings.quietHoursEnabled === "boolean") {
             setQuietHoursEnabled(settings.quietHoursEnabled);
           }
-
         }
       },
-    }
-  )
+    },
+  ),
 );
 
-export const getSupportedLanguages = (): SupportedLanguage[] => ['tr', 'en', 'it', 'de', 'fr', 'es', 'pt', 'ja', 'ko', 'ru', 'ar', 'he', 'ro', 'nl', 'sv', 'da', 'no', 'fi', 'cs', 'hu', 'sk', 'ca', 'hr', 'hi', 'th', 'vi', 'ms', 'zh', 'zh-TW', 'pl', 'el', 'uk', 'id'];
+export const getSupportedLanguages = (): SupportedLanguage[] => [
+  "tr",
+  "en",
+  "it",
+  "de",
+  "fr",
+  "es",
+  "pt",
+  "ja",
+  "ko",
+  "ru",
+  "ar",
+  "he",
+  "ro",
+  "nl",
+  "sv",
+  "da",
+  "no",
+  "fi",
+  "cs",
+  "hu",
+  "sk",
+  "ca",
+  "hr",
+  "hi",
+  "th",
+  "vi",
+  "ms",
+  "zh",
+  "zh-TW",
+  "pl",
+  "el",
+  "uk",
+  "id",
+];
 
-export const isLanguageSupported = (language: string): language is SupportedLanguage => {
-  return ['tr', 'en', 'it', 'de', 'fr', 'es', 'pt', 'ja', 'ko', 'ru', 'ar', 'he', 'ro', 'nl', 'sv', 'da', 'no', 'fi', 'cs', 'hu', 'sk', 'ca', 'hr', 'hi', 'th', 'vi', 'ms', 'zh', 'zh-TW', 'pl', 'el', 'uk', 'id'].includes(language);
+export const isLanguageSupported = (
+  language: string,
+): language is SupportedLanguage => {
+  return [
+    "tr",
+    "en",
+    "it",
+    "de",
+    "fr",
+    "es",
+    "pt",
+    "ja",
+    "ko",
+    "ru",
+    "ar",
+    "he",
+    "ro",
+    "nl",
+    "sv",
+    "da",
+    "no",
+    "fi",
+    "cs",
+    "hu",
+    "sk",
+    "ca",
+    "hr",
+    "hi",
+    "th",
+    "vi",
+    "ms",
+    "zh",
+    "zh-TW",
+    "pl",
+    "el",
+    "uk",
+    "id",
+  ].includes(language);
 };
 
-export const getLanguageDirection = (language: SupportedLanguage): 'ltr' | 'rtl' => {
-  return language === 'ar' || language === 'he' ? 'rtl' : 'ltr';
+export const getLanguageDirection = (
+  language: SupportedLanguage,
+): "ltr" | "rtl" => {
+  return language === "ar" || language === "he" ? "rtl" : "ltr";
 };
 
 export const getLanguageDisplayName = (language: SupportedLanguage): string => {
   const displayNames: Record<SupportedLanguage, string> = {
-    tr: 'Türkçe',
-    en: 'English',
-    it: 'Italiano',
-    de: 'Deutsch',
-    fr: 'Français',
-    es: 'Español',
-    pt: 'Português',
-    ja: '日本語',
-    ko: 'Korean',
-    ru: 'Russian',
-    ar: 'Arabic',
-    he: 'Hebrew',
-    ro: 'Romanian',
-    nl: 'Dutch',
-    sv: 'Swedish',
-    da: 'Danish',
-    no: 'Norwegian',
-    fi: 'Finnish',
-    cs: 'Czech',
-    hu: 'Hungarian',
-    sk: 'Slovak',
-    ca: 'Catalan',
-    hr: 'Croatian',
-    hi: 'Hindi',
-    th: 'Thai',
-    vi: 'Vietnamese',
-    ms: 'Malay',
-    zh: 'Chinese',
-    'zh-TW': 'Traditional Chinese',
-    pl: 'Polish',
-    el: 'Greek',
-    uk: 'Ukrainian',
-    id: 'Indonesian',
+    tr: "Türkçe",
+    en: "English",
+    it: "Italiano",
+    de: "Deutsch",
+    fr: "Français",
+    es: "Español",
+    pt: "Português",
+    ja: "日本語",
+    ko: "Korean",
+    ru: "Russian",
+    ar: "Arabic",
+    he: "Hebrew",
+    ro: "Romanian",
+    nl: "Dutch",
+    sv: "Swedish",
+    da: "Danish",
+    no: "Norwegian",
+    fi: "Finnish",
+    cs: "Czech",
+    hu: "Hungarian",
+    sk: "Slovak",
+    ca: "Catalan",
+    hr: "Croatian",
+    hi: "Hindi",
+    th: "Thai",
+    vi: "Vietnamese",
+    ms: "Malay",
+    zh: "Chinese",
+    "zh-TW": "Traditional Chinese",
+    pl: "Polish",
+    el: "Greek",
+    uk: "Ukrainian",
+    id: "Indonesian",
   };
   return displayNames[language] || language;
 };
 
 export const getLanguageNativeName = (language: SupportedLanguage): string => {
   const nativeNames: Record<SupportedLanguage, string> = {
-    tr: 'Türkçe',
-    en: 'English',
-    it: 'Italiano',
-    de: 'Deutsch',
-    fr: 'Français',
-    es: 'Español',
-    pt: 'Português',
-    ja: '日本語',
-    ko: '한국어',
-    ru: 'Русский',
-    ar: 'العربية',
-    he: 'עברית',
-    ro: 'Română',
-    nl: 'Nederlands',
-    sv: 'Svenska',
-    da: 'Dansk',
-    no: 'Norsk',
-    fi: 'Suomi',
-    cs: 'Čeština',
-    hu: 'Magyar',
-    sk: 'Slovenčina',
-    ca: 'Català',
-    hr: 'Hrvatski',
-    hi: 'हिन्दी',
-    th: 'ไทย',
-    vi: 'Tiếng Việt',
-    ms: 'Bahasa Melayu',
-    zh: '简体中文',
-    'zh-TW': '繁體中文',
-    pl: 'Polski',
-    el: 'Ελληνικά',
-    uk: 'Українська',
-    id: 'Bahasa Indonesia',
+    tr: "Türkçe",
+    en: "English",
+    it: "Italiano",
+    de: "Deutsch",
+    fr: "Français",
+    es: "Español",
+    pt: "Português",
+    ja: "日本語",
+    ko: "한국어",
+    ru: "Русский",
+    ar: "العربية",
+    he: "עברית",
+    ro: "Română",
+    nl: "Nederlands",
+    sv: "Svenska",
+    da: "Dansk",
+    no: "Norsk",
+    fi: "Suomi",
+    cs: "Čeština",
+    hu: "Magyar",
+    sk: "Slovenčina",
+    ca: "Català",
+    hr: "Hrvatski",
+    hi: "हिन्दी",
+    th: "ไทย",
+    vi: "Tiếng Việt",
+    ms: "Bahasa Melayu",
+    zh: "简体中文",
+    "zh-TW": "繁體中文",
+    pl: "Polski",
+    el: "Ελληνικά",
+    uk: "Українська",
+    id: "Bahasa Indonesia",
   };
   return nativeNames[language] || language;
 };
 
 export const getSupportedCurrencies = (): SupportedCurrency[] => [
-  'TRY', 'USD', 'EUR', 'GBP', 'AUD', 'BRL', 'CAD', 'CHF', 'CNY', 'CZK', 'DKK',
-  'HKD', 'HUF', 'IDR', 'ILS', 'INR', 'ISK', 'JPY', 'KRW', 'MXN', 'MYR', 'NOK',
-  'NZD', 'PHP', 'PLN', 'RON', 'SEK', 'SGD', 'THB', 'ZAR',
+  "TRY",
+  "USD",
+  "EUR",
+  "GBP",
+  "AUD",
+  "BRL",
+  "CAD",
+  "CHF",
+  "CNY",
+  "CZK",
+  "DKK",
+  "HKD",
+  "HUF",
+  "IDR",
+  "ILS",
+  "INR",
+  "ISK",
+  "JPY",
+  "KRW",
+  "MXN",
+  "MYR",
+  "NOK",
+  "NZD",
+  "PHP",
+  "PLN",
+  "RON",
+  "SEK",
+  "SGD",
+  "THB",
+  "ZAR",
 ];
 
 export const getCurrencyDisplayName = (currency: SupportedCurrency): string => {
   const displayNames: Record<SupportedCurrency, string> = {
-    TRY: 'Turkish Lira',
-    USD: 'US Dollar',
-    EUR: 'Euro',
-    GBP: 'British Pound',
-    AUD: 'Australian Dollar',
-    BRL: 'Brazilian Real',
-    CAD: 'Canadian Dollar',
-    CHF: 'Swiss Franc',
-    CNY: 'Chinese Yuan',
-    CZK: 'Czech Koruna',
-    DKK: 'Danish Krone',
-    HKD: 'Hong Kong Dollar',
-    HUF: 'Hungarian Forint',
-    IDR: 'Indonesian Rupiah',
-    ILS: 'Israeli New Shekel',
-    INR: 'Indian Rupee',
-    ISK: 'Icelandic Króna',
-    JPY: 'Japanese Yen',
-    KRW: 'South Korean Won',
-    MXN: 'Mexican Peso',
-    MYR: 'Malaysian Ringgit',
-    NOK: 'Norwegian Krone',
-    NZD: 'New Zealand Dollar',
-    PHP: 'Philippine Peso',
-    PLN: 'Polish Złoty',
-    RON: 'Romanian Leu',
-    SEK: 'Swedish Krona',
-    SGD: 'Singapore Dollar',
-    THB: 'Thai Baht',
-    ZAR: 'South African Rand',
+    TRY: "Turkish Lira",
+    USD: "US Dollar",
+    EUR: "Euro",
+    GBP: "British Pound",
+    AUD: "Australian Dollar",
+    BRL: "Brazilian Real",
+    CAD: "Canadian Dollar",
+    CHF: "Swiss Franc",
+    CNY: "Chinese Yuan",
+    CZK: "Czech Koruna",
+    DKK: "Danish Krone",
+    HKD: "Hong Kong Dollar",
+    HUF: "Hungarian Forint",
+    IDR: "Indonesian Rupiah",
+    ILS: "Israeli New Shekel",
+    INR: "Indian Rupee",
+    ISK: "Icelandic Króna",
+    JPY: "Japanese Yen",
+    KRW: "South Korean Won",
+    MXN: "Mexican Peso",
+    MYR: "Malaysian Ringgit",
+    NOK: "Norwegian Krone",
+    NZD: "New Zealand Dollar",
+    PHP: "Philippine Peso",
+    PLN: "Polish Złoty",
+    RON: "Romanian Leu",
+    SEK: "Swedish Krona",
+    SGD: "Singapore Dollar",
+    THB: "Thai Baht",
+    ZAR: "South African Rand",
   };
   return displayNames[currency] || currency;
 };
 
 export const getCurrencyFlag = (currency: SupportedCurrency): string => {
   const flags: Record<SupportedCurrency, string> = {
-    TRY: '🇹🇷',
-    USD: '🇺🇸',
-    EUR: '🇪🇺',
-    GBP: '🇬🇧',
-    AUD: '🇦🇺',
-    BRL: '🇧🇷',
-    CAD: '🇨🇦',
-    CHF: '🇨🇭',
-    CNY: '🇨🇳',
-    CZK: '🇨🇿',
-    DKK: '🇩🇰',
-    HKD: '🇭🇰',
-    HUF: '🇭🇺',
-    IDR: '🇮🇩',
-    ILS: '🇮🇱',
-    INR: '🇮🇳',
-    ISK: '🇮🇸',
-    JPY: '🇯🇵',
-    KRW: '🇰🇷',
-    MXN: '🇲🇽',
-    MYR: '🇲🇾',
-    NOK: '🇳🇴',
-    NZD: '🇳🇿',
-    PHP: '🇵🇭',
-    PLN: '🇵🇱',
-    RON: '🇷🇴',
-    SEK: '🇸🇪',
-    SGD: '🇸🇬',
-    THB: '🇹🇭',
-    ZAR: '🇿🇦',
+    TRY: "🇹🇷",
+    USD: "🇺🇸",
+    EUR: "🇪🇺",
+    GBP: "🇬🇧",
+    AUD: "🇦🇺",
+    BRL: "🇧🇷",
+    CAD: "🇨🇦",
+    CHF: "🇨🇭",
+    CNY: "🇨🇳",
+    CZK: "🇨🇿",
+    DKK: "🇩🇰",
+    HKD: "🇭🇰",
+    HUF: "🇭🇺",
+    IDR: "🇮🇩",
+    ILS: "🇮🇱",
+    INR: "🇮🇳",
+    ISK: "🇮🇸",
+    JPY: "🇯🇵",
+    KRW: "🇰🇷",
+    MXN: "🇲🇽",
+    MYR: "🇲🇾",
+    NOK: "🇳🇴",
+    NZD: "🇳🇿",
+    PHP: "🇵🇭",
+    PLN: "🇵🇱",
+    RON: "🇷🇴",
+    SEK: "🇸🇪",
+    SGD: "🇸🇬",
+    THB: "🇹🇭",
+    ZAR: "🇿🇦",
   };
-  return flags[currency] || '💱';
+  return flags[currency] || "💱";
 };
 
 export const getCurrencySymbol = (currency: SupportedCurrency): string => {

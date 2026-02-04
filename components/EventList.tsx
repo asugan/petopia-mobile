@@ -8,6 +8,8 @@ import { tr, enUS } from 'date-fns/locale';
 import { Event } from '../lib/types';
 import { createEventTypeOptions } from '../constants';
 import { EventCard } from './EventCard';
+import { useUserTimezone } from '@/lib/hooks/useUserTimezone';
+import { formatInTimeZone } from '@/lib/utils/date';
 
 interface EventListProps {
   events: Event[];
@@ -45,6 +47,7 @@ export function EventList({
   const { t, i18n } = useTranslation();
   const { theme } = useTheme();
   const locale = i18n.language === 'tr' ? tr : enUS;
+  const userTimezone = useUserTimezone();
 
   // State for search and filtering
   const [searchQuery, setSearchQuery] = useState('');
@@ -138,8 +141,7 @@ export function EventList({
     const groups: { [date: string]: Event[] } = {};
 
     filteredEvents.forEach(event => {
-      const eventDate = new Date(event.startTime);
-      const dateKey = format(eventDate, 'yyyy-MM-dd');
+      const dateKey = formatInTimeZone(event.startTime, userTimezone, 'yyyy-MM-dd');
 
       if (!groups[dateKey]) {
         groups[dateKey] = [];
@@ -148,22 +150,25 @@ export function EventList({
     });
 
     return groups;
-  }, [filteredEvents]);
+  }, [filteredEvents, userTimezone]);
 
   // Format date for section headers
   const formatSectionDate = useCallback((dateString: string) => {
-    const date = new Date(dateString);
+    const today = formatInTimeZone(new Date(), userTimezone, 'yyyy-MM-dd');
+    const tomorrow = formatInTimeZone(addDays(new Date(), 1), userTimezone, 'yyyy-MM-dd');
+    const yesterday = formatInTimeZone(addDays(new Date(), -1), userTimezone, 'yyyy-MM-dd');
 
-    if (isToday(date)) {
+    if (dateString === today) {
       return t('eventList.today');
-    } else if (isTomorrow(date)) {
+    } else if (dateString === tomorrow) {
       return t('eventList.tomorrow');
-    } else if (isYesterday(date)) {
+    } else if (dateString === yesterday) {
       return t('eventList.yesterday');
     } else {
-      return format(date, 'dd MMMM yyyy', { locale });
+      // Parse the date string safely or format a date object
+      return format(new Date(dateString), 'dd MMMM yyyy', { locale });
     }
-  }, [locale, t]);
+  }, [locale, t, userTimezone]);
 
   // Filter options
   const filterOptions: { type: FilterType; label: string }[] = [
@@ -335,13 +340,13 @@ export function EventList({
         keyExtractor={(item) => item._id}
         renderItem={({ item, index }) => {
           const showSectionHeader = index === 0 ||
-            format(new Date(item.startTime), 'yyyy-MM-dd') !==
-            format(new Date(filteredEvents[index - 1].startTime), 'yyyy-MM-dd');
+            formatInTimeZone(item.startTime, userTimezone, 'yyyy-MM-dd') !==
+            formatInTimeZone(filteredEvents[index - 1].startTime, userTimezone, 'yyyy-MM-dd');
 
           return (
             <View>
               {showSectionHeader && renderSectionHeader({
-                section: { title: format(new Date(item.startTime), 'yyyy-MM-dd') }
+                section: { title: formatInTimeZone(item.startTime, userTimezone, 'yyyy-MM-dd') }
               })}
               {renderEvent({ item })}
             </View>

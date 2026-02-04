@@ -1,6 +1,7 @@
 import i18n from '@/lib/i18n';
-import { addDays, addHours, endOfDay, format, formatDistanceToNow, isAfter, isToday, isTomorrow, isYesterday, startOfDay } from 'date-fns';
+import { addDays, addHours, endOfDay, format, formatDistanceToNow, isAfter, isToday, isTomorrow, isYesterday, startOfDay, isSameDay } from 'date-fns';
 import { enUS, tr } from 'date-fns/locale';
+import { formatInTimeZone as fnsFormatInTimeZone, toZonedTime, fromZonedTime } from 'date-fns-tz';
 import type { TranslationFunction } from '../types';
 import { fromUTCWithOffset } from './dateConversion';
 
@@ -75,6 +76,51 @@ export const formatEventDate = (date: Date | string | number, t: TranslationFunc
   }
 };
 
+/**
+ * Format a date in a specific timezone
+ */
+export const formatInTimeZone = (
+  date: Date | string | number,
+  timezone: string,
+  formatStr: string,
+  options?: { locale?: any }
+) => {
+  return fnsFormatInTimeZone(new Date(date), timezone, formatStr, {
+    locale: options?.locale || getLocale(),
+  });
+};
+
+/**
+ * Check if a date is "today" in the given timezone
+ */
+export const isTodayInTimeZone = (date: Date | string | number, timezone: string) => {
+  const now = new Date();
+  const zonedNow = toZonedTime(now, timezone);
+  const zonedDate = toZonedTime(new Date(date), timezone);
+  return isSameDay(zonedNow, zonedDate);
+};
+
+/**
+ * Check if a date is "tomorrow" in the given timezone
+ */
+export const isTomorrowInTimeZone = (date: Date | string | number, timezone: string) => {
+  const now = new Date();
+  const zonedNow = toZonedTime(now, timezone);
+  const zonedDate = toZonedTime(new Date(date), timezone);
+  
+  const tomorrow = addDays(zonedNow, 1);
+  return isSameDay(tomorrow, zonedDate);
+};
+
+/**
+ * Get the end of the day for a specific date in a timezone, returned as UTC Date
+ */
+export const getEndOfDayInTimeZone = (date: Date, timezone: string) => {
+  const zonedDate = toZonedTime(date, timezone);
+  const endOfDayZoned = endOfDay(zonedDate);
+  return fromZonedTime(endOfDayZoned, timezone);
+};
+
 export const dateUtils = {
   format,
   formatDistanceToNow,
@@ -86,5 +132,11 @@ export const dateUtils = {
   startOfDay,
   endOfDay,
   addDays,
-  getLocale
+  getLocale,
+  toZonedTime,
+  fromZonedTime,
+  formatInTimeZone,
+  isTodayInTimeZone,
+  isTomorrowInTimeZone,
+  getEndOfDayInTimeZone
 };

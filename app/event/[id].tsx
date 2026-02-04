@@ -33,6 +33,8 @@ import { useEventReminderStore } from '@/stores/eventReminderStore';
 import { showToast } from '@/lib/toast/showToast';
 import { RecurrenceEditChoiceModal } from '@/components/modals/RecurrenceEditChoiceModal';
 import { useAddRecurrenceException, useDeleteRecurrenceRule } from '@/lib/hooks/useRecurrence';
+import { useUserTimezone } from '@/lib/hooks/useUserTimezone';
+import { formatInTimeZone } from '@/lib/utils/date';
 
 export default function EventDetailScreen() {
   const { width } = useWindowDimensions();
@@ -43,6 +45,7 @@ export default function EventDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const locale = i18n.language === 'tr' ? tr : enUS;
   const insets = useSafeAreaInsets();
+  const userTimezone = useUserTimezone();
 
   const { data: event, isLoading, error } = useEvent(id);
   const { data: pet } = usePet(event?.petId || '');
@@ -185,8 +188,8 @@ export default function EventDetailScreen() {
   const handleShare = async () => {
     if (!event) return;
     try {
-      const eventDate = format(new Date(event.startTime), 'dd MMMM yyyy', { locale });
-      const eventTime = format(new Date(event.startTime), 'HH:mm', { locale });
+      const eventDate = formatInTimeZone(event.startTime, userTimezone, 'dd MMMM yyyy', { locale });
+      const eventTime = formatInTimeZone(event.startTime, userTimezone, 'HH:mm', { locale });
       const shareMessage = `📅 ${event.title}\n🐾 ${pet?.name || t('events.pet')}\n📍 ${event.location || t('events.noLocation')}\n🕐 ${eventDate} - ${eventTime}\n\n${event.description || ''}\n\n${t('events.sharedFrom')} PawPa`;
       await Share.share({ message: shareMessage, title: event.title });
     } catch (error) {
@@ -376,8 +379,8 @@ export default function EventDetailScreen() {
     );
   }
 
-  const dateStr = format(new Date(event.startTime), 'MMM dd, yyyy', { locale });
-  const timeStr = format(new Date(event.startTime), 'hh:mm a', { locale });
+  const dateStr = formatInTimeZone(event.startTime, userTimezone, 'MMM dd, yyyy', { locale });
+  const timeStr = formatInTimeZone(event.startTime, userTimezone, 'hh:mm a', { locale });
   const eventTypeLabel = getEventTypeLabel(event.type, t);
   const heroImage = pet?.profilePhoto 
     ? { uri: pet.profilePhoto } 

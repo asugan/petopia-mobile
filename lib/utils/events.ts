@@ -19,15 +19,24 @@ export interface EventGroups {
  * @param events - Array of events to filter
  * @param daysToShow - Number of days to show from now (default: 7)
  * @param maxEvents - Maximum number of events to return (default: 5)
+ * @param timezone - User's timezone (optional)
  * @returns Filtered and sorted array of events
  */
 export const filterUpcomingEvents = (
   events: Event[],
   daysToShow: number = 7,
-  maxEvents: number = 5
+  maxEvents: number = 5,
+  timezone?: string
 ): Event[] => {
   const now = new Date();
-  const endDate = dateUtils.endOfDay(dateUtils.addDays(now, daysToShow));
+  
+  let endDate: Date;
+  if (timezone) {
+    const futureDate = dateUtils.addDays(now, daysToShow);
+    endDate = dateUtils.getEndOfDayInTimeZone(futureDate, timezone);
+  } else {
+    endDate = dateUtils.endOfDay(dateUtils.addDays(now, daysToShow));
+  }
 
   return events
     .filter(event => {
@@ -52,9 +61,10 @@ export const filterUpcomingEvents = (
  * - "thisWeek": Events happening in the next 7 days
  *
  * @param events - Array of events to group
+ * @param timezone - User's timezone (optional)
  * @returns Object with events grouped by time category
  */
-export const groupEventsByTime = (events: Event[]): EventGroups => {
+export const groupEventsByTime = (events: Event[], timezone?: string): EventGroups => {
   const now = new Date();
   const inOneHour = dateUtils.addHours(now, 1);
 
@@ -70,12 +80,24 @@ export const groupEventsByTime = (events: Event[]): EventGroups => {
 
     if (dateUtils.isAfter(eventDate, now) && eventDate <= inOneHour) {
       groups.now.push(event);
-    } else if (dateUtils.isToday(eventDate)) {
-      groups.today.push(event);
-    } else if (dateUtils.isTomorrow(eventDate)) {
-      groups.tomorrow.push(event);
     } else {
-      groups.thisWeek.push(event);
+      let isToday, isTomorrow;
+
+      if (timezone) {
+        isToday = dateUtils.isTodayInTimeZone(eventDate, timezone);
+        isTomorrow = dateUtils.isTomorrowInTimeZone(eventDate, timezone);
+      } else {
+        isToday = dateUtils.isToday(eventDate);
+        isTomorrow = dateUtils.isTomorrow(eventDate);
+      }
+
+      if (isToday) {
+        groups.today.push(event);
+      } else if (isTomorrow) {
+        groups.tomorrow.push(event);
+      } else {
+        groups.thisWeek.push(event);
+      }
     }
   });
 

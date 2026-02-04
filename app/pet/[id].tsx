@@ -20,6 +20,8 @@ import { formatTimeForDisplay, getNextFeedingTime, getPreviousFeedingTime } from
 import { PetModal } from '@/components/PetModal';
 import { showToast } from '@/lib/toast/showToast';
 import { TAB_ROUTES } from '@/constants/routes';
+import { useUserTimezone } from '@/lib/hooks/useUserTimezone';
+import { formatInTimeZone } from '@/lib/utils/date';
 
 const { width } = Dimensions.get('window');
 
@@ -35,6 +37,7 @@ export default function PetDetailScreen() {
   const { theme } = useTheme();
   const { t, i18n } = useTranslation();
   const insets = useSafeAreaInsets();
+  const userTimezone = useUserTimezone();
 
   const footerStyles = useMemo(() => StyleSheet.create({
     bottomBar: {
@@ -399,7 +402,7 @@ export default function PetDetailScreen() {
                     </View>
                   </View>
                   <Text style={[styles.timeText, { color: theme.colors.onSurface }]}>
-                    {nextFeedingSchedule ? formatTimeForDisplay(nextFeedingSchedule.time) : format(nextFeedingTime, 'HH:mm')}
+                    {nextFeedingSchedule ? formatTimeForDisplay(nextFeedingSchedule.time) : formatInTimeZone(nextFeedingTime, userTimezone, 'HH:mm')}
                   </Text>
                 </View>
                 <View style={[styles.progressBarBg, { backgroundColor: theme.colors.overlayLight }]}>
@@ -442,7 +445,7 @@ export default function PetDetailScreen() {
                           {activity.title || t(`eventTypes.${activity.type}`, activity.type)}
                         </Text>
                         <Text style={[styles.timelineTime, { color: theme.colors.onSurfaceVariant }]}>
-                          {format(new Date(activity.startTime), 'HH:mm')}
+                          {formatInTimeZone(activity.startTime, userTimezone, 'HH:mm')}
                         </Text>
                       </View>
                       <Text style={[styles.timelineDesc, { color: theme.colors.onSurfaceVariant }]}>
@@ -486,7 +489,7 @@ export default function PetDetailScreen() {
                           {t(`healthRecordTypes.${record.type}`, record.type)}
                         </Text>
                         <Text style={[styles.timelineTime, { color: theme.colors.onSurfaceVariant }]}>
-                          {format(new Date(record.date), 'd MMM', { locale: dateLocale })}
+                          {formatInTimeZone(record.date, userTimezone, 'd MMM', { locale: dateLocale })}
                         </Text>
                       </View>
                       <Text style={[styles.timelineDesc, { color: theme.colors.onSurfaceVariant }]}>
