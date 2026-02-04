@@ -2,7 +2,7 @@
   "expo": {
     "name": "Petopia",
     "slug": "petopia-petcare",
-    "version": "1.1.0",
+    "version": "1.1.1",
     "locales": {
       "en-US": "./locales/native/en-US.json",
       "en-GB": "./locales/native/en-GB.json",
