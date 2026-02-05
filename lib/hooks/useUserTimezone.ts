@@ -21,13 +21,13 @@ export function useUserTimezone(): string {
       if (calendars && calendars.length > 0 && calendars[0].timeZone) {
         return calendars[0].timeZone;
       }
-    } catch (error) {
+    } catch {
       // Fallback if getCalendars fails
     }
 
     try {
       return Intl.DateTimeFormat().resolvedOptions().timeZone || "UTC";
-    } catch (error) {
+    } catch {
       return "UTC";
     }
   }, [settings?.timezone]);
