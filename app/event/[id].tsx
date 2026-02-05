@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useState } from 'react';
 
 import { MaterialIcons } from '@expo/vector-icons';
-import { format } from 'date-fns';
+
 import { enUS, tr } from 'date-fns/locale';
 import { Image } from 'expo-image';
 import { LinearGradient } from 'expo-linear-gradient';

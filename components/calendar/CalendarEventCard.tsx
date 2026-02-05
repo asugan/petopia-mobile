@@ -4,7 +4,7 @@ import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { Text, Switch } from '@/components/ui';
 import { useTheme } from '@/lib/theme';
 import { useTranslation } from 'react-i18next';
-import { format } from 'date-fns';
+
 import { tr, enUS } from 'date-fns/locale';
 import { Event } from '@/lib/types';
 import { getEventColor } from '@/lib/utils/eventColors';
