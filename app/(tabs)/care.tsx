@@ -16,7 +16,6 @@ import {
   useAllFeedingSchedules,
   useDeleteFeedingSchedule,
   useToggleFeedingSchedule,
-  useToggleFeedingScheduleReminder,
 } from '@/lib/hooks/useFeedingSchedules';
 import LoadingSpinner from '@/components/LoadingSpinner';
 import EmptyState from '@/components/EmptyState';
@@ -57,7 +56,7 @@ export default function CareScreen() {
   const [activeSchedule, setActiveSchedule] = useState<FeedingSchedule | undefined>();
 
   // Notifications
-  const { requestPermission, isLoading: isNotificationLoading } = useNotifications();
+  const { requestPermission } = useNotifications();
   const { executeWithDeduplication } = useRequestDeduplication();
 
   // Get pets for selection
@@ -94,7 +93,6 @@ export default function CareScreen() {
   // Mutations
   const deleteScheduleMutation = useDeleteFeedingSchedule();
   const toggleScheduleMutation = useToggleFeedingSchedule();
-  const toggleReminderMutation = useToggleFeedingScheduleReminder();
 
   // Filter health records by type (all records since we removed type filter)
   const filteredHealthRecords = healthRecords;
@@ -156,28 +154,24 @@ export default function CareScreen() {
       return;
     }
 
-    try {
-      await toggleScheduleMutation.mutateAsync({ id: schedule._id, isActive });
-    } catch {
-    }
-  };
-
-  const handleToggleReminder = async (schedule: FeedingSchedule, reminderEnabled: boolean) => {
-    if (reminderEnabled) {
+    if (isActive && !schedule.isActive) {
       const granted = await executeWithDeduplication(
-        `reminder-toggle-${schedule._id}`,
+        `schedule-activation-${schedule._id}`,
         async () => await requestPermission()
       );
 
-      if (granted) {
-        void registerPushTokenWithBackend();
-        await toggleReminderMutation.mutateAsync({ id: schedule._id, enabled: true });
-      } else {
+      if (!granted) {
         setActiveSchedule(schedule);
         setShowPermissionModal(true);
+        return;
       }
-    } else {
-      await toggleReminderMutation.mutateAsync({ id: schedule._id, enabled: false });
+
+      void registerPushTokenWithBackend();
+    }
+
+    try {
+      await toggleScheduleMutation.mutateAsync({ id: schedule._id, isActive });
+    } catch {
     }
   };
 
@@ -347,9 +341,6 @@ export default function CareScreen() {
             onEdit={handleEditSchedule}
             onDelete={handleDeleteSchedule}
             onToggleActive={handleToggleActive}
-            onToggleReminder={handleToggleReminder}
-            reminderEnabled={schedule.remindersEnabled ?? false}
-            isReminderLoading={isNotificationLoading}
             showPetInfo={true}
             showActions
             petName={petNameById[schedule.petId]}
@@ -472,8 +463,11 @@ export default function CareScreen() {
         }}
         onPermissionGranted={async () => {
           if (activeSchedule) {
-            void registerPushTokenWithBackend();
-            await toggleReminderMutation.mutateAsync({ id: activeSchedule._id, enabled: true });
+            try {
+              void registerPushTokenWithBackend();
+              await toggleScheduleMutation.mutateAsync({ id: activeSchedule._id, isActive: true });
+            } catch {
+            }
           }
           setActiveSchedule(undefined);
         }}
