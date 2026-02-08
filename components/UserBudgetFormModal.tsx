@@ -3,6 +3,7 @@ import { Modal as RNModal, View, StyleSheet } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Text, Button } from "@/components/ui";
 import { useTheme } from "@/lib/theme";
+import { useTranslation } from "react-i18next";
 import UserBudgetForm from "./UserBudgetForm";
 import { SetUserBudgetInput, UserBudget } from "@/lib/types";
 
@@ -22,6 +23,7 @@ const UserBudgetFormModal: React.FC<UserBudgetFormModalProps> = ({
   isSubmitting,
 }) => {
   const { theme } = useTheme();
+  const { t } = useTranslation();
 
   return (
     <RNModal
@@ -35,7 +37,7 @@ const UserBudgetFormModal: React.FC<UserBudgetFormModalProps> = ({
       >
         <View style={styles.header}>
           <Text style={[styles.title, { color: theme.colors.onSurface }]}>
-            {budget ? "Edit Budget" : "Set Budget"}
+            {budget ? t("common.edit", "Edit") : t("budgets.setBudget", "Set Budget")}
           </Text>
           <Button
             mode="text"
@@ -43,7 +45,7 @@ const UserBudgetFormModal: React.FC<UserBudgetFormModalProps> = ({
             disabled={isSubmitting}
             compact
           >
-            Close
+            {t("common.close", "Close")}
           </Button>
         </View>
 
