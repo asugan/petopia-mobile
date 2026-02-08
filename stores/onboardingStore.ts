@@ -8,6 +8,7 @@ interface OnboardingState {
   hasHydrated: boolean;
   preferredLanguage: SupportedLanguage | null;
   preferredCurrency: SupportedCurrency | null;
+  preferredTimezone: string | null;
   preferencesSynced: boolean;
 }
 
@@ -19,6 +20,7 @@ interface OnboardingActions {
   setOnboardingPreferences: (preferences: {
     language: SupportedLanguage;
     currency: SupportedCurrency;
+    timezone: string;
   }) => void;
   markPreferencesSynced: (value: boolean) => void;
 }
@@ -37,6 +39,7 @@ export const useOnboardingStore = create<OnboardingStore>()(
       hasHydrated: false,
       preferredLanguage: null,
       preferredCurrency: null,
+      preferredTimezone: null,
       preferencesSynced: false,
 
       // Actions
@@ -51,14 +54,16 @@ export const useOnboardingStore = create<OnboardingStore>()(
           hasSeenOnboarding: false,
           preferredLanguage: null,
           preferredCurrency: null,
+          preferredTimezone: null,
           preferencesSynced: false,
         });
       },
       setHasHydrated: (value) => set({ hasHydrated: value }),
-      setOnboardingPreferences: ({ language, currency }) =>
+      setOnboardingPreferences: ({ language, currency, timezone }) =>
         set({
           preferredLanguage: language,
           preferredCurrency: currency,
+          preferredTimezone: timezone,
           preferencesSynced: false,
         }),
       markPreferencesSynced: (value) => set({ preferencesSynced: value }),
@@ -70,6 +75,7 @@ export const useOnboardingStore = create<OnboardingStore>()(
         hasSeenOnboarding: state.hasSeenOnboarding,
         preferredLanguage: state.preferredLanguage,
         preferredCurrency: state.preferredCurrency,
+        preferredTimezone: state.preferredTimezone,
         preferencesSynced: state.preferencesSynced,
       }),
       onRehydrateStorage: () => (state) => {

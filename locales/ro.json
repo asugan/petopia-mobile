@@ -610,7 +610,9 @@
       "ukrainian": "Ucraineană",
       "indonesian": "Bahasa Indonesia"
     },
-    "selectCurrency": "Selectați moneda"
+    "selectCurrency": "Selectați moneda",
+    "timezone": "Fus orar",
+    "selectTimezone": "Selectează fusul orar"
   },
   "common": {
     "loading": "Se încarcă...",
@@ -1316,8 +1318,8 @@
       "addYourFirstPet": "Adaugă primul tău animal"
     },
     "language": {
-      "title": "Alege limba și moneda",
-      "description": "Vom folosi aceste opțiuni în ecranele următoare și le vom sincroniza după autentificare. Le poți schimba oricând din Setări.",
+      "title": "Alege limba, moneda și fusul orar",
+      "description": "Vom folosi selecțiile tale pe ecranele următoare și le vom sincroniza după autentificare. Poți schimba totul oricând din Setări.",
       "continue": "Continuă"
     }
   },

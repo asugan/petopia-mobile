@@ -610,7 +610,9 @@
       "ukrainian": "Ucraniano",
       "indonesian": "Bahasa Indonesia"
     },
-    "selectCurrency": "Selecionar moeda"
+    "selectCurrency": "Selecionar moeda",
+    "timezone": "Fuso horário",
+    "selectTimezone": "Selecionar fuso horário"
   },
   "common": {
     "loading": "Carregando...",
@@ -1316,8 +1318,8 @@
       "addYourFirstPet": "Primeiro Pet"
     },
     "language": {
-      "title": "Escolha idioma e moeda",
-      "description": "Usaremos suas escolhas nas próximas telas e vamos sincronizá-las após o login. Você pode alterar ambas a qualquer momento em Configurações.",
+      "title": "Escolha seu idioma, moeda e fuso horário",
+      "description": "Usaremos suas seleções nas próximas telas e as sincronizaremos após o login. Você pode alterar tudo a qualquer momento em Configurações.",
       "continue": "Continuar"
     }
   },

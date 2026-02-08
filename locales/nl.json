@@ -610,7 +610,9 @@
       "ukrainian": "Oekraïens",
       "indonesian": "Bahasa Indonesia"
     },
-    "selectCurrency": "Valuta selecteren"
+    "selectCurrency": "Valuta selecteren",
+    "timezone": "Tijdzone",
+    "selectTimezone": "Tijdzone selecteren"
   },
   "common": {
     "loading": "Laden...",
@@ -1316,8 +1318,8 @@
       "addYourFirstPet": "Voeg Je Eerste Huisdier Toe"
     },
     "language": {
-      "title": "Kies taal en valuta",
-      "description": "We gebruiken je keuzes op de volgende schermen en synchroniseren ze na het inloggen. Je kunt beide altijd wijzigen in Instellingen.",
+      "title": "Kies je taal, valuta en tijdzone",
+      "description": "We gebruiken je keuzes op de volgende schermen en synchroniseren ze na het inloggen. Je kunt alles op elk moment wijzigen in Instellingen.",
       "continue": "Doorgaan"
     }
   },

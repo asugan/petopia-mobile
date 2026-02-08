@@ -610,7 +610,9 @@
       "croatian": "Croatian",
       "ukrainian": "Ukrán",
       "indonesian": "Bahasa Indonesia"
-    }
+    },
+    "timezone": "Időzóna",
+    "selectTimezone": "Időzóna kiválasztása"
   },
   "common": {
     "loading": "Betöltés...",
@@ -1316,8 +1318,8 @@
       "addYourFirstPet": "Első kedvenc hozzáadása"
     },
     "language": {
-      "title": "Válassz nyelvet és pénznemet",
-      "description": "A választásaidat a következő képernyőkön használjuk, majd bejelentkezés után szinkronizáljuk. Mindkettőt bármikor módosíthatod a Beállításokban.",
+      "title": "Válaszd ki a nyelvet, pénznemet és időzónát",
+      "description": "A választásaidat a következő képernyőkön használjuk, és bejelentkezés után szinkronizáljuk. Mindent bármikor módosíthatsz a Beállításokban.",
       "continue": "Folytatás"
     }
   },

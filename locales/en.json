@@ -509,6 +509,7 @@
     "deviceLanguage": "Device Language",
     "selectLanguage": "Select Language",
     "selectCurrency": "Select Currency",
+    "selectTimezone": "Select Timezone",
     "languageExplicitlySet": "Language explicitly set by user",
     "notSupported": "Not supported",
     "willAutoDetect": "Will auto-detect on app start",
@@ -516,6 +517,7 @@
     "resetToDeviceLanguage": "Reset to Device Language",
     "toggleLanguage": "Toggle Language",
     "currency": "Currency",
+    "timezone": "Timezone",
     "defaultCurrency": "Default Currency",
     "changeCurrency": "Change default currency",
     "currencyWarning": "Changing the default currency will recalculate all expenses to the new base currency.",
@@ -1279,8 +1281,8 @@
   },
   "onboarding": {
     "language": {
-      "title": "Choose your language and currency",
-      "description": "We'll use your selections on the next screens and sync them after sign in. You can change both anytime in Settings.",
+      "title": "Choose your language, currency and timezone",
+      "description": "We'll use your selections on the next screens and sync them after sign in. You can change all anytime in Settings.",
       "continue": "Continue"
     },
     "screen1": {

@@ -610,7 +610,9 @@
       "croatian": "Croatian",
       "ukrainian": "Ukrajinski",
       "indonesian": "Bahasa Indonesia"
-    }
+    },
+    "timezone": "Vremenska zona",
+    "selectTimezone": "Odaberi vremensku zonu"
   },
   "common": {
     "loading": "Učitavanje...",
@@ -1316,8 +1318,8 @@
       "addYourFirstPet": "Dodaj svog prvog ljubimca"
     },
     "language": {
-      "title": "Odaberite jezik i valutu",
-      "description": "Vaše odabire koristit ćemo na sljedećim zaslonima i sinkronizirati ih nakon prijave. Oboje možete promijeniti u bilo kojem trenutku u Postavkama.",
+      "title": "Odaberite jezik, valutu i vremensku zonu",
+      "description": "Vaše odabire koristit ćemo na sljedećim zaslonima i sinkronizirati ih nakon prijave. Sve možete promijeniti u bilo kojem trenutku u Postavkama.",
       "continue": "Nastavi"
     }
   },

@@ -39,7 +39,8 @@ export default function TabLayout() {
     return null;
   }
 
-  const TAB_BAR_HEIGHT = 60;
+  const TAB_BAR_HEIGHT = 56;
+  const tabBarBottomInset = Math.max(insets.bottom - 8, 6);
 
   return (
     <Tabs
@@ -49,13 +50,15 @@ export default function TabLayout() {
         tabBarStyle: {
           backgroundColor: theme.colors.surface,
           borderTopColor: theme.colors.outline,
-          paddingBottom: insets.bottom,
-          height: TAB_BAR_HEIGHT + insets.bottom,
+          borderTopWidth: 1,
+          paddingTop: 6,
+          paddingBottom: tabBarBottomInset,
+          height: TAB_BAR_HEIGHT + tabBarBottomInset,
         },
-        tabBarLabelStyle: {
-          fontSize: 12,
-          fontWeight: '600',
+        tabBarItemStyle: {
+          paddingVertical: 2,
         },
+        tabBarShowLabel: false,
         headerShown: false,
         sceneStyle: {
           backgroundColor: theme.colors.background,

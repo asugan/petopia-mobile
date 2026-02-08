@@ -610,7 +610,9 @@
       "ukrainian": "Tiếng Ukraina",
       "indonesian": "Bahasa Indonesia"
     },
-    "selectCurrency": "Chọn tiền tệ"
+    "selectCurrency": "Chọn tiền tệ",
+    "timezone": "Múi giờ",
+    "selectTimezone": "Chọn múi giờ"
   },
   "common": {
     "loading": "Đang tải...",
@@ -1316,8 +1318,8 @@
       "addYourFirstPet": "Thêm thú cưng đầu tiên của bạn"
     },
     "language": {
-      "title": "Chọn ngôn ngữ và tiền tệ",
-      "description": "Chúng tôi sẽ dùng lựa chọn của bạn ở các màn hình tiếp theo và đồng bộ sau khi đăng nhập. Bạn có thể đổi cả hai bất cứ lúc nào trong Cài đặt.",
+      "title": "Chọn ngôn ngữ, tiền tệ và múi giờ của bạn",
+      "description": "Chúng tôi sẽ dùng lựa chọn của bạn ở các màn hình tiếp theo và đồng bộ sau khi đăng nhập. Bạn có thể thay đổi mọi thứ bất cứ lúc nào trong Cài đặt.",
       "continue": "Tiếp tục"
     }
   },

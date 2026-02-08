@@ -610,7 +610,9 @@
       "croatian": "Croatian",
       "ukrainian": "Ucraïnès",
       "indonesian": "Bahasa Indonesia"
-    }
+    },
+    "timezone": "Zona horària",
+    "selectTimezone": "Selecciona la zona horària"
   },
   "common": {
     "loading": "Carregant...",
@@ -1316,8 +1318,8 @@
       "addYourFirstPet": "Afegeix la teva primera mascota"
     },
     "language": {
-      "title": "Tria idioma i moneda",
-      "description": "Farem servir les teves opcions a les pantalles següents i les sincronitzarem després d’iniciar sessió. Les pots canviar quan vulguis a Configuració.",
+      "title": "Tria idioma, moneda i zona horària",
+      "description": "Farem servir les teves seleccions a les pantalles següents i les sincronitzarem després d’iniciar sessió. Ho pots canviar tot en qualsevol moment a Configuració.",
       "continue": "Continua"
     }
   },

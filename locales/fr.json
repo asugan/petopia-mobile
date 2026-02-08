@@ -610,7 +610,9 @@
       "ukrainian": "Ukrainien",
       "indonesian": "Bahasa Indonesia"
     },
-    "selectCurrency": "Sélectionner la devise"
+    "selectCurrency": "Sélectionner la devise",
+    "timezone": "Fuseau horaire",
+    "selectTimezone": "Sélectionner le fuseau horaire"
   },
   "common": {
     "loading": "Chargement...",
@@ -1316,8 +1318,8 @@
       "addYourFirstPet": "Ajouter votre premier animal"
     },
     "language": {
-      "title": "Choisissez la langue et la devise",
-      "description": "Nous utiliserons vos choix dans les écrans suivants et les synchroniserons après la connexion. Vous pourrez tout modifier à tout moment dans les Réglages.",
+      "title": "Choisissez votre langue, devise et fuseau horaire",
+      "description": "Nous utiliserons vos choix sur les écrans suivants et les synchroniserons après la connexion. Vous pouvez tout modifier à tout moment dans les Paramètres.",
       "continue": "Continuer"
     }
   },

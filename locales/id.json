@@ -610,7 +610,9 @@
       "croatian": "Croatian",
       "ukrainian": "Bahasa Ukraina",
       "indonesian": "Bahasa Indonesia"
-    }
+    },
+    "timezone": "Zona waktu",
+    "selectTimezone": "Pilih zona waktu"
   },
   "common": {
     "loading": "Memuat...",
@@ -1316,8 +1318,8 @@
       "addYourFirstPet": "Tambah Hewan Pertama Anda"
     },
     "language": {
-      "title": "Pilih bahasa dan mata uang",
-      "description": "Kami akan menggunakan pilihan Anda di layar berikutnya dan menyinkronkannya setelah masuk. Keduanya dapat diubah kapan saja di Pengaturan.",
+      "title": "Pilih bahasa, mata uang, dan zona waktu Anda",
+      "description": "Kami akan menggunakan pilihan Anda di layar berikutnya dan menyinkronkannya setelah masuk. Anda dapat mengubah semuanya kapan saja di Pengaturan.",
       "continue": "Lanjutkan"
     }
   },

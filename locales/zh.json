@@ -610,7 +610,9 @@
       "ukrainian": "乌克兰语",
       "indonesian": "Bahasa Indonesia"
     },
-    "selectCurrency": "选择货币"
+    "selectCurrency": "选择货币",
+    "timezone": "时区",
+    "selectTimezone": "选择时区"
   },
   "common": {
     "loading": "加载中...",
@@ -1316,8 +1318,8 @@
       "addYourFirstPet": "添加您的第一只宠物"
     },
     "language": {
-      "title": "选择语言和货币",
-      "description": "我们会在后续页面使用你的选择，并在登录后同步到账号。你也可以随时在设置中修改。",
+      "title": "选择您的语言、货币和时区",
+      "description": "我们会在接下来的页面使用您的选择，并在登录后进行同步。您可以随时在设置中修改全部内容。",
       "continue": "继续"
     }
   },

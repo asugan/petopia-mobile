@@ -610,7 +610,9 @@
       "croatian": "Croatian",
       "ukrainian": "Ukrainsk",
       "indonesian": "Bahasa Indonesia"
-    }
+    },
+    "timezone": "Tidssone",
+    "selectTimezone": "Velg tidssone"
   },
   "common": {
     "loading": "Laster...",
@@ -1316,8 +1318,8 @@
       "addYourFirstPet": "Legg til ditt første kjæledyr"
     },
     "language": {
-      "title": "Velg språk og valuta",
-      "description": "Vi bruker valgene dine på de neste skjermene og synkroniserer dem etter innlogging. Du kan når som helst endre begge i Innstillinger.",
+      "title": "Velg språk, valuta og tidssone",
+      "description": "Vi bruker valgene dine på de neste skjermene og synkroniserer dem etter innlogging. Du kan endre alt når som helst i Innstillinger.",
       "continue": "Fortsett"
     }
   },

@@ -169,6 +169,7 @@ function RootLayoutContent() {
     hasSeenOnboarding,
     preferredLanguage,
     preferredCurrency,
+    preferredTimezone,
     preferencesSynced,
     markPreferencesSynced,
   } = useOnboardingStore();
@@ -205,8 +206,10 @@ function RootLayoutContent() {
       !!preferredLanguage && preferredLanguage !== settings.language;
     const shouldUpdateCurrency =
       !!preferredCurrency && preferredCurrency !== settings.baseCurrency;
+    const shouldUpdateTimezone =
+      !!preferredTimezone && preferredTimezone !== settings.timezone;
 
-    if (!shouldUpdateLanguage && !shouldUpdateCurrency) {
+    if (!shouldUpdateLanguage && !shouldUpdateCurrency && !shouldUpdateTimezone) {
       markPreferencesSynced(true);
       return;
     }
@@ -215,8 +218,15 @@ function RootLayoutContent() {
 
     const syncPreferences = async () => {
       try {
-        if (shouldUpdateLanguage && preferredLanguage) {
-          await updateSettings({ language: preferredLanguage });
+        if ((shouldUpdateLanguage && preferredLanguage) || (shouldUpdateTimezone && preferredTimezone)) {
+          await updateSettings({
+            ...(shouldUpdateLanguage && preferredLanguage
+              ? { language: preferredLanguage }
+              : {}),
+            ...(shouldUpdateTimezone && preferredTimezone
+              ? { timezone: preferredTimezone }
+              : {}),
+          });
         }
 
         if (shouldUpdateCurrency && preferredCurrency) {
@@ -237,6 +247,7 @@ function RootLayoutContent() {
     settings,
     preferredLanguage,
     preferredCurrency,
+    preferredTimezone,
     preferencesSynced,
     markPreferencesSynced,
     updateSettings,

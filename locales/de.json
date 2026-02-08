@@ -610,7 +610,9 @@
       "ukrainian": "Ukrainisch",
       "indonesian": "Bahasa Indonesia"
     },
-    "selectCurrency": "Währung auswählen"
+    "selectCurrency": "Währung auswählen",
+    "timezone": "Zeitzone",
+    "selectTimezone": "Zeitzone auswählen"
   },
   "common": {
     "loading": "Lädt...",
@@ -1316,8 +1318,8 @@
       "addYourFirstPet": "Erstes Tier hinzufügen"
     },
     "language": {
-      "title": "Sprache und Währung auswählen",
-      "description": "Wir verwenden diese Auswahl in den nächsten Schritten und synchronisieren sie nach der Anmeldung. Beides kannst du jederzeit in den Einstellungen ändern.",
+      "title": "Wähle Sprache, Währung und Zeitzone",
+      "description": "Wir verwenden deine Auswahl in den nächsten Schritten und synchronisieren sie nach der Anmeldung. Alles kannst du jederzeit in den Einstellungen ändern.",
       "continue": "Weiter"
     }
   },

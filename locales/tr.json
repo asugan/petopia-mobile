@@ -610,7 +610,9 @@
       "croatian": "Croatian",
       "ukrainian": "Ukrayna Dili",
       "indonesian": "Bahasa Indonesia"
-    }
+    },
+    "timezone": "Saat Dilimi",
+    "selectTimezone": "Saat Dilimi Seç"
   },
   "common": {
     "loading": "Yükleniyor...",
@@ -1316,8 +1318,8 @@
       "addYourFirstPet": "İlk Petini Ekle"
     },
     "language": {
-      "title": "Dilini ve para birimini seç",
-      "description": "Seçimlerini sonraki ekranlarda kullanacağız ve girişten sonra hesabınla eşitleyeceğiz. İkisini de Ayarlar’dan istediğin zaman değiştirebilirsin.",
+      "title": "Dilini, para birimini ve saat dilimini seç",
+      "description": "Seçimlerini sonraki ekranlarda kullanacağız ve giriş yaptıktan sonra senkronize edeceğiz. Tümünü istediğin zaman Ayarlar’dan değiştirebilirsin.",
       "continue": "Devam et"
     }
   },

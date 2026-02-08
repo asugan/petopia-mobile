@@ -610,7 +610,9 @@
       "croatian": "Croatian",
       "ukrainian": "Ukrajinština",
       "indonesian": "Bahasa Indonesia"
-    }
+    },
+    "timezone": "Časové pásmo",
+    "selectTimezone": "Vyberte časové pásmo"
   },
   "common": {
     "loading": "Načítání...",
@@ -1316,8 +1318,8 @@
       "addYourFirstPet": "Přidat svého prvního mazlíčka"
     },
     "language": {
-      "title": "Vyberte jazyk a měnu",
-      "description": "Vaše volby použijeme na dalších obrazovkách a po přihlášení je synchronizujeme. Obojí můžete kdykoli změnit v Nastavení.",
+      "title": "Vyberte jazyk, měnu a časové pásmo",
+      "description": "Vaše volby použijeme na dalších obrazovkách a po přihlášení je synchronizujeme. Vše můžete kdykoli změnit v Nastavení.",
       "continue": "Pokračovat"
     }
   },

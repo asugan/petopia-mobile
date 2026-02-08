@@ -1,5 +1,6 @@
 import * as Localization from 'expo-localization';
 import type { SupportedCurrency, SupportedLanguage } from '@/lib/types';
+import { detectDeviceTimezone } from '@/lib/utils/timezone';
 
 const SUPPORTED_LANGUAGES: SupportedLanguage[] = [
   'tr',
@@ -137,9 +138,11 @@ const detectRecommendedCurrency = (): SupportedCurrency => {
 export const getRecommendedOnboardingPreferences = (): {
   language: SupportedLanguage;
   currency: SupportedCurrency;
+  timezone: string;
 } => {
   return {
     language: detectRecommendedLanguage(),
     currency: detectRecommendedCurrency(),
+    timezone: detectDeviceTimezone(),
   };
 };

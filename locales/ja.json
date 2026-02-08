@@ -610,7 +610,9 @@
       "ukrainian": "ウクライナ語",
       "indonesian": "Bahasa Indonesia"
     },
-    "selectCurrency": "通貨を選択"
+    "selectCurrency": "通貨を選択",
+    "timezone": "タイムゾーン",
+    "selectTimezone": "タイムゾーンを選択"
   },
   "common": {
     "loading": "読み込み中...",
@@ -1316,8 +1318,8 @@
       "addYourFirstPet": "最初のペットを追加"
     },
     "language": {
-      "title": "言語と通貨を選択",
-      "description": "選択内容は次の画面で使用し、サインイン後に同期されます。どちらも設定からいつでも変更できます。",
+      "title": "言語、通貨、タイムゾーンを選択してください",
+      "description": "次の画面で選択内容を使用し、サインイン後に同期します。すべての設定はいつでも設定画面で変更できます。",
       "continue": "続行"
     }
   },
