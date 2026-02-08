@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, StyleSheet, ScrollView } from 'react-native';
+import { View, StyleSheet } from 'react-native';
 import { Chip, Text,  } from '@/components/ui';
 import { useTheme } from '@/lib/theme';
 import { ExpenseCategory } from '../lib/types';
@@ -66,11 +66,7 @@ const CategoryPicker: React.FC<CategoryPickerProps> = ({
           {label}
         </Text>
       )}
-      <ScrollView
-        horizontal
-        showsHorizontalScrollIndicator={false}
-        contentContainerStyle={styles.chipContainer}
-      >
+      <View style={styles.chipContainer}>
         {EXPENSE_CATEGORIES.map((category) => (
           <Chip
             key={category}
@@ -104,7 +100,7 @@ const CategoryPicker: React.FC<CategoryPickerProps> = ({
             {t(`expenses.categories.${category}`, category)}
           </Chip>
         ))}
-      </ScrollView>
+      </View>
       {error && (
         <Text variant="bodySmall" style={[styles.error, { color: theme.colors.error }]}>
           {error}
@@ -124,11 +120,13 @@ const styles = StyleSheet.create({
   },
   chipContainer: {
     flexDirection: 'row',
+    flexWrap: 'wrap',
     gap: 8,
     paddingVertical: 4,
   },
   chip: {
-    marginRight: 8,
+    marginRight: 0,
+    marginBottom: 8,
   },
   error: {
     marginTop: 4,

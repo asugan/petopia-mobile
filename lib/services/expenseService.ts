@@ -48,10 +48,6 @@ export class ExpenseService {
       const cleanedData = {
         ...data,
         date: convertDateToISOString(data.date),
-        receiptPhoto: data.receiptPhoto || undefined,
-        vendor: data.vendor || undefined,
-        notes: data.notes || undefined,
-        description: data.description || undefined,
         paymentMethod: data.paymentMethod || undefined
       };
       if (!cleanedData.currency) {
