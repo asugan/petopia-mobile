@@ -39,29 +39,9 @@ export const eventFormSchema = () =>
 
       startTime: z.string().min(1, { message: t('forms.validation.event.startTimeRequired') }),
 
-      endDate: z
-        .string()
-        .optional()
-        .transform((val) => val?.trim() || undefined),
-
-      endTime: z
-        .string()
-        .optional()
-        .transform((val) => val?.trim() || undefined),
-
-      location: z
-        .string()
-        .optional()
-        .transform((val) => val?.trim() || undefined),
-
       reminder: z.boolean(),
 
       reminderPreset: z.enum(['standard', 'compact', 'minimal']).default('standard'),
-
-      notes: z
-        .string()
-        .optional()
-        .transform((val) => val?.trim() || undefined),
 
       vaccineName: z
         .string()
@@ -99,54 +79,6 @@ export const eventFormSchema = () =>
       recurrence: recurrenceSettingsSchema().optional(),
     })
     .superRefine((data, ctx) => {
-      // Validate end time is provided completely if either endDate or endTime is provided
-      if ((data.endDate && !data.endTime) || (!data.endDate && data.endTime)) {
-        ctx.addIssue({
-          code: z.ZodIssueCode.custom,
-          message: t('forms.validation.event.endDateTimeRequired'),
-          path: ['endTime'],
-        });
-      }
-
-      // Validate end time is after start time
-      if (data.endDate && data.endTime && data.startDate && data.startTime) {
-        let startDateTime: string;
-        try {
-          startDateTime = combineDateTimeToISO(data.startDate, data.startTime);
-        } catch {
-          ctx.addIssue({
-            code: z.ZodIssueCode.custom,
-            message: t('forms.validation.event.invalidStartDateTime'),
-            path: ['startDate', 'startTime'],
-          });
-          return;
-        }
-
-        let endDateTime: string;
-        try {
-          endDateTime = combineDateTimeToISO(data.endDate, data.endTime);
-        } catch {
-          ctx.addIssue({
-            code: z.ZodIssueCode.custom,
-            message: t('forms.validation.event.invalidEndDateTime'),
-            path: ['endDate', 'endTime'],
-          });
-          return;
-        }
-
-        const start = new Date(startDateTime);
-        const end = new Date(endDateTime);
-
-        // End time must be at least 15 minutes after start time
-        const minimumEndTime = new Date(start.getTime() + 15 * 60000);
-        if (end < minimumEndTime) {
-          ctx.addIssue({
-            code: z.ZodIssueCode.custom,
-            message: t('forms.validation.event.endAfterStart'),
-            path: ['endTime'],
-          });
-        }
-      }
 
       // Validate start time is in the future
       if (data.startDate && data.startTime) {
@@ -275,15 +207,9 @@ export const eventSchema = () =>
 
     startTime: utcDateStringSchema(),
 
-    endTime: utcDateStringSchema().optional(),
-
-    location: z.string().optional(),
-
     reminder: z.boolean().optional(),
 
     reminderPreset: z.enum(['standard', 'compact', 'minimal']).optional(),
-
-    notes: z.string().optional(),
 
     vaccineName: z.string().optional(),
     vaccineManufacturer: z.string().optional(),
@@ -328,20 +254,9 @@ export const updateEventSchema = () =>
         params: { i18nKey: 'forms.validation.event.startTimeUtcInvalid' },
       })
       .optional(),
-    endTime: z.string().nullable().optional(),
-    location: z
-      .string()
-      .max(200, { message: t('forms.validation.event.locationMax') })
-      .nullable()
-      .optional(),
     reminder: z.boolean().optional(),
     reminderPreset: z.enum(['standard', 'compact', 'minimal']).optional(),
     status: z.enum(['upcoming', 'completed', 'cancelled', 'missed']).optional(),
-    notes: z
-      .string()
-      .max(1000, { message: t('forms.validation.event.notesMax') })
-      .nullable()
-      .optional(),
     vaccineName: z
       .string()
       .max(100, { message: t('forms.validation.event.vaccineNameMax') })
@@ -397,8 +312,6 @@ export const getMinimumEventDateTime = (): string => {
 export const defaultEventFormValues: Partial<EventFormData> = {
   reminder: false,
   reminderPreset: 'standard',
-  notes: '',
-  location: '',
   isRecurring: false,
 };
 
@@ -459,21 +372,14 @@ export const getEventTypeSpecificRules = (eventType: string) => {
 export const transformFormDataToAPI = (formData: EventFormData): EventData => {
   // Combine date and time into ISO datetime strings
   const startTime = combineDateTimeToISO(formData.startDate, formData.startTime);
-  const endTime =
-    formData.endDate && formData.endTime
-      ? combineDateTimeToISO(formData.endDate, formData.endTime)
-      : undefined;
 
   return {
     title: formData.title,
     petId: formData.petId,
     type: formData.type,
     startTime,
-    endTime,
-    location: formData.location || undefined,
     reminder: formData.reminder || undefined,
     reminderPreset: formData.reminder ? formData.reminderPreset : undefined,
-    notes: formData.notes || undefined,
     vaccineName: formData.vaccineName || undefined,
     vaccineManufacturer: formData.vaccineManufacturer || undefined,
     batchNumber: formData.batchNumber || undefined,
@@ -496,15 +402,6 @@ export const transformFormDataToRecurrenceRule = (
     throw new Error('Recurrence settings are required for recurring events');
   }
 
-  // Calculate event duration in minutes if end time is provided
-  let eventDurationMinutes: number | undefined;
-  if (formData.endDate && formData.endTime) {
-    const startTime = combineDateTimeToISO(formData.startDate, formData.startTime);
-    const endTime = combineDateTimeToISO(formData.endDate, formData.endTime);
-    const durationMs = new Date(endTime).getTime() - new Date(startTime).getTime();
-    eventDurationMinutes = Math.round(durationMs / 60000);
-  }
-
   // Build start date from form date (use the date part only, time comes from recurrence settings)
   const startDate = new Date(formData.startDate);
   startDate.setHours(0, 0, 0, 0);
@@ -513,8 +410,6 @@ export const transformFormDataToRecurrenceRule = (
     petId: formData.petId,
     title: formData.title,
     type: formData.type,
-    location: formData.location || undefined,
-    notes: formData.notes || undefined,
     reminder: reminderEnabled,
     reminderPreset: reminderEnabled ? reminderPresetKey : undefined,
 
@@ -532,7 +427,6 @@ export const transformFormDataToRecurrenceRule = (
     dayOfMonth: formData.recurrence.dayOfMonth,
     timesPerDay: formData.recurrence.timesPerDay,
     dailyTimes: formData.recurrence.dailyTimes ?? [formData.startTime],
-    eventDurationMinutes,
 
     // Timezone
     timezone: formData.recurrence.timezone!,

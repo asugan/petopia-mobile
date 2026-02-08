@@ -27,13 +27,8 @@ export const useEventForm = (event?: Event, initialPetId?: string): UseEventForm
       ? new Date(event.startTime)
       : new Date(Date.now() + 60000); // Now + 1 minute
 
-    const endDateTime = event?.endTime ? new Date(event.endTime) : null;
-
     const startDate = toISODateString(startDateTime) || '';
     const startTime = toTimeString(startDateTime) || '';
-    
-    const endDate = endDateTime ? toISODateString(endDateTime) : '';
-    const endTime = endDateTime ? toTimeString(endDateTime) : '';
     const presetSelection = event
       ? (presetSelections[event._id] ?? event.reminderPreset)
       : undefined;
@@ -44,12 +39,8 @@ export const useEventForm = (event?: Event, initialPetId?: string): UseEventForm
       type: event?.type || 'other',
       startDate,
       startTime,
-      endDate: endDate || undefined,
-      endTime: endTime || undefined,
-      location: event?.location || undefined,
       reminder: event?.reminder ?? false,
       reminderPreset: presetSelection ?? 'standard',
-      notes: event?.notes || undefined,
       vaccineName: event?.vaccineName || undefined,
       vaccineManufacturer: event?.vaccineManufacturer || undefined,
       batchNumber: event?.batchNumber || undefined,

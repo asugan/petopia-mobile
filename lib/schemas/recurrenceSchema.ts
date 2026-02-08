@@ -88,8 +88,6 @@ export const recurrenceRuleSchema = () =>
       message: t('forms.validation.event.typeInvalid'),
     }),
 
-    location: z.string().optional(),
-    notes: z.string().optional(),
     reminder: z.boolean().default(false),
     reminderPreset: z.enum(['standard', 'compact', 'minimal']).optional(),
 
@@ -109,9 +107,6 @@ export const recurrenceRuleSchema = () =>
     dayOfMonth: z.number().int().min(1).max(31).optional(),
     timesPerDay: z.number().int().min(1).max(10).optional(),
     dailyTimes: z.array(z.string()).optional(),
-
-    // Duration
-    eventDurationMinutes: z.number().int().min(0).optional(),
 
     // Timezone
     timezone: z.string(),

@@ -448,8 +448,8 @@ export default function PetDetailScreen() {
                           {formatInTimeZone(activity.startTime, userTimezone, 'HH:mm')}
                         </Text>
                       </View>
-                      <Text style={[styles.timelineDesc, { color: theme.colors.onSurfaceVariant }]}>
-                        {activity.notes || t('common.noNotes')}
+                      <Text style={[styles.timelineDesc, { color: theme.colors.onSurfaceVariant }]}> 
+                        {t(`eventTypes.${activity.type}`, activity.type)}
                       </Text>
                     </View>
                   </View>

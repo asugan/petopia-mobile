@@ -34,7 +34,6 @@ export function CalendarEventCard({
   const eventTypeLabel = getEventTypeLabel(event.type, t);
   const eventTypeText = eventTypeLabel.toLocaleUpperCase(i18n.language);
   const eventTypeIcon = getEventTypeIcon(event.type);
-  const subtitle = event.location;
   const reminderLabel = event.reminder
     ? t('calendar.reminderOn')
     : t('calendar.reminderOff');
@@ -114,15 +113,6 @@ export function CalendarEventCard({
           >
             {event.title}
           </Text>
-          {subtitle && (
-            <Text
-              variant="bodySmall"
-              style={[styles.subtitle, { color: theme.colors.onSurfaceVariant }]}
-              numberOfLines={1}
-            >
-              {subtitle}
-            </Text>
-          )}
         </View>
 
         <View style={styles.rightColumn}>
@@ -240,9 +230,6 @@ const styles = StyleSheet.create({
   },
   title: {
     fontWeight: '600',
-  },
-  subtitle: {
-    marginTop: 2,
   },
   rightColumn: {
     marginLeft: 12,
