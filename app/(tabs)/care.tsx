@@ -409,7 +409,7 @@ export default function CareScreen() {
       {activeTab === 'health' && (
         <FAB
           icon="add"
-          style={{ ...styles.fab, backgroundColor: theme.colors.secondary }}
+          style={{ ...styles.fab, backgroundColor: theme.colors.primary }}
           onPress={handleAddHealthRecord}
         />
       )}
