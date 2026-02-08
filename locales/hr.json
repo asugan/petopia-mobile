@@ -875,6 +875,7 @@
       "steps": {
         "basicInfo": "Osnovne informacije",
         "physicalDetails": "Fizički detalji",
+        "breedWeight": "Pasmina i Težina",
         "photo": "Fotografija"
       },
       "sections": {

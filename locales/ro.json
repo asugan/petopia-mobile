@@ -875,6 +875,7 @@
       "steps": {
         "basicInfo": "Informații de bază",
         "physicalDetails": "Detalii fizice",
+        "breedWeight": "Rasă și Greutate",
         "photo": "Fotografie"
       },
       "sections": {

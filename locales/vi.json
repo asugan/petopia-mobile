@@ -875,6 +875,7 @@
       "steps": {
         "basicInfo": "Thông tin cơ bản",
         "physicalDetails": "Chi tiết thể chất",
+        "breedWeight": "Giống và Cân nặng",
         "photo": "Ảnh"
       },
       "sections": {

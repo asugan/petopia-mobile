@@ -875,6 +875,7 @@
       "steps": {
         "basicInfo": "기본 정보",
         "physicalDetails": "신체 정보",
+        "breedWeight": "품종 및 몸무게",
         "photo": "사진"
       },
       "sections": {

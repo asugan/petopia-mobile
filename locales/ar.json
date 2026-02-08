@@ -875,6 +875,7 @@
       "steps": {
         "basicInfo": "معلومات أساسية",
         "physicalDetails": "تفاصيل بدنية",
+        "breedWeight": "السلالة و الوزن",
         "photo": "الصورة"
       },
       "sections": {

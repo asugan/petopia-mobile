@@ -875,6 +875,7 @@
       "steps": {
         "basicInfo": "बुनियादी जानकारी",
         "physicalDetails": "शारीरिक विवरण",
+        "breedWeight": "नस्ल और वजन",
         "photo": "फोटो"
       },
       "sections": {

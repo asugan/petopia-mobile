@@ -875,6 +875,7 @@
       "steps": {
         "basicInfo": "Maklumat Asas",
         "physicalDetails": "Butiran Fizikal",
+        "breedWeight": "Baka dan Berat",
         "photo": "Foto"
       },
       "sections": {

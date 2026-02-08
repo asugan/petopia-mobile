@@ -875,6 +875,7 @@
       "steps": {
         "basicInfo": "Základné informácie",
         "physicalDetails": "Fyzické detaily",
+        "breedWeight": "Plemeno a Hmotnosť",
         "photo": "Fotka"
       },
       "sections": {

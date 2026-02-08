@@ -875,6 +875,7 @@
       "steps": {
         "basicInfo": "Alapadatok",
         "physicalDetails": "Fizikai adatok",
+        "breedWeight": "Fajta és Súly",
         "photo": "Fotó"
       },
       "sections": {

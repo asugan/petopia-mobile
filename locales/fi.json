@@ -875,6 +875,7 @@
       "steps": {
         "basicInfo": "Perustiedot",
         "physicalDetails": "Fyysiset tiedot",
+        "breedWeight": "Rotu ja Paino",
         "photo": "Kuva"
       },
       "sections": {

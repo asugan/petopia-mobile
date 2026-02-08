@@ -875,6 +875,7 @@
       "steps": {
         "basicInfo": "Βασικές Πληροφορίες",
         "physicalDetails": "Φυσικές Λεπτομέρειες",
+        "breedWeight": "Ράτσα και Βάρος",
         "photo": "Φωτογραφία"
       },
       "sections": {

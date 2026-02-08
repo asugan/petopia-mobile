@@ -875,6 +875,7 @@
       "steps": {
         "basicInfo": "Básico",
         "physicalDetails": "Físico",
+        "breedWeight": "Raça e Peso",
         "photo": "Foto"
       },
       "sections": {

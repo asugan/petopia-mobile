@@ -875,6 +875,7 @@
       "steps": {
         "basicInfo": "Informasi Dasar",
         "physicalDetails": "Detail Fisik",
+        "breedWeight": "Ras dan Berat",
         "photo": "Foto"
       },
       "sections": {

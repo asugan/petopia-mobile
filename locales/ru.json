@@ -875,6 +875,7 @@
       "steps": {
         "basicInfo": "Основное",
         "physicalDetails": "Физические данные",
+        "breedWeight": "Порода и Вес",
         "photo": "Фото"
       },
       "sections": {

@@ -875,6 +875,7 @@
       "steps": {
         "basicInfo": "Temel Bilgiler",
         "physicalDetails": "Fiziksel Bilgiler",
+        "breedWeight": "Cins ve Kilo",
         "photo": "Fotoğraf"
       },
       "sections": {

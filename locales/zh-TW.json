@@ -875,6 +875,7 @@
       "steps": {
         "basicInfo": "基本信息",
         "physicalDetails": "體格詳情",
+        "breedWeight": "品種和體重",
         "photo": "照片"
       },
       "sections": {
