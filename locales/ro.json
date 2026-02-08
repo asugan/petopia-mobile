@@ -671,7 +671,8 @@
     "noNotes": "Nicio notă",
     "hoursMinutes": "{{hours}}h {{minutes}}m",
     "minutesOnly": "{{minutes}}m",
-    "timeLeft": "{{time}} rămas"
+    "timeLeft": "{{time}} rămas",
+    "search": "Caută"
   },
   "errors": {
     "loadingFailed": "Încărcare eșuată",

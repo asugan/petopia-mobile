@@ -671,7 +671,8 @@
     "noNotes": "Tiada nota",
     "hoursMinutes": "{{hours}}j {{minutes}}m",
     "minutesOnly": "{{minutes}}m",
-    "timeLeft": "{{time}} tinggal"
+    "timeLeft": "{{time}} tinggal",
+    "search": "Cari"
   },
   "errors": {
     "loadingFailed": "Pemuatan Gagal",

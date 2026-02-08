@@ -671,7 +671,8 @@
     "noNotes": "कोई नोट्स नहीं",
     "hoursMinutes": "{{hours}}घं {{minutes}}मि",
     "minutesOnly": "{{minutes}}मि",
-    "timeLeft": "{{time}} शेष"
+    "timeLeft": "{{time}} शेष",
+    "search": "खोजें"
   },
   "errors": {
     "loadingFailed": "लोडिंग विफल रही",

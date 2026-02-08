@@ -671,7 +671,8 @@
     "noNotes": "Δεν υπάρχουν σημειώσεις",
     "hoursMinutes": "{{hours}}ώ {{minutes}}λ",
     "minutesOnly": "{{minutes}}λ",
-    "timeLeft": "απομένουν {{time}}"
+    "timeLeft": "απομένουν {{time}}",
+    "search": "Αναζήτηση"
   },
   "errors": {
     "loadingFailed": "Η Φόρτωση Απέτυχε",

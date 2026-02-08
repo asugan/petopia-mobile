@@ -671,7 +671,8 @@
     "noNotes": "Заметок нет",
     "hoursMinutes": "{{hours}}ч {{minutes}}м",
     "minutesOnly": "{{minutes}}м",
-    "timeLeft": "осталось {{time}}"
+    "timeLeft": "осталось {{time}}",
+    "search": "Поиск"
   },
   "errors": {
     "loadingFailed": "Ошибка загрузки",

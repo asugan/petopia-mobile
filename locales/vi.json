@@ -671,7 +671,8 @@
     "noNotes": "Không có ghi chú",
     "hoursMinutes": "{{hours}}g {{minutes}}p",
     "minutesOnly": "{{minutes}}p",
-    "timeLeft": "Còn lại {{time}}"
+    "timeLeft": "Còn lại {{time}}",
+    "search": "Tìm kiếm"
   },
   "errors": {
     "loadingFailed": "Tải thất bại",

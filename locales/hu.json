@@ -671,7 +671,8 @@
     "noNotes": "Nincs megjegyzés",
     "hoursMinutes": "{{hours}}ó {{minutes}}p",
     "minutesOnly": "{{minutes}}p",
-    "timeLeft": "{{time}} van hátra"
+    "timeLeft": "{{time}} van hátra",
+    "search": "Keresés"
   },
   "errors": {
     "loadingFailed": "Sikertelen betöltés",

@@ -671,7 +671,8 @@
     "noNotes": "Žiadne poznámky",
     "hoursMinutes": "{{hours}}h {{minutes}}m",
     "minutesOnly": "{{minutes}}m",
-    "timeLeft": "zostáva {{time}}"
+    "timeLeft": "zostáva {{time}}",
+    "search": "Hľadať"
   },
   "errors": {
     "loadingFailed": "Načítanie zlyhalo",

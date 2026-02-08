@@ -671,7 +671,8 @@
     "noNotes": "メモなし",
     "hoursMinutes": "{{hours}}時間 {{minutes}}分",
     "minutesOnly": "{{minutes}}分",
-    "timeLeft": "残り{{time}}"
+    "timeLeft": "残り{{time}}",
+    "search": "検索"
   },
   "errors": {
     "loadingFailed": "読み込み失敗",

@@ -671,7 +671,8 @@
     "noNotes": "Nema bilješki",
     "hoursMinutes": "{{hours}}h {{minutes}}m",
     "minutesOnly": "{{minutes}}m",
-    "timeLeft": "Preostalo {{time}}"
+    "timeLeft": "Preostalo {{time}}",
+    "search": "Pretraži"
   },
   "errors": {
     "loadingFailed": "Učitavanje nije uspjelo",

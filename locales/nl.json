@@ -671,7 +671,8 @@
     "noNotes": "Geen notities",
     "hoursMinutes": "{{hours}}u {{minutes}}m",
     "minutesOnly": "{{minutes}}m",
-    "timeLeft": "{{time}} over"
+    "timeLeft": "{{time}} over",
+    "search": "Zoeken"
   },
   "errors": {
     "loadingFailed": "Laden Mislukt",

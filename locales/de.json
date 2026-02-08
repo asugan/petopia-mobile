@@ -671,7 +671,8 @@
     "noNotes": "Keine Notizen",
     "hoursMinutes": "{{hours}}Std {{minutes}}Min",
     "minutesOnly": "{{minutes}}Min",
-    "timeLeft": "{{time}} übrig"
+    "timeLeft": "{{time}} übrig",
+    "search": "Suchen"
   },
   "errors": {
     "loadingFailed": "Laden fehlgeschlagen",

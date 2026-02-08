@@ -671,7 +671,8 @@
     "noNotes": "Inga anteckningar",
     "hoursMinutes": "{{hours}}h {{minutes}}m",
     "minutesOnly": "{{minutes}}m",
-    "timeLeft": "{{time}} kvar"
+    "timeLeft": "{{time}} kvar",
+    "search": "Sök"
   },
   "errors": {
     "loadingFailed": "Laddning misslyckades",

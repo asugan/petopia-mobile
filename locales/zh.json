@@ -671,7 +671,8 @@
     "noNotes": "无备注",
     "hoursMinutes": "{{hours}}小时 {{minutes}}分钟",
     "minutesOnly": "{{minutes}}分钟",
-    "timeLeft": "剩余 {{time}}"
+    "timeLeft": "剩余 {{time}}",
+    "search": "搜索"
   },
   "errors": {
     "loadingFailed": "加载失败",

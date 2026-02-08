@@ -671,7 +671,8 @@
     "noNotes": "Ingen notater",
     "hoursMinutes": "{{hours}}t {{minutes}}m",
     "minutesOnly": "{{minutes}}m",
-    "timeLeft": "{{time}} igjen"
+    "timeLeft": "{{time}} igjen",
+    "search": "Søk"
   },
   "errors": {
     "loadingFailed": "Lasting feilet",

@@ -671,7 +671,8 @@
     "noNotes": "Ei muistiinpanoja",
     "hoursMinutes": "{{hours}}t {{minutes}}min",
     "minutesOnly": "{{minutes}}min",
-    "timeLeft": "{{time}} jäljellä"
+    "timeLeft": "{{time}} jäljellä",
+    "search": "Hae"
   },
   "errors": {
     "loadingFailed": "Lataaminen epäonnistui",

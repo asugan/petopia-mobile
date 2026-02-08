@@ -671,7 +671,8 @@
     "noNotes": "Sense notes",
     "hoursMinutes": "{{hours}}h {{minutes}}m",
     "minutesOnly": "{{minutes}}m",
-    "timeLeft": "queden {{time}}"
+    "timeLeft": "queden {{time}}",
+    "search": "Cerca"
   },
   "errors": {
     "loadingFailed": "Error en la càrrega",

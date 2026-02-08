@@ -671,7 +671,8 @@
     "noNotes": "Немає нотаток",
     "hoursMinutes": "{{hours}}год {{minutes}}хв",
     "minutesOnly": "{{minutes}}хв",
-    "timeLeft": "Залишилось {{time}}"
+    "timeLeft": "Залишилось {{time}}",
+    "search": "Пошук"
   },
   "errors": {
     "loadingFailed": "Не вдалося завантажити",

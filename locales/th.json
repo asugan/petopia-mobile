@@ -671,7 +671,8 @@
     "noNotes": "ไม่มีบันทึก",
     "hoursMinutes": "{{hours}} ชม. {{minutes}} นาที",
     "minutesOnly": "{{minutes}} นาที",
-    "timeLeft": "เหลือเวลา {{time}}"
+    "timeLeft": "เหลือเวลา {{time}}",
+    "search": "ค้นหา"
   },
   "errors": {
     "loadingFailed": "โหลดล้มเหลว",

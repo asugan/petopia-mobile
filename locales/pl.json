@@ -671,7 +671,8 @@
     "noNotes": "Brak notatek",
     "hoursMinutes": "{{hours}}h {{minutes}}m",
     "minutesOnly": "{{minutes}}m",
-    "timeLeft": "pozostało {{time}}"
+    "timeLeft": "pozostało {{time}}",
+    "search": "Szukaj"
   },
   "errors": {
     "loadingFailed": "Ładowanie nie powiodło się",

@@ -671,7 +671,8 @@
     "noNotes": "אין הערות",
     "hoursMinutes": "{{hours}}ש {{minutes}}ד",
     "minutesOnly": "{{minutes}}ד",
-    "timeLeft": "נותרו {{time}}"
+    "timeLeft": "נותרו {{time}}",
+    "search": "חפש"
   },
   "errors": {
     "loadingFailed": "הטעינה נכשלה",

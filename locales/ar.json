@@ -671,7 +671,8 @@
     "noNotes": "لا توجد ملاحظات",
     "hoursMinutes": "{{hours}}س {{minutes}}د",
     "minutesOnly": "{{minutes}}د",
-    "timeLeft": "متبقي {{time}}"
+    "timeLeft": "متبقي {{time}}",
+    "search": "بحث"
   },
   "errors": {
     "loadingFailed": "فشل التحميل",

@@ -671,7 +671,8 @@
     "noNotes": "Tidak ada catatan",
     "hoursMinutes": "{{hours}}j {{minutes}}m",
     "minutesOnly": "{{minutes}}m",
-    "timeLeft": "{{time}} tersisa"
+    "timeLeft": "{{time}} tersisa",
+    "search": "Cari"
   },
   "errors": {
     "loadingFailed": "Gagal Memuat",

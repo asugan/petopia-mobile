@@ -671,7 +671,8 @@
     "noNotes": "메모 없음",
     "hoursMinutes": "{{hours}}시간 {{minutes}}분",
     "minutesOnly": "{{minutes}}분",
-    "timeLeft": "{{time}} 남음"
+    "timeLeft": "{{time}} 남음",
+    "search": "검색"
   },
   "errors": {
     "loadingFailed": "불러오기 실패",

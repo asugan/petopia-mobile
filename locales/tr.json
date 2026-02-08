@@ -671,7 +671,8 @@
     "noNotes": "Not yok",
     "hoursMinutes": "{{hours}} saat {{minutes}} dk",
     "minutesOnly": "{{minutes}} dk",
-    "timeLeft": "{{time}} kaldı"
+    "timeLeft": "{{time}} kaldı",
+    "search": "Ara"
   },
   "errors": {
     "loadingFailed": "Yükleme Başarısız",
