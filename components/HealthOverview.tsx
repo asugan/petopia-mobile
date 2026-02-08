@@ -7,8 +7,6 @@ import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { usePets } from '@/lib/hooks/usePets';
 import type { HealthRecord } from '@/lib/types';
-import { useUserSettingsStore } from '@/stores/userSettingsStore';
-import MoneyDisplay from '@/components/ui/MoneyDisplay';
 import { TAB_ROUTES } from '@/constants/routes';
 
 interface HealthOverviewProps {
@@ -24,8 +22,6 @@ const HealthOverview: React.FC<HealthOverviewProps> = ({
   const { t } = useTranslation();
   const router = useRouter();
   const { data: pets } = usePets();
-  const { settings } = useUserSettingsStore();
-  const baseCurrency = settings?.baseCurrency || 'TRY';
 
   // Get pet name by id
   const getPetName = (petId: string) => {
@@ -68,9 +64,6 @@ const HealthOverview: React.FC<HealthOverviewProps> = ({
     petId: record.petId,
     date: record.date,
     type: record.type,
-    cost: record.cost,
-    currency: record.currency,
-    amountBase: record.amountBase,
   }));
 
   if (loading) {
@@ -145,13 +138,6 @@ const HealthOverview: React.FC<HealthOverviewProps> = ({
                   <Text variant="bodyMedium" style={{ color: theme.colors.onSurface }}>
                     {item.title}{petName ? ` - ${petName}` : ''}
                   </Text>
-                  <MoneyDisplay
-                    amount={item.cost}
-                    currency={item.currency}
-                    baseCurrency={baseCurrency}
-                    amountBase={item.amountBase}
-                    size="small"
-                  />
                 </View>
                 <Text variant="bodySmall" style={{ color: theme.colors.onSurfaceVariant }}>
                   {formatDate(item.date)}

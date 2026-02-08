@@ -3,98 +3,22 @@ import { describe, expect, it } from 'vitest';
 import { HealthRecordCreateSchema, HealthRecordUpdateSchema } from '@/lib/schemas/healthRecordSchema';
 
 describe('healthRecordSchema', () => {
-  it('transforms nextVisitDate Date into UTC ISO string on create', () => {
-    const now = new Date();
-    now.setMinutes(now.getMinutes() + 10);
-
+  it('accepts minimal valid create payload', () => {
     const result = HealthRecordCreateSchema().safeParse({
       petId: '507f1f77bcf86cd799439011',
       type: 'checkup',
-      title: 'Vet checkup',
-      description: 'Routine',
-      date: new Date(),
-      nextVisitDate: now,
-      veterinarian: 'Dr X',
-      clinic: 'Clinic',
-      notes: 'N/A',
-      cost: 10,
-      treatmentPlan: [],
-    });
-
-    expect(result.success).toBe(true);
-    if (!result.success) return;
-
-    expect(typeof result.data.nextVisitDate).toBe('string');
-    expect(result.data.nextVisitDate).toContain('T');
-    expect(result.data.nextVisitDate).toMatch(/Z$/);
-  });
-
-  it('rejects nextVisitDate in the past on create', () => {
-    const pastDate = new Date();
-    pastDate.setMinutes(pastDate.getMinutes() - 10);
-
-    const result = HealthRecordCreateSchema().safeParse({
-      petId: '507f1f77bcf86cd799439011',
-      type: 'checkup',
-      title: 'Vet checkup',
-      date: new Date(),
-      nextVisitDate: pastDate,
-    });
-
-    expect(result.success).toBe(false);
-  });
-
-  it('allows undefined nextVisitDate on create', () => {
-    const result = HealthRecordCreateSchema().safeParse({
-      petId: '507f1f77bcf86cd799439011',
-      type: 'checkup',
-      title: 'Vet checkup',
+      title: 'General checkup',
       date: new Date(),
     });
 
     expect(result.success).toBe(true);
-    if (!result.success) return;
-
-    expect(result.data.nextVisitDate).toBeUndefined();
   });
 
-  it('accepts nextVisitDate as UTC ISO string on create', () => {
+  it('rejects invalid treatmentPlan item', () => {
     const result = HealthRecordCreateSchema().safeParse({
       petId: '507f1f77bcf86cd799439011',
       type: 'checkup',
-      title: 'Vet checkup',
-      date: new Date(),
-      nextVisitDate: '2100-01-01T10:00:00.000Z',
-    });
-
-    expect(result.success).toBe(true);
-    if (!result.success) return;
-
-    expect(result.data.nextVisitDate).toBe('2100-01-01T10:00:00.000Z');
-  });
-
-  it('transforms nextVisitDate string without timezone into UTC ISO string on create', () => {
-    const result = HealthRecordCreateSchema().safeParse({
-      petId: '507f1f77bcf86cd799439011',
-      type: 'checkup',
-      title: 'Vet checkup',
-      date: new Date(),
-      nextVisitDate: '2100-01-01T10:00:00',
-    });
-
-    expect(result.success).toBe(true);
-    if (!result.success) return;
-
-    expect(typeof result.data.nextVisitDate).toBe('string');
-    expect(result.data.nextVisitDate).toContain('T');
-    expect(result.data.nextVisitDate).toMatch(/Z$/);
-  });
-
-  it('rejects invalid treatmentPlan item on create', () => {
-    const result = HealthRecordCreateSchema().safeParse({
-      petId: '507f1f77bcf86cd799439011',
-      type: 'checkup',
-      title: 'Vet checkup',
+      title: 'General checkup',
       date: new Date(),
       treatmentPlan: [
         {
@@ -108,16 +32,12 @@ describe('healthRecordSchema', () => {
     expect(result.success).toBe(false);
   });
 
-  it('accepts valid treatmentPlan on create', () => {
-    const now = new Date();
-    now.setMinutes(now.getMinutes() + 10);
-
+  it('accepts valid treatmentPlan', () => {
     const result = HealthRecordCreateSchema().safeParse({
       petId: '507f1f77bcf86cd799439011',
-      type: 'checkup',
-      title: 'Vet checkup',
+      type: 'visit',
+      title: 'Treatment follow-up',
       date: new Date(),
-      nextVisitDate: now,
       treatmentPlan: [
         {
           name: 'Antibiotics',
@@ -131,14 +51,11 @@ describe('healthRecordSchema', () => {
     expect(result.success).toBe(true);
   });
 
-  it('allows nextVisitDate null on update', () => {
+  it('accepts partial update payload', () => {
     const result = HealthRecordUpdateSchema().safeParse({
-      nextVisitDate: null,
+      title: 'Updated title',
     });
 
     expect(result.success).toBe(true);
-    if (!result.success) return;
-
-    expect(result.data.nextVisitDate).toBeNull();
   });
 });

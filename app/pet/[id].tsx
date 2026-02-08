@@ -492,8 +492,8 @@ export default function PetDetailScreen() {
                           {formatInTimeZone(record.date, userTimezone, 'd MMM', { locale: dateLocale })}
                         </Text>
                       </View>
-                      <Text style={[styles.timelineDesc, { color: theme.colors.onSurfaceVariant }]}>
-                        {record.description || record.notes || t('common.noNotes')}
+                      <Text style={[styles.timelineDesc, { color: theme.colors.onSurfaceVariant }]}> 
+                        {record.title}
                       </Text>
                     </View>
                   </View>

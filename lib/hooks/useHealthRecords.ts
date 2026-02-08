@@ -14,8 +14,7 @@ export { healthRecordKeys } from './queryKeys';
 // Type-safe filters for health records
 interface HealthRecordFilters {
   type?: string;
-  veterinarian?: string;
-  sortBy?: 'date' | 'type' | 'veterinarian' | 'title';
+  sortBy?: 'date' | 'type' | 'title';
   sortOrder?: 'asc' | 'desc';
 }
 

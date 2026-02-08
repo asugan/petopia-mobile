@@ -22,9 +22,7 @@ import EmptyState from '@/components/EmptyState';
 import { HealthRecordForm } from '@/components/forms/HealthRecordForm';
 import { FeedingScheduleModal } from '@/components/FeedingScheduleModal';
 import { TURKCE_LABELS, HEALTH_RECORD_COLORS, HEALTH_RECORD_ICONS, LAYOUT } from '@/constants';
-import { useUserSettingsStore } from '@/stores/userSettingsStore';
 import type { HealthRecord, FeedingSchedule } from '@/lib/types';
-import MoneyDisplay from '@/components/ui/MoneyDisplay';
 import { showToast } from '@/lib/toast/showToast';
 import { useNotifications } from '@/lib/hooks/useNotifications';
 import { useRequestDeduplication } from '@/lib/hooks/useRequestCancellation';
@@ -40,8 +38,6 @@ export default function CareScreen() {
   const { t } = useTranslation();
   const { isProUser } = useSubscription();
   const router = useRouter();
-  const { settings } = useUserSettingsStore();
-  const baseCurrency = settings?.baseCurrency || 'TRY';
   const [activeTab, setActiveTab] = useState<CareTabValue>('health');
   
   // Health state
@@ -290,18 +286,6 @@ export default function CareScreen() {
                     {new Date(record.date).toLocaleDateString('tr-TR')}
                   </Text>
                 </View>
-                {record.veterinarian && (
-                  <Text variant="bodySmall" style={{ color: theme.colors.onSurfaceVariant }}>
-                    Dr. {record.veterinarian}
-                  </Text>
-                )}
-                <MoneyDisplay
-                  amount={record.cost}
-                  currency={record.currency}
-                  baseCurrency={baseCurrency}
-                  amountBase={record.amountBase}
-                  size="small"
-                />
               </View>
               <MaterialCommunityIcons
                 name="chevron-right"
