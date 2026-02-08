@@ -40,7 +40,7 @@ export const LargeTitle = ({ title, style, actions }: LargeTitleProps) => {
                 height: logoCircleSize,
                 borderRadius: logoCircleSize / 2,
                 backgroundColor: theme.colors.surface + "F0",
-                borderColor: theme.colors.surface,
+                borderColor: theme.colors.primary,
               },
             ]}
           >
@@ -238,7 +238,7 @@ const styles = StyleSheet.create({
   logoCircle: {
     justifyContent: "center",
     alignItems: "center",
-    borderWidth: 1,
+    borderWidth: 2,
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.16,
