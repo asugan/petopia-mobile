@@ -78,7 +78,7 @@ const TabBarItem = memo(function TabBarItem({
   const iconStyle = useAnimatedStyle(() => ({
     transform: [
       { scale: interpolate(progress.value, [0, 1], [1, 1.1]) },
-      { translateY: interpolate(progress.value, [0, 1], [0, -7]) },
+      { translateY: interpolate(progress.value, [0, 1], [0, -4]) },
     ],
   }));
 
@@ -305,7 +305,7 @@ const styles = StyleSheet.create({
   },
   labelWrap: {
     position: 'absolute',
-    bottom: 8,
+    bottom: 11,
     left: 2,
     right: 2,
     height: 14,
