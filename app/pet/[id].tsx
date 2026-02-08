@@ -449,7 +449,7 @@ export default function PetDetailScreen() {
                         </Text>
                       </View>
                       <Text style={[styles.timelineDesc, { color: theme.colors.onSurfaceVariant }]}>
-                        {activity.description || activity.notes || t('common.noNotes')}
+                        {activity.notes || t('common.noNotes')}
                       </Text>
                     </View>
                   </View>

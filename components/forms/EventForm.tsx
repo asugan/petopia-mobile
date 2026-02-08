@@ -133,7 +133,7 @@ export function EventForm({
   const isEditMode = !!event;
 
   const steps = React.useMemo(() => {
-    const detailFields: (keyof EventFormData)[] = ['title', 'type', 'description'];
+    const detailFields: (keyof EventFormData)[] = ['type', 'title'];
 
     if (eventType === 'vaccination') {
       detailFields.push('vaccineName');
@@ -237,6 +237,13 @@ export function EventForm({
 
         {currentStep === 1 && (
           <FormSection title={t('events.eventDetails')}>
+            {/* Event Type */}
+            <SmartEventTypePicker
+              name="type"
+              label={t('events.type')}
+              testID={testID ? `${testID}-type` : 'event-form-type'}
+            />
+
             {/* Title */}
             <SmartInput
               name="title"
@@ -244,13 +251,6 @@ export function EventForm({
               placeholder={t('events.titlePlaceholder')}
               label={t('events.title')}
               testID={`${testID}-title`}
-            />
-
-            {/* Event Type */}
-            <SmartEventTypePicker
-              name="type"
-              label={t('events.type')}
-              testID={testID ? `${testID}-type` : 'event-form-type'}
             />
 
             {/* Event type suggestions */}
@@ -263,15 +263,6 @@ export function EventForm({
               </Text>
             </View>
 
-            {/* Description */}
-            <SmartInput
-              name="description"
-              placeholder={t('events.descriptionPlaceholder')}
-              label={t('events.description')}
-              multiline
-              numberOfLines={3}
-              testID={`${testID}-description`}
-            />
           </FormSection>
         )}
 

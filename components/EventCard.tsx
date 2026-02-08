@@ -149,17 +149,6 @@ export function EventCard({
           {event.title}
         </Text>
 
-        {/* Description (if not compact) */}
-        {!compact && event.description && (
-          <Text
-            variant="bodyMedium"
-            style={[styles.description, { color: theme.colors.onSurfaceVariant }]}
-            numberOfLines={2}
-          >
-            {event.description}
-          </Text>
-        )}
-
         {/* Location (if provided) */}
         {event.location && !compact && (
           <View style={styles.locationContainer}>

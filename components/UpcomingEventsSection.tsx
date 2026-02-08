@@ -123,7 +123,7 @@ export function UpcomingEventsSection() {
                       </View>
                     </View>
                     <Text variant="bodySmall" style={{ color: theme.colors.onSurfaceVariant }}>
-                      {petName}{event.description ? ` - ${event.description}` : ''}
+                      {petName}
                     </Text>
                   </View>
                 </View>
@@ -198,7 +198,7 @@ export function UpcomingEventsSection() {
                     </Text>
                   </View>
                   <Text variant="bodySmall" style={{ color: theme.colors.onSurfaceVariant }}>
-                    {petName}{event.description ? ` - ${event.description}` : ''}
+                    {petName}
                   </Text>
                 </View>
               </View>

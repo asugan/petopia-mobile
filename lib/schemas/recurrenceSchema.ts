@@ -84,8 +84,6 @@ export const recurrenceRuleSchema = () =>
       .min(1, { message: t('forms.validation.event.titleRequired') })
       .max(100, { message: t('forms.validation.event.titleMax') }),
 
-    description: z.string().optional(),
-
     type: z.enum(Object.values(EVENT_TYPES) as [string, ...string[]], {
       message: t('forms.validation.event.typeInvalid'),
     }),

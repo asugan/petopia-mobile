@@ -247,7 +247,7 @@ export class NotificationService {
           eventType: eventTypeLabel,
           emoji: eventTypeEmoji,
         });
-      const notificationBody = event.description || i18n.t('notifications.reminderBody', {
+      const notificationBody = i18n.t('notifications.reminderBody', {
         eventType: eventTypeLabel,
       });
 

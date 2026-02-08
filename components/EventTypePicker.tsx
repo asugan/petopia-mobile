@@ -1,7 +1,7 @@
 import React from 'react';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
-import { ScrollView, StyleSheet, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import { Chip, Text } from '@/components/ui';
 import { EVENT_TYPES } from '@/constants';
 import { getEventTypeIcon, getEventTypeLabel } from '@/constants/eventIcons';
@@ -35,12 +35,7 @@ const EventTypePicker: React.FC<EventTypePickerProps> = ({
           {label}
         </Text>
       )}
-      <ScrollView
-        horizontal
-        showsHorizontalScrollIndicator={false}
-        contentContainerStyle={styles.chipContainer}
-        testID={testID}
-      >
+      <View style={styles.chipContainer} testID={testID}>
         {eventTypes.map((type) => {
           const isSelected = selectedType === type;
           const eventColor = getEventColor(type, theme);
@@ -74,7 +69,7 @@ const EventTypePicker: React.FC<EventTypePickerProps> = ({
             </Chip>
           );
         })}
-      </ScrollView>
+      </View>
       {error && (
         <Text variant="bodySmall" style={[styles.error, { color: theme.colors.error }]}>
           {error}
@@ -94,11 +89,13 @@ const styles = StyleSheet.create({
   },
   chipContainer: {
     flexDirection: 'row',
+    flexWrap: 'wrap',
     gap: 8,
     paddingVertical: 4,
   },
   chip: {
-    marginRight: 8,
+    marginRight: 0,
+    marginBottom: 8,
   },
   error: {
     marginTop: 4,

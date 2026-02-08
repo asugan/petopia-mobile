@@ -34,7 +34,7 @@ export function CalendarEventCard({
   const eventTypeLabel = getEventTypeLabel(event.type, t);
   const eventTypeText = eventTypeLabel.toLocaleUpperCase(i18n.language);
   const eventTypeIcon = getEventTypeIcon(event.type);
-  const subtitle = event.location || event.description;
+  const subtitle = event.location;
   const reminderLabel = event.reminder
     ? t('calendar.reminderOn')
     : t('calendar.reminderOff');

@@ -66,7 +66,6 @@ export function EventList({
       const query = searchQuery.toLowerCase().trim();
       filtered = filtered.filter(event =>
         event.title.toLowerCase().includes(query) ||
-        event.description?.toLowerCase().includes(query) ||
         event.location?.toLowerCase().includes(query) ||
         event.notes?.toLowerCase().includes(query)
       );

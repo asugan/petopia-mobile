@@ -40,7 +40,6 @@ export const useEventForm = (event?: Event, initialPetId?: string): UseEventForm
 
     return {
       title: event?.title || '',
-      description: event?.description || '',
       petId: initialPetId || event?.petId || '',
       type: event?.type || 'other',
       startDate,

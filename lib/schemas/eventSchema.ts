@@ -24,11 +24,6 @@ export const eventFormSchema = () =>
           message: t('forms.validation.event.titleInvalidChars'),
         }),
 
-      description: z
-        .string()
-        .optional()
-        .transform((val) => val?.trim() || undefined),
-
       petId: z
         .string({
           error: t('forms.validation.event.petRequired'),
@@ -269,8 +264,6 @@ export const eventSchema = () =>
       .min(1, { message: t('forms.validation.event.titleRequired') })
       .max(100, { message: t('forms.validation.event.titleMax') }),
 
-    description: z.string().optional(),
-
     petId: z
       .string()
       .min(1, { message: t('forms.validation.event.petRequired') })
@@ -323,10 +316,6 @@ export const updateEventSchema = () =>
       .string()
       .min(1, { message: t('forms.validation.event.titleRequired') })
       .max(100, { message: t('forms.validation.event.titleMax') })
-      .optional(),
-    description: z
-      .string()
-      .max(500, { message: t('forms.validation.event.descriptionMax') })
       .optional(),
     petId: objectIdSchema().optional(),
     type: z.enum(Object.values(EVENT_TYPES) as [string, ...string[]], {
@@ -406,7 +395,6 @@ export const getMinimumEventDateTime = (): string => {
 
 // Default form values
 export const defaultEventFormValues: Partial<EventFormData> = {
-  description: '',
   reminder: false,
   reminderPreset: 'standard',
   notes: '',
@@ -478,7 +466,6 @@ export const transformFormDataToAPI = (formData: EventFormData): EventData => {
 
   return {
     title: formData.title,
-    description: formData.description || undefined,
     petId: formData.petId,
     type: formData.type,
     startTime,
@@ -525,7 +512,6 @@ export const transformFormDataToRecurrenceRule = (
   return {
     petId: formData.petId,
     title: formData.title,
-    description: formData.description || undefined,
     type: formData.type,
     location: formData.location || undefined,
     notes: formData.notes || undefined,

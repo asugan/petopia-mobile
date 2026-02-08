@@ -15,6 +15,7 @@ import { eventKeys } from "./queryKeys";
 import { useMemo } from "react";
 import { filterUpcomingEvents, groupEventsByTime } from "@/lib/utils/events";
 import { toISODateString } from "@/lib/utils/dateConversion";
+import { formatInTimeZone } from "@/lib/utils/date";
 import { useReminderScheduler } from "@/hooks/useReminderScheduler";
 import { ReminderPresetKey } from "@/constants/reminders";
 import { useUserTimezone } from "@/lib/hooks/useUserTimezone";
@@ -35,6 +36,41 @@ export const useEvents = (petId: string) => {
 
 const MISSING_ID_PLACEHOLDER = "__missing__";
 
+const normalizeTimezone = (timezone?: string) => {
+  const trimmed = timezone?.trim();
+  return trimmed && trimmed.length > 0 ? trimmed : undefined;
+};
+
+const getEventDateForTimezone = (startTime: string, timezone?: string) => {
+  const safeTimezone = normalizeTimezone(timezone);
+
+  if (safeTimezone) {
+    try {
+      return formatInTimeZone(startTime, safeTimezone, "yyyy-MM-dd");
+    } catch {
+      // Fall through to local date fallback when timezone formatting fails
+    }
+  }
+
+  return toISODateString(new Date(startTime)) ?? startTime.split("T")[0];
+};
+
+const isCalendarQueryForDate = (queryKey: readonly unknown[], date: string) =>
+  Array.isArray(queryKey) &&
+  queryKey[0] === eventKeys.all[0] &&
+  queryKey[1] === "calendar" &&
+  queryKey[2] === date;
+
+const isCalendarQuery = (queryKey: readonly unknown[]) =>
+  Array.isArray(queryKey) &&
+  queryKey[0] === eventKeys.all[0] &&
+  queryKey[1] === "calendar";
+
+const buildCalendarQueryKey = (date: string, timezone?: string) => {
+  const safeTimezone = normalizeTimezone(timezone);
+  return [...eventKeys.calendar(date), { timezone: safeTimezone }] as const;
+};
+
 export const useEvent = (id?: string, options?: { enabled?: boolean }) => {
   const { enabled } = useAuthQueryEnabled();
   const safeId = id ?? MISSING_ID_PLACEHOLDER;
@@ -54,12 +90,12 @@ export const useCalendarEvents = (
   options?: { enabled?: boolean; timezone?: string },
 ) => {
   const { enabled } = useAuthQueryEnabled();
-  const { timezone } = options || {};
+  const timezone = normalizeTimezone(options?.timezone);
   const isEnabled =
     options?.enabled !== undefined ? options.enabled && !!date : !!date;
 
   return useConditionalQuery<Event[]>({
-    queryKey: [...eventKeys.calendar(date), { timezone }],
+    queryKey: buildCalendarQueryKey(date, timezone),
     queryFn: () => eventService.getEventsByDate(date, timezone),
     staleTime: CACHE_TIMES.MEDIUM,
     enabled: enabled && isEnabled,
@@ -176,6 +212,7 @@ export const useRecentPastEvents = () => {
 // Mutations
 export const useCreateEvent = () => {
   const queryClient = useQueryClient();
+  const timezone = useUserTimezone();
   const { scheduleChainForEvent, cancelRemindersForEvent, clearReminderState } =
     useReminderScheduler();
 
@@ -190,11 +227,8 @@ export const useCreateEvent = () => {
       listQueryKey: eventKeys.lists(),
       onSuccess: async (newEvent, variables) => {
         // Also update calendar and today events if applicable
-        const eventDate =
-          toISODateString(new Date(newEvent.startTime)) ??
-          newEvent.startTime.split("T")[0];
-        const today =
-          toISODateString(new Date()) ?? new Date().toISOString().split("T")[0];
+        const eventDate = getEventDateForTimezone(newEvent.startTime, timezone);
+        const today = getEventDateForTimezone(new Date().toISOString(), timezone);
 
         if (eventDate === today) {
           queryClient.setQueryData(
@@ -204,8 +238,10 @@ export const useCreateEvent = () => {
           );
         }
 
-        queryClient.setQueryData(
-          eventKeys.calendar(eventDate),
+        queryClient.setQueriesData(
+          {
+            predicate: (query) => isCalendarQueryForDate(query.queryKey, eventDate),
+          },
           (old: Event[] | undefined) => (old ? [...old, newEvent] : [newEvent]),
         );
 
@@ -225,12 +261,9 @@ export const useCreateEvent = () => {
           queryClient.invalidateQueries({ queryKey: eventKeys.upcoming() });
           queryClient.invalidateQueries({ queryKey: eventKeys.today() });
 
-          // Invalidate calendar for the event date
-          const eventDate =
-            toISODateString(new Date(newEvent.startTime)) ??
-            newEvent.startTime.split("T")[0];
+          // Invalidate all calendar query variants (timezone-aware keys included)
           queryClient.invalidateQueries({
-            queryKey: eventKeys.calendar(eventDate),
+            predicate: (query) => isCalendarQuery(query.queryKey),
           });
         }
       },
@@ -240,6 +273,7 @@ export const useCreateEvent = () => {
 
 export const useUpdateEvent = () => {
   const queryClient = useQueryClient();
+  const timezone = useUserTimezone();
   const { scheduleChainForEvent, cancelRemindersForEvent, clearReminderState } =
     useReminderScheduler();
   type UpdateEventWithPreset = UpdateEventInput & {
@@ -269,14 +303,24 @@ export const useUpdateEvent = () => {
         });
         queryClient.invalidateQueries({ queryKey: eventKeys.lists() });
 
-        // Invalidate calendar queries if date changed
-        if (variables.data.startTime) {
-          const eventDate =
-            toISODateString(new Date(variables.data.startTime)) ??
-            variables.data.startTime.split("T")[0];
-          queryClient.invalidateQueries({
-            queryKey: eventKeys.calendar(eventDate),
-          });
+        // Keep calendar query variants consistent after update
+        queryClient.invalidateQueries({
+          predicate: (query) => isCalendarQuery(query.queryKey),
+        });
+
+        const targetStartTime = variables.data.startTime ?? data?.startTime;
+        if (targetStartTime && data) {
+          const targetDate = getEventDateForTimezone(targetStartTime, timezone);
+          queryClient.setQueriesData(
+            {
+              predicate: (query) => isCalendarQueryForDate(query.queryKey, targetDate),
+            },
+            (old: Event[] | undefined) => {
+              if (!old) return old;
+              const withoutOld = old.filter((item) => item._id !== data._id);
+              return [...withoutOld, data];
+            },
+          );
         }
       },
     },

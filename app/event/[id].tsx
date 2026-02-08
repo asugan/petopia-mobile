@@ -190,7 +190,7 @@ export default function EventDetailScreen() {
     try {
       const eventDate = formatInTimeZone(event.startTime, userTimezone, 'dd MMMM yyyy', { locale });
       const eventTime = formatInTimeZone(event.startTime, userTimezone, 'HH:mm', { locale });
-      const shareMessage = `📅 ${event.title}\n🐾 ${pet?.name || t('events.pet')}\n📍 ${event.location || t('events.noLocation')}\n🕐 ${eventDate} - ${eventTime}\n\n${event.description || ''}\n\n${t('events.sharedFrom')} PawPa`;
+      const shareMessage = `📅 ${event.title}\n🐾 ${pet?.name || t('events.pet')}\n📍 ${event.location || t('events.noLocation')}\n🕐 ${eventDate} - ${eventTime}\n\n${t('events.sharedFrom')} PawPa`;
       await Share.share({ message: shareMessage, title: event.title });
     } catch (error) {
       console.error('Failed to share event', error);
@@ -435,7 +435,7 @@ export default function EventDetailScreen() {
               <Text style={[styles.badgeText, { color: COLORS.primary }]}>{eventTypeLabel}</Text>
             </View>
             <Text style={[styles.heroTitle, { color: COLORS.white }]}>{event.title}</Text>
-            <Text style={[styles.heroSubtitle, { color: COLORS.gray300 }]}>{event.description || t('events.eventDetails')}</Text>
+            <Text style={[styles.heroSubtitle, { color: COLORS.gray300 }]}>{eventTypeLabel}</Text>
           </View>
         </View>
 
