@@ -1,8 +1,9 @@
 import React from "react";
-import { Pressable, StyleSheet, View, ViewStyle } from "react-native";
+import { Pressable, StyleSheet, View, ViewStyle, useWindowDimensions } from "react-native";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import { useTranslation } from "react-i18next";
+import { Image } from "expo-image";
 import { Text } from "@/components/ui";
 import { useTheme } from "@/lib/theme";
 import { useSubscription } from "@/lib/hooks/useSubscription";
@@ -22,16 +23,53 @@ interface LargeTitleProps {
 
 export const LargeTitle = ({ title, style, actions }: LargeTitleProps) => {
   const { theme } = useTheme();
+  const { width } = useWindowDimensions();
   const hasActions = Boolean(actions);
+  const logoCircleSize = width >= 1024 ? 52 : width >= 768 ? 46 : width <= 360 ? 36 : 42;
+  const logoMaskSize = logoCircleSize - 4;
 
   return (
     <View style={[styles.container, hasActions && styles.containerRow, style]}>
-      <Text
-        variant="headlineLarge"
-        style={[styles.title, { color: theme.colors.onBackground }]}
-      >
-        {title}
-      </Text>
+      {hasActions ? (
+        <View style={styles.logoWrap} accessibilityLabel={title}>
+          <View
+            style={[
+              styles.logoCircle,
+              {
+                width: logoCircleSize,
+                height: logoCircleSize,
+                borderRadius: logoCircleSize / 2,
+                backgroundColor: theme.colors.surface + "F0",
+                borderColor: theme.colors.surface,
+              },
+            ]}
+          >
+            <View
+              style={[
+                styles.logoMask,
+                {
+                  width: logoMaskSize,
+                  height: logoMaskSize,
+                  borderRadius: logoMaskSize / 2,
+                },
+              ]}
+            >
+              <Image
+                source={require("@/assets/images/foreground.png")}
+                style={styles.logoImage}
+                contentFit="cover"
+              />
+            </View>
+          </View>
+        </View>
+      ) : (
+        <Text
+          variant="headlineLarge"
+          style={[styles.title, { color: theme.colors.onBackground }]}
+        >
+          {title}
+        </Text>
+      )}
       {actions ? <View style={styles.actionsContainer}>{actions}</View> : null}
     </View>
   );
@@ -189,6 +227,34 @@ const styles = StyleSheet.create({
   title: {
     fontWeight: "700",
     flexShrink: 1,
+  },
+  logoWrap: {
+    height: 52,
+    minWidth: 52,
+    justifyContent: "center",
+    alignItems: "flex-start",
+    flexShrink: 1,
+  },
+  logoCircle: {
+    justifyContent: "center",
+    alignItems: "center",
+    borderWidth: 1,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.16,
+    shadowRadius: 6,
+    elevation: 5,
+  },
+  logoMask: {
+    overflow: "hidden",
+    backgroundColor: "#d3dff1",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  logoImage: {
+    width: "100%",
+    height: "100%",
+    transform: [{ scale: 1.45 }],
   },
   headerActions: {
     flexDirection: "row",
