@@ -1314,6 +1314,11 @@
       "addPet": "Huisdier Toevoegen",
       "skipPet": "Later doen",
       "addYourFirstPet": "Voeg Je Eerste Huisdier Toe"
+    },
+    "language": {
+      "title": "Kies taal en valuta",
+      "description": "We gebruiken je keuzes op de volgende schermen en synchroniseren ze na het inloggen. Je kunt beide altijd wijzigen in Instellingen.",
+      "continue": "Doorgaan"
     }
   },
   "serviceResponse": {

@@ -7,6 +7,7 @@ export default function OnboardingLayout() {
       <StatusBar style="light" />
       <Stack screenOptions={{ headerShown: false }}>
         <Stack.Screen name="index" />
+        <Stack.Screen name="welcome" />
         <Stack.Screen name="step2" />
         <Stack.Screen name="completed" />
       </Stack>

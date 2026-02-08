@@ -1314,6 +1314,11 @@
       "addPet": "Tier hinzufügen",
       "skipPet": "Später machen",
       "addYourFirstPet": "Erstes Tier hinzufügen"
+    },
+    "language": {
+      "title": "Sprache und Währung auswählen",
+      "description": "Wir verwenden diese Auswahl in den nächsten Schritten und synchronisieren sie nach der Anmeldung. Beides kannst du jederzeit in den Einstellungen ändern.",
+      "continue": "Weiter"
     }
   },
   "serviceResponse": {

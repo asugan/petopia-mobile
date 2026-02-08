@@ -24,6 +24,7 @@ import { AuthProvider } from "@/providers/AuthProvider";
 import { SubscriptionProvider } from "@/providers/SubscriptionProvider";
 import { useUserSettingsStore } from '@/stores/userSettingsStore';
 import { useEventReminderStore } from '@/stores/eventReminderStore';
+import { useOnboardingStore } from '@/stores/onboardingStore';
 import { useUpcomingEvents } from '@/lib/hooks/useEvents';
 import { useReminderScheduler } from '@/hooks/useReminderScheduler';
 import { createToastConfig } from '@/lib/toast/toastConfig';
@@ -155,13 +156,29 @@ function OnlineManagerProvider({ children }: { children: React.ReactNode }) {
 function RootLayoutContent() {
   const router = useRouter();
   const { isAuthenticated } = useAuth();
-  const { initialize, theme, setAuthenticated, clear } = useUserSettingsStore();
+  const {
+    initialize,
+    theme,
+    setAuthenticated,
+    clear,
+    settings,
+    updateSettings,
+    updateBaseCurrency,
+  } = useUserSettingsStore();
+  const {
+    hasSeenOnboarding,
+    preferredLanguage,
+    preferredCurrency,
+    preferencesSynced,
+    markPreferencesSynced,
+  } = useOnboardingStore();
   const quietHours = useEventReminderStore((state) => state.quietHours);
   const quietHoursEnabled = useEventReminderStore((state) => state.quietHoursEnabled);
   const { data: upcomingEvents = [] } = useUpcomingEvents();
   const { scheduleChainForEvent } = useReminderScheduler();
   const TIMEZONE_STORAGE_KEY = 'last-known-timezone';
   const rescheduleSignatureRef = useRef<string | null>(null);
+  const preferenceSyncInFlightRef = useRef(false);
 
   useEffect(() => {
     setAuthenticated(isAuthenticated);
@@ -174,6 +191,57 @@ function RootLayoutContent() {
       clear();
     }
   }, [isAuthenticated, initialize, clear]);
+
+  useEffect(() => {
+    if (!isAuthenticated || !hasSeenOnboarding || !settings) {
+      return;
+    }
+
+    if (preferencesSynced || preferenceSyncInFlightRef.current) {
+      return;
+    }
+
+    const shouldUpdateLanguage =
+      !!preferredLanguage && preferredLanguage !== settings.language;
+    const shouldUpdateCurrency =
+      !!preferredCurrency && preferredCurrency !== settings.baseCurrency;
+
+    if (!shouldUpdateLanguage && !shouldUpdateCurrency) {
+      markPreferencesSynced(true);
+      return;
+    }
+
+    preferenceSyncInFlightRef.current = true;
+
+    const syncPreferences = async () => {
+      try {
+        if (shouldUpdateLanguage && preferredLanguage) {
+          await updateSettings({ language: preferredLanguage });
+        }
+
+        if (shouldUpdateCurrency && preferredCurrency) {
+          await updateBaseCurrency(preferredCurrency);
+        }
+
+        markPreferencesSynced(true);
+      } catch {
+      } finally {
+        preferenceSyncInFlightRef.current = false;
+      }
+    };
+
+    void syncPreferences();
+  }, [
+    isAuthenticated,
+    hasSeenOnboarding,
+    settings,
+    preferredLanguage,
+    preferredCurrency,
+    preferencesSynced,
+    markPreferencesSynced,
+    updateSettings,
+    updateBaseCurrency,
+  ]);
 
   useEffect(() => {
     notificationService.setQuietHours(quietHours);

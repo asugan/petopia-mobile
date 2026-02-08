@@ -217,7 +217,7 @@
     "petSelection": "Pet Selection",
     "deleteRecord": "Delete Health Record",
     "deleteConfirmation": "Are you sure you want to delete this health record? This operation cannot be undone.",
-    "deleteError": "An error occurred while deleting the health record",
+    "deleteError": "Failed to delete health record. Please try again.",
     "notFoundDescription": "Health record not found or deleted",
     "veterinarianInfo": "Veterinarian Information",
     "veterinarian": "Veterinarian",
@@ -241,7 +241,6 @@
     "notFoundUpdate": "Health record not found for update",
     "notFoundDelete": "Health record not found for deletion",
     "updateError": "Failed to update health record. Please check the information and try again.",
-    "deleteError": "Failed to delete health record. Please try again.",
     "fetchByTypeError": "Failed to fetch health records by type. Please try again.",
     "titleField": "Title",
     "titlePlaceholder": "Record title",
@@ -291,19 +290,18 @@
       "day": "Day"
     }
   },
-    "events": {
-      "recurrence": {
-        "editTitle": "Recurring Event",
-        "editDescription": "How would you like to edit this event?",
-        "editSingle": "Only this event",
-        "editSeries": "All events in series",
-        "deleteTitle": "Delete Event",
-        "deleteDescription": "How would you like to delete this recurring event?",
-        "deleteSingle": "Only this event",
-        "deleteSeries": "All events in series"
-      },
-      "status": "Status",
-
+  "events": {
+    "recurrence": {
+      "editTitle": "Recurring Event",
+      "editDescription": "How would you like to edit this event?",
+      "editSingle": "Only this event",
+      "editSeries": "All events in series",
+      "deleteTitle": "Delete Event",
+      "deleteDescription": "How would you like to delete this recurring event?",
+      "deleteSingle": "Only this event",
+      "deleteSeries": "All events in series"
+    },
+    "status": "Status",
     "upcoming": "Upcoming Events",
     "past": "Past",
     "today": "Today",
@@ -1138,7 +1136,6 @@
       "cancel": "Cancel"
     }
   },
-
   "expenses": {
     "title": "Expenses",
     "selectPetFirst": "Please select a pet first",
@@ -1281,6 +1278,11 @@
     }
   },
   "onboarding": {
+    "language": {
+      "title": "Choose your language and currency",
+      "description": "We'll use your selections on the next screens and sync them after sign in. You can change both anytime in Settings.",
+      "continue": "Continue"
+    },
     "screen1": {
       "title": "Welcome to Petopia Petcare",
       "description": "Easily track your pet's health and happiness.",

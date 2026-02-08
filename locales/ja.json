@@ -1314,6 +1314,11 @@
       "addPet": "ペットを追加",
       "skipPet": "後で行う",
       "addYourFirstPet": "最初のペットを追加"
+    },
+    "language": {
+      "title": "言語と通貨を選択",
+      "description": "選択内容は次の画面で使用し、サインイン後に同期されます。どちらも設定からいつでも変更できます。",
+      "continue": "続行"
     }
   },
   "serviceResponse": {

@@ -1314,6 +1314,11 @@
       "addPet": "Kedvenc hozzáadása",
       "skipPet": "Majd később",
       "addYourFirstPet": "Első kedvenc hozzáadása"
+    },
+    "language": {
+      "title": "Válassz nyelvet és pénznemet",
+      "description": "A választásaidat a következő képernyőkön használjuk, majd bejelentkezés után szinkronizáljuk. Mindkettőt bármikor módosíthatod a Beállításokban.",
+      "continue": "Folytatás"
     }
   },
   "serviceResponse": {

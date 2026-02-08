@@ -1314,6 +1314,11 @@
       "addPet": "Ajouter votre animal",
       "skipPet": "Plus tard",
       "addYourFirstPet": "Ajouter votre premier animal"
+    },
+    "language": {
+      "title": "Choisissez la langue et la devise",
+      "description": "Nous utiliserons vos choix dans les écrans suivants et les synchroniserons après la connexion. Vous pourrez tout modifier à tout moment dans les Réglages.",
+      "continue": "Continuer"
     }
   },
   "serviceResponse": {

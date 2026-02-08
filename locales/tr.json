@@ -1314,6 +1314,11 @@
       "addPet": "Petini Ekle",
       "skipPet": "Sonra Yaparım",
       "addYourFirstPet": "İlk Petini Ekle"
+    },
+    "language": {
+      "title": "Dilini ve para birimini seç",
+      "description": "Seçimlerini sonraki ekranlarda kullanacağız ve girişten sonra hesabınla eşitleyeceğiz. İkisini de Ayarlar’dan istediğin zaman değiştirebilirsin.",
+      "continue": "Devam et"
     }
   },
   "serviceResponse": {

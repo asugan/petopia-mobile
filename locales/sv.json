@@ -1314,6 +1314,11 @@
       "addPet": "Lägg till ditt husdjur",
       "skipPet": "Gör det senare",
       "addYourFirstPet": "Lägg till ditt första husdjur"
+    },
+    "language": {
+      "title": "Välj språk och valuta",
+      "description": "Vi använder dina val på nästa skärmar och synkroniserar dem efter inloggning. Du kan när som helst ändra båda i Inställningar.",
+      "continue": "Fortsätt"
     }
   },
   "serviceResponse": {

@@ -1314,6 +1314,11 @@
       "addPet": "Pridať zvieratko",
       "skipPet": "Urobiť neskôr",
       "addYourFirstPet": "Pridať prvé zvieratko"
+    },
+    "language": {
+      "title": "Vyberte jazyk a menu",
+      "description": "Vaše voľby použijeme na ďalších obrazovkách a po prihlásení ich zosynchronizujeme. Oboje môžete kedykoľvek zmeniť v Nastaveniach.",
+      "continue": "Pokračovať"
     }
   },
   "serviceResponse": {

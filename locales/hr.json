@@ -1314,6 +1314,11 @@
       "addPet": "Dodaj svog ljubimca",
       "skipPet": "Učini to kasnije",
       "addYourFirstPet": "Dodaj svog prvog ljubimca"
+    },
+    "language": {
+      "title": "Odaberite jezik i valutu",
+      "description": "Vaše odabire koristit ćemo na sljedećim zaslonima i sinkronizirati ih nakon prijave. Oboje možete promijeniti u bilo kojem trenutku u Postavkama.",
+      "continue": "Nastavi"
     }
   },
   "serviceResponse": {

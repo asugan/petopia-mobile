@@ -713,8 +713,7 @@
     "bath": "洗澡",
     "vaccination": "接种疫苗",
     "medication": "用药",
-    "other": "其他",
-    "vet_visit": "Vet Visit"
+    "other": "其他"
   },
   "recurrence": {
     "settings": "重复设置",
@@ -1315,6 +1314,11 @@
       "addPet": "添加您的宠物",
       "skipPet": "以后再说",
       "addYourFirstPet": "添加您的第一只宠物"
+    },
+    "language": {
+      "title": "选择语言和货币",
+      "description": "我们会在后续页面使用你的选择，并在登录后同步到账号。你也可以随时在设置中修改。",
+      "continue": "继续"
     }
   },
   "serviceResponse": {

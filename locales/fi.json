@@ -1314,6 +1314,11 @@
       "addPet": "Lisää lemmikkisi",
       "skipPet": "Tee se myöhemmin",
       "addYourFirstPet": "Lisää ensimmäinen lemmikkisi"
+    },
+    "language": {
+      "title": "Valitse kieli ja valuutta",
+      "description": "Käytämme valintojasi seuraavissa näkymissä ja synkronoimme ne kirjautumisen jälkeen. Voit muuttaa molempia milloin tahansa Asetuksissa.",
+      "continue": "Jatka"
     }
   },
   "serviceResponse": {

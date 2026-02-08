@@ -1314,6 +1314,11 @@
       "addPet": "Tambah Haiwan Anda",
       "skipPet": "Buat kemudian",
       "addYourFirstPet": "Tambah Haiwan Pertama Anda"
+    },
+    "language": {
+      "title": "Pilih bahasa dan mata wang",
+      "description": "Kami akan gunakan pilihan anda pada skrin seterusnya dan menyegerakkannya selepas log masuk. Anda boleh ubah kedua-duanya pada bila-bila masa di Tetapan.",
+      "continue": "Teruskan"
     }
   },
   "serviceResponse": {

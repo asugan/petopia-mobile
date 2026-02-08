@@ -1314,6 +1314,11 @@
       "addPet": "Afegeix la teva mascota",
       "skipPet": "Fes-ho més tard",
       "addYourFirstPet": "Afegeix la teva primera mascota"
+    },
+    "language": {
+      "title": "Tria idioma i moneda",
+      "description": "Farem servir les teves opcions a les pantalles següents i les sincronitzarem després d’iniciar sessió. Les pots canviar quan vulguis a Configuració.",
+      "continue": "Continua"
     }
   },
   "serviceResponse": {

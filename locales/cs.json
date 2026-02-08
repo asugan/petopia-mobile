@@ -1314,6 +1314,11 @@
       "addPet": "Přidat mazlíčka",
       "skipPet": "Udělat později",
       "addYourFirstPet": "Přidat svého prvního mazlíčka"
+    },
+    "language": {
+      "title": "Vyberte jazyk a měnu",
+      "description": "Vaše volby použijeme na dalších obrazovkách a po přihlášení je synchronizujeme. Obojí můžete kdykoli změnit v Nastavení.",
+      "continue": "Pokračovat"
     }
   },
   "serviceResponse": {

@@ -1314,6 +1314,11 @@
       "addPet": "Tambah Hewan Anda",
       "skipPet": "Nanti saja",
       "addYourFirstPet": "Tambah Hewan Pertama Anda"
+    },
+    "language": {
+      "title": "Pilih bahasa dan mata uang",
+      "description": "Kami akan menggunakan pilihan Anda di layar berikutnya dan menyinkronkannya setelah masuk. Keduanya dapat diubah kapan saja di Pengaturan.",
+      "continue": "Lanjutkan"
     }
   },
   "serviceResponse": {

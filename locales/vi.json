@@ -1314,6 +1314,11 @@
       "addPet": "Thêm thú cưng của bạn",
       "skipPet": "Để sau",
       "addYourFirstPet": "Thêm thú cưng đầu tiên của bạn"
+    },
+    "language": {
+      "title": "Chọn ngôn ngữ và tiền tệ",
+      "description": "Chúng tôi sẽ dùng lựa chọn của bạn ở các màn hình tiếp theo và đồng bộ sau khi đăng nhập. Bạn có thể đổi cả hai bất cứ lúc nào trong Cài đặt.",
+      "continue": "Tiếp tục"
     }
   },
   "serviceResponse": {

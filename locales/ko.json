@@ -1314,6 +1314,11 @@
       "addPet": "반려동물 추가",
       "skipPet": "나중에 하기",
       "addYourFirstPet": "첫 반려동물 추가"
+    },
+    "language": {
+      "title": "언어와 통화 선택",
+      "description": "선택한 설정은 다음 화면에서 사용되며 로그인 후 계정과 동기화됩니다. 두 항목 모두 설정에서 언제든지 변경할 수 있어요.",
+      "continue": "계속"
     }
   },
   "serviceResponse": {

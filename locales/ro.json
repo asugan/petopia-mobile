@@ -1314,6 +1314,11 @@
       "addPet": "Adaugă animalul tău",
       "skipPet": "Fă-o mai târziu",
       "addYourFirstPet": "Adaugă primul tău animal"
+    },
+    "language": {
+      "title": "Alege limba și moneda",
+      "description": "Vom folosi aceste opțiuni în ecranele următoare și le vom sincroniza după autentificare. Le poți schimba oricând din Setări.",
+      "continue": "Continuă"
     }
   },
   "serviceResponse": {

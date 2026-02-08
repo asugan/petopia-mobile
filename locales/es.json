@@ -1309,6 +1309,11 @@
       "addPet": "Añadir mascota",
       "skipPet": "Luego",
       "addYourFirstPet": "Primera mascota"
+    },
+    "language": {
+      "title": "Elige idioma y moneda",
+      "description": "Usaremos tus elecciones en las siguientes pantallas y las sincronizaremos después de iniciar sesión. Puedes cambiar ambas en cualquier momento desde Ajustes.",
+      "continue": "Continuar"
     }
   },
   "serviceResponse": {

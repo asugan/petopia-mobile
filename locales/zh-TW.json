@@ -1314,6 +1314,11 @@
       "addPet": "添加您的寵物",
       "skipPet": "以後再說",
       "addYourFirstPet": "添加您的第一隻寵物"
+    },
+    "language": {
+      "title": "選擇語言與貨幣",
+      "description": "我們會在後續畫面使用你的選擇，並在登入後同步到帳號。你也可以隨時在設定中變更。",
+      "continue": "繼續"
     }
   },
   "serviceResponse": {

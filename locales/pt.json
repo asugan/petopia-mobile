@@ -1314,6 +1314,11 @@
       "addPet": "Add Pet",
       "skipPet": "Depois",
       "addYourFirstPet": "Primeiro Pet"
+    },
+    "language": {
+      "title": "Escolha idioma e moeda",
+      "description": "Usaremos suas escolhas nas próximas telas e vamos sincronizá-las após o login. Você pode alterar ambas a qualquer momento em Configurações.",
+      "continue": "Continuar"
     }
   },
   "serviceResponse": {
