@@ -674,7 +674,8 @@
     "hoursMinutes": "{{hours}}h {{minutes}}m",
     "minutesOnly": "{{minutes}}m",
     "timeLeft": "pozostało {{time}}",
-    "search": "Szukaj"
+    "search": "Szukaj",
+    "info": "Informacja"
   },
   "errors": {
     "loadingFailed": "Ładowanie nie powiodło się",
@@ -1562,7 +1563,9 @@
       "cancelAnytime": "Możesz anulować w dowolnym momencie w ustawieniach App Store / Google Play",
       "billedByStore": "Płatność jest bezpiecznie obsługiwana przez konto sklepu z aplikacjami",
       "secureCheckout": "W aplikacji nie trzeba ręcznie wpisywać danych karty"
-    }
+    },
+    "verifyingPurchase": "Zakup otrzymany. Weryfikujemy twoja subskrypcje...",
+    "verificationTakingLong": "Twoj zakup jest weryfikowany. Dostep zostanie automatycznie odblokowany za kilka sekund."
   },
   "downgrade": {
     "title": "Wybierz swojego zwierzaka",

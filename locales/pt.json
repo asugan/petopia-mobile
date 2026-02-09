@@ -674,7 +674,8 @@
     "hoursMinutes": "{{hours}}h {{minutes}}m",
     "minutesOnly": "{{minutes}}m",
     "timeLeft": "restam {{time}}",
-    "search": "Buscar"
+    "search": "Buscar",
+    "info": "Informacao"
   },
   "errors": {
     "loadingFailed": "Falha no Carregamento",
@@ -1562,7 +1563,9 @@
       "cancelAnytime": "Pode cancelar a qualquer momento nas definições da App Store / Google Play",
       "billedByStore": "A faturação é processada com segurança através da sua conta da loja de apps",
       "secureCheckout": "Não é necessário inserir manualmente os dados do cartão na aplicação"
-    }
+    },
+    "verifyingPurchase": "Compra recebida. Verificando a sua subscricao...",
+    "verificationTakingLong": "A sua compra esta a ser verificada. O acesso sera desbloqueado automaticamente em alguns segundos."
   },
   "downgrade": {
     "title": "Escolha seu Pet",

@@ -674,7 +674,8 @@
     "hoursMinutes": "{{hours}}Std {{minutes}}Min",
     "minutesOnly": "{{minutes}}Min",
     "timeLeft": "{{time}} übrig",
-    "search": "Suchen"
+    "search": "Suchen",
+    "info": "Info"
   },
   "errors": {
     "loadingFailed": "Laden fehlgeschlagen",
@@ -1562,7 +1563,9 @@
       "cancelAnytime": "Jederzeit in den Einstellungen von App Store / Google Play kündbar",
       "billedByStore": "Die Abrechnung wird sicher über dein App-Store-Konto abgewickelt",
       "secureCheckout": "Keine manuelle Kreditkarteneingabe in der App erforderlich"
-    }
+    },
+    "verifyingPurchase": "Kauf erhalten. Dein Abonnement wird uberpruft...",
+    "verificationTakingLong": "Dein Kauf wird uberpruft. Der Zugriff wird in wenigen Sekunden automatisch freigeschaltet."
   },
   "downgrade": {
     "title": "Wählen Sie Ihr Tier",

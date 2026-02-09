@@ -674,7 +674,8 @@
     "hoursMinutes": "{{hours}}j {{minutes}}m",
     "minutesOnly": "{{minutes}}m",
     "timeLeft": "{{time}} tinggal",
-    "search": "Cari"
+    "search": "Cari",
+    "info": "Maklumat"
   },
   "errors": {
     "loadingFailed": "Pemuatan Gagal",
@@ -1562,7 +1563,9 @@
       "cancelAnytime": "Batalkan pada bila-bila masa melalui tetapan App Store / Google Play",
       "billedByStore": "Pengebilan diproses dengan selamat melalui akaun gedung aplikasi anda",
       "secureCheckout": "Tiada kemasukan manual kad kredit diperlukan dalam aplikasi"
-    }
+    },
+    "verifyingPurchase": "Pembelian diterima. Sedang mengesahkan langganan anda...",
+    "verificationTakingLong": "Pembelian anda sedang disahkan. Akses akan dibuka secara automatik dalam beberapa saat."
   },
   "downgrade": {
     "title": "Pilih Haiwan Anda",

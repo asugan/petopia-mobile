@@ -166,6 +166,53 @@ export class SubscriptionApiService {
   }
 
   /**
+   * Verify purchase status with backend and sync latest RevenueCat state.
+   * Falls back to existing DB state if verification cannot be completed.
+   */
+  async verifySubscription(): Promise<ApiResponse<SubscriptionStatus>> {
+    try {
+      const deviceId = await getDeviceId();
+
+      const response = await api.post<SubscriptionStatus>(
+        ENV.ENDPOINTS.SUBSCRIPTION_VERIFY,
+        { deviceId }
+      );
+
+      if (!response.data) {
+        return {
+          success: false,
+          error: {
+            code: 'INVALID_RESPONSE',
+            message: 'subscription.invalidResponse',
+          },
+        };
+      }
+
+      return {
+        success: true,
+        data: response.data,
+      };
+    } catch (error) {
+      if (error instanceof ApiError) {
+        return {
+          success: false,
+          error: {
+            code: error.code ?? 'VERIFY_SUBSCRIPTION_ERROR',
+            message: error.message,
+          },
+        };
+      }
+      return {
+        success: false,
+        error: {
+          code: 'VERIFY_SUBSCRIPTION_ERROR',
+          message: 'subscription.verificationError',
+        },
+      };
+    }
+  }
+
+  /**
    * Get downgrade status - check if user needs to select pets after subscription expiry
    */
   async getDowngradeStatus(): Promise<ApiResponse<DowngradeStatus>> {

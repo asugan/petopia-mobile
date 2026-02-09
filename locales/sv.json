@@ -674,7 +674,8 @@
     "hoursMinutes": "{{hours}}h {{minutes}}m",
     "minutesOnly": "{{minutes}}m",
     "timeLeft": "{{time}} kvar",
-    "search": "Sök"
+    "search": "Sök",
+    "info": "Info"
   },
   "errors": {
     "loadingFailed": "Laddning misslyckades",
@@ -1562,7 +1563,9 @@
       "cancelAnytime": "Du kan avsluta när som helst i inställningarna för App Store / Google Play",
       "billedByStore": "Debiteringen hanteras säkert via ditt appbutikskonto",
       "secureCheckout": "Du behöver inte ange kortuppgifter manuellt i appen"
-    }
+    },
+    "verifyingPurchase": "Kop mottaget. Verifierar din prenumeration...",
+    "verificationTakingLong": "Ditt kop verifieras. Atkomst lasses upp automatiskt om nagra sekunder."
   },
   "downgrade": {
     "title": "Välj ditt husdjur",

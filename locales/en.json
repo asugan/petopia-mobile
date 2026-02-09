@@ -619,6 +619,7 @@
   "common": {
     "loading": "Loading...",
     "error": "Error",
+    "info": "Info",
     "today": "Today",
     "yesterday": "Yesterday",
     "tomorrow": "Tomorrow",
@@ -1507,6 +1508,8 @@
     "autoRenews": "Auto-renews on {{date}}",
     "cancelled": "Cancelled - expires {{date}}",
     "paywallError": "Unable to load subscription options",
+    "verifyingPurchase": "Purchase received. Verifying your subscription...",
+    "verificationTakingLong": "Your purchase is being verified. Access will unlock automatically in a few seconds.",
     "trialAlreadySubscribed": "You already have an active subscription",
     "trialAlreadyUsed": "This device has already used a free trial",
     "trialStartFailed": "Unable to start the free trial. Please try again.",

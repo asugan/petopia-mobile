@@ -674,7 +674,8 @@
     "hoursMinutes": "{{hours}}小時 {{minutes}}分鐘",
     "minutesOnly": "{{minutes}}分鐘",
     "timeLeft": "剩餘 {{time}}",
-    "search": "搜索"
+    "search": "搜索",
+    "info": "資訊"
   },
   "errors": {
     "loadingFailed": "加載失敗",
@@ -1562,7 +1563,9 @@
       "cancelAnytime": "可隨時在 App Store / Google Play 設定中取消",
       "billedByStore": "帳務會透過您的應用商店帳號安全處理",
       "secureCheckout": "不需要在 App 內手動輸入信用卡資訊"
-    }
+    },
+    "verifyingPurchase": "已收到購買，正在驗證您的訂閱...",
+    "verificationTakingLong": "正在驗證您的購買，存取權限將在幾秒內自動開通。"
   },
   "downgrade": {
     "title": "選擇您的寵物",

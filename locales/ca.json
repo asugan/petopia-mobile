@@ -674,7 +674,8 @@
     "hoursMinutes": "{{hours}}h {{minutes}}m",
     "minutesOnly": "{{minutes}}m",
     "timeLeft": "queden {{time}}",
-    "search": "Cerca"
+    "search": "Cerca",
+    "info": "Informacio"
   },
   "errors": {
     "loadingFailed": "Error en la càrrega",
@@ -1562,7 +1563,9 @@
       "cancelAnytime": "Pots cancel·lar en qualsevol moment des de la configuració de l'App Store / Google Play",
       "billedByStore": "La facturació es gestiona de manera segura a través del teu compte de la botiga",
       "secureCheckout": "No cal introduir manualment la targeta dins de l'aplicació"
-    }
+    },
+    "verifyingPurchase": "S'ha rebut la compra. S'esta verificant la teva subscripcio...",
+    "verificationTakingLong": "S'esta verificant la teva compra. L'acces s'activara automaticament en uns segons."
   },
   "downgrade": {
     "title": "Tria la teva mascota",

@@ -619,6 +619,7 @@
   "common": {
     "loading": "Yükleniyor...",
     "error": "Hata",
+    "info": "Bilgi",
     "today": "Bugün",
     "yesterday": "Dün",
     "tomorrow": "Yarın",
@@ -1507,6 +1508,8 @@
     "autoRenews": "{{date}} tarihinde otomatik yenilenir",
     "cancelled": "İptal edildi - {{date}} tarihinde sona eriyor",
     "paywallError": "Abonelik seçenekleri yüklenemiyor",
+    "verifyingPurchase": "Satın alma alındı. Aboneliğiniz doğrulanıyor...",
+    "verificationTakingLong": "Satın alımınız doğrulanıyor. Erişiminiz birkaç saniye içinde otomatik olarak açılacak.",
     "trialAlreadySubscribed": "Zaten aktif bir aboneliğiniz var",
     "trialAlreadyUsed": "Bu cihazda ücretsiz deneme daha önce kullanıldı",
     "trialStartFailed": "Ücretsiz deneme başlatılamadı. Lütfen tekrar deneyin.",

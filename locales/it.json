@@ -674,7 +674,8 @@
     "hoursMinutes": "{{hours}}o {{minutes}}m",
     "minutesOnly": "{{minutes}}m",
     "timeLeft": "{{time}} rimanenti",
-    "search": "Cerca"
+    "search": "Cerca",
+    "info": "Informazione"
   },
   "errors": {
     "loadingFailed": "Caricamento Fallito",
@@ -1562,7 +1563,9 @@
       "cancelAnytime": "Puoi annullare in qualsiasi momento dalle impostazioni di App Store / Google Play",
       "billedByStore": "La fatturazione è gestita in modo sicuro tramite il tuo account dello store",
       "secureCheckout": "Nessun inserimento manuale della carta di credito all'interno dell'app"
-    }
+    },
+    "verifyingPurchase": "Acquisto ricevuto. Verifica del tuo abbonamento in corso...",
+    "verificationTakingLong": "Il tuo acquisto e in verifica. L'accesso verra sbloccato automaticamente tra pochi secondi."
   },
   "downgrade": {
     "title": "Scegli il tuo Animale",

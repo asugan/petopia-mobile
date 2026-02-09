@@ -674,7 +674,8 @@
     "hoursMinutes": "{{hours}}ó {{minutes}}p",
     "minutesOnly": "{{minutes}}p",
     "timeLeft": "{{time}} van hátra",
-    "search": "Keresés"
+    "search": "Keresés",
+    "info": "Informacio"
   },
   "errors": {
     "loadingFailed": "Sikertelen betöltés",
@@ -1562,7 +1563,9 @@
       "cancelAnytime": "Az App Store / Google Play beállításaiban bármikor lemondhatod",
       "billedByStore": "A számlázás biztonságosan az alkalmazásbolt-fiókodon keresztül történik",
       "secureCheckout": "Az alkalmazásban nem szükséges kézzel megadni a bankkártyaadatokat"
-    }
+    },
+    "verifyingPurchase": "Vasarlas fogadva. Elfizetesed ellenorzese folyamatban...",
+    "verificationTakingLong": "A vasarlas ellenorzese folyamatban van. A hozzaferes nehany masodpercen belul automatikusan feloldodik."
   },
   "downgrade": {
     "title": "Válassza ki kedvencét",

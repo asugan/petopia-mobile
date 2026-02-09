@@ -674,7 +674,8 @@
     "hoursMinutes": "{{hours}}ש {{minutes}}ד",
     "minutesOnly": "{{minutes}}ד",
     "timeLeft": "נותרו {{time}}",
-    "search": "חפש"
+    "search": "חפש",
+    "info": "מידע"
   },
   "errors": {
     "loadingFailed": "הטעינה נכשלה",
@@ -1562,7 +1563,9 @@
       "cancelAnytime": "ניתן לבטל בכל עת מההגדרות של App Store / Google Play",
       "billedByStore": "החיוב מתבצע בצורה מאובטחת דרך חשבון חנות האפליקציות שלך",
       "secureCheckout": "אין צורך להזין פרטי כרטיס אשראי ידנית בתוך האפליקציה"
-    }
+    },
+    "verifyingPurchase": "הרכישה התקבלה. מאמתים את המנוי שלך...",
+    "verificationTakingLong": "הרכישה שלך נמצאת באימות. הגישה תיפתח אוטומטית בעוד כמה שניות."
   },
   "downgrade": {
     "title": "בחר את חיית המחמד שלך",

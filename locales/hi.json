@@ -674,7 +674,8 @@
     "hoursMinutes": "{{hours}}घं {{minutes}}मि",
     "minutesOnly": "{{minutes}}मि",
     "timeLeft": "{{time}} शेष",
-    "search": "खोजें"
+    "search": "खोजें",
+    "info": "जानकारी"
   },
   "errors": {
     "loadingFailed": "लोडिंग विफल रही",
@@ -1562,7 +1563,9 @@
       "cancelAnytime": "आप App Store / Google Play सेटिंग्स से कभी भी रद्द कर सकते हैं",
       "billedByStore": "बिलिंग आपके ऐप स्टोर खाते के माध्यम से सुरक्षित रूप से की जाती है",
       "secureCheckout": "ऐप के अंदर क्रेडिट कार्ड विवरण मैन्युअली दर्ज करने की जरूरत नहीं है"
-    }
+    },
+    "verifyingPurchase": "खरीदारी प्राप्त हुई। आपकी सदस्यता सत्यापित की जा रही है...",
+    "verificationTakingLong": "आपकी खरीदारी सत्यापित की जा रही है। एक्सेस कुछ सेकंड में अपने आप अनलॉक हो जाएगा।"
   },
   "downgrade": {
     "title": "अपना पालतू जानवर चुनें",

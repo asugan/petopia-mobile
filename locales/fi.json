@@ -674,7 +674,8 @@
     "hoursMinutes": "{{hours}}t {{minutes}}min",
     "minutesOnly": "{{minutes}}min",
     "timeLeft": "{{time}} jäljellä",
-    "search": "Hae"
+    "search": "Hae",
+    "info": "Tieto"
   },
   "errors": {
     "loadingFailed": "Lataaminen epäonnistui",
@@ -1562,7 +1563,9 @@
       "cancelAnytime": "Voit peruuttaa milloin tahansa App Storen / Google Playn asetuksista",
       "billedByStore": "Laskutus hoidetaan turvallisesti sovelluskauppatilisi kautta",
       "secureCheckout": "Sovelluksessa ei tarvitse syöttää korttitietoja manuaalisesti"
-    }
+    },
+    "verifyingPurchase": "Osto vastaanotettu. Vahvistetaan tilaustasi...",
+    "verificationTakingLong": "Ostoasi vahvistetaan. Kaytto avautuu automaattisesti muutaman sekunnin kuluttua."
   },
   "downgrade": {
     "title": "Valitse lemmikkisi",

@@ -674,7 +674,8 @@
     "hoursMinutes": "{{hours}}h {{minutes}}m",
     "minutesOnly": "{{minutes}}m",
     "timeLeft": "Preostalo {{time}}",
-    "search": "Pretraži"
+    "search": "Pretraži",
+    "info": "Informacija"
   },
   "errors": {
     "loadingFailed": "Učitavanje nije uspjelo",
@@ -1562,7 +1563,9 @@
       "cancelAnytime": "Pretplatu možete otkazati u bilo kojem trenutku u postavkama App Store / Google Play",
       "billedByStore": "Naplata se sigurno obrađuje putem vašeg računa trgovine aplikacija",
       "secureCheckout": "U aplikaciji nije potrebno ručno unositi podatke kartice"
-    }
+    },
+    "verifyingPurchase": "Kupnja je zaprimljena. Provjeravamo vasu pretplatu...",
+    "verificationTakingLong": "Vasa kupnja se provjerava. Pristup ce se automatski otkljucati za nekoliko sekundi."
   },
   "downgrade": {
     "title": "Odaberite svog ljubimca",

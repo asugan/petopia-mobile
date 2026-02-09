@@ -674,7 +674,8 @@
     "hoursMinutes": "{{hours}}g {{minutes}}p",
     "minutesOnly": "{{minutes}}p",
     "timeLeft": "Còn lại {{time}}",
-    "search": "Tìm kiếm"
+    "search": "Tìm kiếm",
+    "info": "Thong tin"
   },
   "errors": {
     "loadingFailed": "Tải thất bại",
@@ -1562,7 +1563,9 @@
       "cancelAnytime": "Bạn có thể hủy bất cứ lúc nào trong phần cài đặt App Store / Google Play",
       "billedByStore": "Thanh toán được xử lý an toàn thông qua tài khoản cửa hàng ứng dụng của bạn",
       "secureCheckout": "Không cần nhập thủ công thông tin thẻ tín dụng trong ứng dụng"
-    }
+    },
+    "verifyingPurchase": "Da nhan mua hang. Dang xac minh goi dang ky cua ban...",
+    "verificationTakingLong": "Giao dich mua cua ban dang duoc xac minh. Quyen truy cap se tu dong mo trong vai giay."
   },
   "downgrade": {
     "title": "Chọn thú cưng của bạn",

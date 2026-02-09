@@ -674,7 +674,8 @@
     "hoursMinutes": "{{hours}}h {{minutes}}m",
     "minutesOnly": "{{minutes}}m",
     "timeLeft": "zbývá {{time}}",
-    "search": "Hledat"
+    "search": "Hledat",
+    "info": "Informace"
   },
   "errors": {
     "loadingFailed": "Načítání selhalo",
@@ -1562,7 +1563,9 @@
       "cancelAnytime": "Předplatné můžete kdykoli zrušit v nastavení App Store / Google Play",
       "billedByStore": "Platba je bezpečně zpracována přes váš účet v obchodě s aplikacemi",
       "secureCheckout": "V aplikaci není potřeba ručně zadávat údaje platební karty"
-    }
+    },
+    "verifyingPurchase": "Nakup prijat. Overujeme vase predplatne...",
+    "verificationTakingLong": "Vas nakup se overuje. Pristup se automaticky odemkne za par sekund."
   },
   "downgrade": {
     "title": "Vyberte svého mazlíčka",

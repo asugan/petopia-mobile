@@ -674,7 +674,8 @@
     "hoursMinutes": "{{hours}}h {{minutes}}m",
     "minutesOnly": "{{minutes}}m",
     "timeLeft": "faltan {{time}}",
-    "search": "Buscar"
+    "search": "Buscar",
+    "info": "Informacion"
   },
   "errors": {
     "loadingFailed": "Carga fallida",
@@ -1557,7 +1558,9 @@
       "cancelAnytime": "Puedes cancelar en cualquier momento desde los ajustes de App Store / Google Play",
       "billedByStore": "La facturación se gestiona de forma segura a través de tu cuenta de la tienda",
       "secureCheckout": "No necesitas introducir la tarjeta manualmente dentro de la app"
-    }
+    },
+    "verifyingPurchase": "Compra recibida. Verificando tu suscripcion...",
+    "verificationTakingLong": "Tu compra se esta verificando. El acceso se desbloqueara automaticamente en unos segundos."
   },
   "downgrade": {
     "title": "Elige tu mascota",

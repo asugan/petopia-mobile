@@ -1,4 +1,4 @@
-import { useCallback } from 'react';
+import { useCallback, useState } from 'react';
 import Purchases, {
   CustomerInfo,
   PurchasesOfferings,
@@ -7,7 +7,12 @@ import Purchases, {
 import RevenueCatUI, { PAYWALL_RESULT } from 'react-native-purchases-ui';
 import { useTranslation } from 'react-i18next';
 import { useSubscriptionStore } from '@/stores/subscriptionStore';
-import { useComputedSubscriptionStatus, useRefetchSubscriptionStatus, useStartTrial } from './useSubscriptionQueries';
+import {
+  useComputedSubscriptionStatus,
+  useRefetchSubscriptionStatus,
+  useStartTrial,
+  useVerifySubscriptionStatus,
+} from './useSubscriptionQueries';
 import { getRevenueCatEntitlementIdOptional } from '@/lib/revenuecat/config';
 import { showToast } from '@/lib/toast/showToast';
 import { useTracking } from '@/lib/posthog';
@@ -39,6 +44,7 @@ export interface UseSubscriptionReturn {
   // Loading states
   isInitialized: boolean;
   isLoading: boolean;
+  isVerifyingStatus: boolean;
   error: string | null;
 
   // Actions
@@ -64,6 +70,7 @@ export interface SubscriptionActionContext {
 export function useSubscription(): UseSubscriptionReturn {
   const { t } = useTranslation();
   const { trackEvent } = useTracking();
+  const [isVerifyingStatus, setIsVerifyingStatus] = useState(false);
   const {
     customerInfo,
     isInitialized,
@@ -94,6 +101,7 @@ export function useSubscription(): UseSubscriptionReturn {
   } = useComputedSubscriptionStatus();
 
   const refetchStatusMutation = useRefetchSubscriptionStatus();
+  const verifyStatusMutation = useVerifySubscriptionStatus();
   const startTrialMutation = useStartTrial();
 
   const isSubscribed = isProUser;
@@ -142,6 +150,54 @@ export function useSubscription(): UseSubscriptionReturn {
     return false;
   }, [isInitialized, t]);
 
+  const verifyThenPollSubscriptionStatus = useCallback(
+    async (context?: SubscriptionActionContext): Promise<boolean> => {
+      const maxAttempts = 10;
+      const intervalMs = 2000;
+
+      setIsVerifyingStatus(true);
+
+      try {
+        try {
+          const verifyResult = await verifyStatusMutation.mutateAsync();
+          if (verifyResult.success && verifyResult.data?.hasActiveSubscription) {
+            return true;
+          }
+        } catch {
+        }
+
+        for (let attempt = 0; attempt < maxAttempts; attempt++) {
+          const response = await refetchStatusMutation.mutateAsync();
+          if (response.success && response.data?.hasActiveSubscription) {
+            return true;
+          }
+
+          if (attempt < maxAttempts - 1) {
+            await new Promise((resolve) => setTimeout(resolve, intervalMs));
+          }
+        }
+
+        trackSubscriptionEvent(SUBSCRIPTION_EVENTS.PAYWALL_CLOSE, context, {
+          reason: 'verification_timeout',
+        });
+
+        showToast({
+          type: 'info',
+          title: t('common.info', 'Info'),
+          message: t(
+            'subscription.verificationTakingLong',
+            'Your purchase is being verified. Access will unlock automatically in a few seconds.'
+          ),
+        });
+
+        return false;
+      } finally {
+        setIsVerifyingStatus(false);
+      }
+    },
+    [refetchStatusMutation, t, trackSubscriptionEvent, verifyStatusMutation]
+  );
+
   const presentPaywall = useCallback(
     async (offering?: PurchasesOfferings, context?: SubscriptionActionContext): Promise<boolean> => {
       try {
@@ -161,8 +217,12 @@ export function useSubscription(): UseSubscriptionReturn {
             trackSubscriptionEvent(SUBSCRIPTION_EVENTS.PURCHASE_SUCCESS, context, {
               result,
             });
-            await refetchStatusMutation.mutateAsync();
-            return true;
+            showToast({
+              type: 'info',
+              title: t('common.info', 'Info'),
+              message: t('subscription.verifyingPurchase', 'Purchase received. Verifying your subscription...'),
+            });
+            return await verifyThenPollSubscriptionStatus(context);
 
           case PAYWALL_RESULT.CANCELLED:
             trackSubscriptionEvent(SUBSCRIPTION_EVENTS.PAYWALL_CLOSE, context, {
@@ -203,7 +263,7 @@ export function useSubscription(): UseSubscriptionReturn {
         return false;
       }
     },
-    [ensureRevenueCatReady, refetchStatusMutation, t, trackSubscriptionEvent]
+    [ensureRevenueCatReady, t, trackSubscriptionEvent, verifyThenPollSubscriptionStatus]
   );
 
   const presentPaywallIfNeeded = useCallback(async (): Promise<boolean> => {
@@ -227,8 +287,7 @@ export function useSubscription(): UseSubscriptionReturn {
         result === PAYWALL_RESULT.PURCHASED ||
         result === PAYWALL_RESULT.RESTORED
       ) {
-        await refetchStatusMutation.mutateAsync();
-        return true;
+        return await verifyThenPollSubscriptionStatus();
       }
 
       return false;
@@ -240,7 +299,7 @@ export function useSubscription(): UseSubscriptionReturn {
         });
         return false;
     }
-  }, [ensureRevenueCatReady, refetchStatusMutation, t, entitlementId]);
+  }, [ensureRevenueCatReady, t, entitlementId, verifyThenPollSubscriptionStatus]);
 
   const presentCustomerCenter = useCallback(async (): Promise<void> => {
     try {
@@ -328,7 +387,8 @@ export function useSubscription(): UseSubscriptionReturn {
 
     // Loading
     isInitialized,
-    isLoading: isLoading || isPurchasing || isQueryLoading,
+    isLoading: isLoading || isPurchasing || isQueryLoading || isVerifyingStatus,
+    isVerifyingStatus,
     error: error || (queryError ? queryError.message : null),
 
     // Actions
@@ -338,6 +398,20 @@ export function useSubscription(): UseSubscriptionReturn {
     restorePurchases: async (context?: SubscriptionActionContext) => {
       trackSubscriptionEvent(SUBSCRIPTION_EVENTS.RESTORE_CLICK, context);
       const restored = await storeRestorePurchases();
+      if (restored) {
+        showToast({
+          type: 'info',
+          title: t('common.info', 'Info'),
+          message: t('subscription.verifyingPurchase', 'Purchase received. Verifying your subscription...'),
+        });
+        const verified = await verifyThenPollSubscriptionStatus(context);
+        if (!verified) {
+          trackSubscriptionEvent(SUBSCRIPTION_EVENTS.RESTORE_FAILED, context, {
+            reason: 'verification_timeout',
+          });
+          return false;
+        }
+      }
       trackSubscriptionEvent(
         restored ? SUBSCRIPTION_EVENTS.RESTORE_SUCCESS : SUBSCRIPTION_EVENTS.RESTORE_FAILED,
         context

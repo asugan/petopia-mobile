@@ -674,7 +674,8 @@
     "hoursMinutes": "{{hours}}小时 {{minutes}}分钟",
     "minutesOnly": "{{minutes}}分钟",
     "timeLeft": "剩余 {{time}}",
-    "search": "搜索"
+    "search": "搜索",
+    "info": "信息"
   },
   "errors": {
     "loadingFailed": "加载失败",
@@ -1562,7 +1563,9 @@
       "cancelAnytime": "可随时在 App Store / Google Play 设置中取消",
       "billedByStore": "账单将通过您的应用商店账户安全处理",
       "secureCheckout": "无需在应用内手动输入信用卡信息"
-    }
+    },
+    "verifyingPurchase": "已收到购买请求，正在验证您的订阅...",
+    "verificationTakingLong": "正在验证您的购买，访问权限将在几秒内自动开通。"
   },
   "downgrade": {
     "title": "选择您的宠物",

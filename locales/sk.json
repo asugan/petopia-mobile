@@ -674,7 +674,8 @@
     "hoursMinutes": "{{hours}}h {{minutes}}m",
     "minutesOnly": "{{minutes}}m",
     "timeLeft": "zostáva {{time}}",
-    "search": "Hľadať"
+    "search": "Hľadať",
+    "info": "Informacia"
   },
   "errors": {
     "loadingFailed": "Načítanie zlyhalo",
@@ -1562,7 +1563,9 @@
       "cancelAnytime": "Predplatné môžete kedykoľvek zrušiť v nastaveniach App Store / Google Play",
       "billedByStore": "Platba sa bezpečne spracúva cez váš účet v obchode s aplikáciami",
       "secureCheckout": "V aplikácii nie je potrebné ručne zadávať údaje karty"
-    }
+    },
+    "verifyingPurchase": "Nakup prijaty. Overujeme vase predplatne...",
+    "verificationTakingLong": "Vas nakup sa overuje. Pristup sa automaticky odomkne o niekolko sekund."
   },
   "downgrade": {
     "title": "Vyberte si svoje zvieratko",

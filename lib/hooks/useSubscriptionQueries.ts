@@ -20,7 +20,7 @@ export function useSubscriptionStatus() {
     queryKey: subscriptionKeys.status(userId),
     queryFn: () => subscriptionApiService.getSubscriptionStatus(),
     enabled,
-    staleTime: CACHE_TIMES.MEDIUM, // 5 minutes
+    staleTime: CACHE_TIMES.VERY_SHORT, // 30 seconds
     gcTime: CACHE_TIMES.LONG,      // 15 minutes
     defaultValue: {
       hasActiveSubscription: false,
@@ -60,6 +60,21 @@ export function useRefetchSubscriptionStatus() {
 
   return useMutation({
     mutationFn: () => subscriptionApiService.getSubscriptionStatus({ bypassCache: true }),
+    onSuccess: (response) => {
+      if (response.success && response.data) {
+        queryClient.setQueryData(subscriptionKeys.status(userId), response.data);
+      }
+      queryClient.invalidateQueries({ predicate: (query) => query.queryKey[0] === 'subscription' && query.queryKey[1] === 'status' });
+    },
+  });
+}
+
+export function useVerifySubscriptionStatus() {
+  const queryClient = useQueryClient();
+  const { userId } = useAuthQueryEnabled();
+
+  return useMutation({
+    mutationFn: () => subscriptionApiService.verifySubscription(),
     onSuccess: (response) => {
       if (response.success && response.data) {
         queryClient.setQueryData(subscriptionKeys.status(userId), response.data);

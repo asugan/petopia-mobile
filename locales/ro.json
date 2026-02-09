@@ -674,7 +674,8 @@
     "hoursMinutes": "{{hours}}h {{minutes}}m",
     "minutesOnly": "{{minutes}}m",
     "timeLeft": "{{time}} rămas",
-    "search": "Caută"
+    "search": "Caută",
+    "info": "Informatii"
   },
   "errors": {
     "loadingFailed": "Încărcare eșuată",
@@ -1562,7 +1563,9 @@
       "cancelAnytime": "Poți anula oricând din setările App Store / Google Play",
       "billedByStore": "Facturarea este procesată în siguranță prin contul tău din magazinul de aplicații",
       "secureCheckout": "Nu este necesară introducerea manuală a cardului în aplicație"
-    }
+    },
+    "verifyingPurchase": "Achizitie primita. Se verifica abonamentul tau...",
+    "verificationTakingLong": "Achizitia ta este verificata. Accesul va fi deblocat automat in cateva secunde."
   },
   "downgrade": {
     "title": "Alege-ți animalul",

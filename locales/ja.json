@@ -674,7 +674,8 @@
     "hoursMinutes": "{{hours}}時間 {{minutes}}分",
     "minutesOnly": "{{minutes}}分",
     "timeLeft": "残り{{time}}",
-    "search": "検索"
+    "search": "検索",
+    "info": "情報"
   },
   "errors": {
     "loadingFailed": "読み込み失敗",
@@ -1562,7 +1563,9 @@
       "cancelAnytime": "App Store / Google Play の設定からいつでも解約できます",
       "billedByStore": "請求はアプリストアのアカウントを通じて安全に処理されます",
       "secureCheckout": "アプリ内でクレジットカード情報を手入力する必要はありません"
-    }
+    },
+    "verifyingPurchase": "購入を受け付けました。サブスクリプションを確認しています...",
+    "verificationTakingLong": "購入を確認しています。数秒後にアクセスが自動的に有効になります。"
   },
   "downgrade": {
     "title": "ペットを選択",

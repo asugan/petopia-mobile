@@ -674,7 +674,8 @@
     "hoursMinutes": "{{hours}}t {{minutes}}m",
     "minutesOnly": "{{minutes}}m",
     "timeLeft": "{{time}} igjen",
-    "search": "Søk"
+    "search": "Søk",
+    "info": "Info"
   },
   "errors": {
     "loadingFailed": "Lasting feilet",
@@ -1562,7 +1563,9 @@
       "cancelAnytime": "Du kan når som helst avslutte i innstillingene for App Store / Google Play",
       "billedByStore": "Fakturering håndteres trygt via appbutikk-kontoen din",
       "secureCheckout": "Du trenger ikke å skrive inn kortinformasjon manuelt i appen"
-    }
+    },
+    "verifyingPurchase": "Kjop mottatt. Verifiserer abonnementet ditt...",
+    "verificationTakingLong": "Kjopet ditt verifiseres. Tilgang blir automatisk last opp om noen sekunder."
   },
   "downgrade": {
     "title": "Velg ditt kjæledyr",

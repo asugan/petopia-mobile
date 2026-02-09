@@ -674,7 +674,8 @@
     "hoursMinutes": "{{hours}}u {{minutes}}m",
     "minutesOnly": "{{minutes}}m",
     "timeLeft": "{{time}} over",
-    "search": "Zoeken"
+    "search": "Zoeken",
+    "info": "Info"
   },
   "errors": {
     "loadingFailed": "Laden Mislukt",
@@ -1562,7 +1563,9 @@
       "cancelAnytime": "Je kunt op elk moment opzeggen via de instellingen van App Store / Google Play",
       "billedByStore": "Facturatie wordt veilig afgehandeld via je appstore-account",
       "secureCheckout": "Geen handmatige invoer van creditcardgegevens in de app nodig"
-    }
+    },
+    "verifyingPurchase": "Aankoop ontvangen. We verifieren je abonnement...",
+    "verificationTakingLong": "Je aankoop wordt geverifieerd. Toegang wordt binnen enkele seconden automatisch ontgrendeld."
   },
   "downgrade": {
     "title": "Kies Je Huisdier",

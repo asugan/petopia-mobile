@@ -674,7 +674,8 @@
     "hoursMinutes": "{{hours}}j {{minutes}}m",
     "minutesOnly": "{{minutes}}m",
     "timeLeft": "{{time}} tersisa",
-    "search": "Cari"
+    "search": "Cari",
+    "info": "Info"
   },
   "errors": {
     "loadingFailed": "Gagal Memuat",
@@ -1575,6 +1576,8 @@
       "cancelAnytime": "Batalkan kapan saja dari pengaturan App Store / Google Play",
       "billedByStore": "Penagihan diproses dengan aman melalui akun toko aplikasi Anda",
       "secureCheckout": "Tidak perlu memasukkan detail kartu kredit secara manual di dalam aplikasi"
-    }
+    },
+    "verifyingPurchase": "Pembelian diterima. Sedang memverifikasi langganan Anda...",
+    "verificationTakingLong": "Pembelian Anda sedang diverifikasi. Akses akan terbuka otomatis dalam beberapa detik."
   }
 }

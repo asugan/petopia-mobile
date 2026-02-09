@@ -34,6 +34,7 @@ export default function SubscriptionScreen() {
   const {
     isPaidSubscription,
     isLoading,
+    isVerifyingStatus,
     restorePurchases,
     presentPaywall,
     canStartTrial,
@@ -207,6 +208,11 @@ export default function SubscriptionScreen() {
 
         {/* Restore Purchases */}
         <View style={styles.restoreContainer}>
+          {isVerifyingStatus && (
+            <Text variant="bodySmall" style={{ color: theme.colors.onSurfaceVariant }}>
+              {t('subscription.verifyingPurchase', 'Purchase received. Verifying your subscription...')}
+            </Text>
+          )}
           <Button
             mode="text"
             onPress={handleRestore}
