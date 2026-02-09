@@ -9,7 +9,6 @@ import { useAuthQueryEnabled } from './useAuthQueryEnabled';
 import { FeedingSchedule } from '../types';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { CACHE_TIMES } from '../config/queryConfig';
-import { toZonedTime, fromZonedTime, formatInTimeZone } from 'date-fns-tz';
 
 // ============================================================================
 // QUERY KEYS
@@ -95,69 +94,6 @@ export function useFeedingReminders() {
   const queryClient = useQueryClient();
   const remindedSchedules = useRef<Record<string, boolean>>({});
 
-  // Get user timezone from settings
-  const userTimezone = useUserSettingsStore(
-    (state) => state.settings?.timezone ?? 'UTC'
-  );
-
-  /**
-   * Calculate next feeding time with timezone awareness
-   * Mirrors backend logic from feedingReminderService.ts
-   */
-  const calculateNextFeedingTime = useCallback(
-    (time: string, days: string): Date | null => {
-      const now = new Date();
-      const [hours, minutes] = time.split(':').map(Number);
-
-      if (hours === undefined || minutes === undefined) {
-        return null;
-      }
-
-      const dayNames = [
-        'sunday',
-        'monday',
-        'tuesday',
-        'wednesday',
-        'thursday',
-        'friday',
-        'saturday',
-      ];
-
-      // Get current date in user's timezone
-      const nowInTz = toZonedTime(now, userTimezone);
-      const todayDayIndex = nowInTz.getDay();
-      const todayName = dayNames[todayDayIndex] ?? 'sunday';
-
-      // Get today's date string in user's timezone
-      const todayDateStr = formatInTimeZone(now, userTimezone, 'yyyy-MM-dd');
-
-      // Build today's feeding time in user's timezone and convert to UTC
-      const todayFeedingTimeUTC = fromZonedTime(`${todayDateStr}T${time}:00`, userTimezone);
-
-      // Check if today is a scheduled day and feeding time hasn't passed
-      if (days.toLowerCase().includes(todayName) && todayFeedingTimeUTC > now) {
-        return todayFeedingTimeUTC;
-      }
-
-      // Find the next scheduled day
-      for (let i = 1; i <= 7; i++) {
-        const nextDayDate = new Date(nowInTz);
-        nextDayDate.setDate(nowInTz.getDate() + i);
-        const nextDayIndex = nextDayDate.getDay();
-        const nextDayName = dayNames[nextDayIndex] ?? 'sunday';
-
-        if (days.toLowerCase().includes(nextDayName)) {
-          const nextDayDateStr = formatInTimeZone(nextDayDate, userTimezone, 'yyyy-MM-dd');
-          const nextFeedingTimeUTC = fromZonedTime(`${nextDayDateStr}T${time}:00`, userTimezone);
-          return nextFeedingTimeUTC;
-        }
-      }
-
-      return null;
-    },
-    [userTimezone]
-  );
-
   // Check if push token is registered with backend
   const checkPushTokenStatus = useCallback(async () => {
     try {
@@ -216,27 +152,7 @@ export function useFeedingReminders() {
         return null;
       }
 
-      // Calculate next feeding time with timezone awareness
-      const feedingTime = calculateNextFeedingTime(schedule.time, schedule.days);
-      if (!feedingTime) {
-        return null;
-      }
-
-      // Calculate reminder time
-      const reminderTime = new Date(feedingTime.getTime() - reminderMinutes * 60 * 1000);
-
-      // Don't schedule if reminder time is in the past
-      if (reminderTime <= new Date()) {
-        return null;
-      }
-
-      // Create schedule object with calculated feeding time for notification service
-      const scheduleWithTime = {
-        ...schedule,
-        time: feedingTime.toISOString(),
-      };
-
-      const notificationId = await scheduleFeedingReminder(scheduleWithTime, reminderMinutes);
+      const notificationId = await scheduleFeedingReminder(schedule, reminderMinutes);
 
       if (notificationId) {
         remindedSchedules.current[scheduleKey] = true;
@@ -246,7 +162,7 @@ export function useFeedingReminders() {
 
       return notificationId;
     },
-    [enabled, pushTokenRegistered, calculateNextFeedingTime]
+    [enabled, pushTokenRegistered]
   );
 
   /**

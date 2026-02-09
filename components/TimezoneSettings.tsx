@@ -8,9 +8,9 @@ import { Text } from '@/components/ui/Text';
 import { useTheme } from '@/lib/theme';
 import { useUserSettingsStore } from '@/stores/userSettingsStore';
 import {
-  detectDeviceTimezone,
   formatTimezoneLabel,
   getSupportedTimezones,
+  resolveEffectiveTimezone,
 } from '@/lib/utils/timezone';
 
 interface TimezoneSettingsProps {
@@ -30,8 +30,9 @@ export function TimezoneSettings({
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [searchValue, setSearchValue] = useState('');
 
-  const currentTimezone =
-    externalSelectedTimezone || settings?.timezone || detectDeviceTimezone();
+  const currentTimezone = resolveEffectiveTimezone(
+    externalSelectedTimezone ?? settings?.timezone
+  );
 
   const supportedTimezones = useMemo(() => getSupportedTimezones(), []);
 

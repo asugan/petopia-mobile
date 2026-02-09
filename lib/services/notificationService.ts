@@ -10,7 +10,9 @@ import i18n from '@/lib/i18n';
 import * as SecureStore from 'expo-secure-store';
 import { api } from '../api/client';
 import { useUserSettingsStore } from '@/stores/userSettingsStore';
-import { toZonedTime, fromZonedTime, formatInTimeZone } from 'date-fns-tz';
+import { toZonedTime, fromZonedTime } from 'date-fns-tz';
+import { calculateNextFeedingTime } from '@/lib/utils/feedingReminderTime';
+import { resolveEffectiveTimezone } from '@/lib/utils/timezone';
 
 /**
  * Notification Service - Handles all push notification operations
@@ -149,7 +151,7 @@ export class NotificationService {
 
   private getUserTimezone(): string {
     const settings = useUserSettingsStore.getState().settings;
-    return settings?.timezone || Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC';
+    return resolveEffectiveTimezone(settings?.timezone);
   }
 
   private async setPushRegistrationCache(isRegistered: boolean): Promise<void> {
@@ -173,51 +175,6 @@ export class NotificationService {
     const isFresh = Number.isFinite(verifiedAt) && Date.now() - verifiedAt < this.pushRegistrationCacheTtlMs;
 
     return { isRegistered, isFresh };
-  }
-
-  private calculateNextFeedingTime(time: string, days: string, timezone: string): Date | null {
-    const now = new Date();
-    const [hours, minutes] = time.split(':').map(Number);
-
-    if (hours === undefined || minutes === undefined) {
-      return null;
-    }
-
-    const dayNames = [
-      'sunday',
-      'monday',
-      'tuesday',
-      'wednesday',
-      'thursday',
-      'friday',
-      'saturday',
-    ];
-
-    const nowInTz = toZonedTime(now, timezone);
-    const todayDayIndex = nowInTz.getDay();
-    const todayName = dayNames[todayDayIndex] ?? 'sunday';
-    const normalizedDays = days.toLowerCase();
-
-    const todayDateStr = formatInTimeZone(now, timezone, 'yyyy-MM-dd');
-    const todayFeedingTimeUTC = fromZonedTime(`${todayDateStr}T${time}:00`, timezone);
-
-    if (normalizedDays.includes(todayName) && todayFeedingTimeUTC > now) {
-      return todayFeedingTimeUTC;
-    }
-
-    for (let i = 1; i <= 7; i++) {
-      const nextDayDate = new Date(nowInTz);
-      nextDayDate.setDate(nowInTz.getDate() + i);
-      const nextDayIndex = nextDayDate.getDay();
-      const nextDayName = dayNames[nextDayIndex] ?? 'sunday';
-
-      if (normalizedDays.includes(nextDayName)) {
-        const nextDayDateStr = formatInTimeZone(nextDayDate, timezone, 'yyyy-MM-dd');
-        return fromZonedTime(`${nextDayDateStr}T${time}:00`, timezone);
-      }
-    }
-
-    return null;
   }
 
   setNavigationHandler(handler: (target: Href) => void) {
@@ -571,7 +528,7 @@ export class NotificationService {
       const timezone = this.getUserTimezone();
       const parsedFeedingTime = new Date(schedule.time);
       const feedingTime = Number.isNaN(parsedFeedingTime.getTime())
-        ? (schedule.days ? this.calculateNextFeedingTime(schedule.time, schedule.days, timezone) : null)
+        ? (schedule.days ? calculateNextFeedingTime(schedule.time, schedule.days, timezone) : null)
         : parsedFeedingTime;
 
       if (!feedingTime) {
@@ -787,8 +744,7 @@ export class NotificationService {
    * Push triggers out of quiet hours (22:00–08:00)
    */
   private adjustForQuietHours(triggerDate: Date): Date {
-    const settings = useUserSettingsStore.getState().settings;
-    const timezone = settings?.timezone || Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC';
+    const timezone = this.getUserTimezone();
     
     // Convert absolute trigger time to user's wall-clock time
     const zonedTrigger = toZonedTime(triggerDate, timezone);
@@ -1078,7 +1034,7 @@ export const sendTestNotification = () =>
 
 // Feeding reminder exports
 export const scheduleFeedingReminder = (
-  schedule: { _id: string; petId: string; time: string; foodType: string; amount: string },
+  schedule: { _id: string; petId: string; time: string; foodType: string; amount: string; days?: string },
   reminderMinutes?: number
 ) => notificationService.scheduleFeedingReminder(schedule, reminderMinutes);
 

@@ -282,8 +282,7 @@ function RootLayoutContent() {
     }
 
     const rescheduleUpcomingReminders = async () => {
-      const deviceTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
-      const safeDeviceTimezone = deviceTimezone || detectDeviceTimezone();
+      const safeDeviceTimezone = detectDeviceTimezone();
       const storedTimezone = await AsyncStorage.getItem(TIMEZONE_STORAGE_KEY);
       const timezoneForSignature = safeDeviceTimezone || storedTimezone || 'unknown';
 
