@@ -494,6 +494,8 @@
     "appSettings": "הגדרות אפליקציה",
     "notifications": "התראות",
     "reminderNotifications": "אפשר תזכורות",
+    "feedingReminders": "תזכורות האכלה",
+    "feedingRemindersDescription": "התראות תזכורת לארוחות עבור לוחות האכלה פעילים",
     "budgetNotifications": "התראות תקציב",
     "budgetNotificationsDescription": "התראות כשמתקרבים למגבלת התקציב",
     "quietHours": "שעות שקט",

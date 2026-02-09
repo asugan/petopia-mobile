@@ -494,6 +494,8 @@
     "appSettings": "Configurações do App",
     "notifications": "Notificações",
     "reminderNotifications": "Ativar lembretes",
+    "feedingReminders": "Lembretes de alimentação",
+    "feedingRemindersDescription": "Notificações de lembrete de refeição para cronogramas de alimentação ativos",
     "budgetNotifications": "Alertas de orçamento",
     "budgetNotificationsDescription": "Avisar quando o gasto estiver alto",
     "quietHours": "Horas de Silêncio",

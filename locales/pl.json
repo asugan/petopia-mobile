@@ -494,6 +494,8 @@
     "appSettings": "Ustawienia aplikacji",
     "notifications": "Powiadomienia",
     "reminderNotifications": "Włącz powiadomienia przypomnień",
+    "feedingReminders": "Przypomnienia karmienia",
+    "feedingRemindersDescription": "Powiadomienia o przypomnieniach posiłków dla aktywnych harmonogramów karmienia",
     "budgetNotifications": "Powiadomienia o budżecie",
     "budgetNotificationsDescription": "Alerty o zbliżaniu się do limitu budżetu",
     "quietHours": "Ciche godziny",

@@ -494,6 +494,8 @@
     "appSettings": "Paramètres de l'application",
     "notifications": "Notifications",
     "reminderNotifications": "Activer les notifications de rappel",
+    "feedingReminders": "Rappels d'alimentation",
+    "feedingRemindersDescription": "Notifications de rappel de repas pour les programmes d'alimentation actifs",
     "budgetNotifications": "Notifications de budget",
     "budgetNotificationsDescription": "Alertes quand vous approchez de votre limite budgétaire",
     "quietHours": "Heures calmes",

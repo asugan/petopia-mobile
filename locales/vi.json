@@ -494,6 +494,8 @@
     "appSettings": "Cài đặt ứng dụng",
     "notifications": "Thông báo",
     "reminderNotifications": "Bật thông báo nhắc nhở",
+    "feedingReminders": "Nhắc nhở cho ăn",
+    "feedingRemindersDescription": "Thông báo nhắc bữa ăn cho lịch cho ăn đang hoạt động",
     "budgetNotifications": "Thông báo ngân sách",
     "budgetNotificationsDescription": "Cảnh báo khi bạn sắp đạt giới hạn ngân sách",
     "quietHours": "Giờ yên tĩnh",

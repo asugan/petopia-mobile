@@ -494,6 +494,8 @@
     "appSettings": "การตั้งค่าแอป",
     "notifications": "การแจ้งเตือน",
     "reminderNotifications": "เปิดใช้งานการแจ้งเตือนการเตือนความจำ",
+    "feedingReminders": "การแจ้งเตือนการให้อาหาร",
+    "feedingRemindersDescription": "การแจ้งเตือนมื้ออาหารสำหรับตารางการให้อาหารที่ใช้งานอยู่",
     "budgetNotifications": "การแจ้งเตือนงบประมาณ",
     "budgetNotificationsDescription": "แจ้งเตือนเมื่อคุณเข้าใกล้ขีดจำกัดงบประมาณ",
     "quietHours": "ช่วงเวลาเงียบ",

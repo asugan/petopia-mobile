@@ -494,6 +494,8 @@
     "appSettings": "App-innstillinger",
     "notifications": "Varslinger",
     "reminderNotifications": "Aktiver påminnelsesvarsler",
+    "feedingReminders": "Fôringspåminnelser",
+    "feedingRemindersDescription": "Påminnelsesvarsler om måltider for aktive fôringsplaner",
     "budgetNotifications": "Budsjettvarsler",
     "budgetNotificationsDescription": "Varsler når du nærmer deg budsjettgrensen din",
     "quietHours": "Stilletid",

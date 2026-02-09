@@ -494,6 +494,8 @@
     "appSettings": "ऐप सेटिंग्स",
     "notifications": "सूचनाएं",
     "reminderNotifications": "अनुस्मारक सूचनाएं सक्षम करें",
+    "feedingReminders": "भोजन अनुस्मारक",
+    "feedingRemindersDescription": "सक्रिय फीडिंग शेड्यूल के लिए भोजन रिमाइंडर सूचनाएं",
     "budgetNotifications": "बजट सूचनाएं",
     "budgetNotificationsDescription": "जब आप अपनी बजट सीमा के करीब हों तो अलर्ट",
     "quietHours": "शांत घंटे",

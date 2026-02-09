@@ -494,6 +494,8 @@
     "appSettings": "Настройки приложения",
     "notifications": "Уведомления",
     "reminderNotifications": "Включить уведомления-напоминания",
+    "feedingReminders": "Напоминания о кормлении",
+    "feedingRemindersDescription": "Уведомления-напоминания о приемах пищи для активных графиков кормления",
     "budgetNotifications": "Уведомления о бюджете",
     "budgetNotificationsDescription": "Оповещать при приближении к лимиту бюджета",
     "quietHours": "Режим тишины",

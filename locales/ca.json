@@ -494,6 +494,8 @@
     "appSettings": "Configuració de l'aplicació",
     "notifications": "Notificacions",
     "reminderNotifications": "Activa recordatoris",
+    "feedingReminders": "Recordatoris d'alimentació",
+    "feedingRemindersDescription": "Notificacions de recordatori d'àpats per als plans d'alimentació actius",
     "budgetNotifications": "Notificacions de pressupost",
     "budgetNotificationsDescription": "Alertes quan t'acostis al teu límit de pressupost",
     "quietHours": "Hores de silenci",

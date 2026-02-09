@@ -494,6 +494,8 @@
     "appSettings": "Uygulama Ayarları",
     "notifications": "Bildirimler",
     "reminderNotifications": "Hatırlatıcı bildirimleri etkinleştir",
+    "feedingReminders": "Beslenme hatırlatıcıları",
+    "feedingRemindersDescription": "Aktif beslenme programları için öğün hatırlatma bildirimleri",
     "budgetNotifications": "Bütçe bildirimleri",
     "budgetNotificationsDescription": "Bütçe limitine yaklaştığında uyarı ver",
     "quietHours": "Sessiz Saatler",

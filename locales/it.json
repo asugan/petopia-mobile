@@ -494,6 +494,8 @@
     "appSettings": "Impostazioni App",
     "notifications": "Notifiche",
     "reminderNotifications": "Abilita notifiche promemoria",
+    "feedingReminders": "Promemoria alimentazione",
+    "feedingRemindersDescription": "Notifiche promemoria dei pasti per i piani di alimentazione attivi",
     "budgetNotifications": "Notifiche budget",
     "budgetNotificationsDescription": "Avvisi quando ti avvicini al limite del tuo budget",
     "quietHours": "Ore di Silenzio",

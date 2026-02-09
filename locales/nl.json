@@ -494,6 +494,8 @@
     "appSettings": "App Instellingen",
     "notifications": "Meldingen",
     "reminderNotifications": "Herinneringsmeldingen inschakelen",
+    "feedingReminders": "Voedingsherinneringen",
+    "feedingRemindersDescription": "Maaltijdherinneringsmeldingen voor actieve voedingsschema's",
     "budgetNotifications": "Budgetmeldingen",
     "budgetNotificationsDescription": "Meldingen wanneer je de budgetlimiet nadert",
     "quietHours": "Stille Uren",

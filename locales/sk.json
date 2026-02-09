@@ -494,6 +494,8 @@
     "appSettings": "Nastavenia aplikácie",
     "notifications": "Upozornenia",
     "reminderNotifications": "Povoliť upozornenia pripomienok",
+    "feedingReminders": "Pripomienky kŕmenia",
+    "feedingRemindersDescription": "Upozornenia na pripomenutie jedla pre aktívne plány kŕmenia",
     "budgetNotifications": "Upozornenia na rozpočet",
     "budgetNotificationsDescription": "Upozornenia, keď sa blížite k limitu rozpočtu",
     "quietHours": "Tiché hodiny",

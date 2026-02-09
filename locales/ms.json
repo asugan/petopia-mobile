@@ -494,6 +494,8 @@
     "appSettings": "Tetapan Aplikasi",
     "notifications": "Notifikasi",
     "reminderNotifications": "Aktifkan notifikasi peringatan",
+    "feedingReminders": "Peringatan pemberian makan",
+    "feedingRemindersDescription": "Pemberitahuan peringatan waktu makan untuk jadual pemberian makan aktif",
     "budgetNotifications": "Notifikasi bajet",
     "budgetNotificationsDescription": "Amaran apabila anda menghampiri had bajet",
     "quietHours": "Waktu Tenang",

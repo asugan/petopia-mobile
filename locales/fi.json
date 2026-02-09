@@ -494,6 +494,8 @@
     "appSettings": "Sovelluksen asetukset",
     "notifications": "Ilmoitukset",
     "reminderNotifications": "Ota muistutusilmoitukset käyttöön",
+    "feedingReminders": "Ruokintamuistutukset",
+    "feedingRemindersDescription": "Ateriamuistutusilmoitukset aktiivisille ruokinta-aikatauluille",
     "budgetNotifications": "Budjetti-ilmoitukset",
     "budgetNotificationsDescription": "Hälytykset, kun lähestyt budjettirajaa",
     "quietHours": "Hiljaiset tunnit",

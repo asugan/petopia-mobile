@@ -494,6 +494,8 @@
     "appSettings": "앱 설정",
     "notifications": "알림",
     "reminderNotifications": "리마인더 알림 활성화",
+    "feedingReminders": "급식 알림",
+    "feedingRemindersDescription": "활성 급식 일정에 대한 식사 리마인더 알림",
     "budgetNotifications": "예산 알림",
     "budgetNotificationsDescription": "예산 한도에 도달하면 알림 받기",
     "quietHours": "방해 금지 시간",

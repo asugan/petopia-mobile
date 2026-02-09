@@ -494,6 +494,8 @@
     "appSettings": "App-Einstellungen",
     "notifications": "Benachrichtigungen",
     "reminderNotifications": "Erinnerungs-Benachrichtigungen aktivieren",
+    "feedingReminders": "Fütterungserinnerungen",
+    "feedingRemindersDescription": "Mahlzeit-Erinnerungsbenachrichtigungen für aktive Fütterungspläne",
     "budgetNotifications": "Budget-Benachrichtigungen",
     "budgetNotificationsDescription": "Warnung bei Erreichen des Budgetlimits",
     "quietHours": "Ruhezeiten",

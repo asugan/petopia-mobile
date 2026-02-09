@@ -494,6 +494,8 @@
     "appSettings": "アプリ設定",
     "notifications": "通知",
     "reminderNotifications": "リマインダー通知を有効化",
+    "feedingReminders": "給餌リマインダー",
+    "feedingRemindersDescription": "有効な給餌スケジュールの食事リマインダー通知",
     "budgetNotifications": "予算通知",
     "budgetNotificationsDescription": "予算制限に近づいたときにアラート",
     "quietHours": "サイレント時間",

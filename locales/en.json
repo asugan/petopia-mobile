@@ -494,6 +494,8 @@
     "appSettings": "App Settings",
     "notifications": "Notifications",
     "reminderNotifications": "Enable reminder notifications",
+    "feedingReminders": "Feeding reminders",
+    "feedingRemindersDescription": "Meal reminder notifications for active feeding schedules",
     "budgetNotifications": "Budget notifications",
     "budgetNotificationsDescription": "Alerts when you approach your budget limit",
     "quietHours": "Quiet Hours",

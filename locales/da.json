@@ -494,6 +494,8 @@
     "appSettings": "App-indstillinger",
     "notifications": "Underretninger",
     "reminderNotifications": "Aktiver påmindelsesunderretninger",
+    "feedingReminders": "Fodringspåmindelser",
+    "feedingRemindersDescription": "Måltidspåmindelser for aktive fodringsplaner",
     "budgetNotifications": "Budgetunderretninger",
     "budgetNotificationsDescription": "Advarsler, når du nærmer dig din budgetgrænse",
     "quietHours": "Stilletid",

@@ -494,6 +494,8 @@
     "appSettings": "Ρυθμίσεις Εφαρμογής",
     "notifications": "Ειδοποιήσεις",
     "reminderNotifications": "Ενεργοποίηση υπενθυμίσεων",
+    "feedingReminders": "Υπενθυμίσεις σίτισης",
+    "feedingRemindersDescription": "Ειδοποιήσεις υπενθύμισης γευμάτων για ενεργά προγράμματα σίτισης",
     "budgetNotifications": "Ειδοποιήσεις προϋπολογισμού",
     "budgetNotificationsDescription": "Ειδοποιήσεις όταν πλησιάζετε το όριο του προϋπολογισμού σας",
     "quietHours": "Ώρες Κοινής Ησυχίας",

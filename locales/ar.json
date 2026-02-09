@@ -494,6 +494,8 @@
     "appSettings": "إعدادات التطبيق",
     "notifications": "الإشعارات",
     "reminderNotifications": "تفعيل إشعارات التذكير",
+    "feedingReminders": "تذكيرات التغذية",
+    "feedingRemindersDescription": "إشعارات تذكير الوجبات لخطط التغذية النشطة",
     "budgetNotifications": "إشعارات الميزانية",
     "budgetNotificationsDescription": "تنبيهات عندما تقترب من حد ميزانيتك",
     "quietHours": "ساعات الهدوء",

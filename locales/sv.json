@@ -494,6 +494,8 @@
     "appSettings": "Appinställningar",
     "notifications": "Aviseringar",
     "reminderNotifications": "Aktivera påminnelseaviseringar",
+    "feedingReminders": "Matningspåminnelser",
+    "feedingRemindersDescription": "Aviseringar om måltidspåminnelser för aktiva matningsscheman",
     "budgetNotifications": "Budgetaviseringar",
     "budgetNotificationsDescription": "Varningar när du närmar dig din budgetgräns",
     "quietHours": "Tysta timmar",

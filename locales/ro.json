@@ -494,6 +494,8 @@
     "appSettings": "Setări aplicație",
     "notifications": "Notificări",
     "reminderNotifications": "Activează notificările memento",
+    "feedingReminders": "Mementouri de hrănire",
+    "feedingRemindersDescription": "Notificări de reamintire a meselor pentru programele active de hrănire",
     "budgetNotifications": "Notificări buget",
     "budgetNotificationsDescription": "Alerte când te apropii de limita bugetului",
     "quietHours": "Ore de liniște",

@@ -494,6 +494,8 @@
     "appSettings": "应用设置",
     "notifications": "通知",
     "reminderNotifications": "启用提醒通知",
+    "feedingReminders": "喂食提醒",
+    "feedingRemindersDescription": "针对启用中的喂食计划的进食提醒通知",
     "budgetNotifications": "预算通知",
     "budgetNotificationsDescription": "接近预算限额时发出警报",
     "quietHours": "静音时间",

@@ -494,6 +494,8 @@
     "appSettings": "Postavke aplikacije",
     "notifications": "Obavijesti",
     "reminderNotifications": "Omogući podsjetnike",
+    "feedingReminders": "Podsjetnici za hranjenje",
+    "feedingRemindersDescription": "Obavijesti podsjetnika za obroke za aktivne rasporede hranjenja",
     "budgetNotifications": "Obavijesti o proračunu",
     "budgetNotificationsDescription": "Upozorenja kada se približite limitu proračuna",
     "quietHours": "Vrijeme mirovanja",

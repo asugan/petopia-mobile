@@ -494,6 +494,8 @@
     "appSettings": "Alkalmazás beállításai",
     "notifications": "Értesítések",
     "reminderNotifications": "Emlékeztetők engedélyezése",
+    "feedingReminders": "Etetési emlékeztetők",
+    "feedingRemindersDescription": "Étkezési emlékeztető értesítések az aktív etetési ütemtervekhez",
     "budgetNotifications": "Költségvetési értesítések",
     "budgetNotificationsDescription": "Riasztás, ha megközelíti a keretet",
     "quietHours": "Csendes órák",
