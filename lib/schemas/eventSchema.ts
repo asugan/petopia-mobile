@@ -1,6 +1,6 @@
 import { z } from 'zod';
 import { EVENT_TYPES } from '@/constants';
-import { combineDateTimeToISO } from '@/lib/utils/dateConversion';
+import { combineDateTimeToISO, dateOnlyToUTCMidnightISOString } from '@/lib/utils/dateConversion';
 import { utcDateStringSchema } from '@/lib/schemas/core/dateSchemas';
 import { t } from '@/lib/schemas/core/i18n';
 import { objectIdSchema } from '@/lib/schemas/core/validators';
@@ -402,9 +402,7 @@ export const transformFormDataToRecurrenceRule = (
     throw new Error('Recurrence settings are required for recurring events');
   }
 
-  // Build start date from form date (use the date part only, time comes from recurrence settings)
-  const startDate = new Date(formData.startDate);
-  startDate.setHours(0, 0, 0, 0);
+  const recurrenceStartDate = dateOnlyToUTCMidnightISOString(formData.startDate);
 
   return {
     petId: formData.petId,
@@ -432,7 +430,7 @@ export const transformFormDataToRecurrenceRule = (
     timezone: formData.recurrence.timezone!,
 
     // Date boundaries
-    startDate: startDate.toISOString(),
+    startDate: recurrenceStartDate,
     endDate: formData.recurrence.endDate 
       ? new Date(formData.recurrence.endDate).toISOString() 
       : undefined,

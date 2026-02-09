@@ -85,6 +85,36 @@ export function combineDateTimeToISO(dateStr: string, timeStr: string): string {
 }
 
 /**
+ * Convert a date-only string (YYYY-MM-DD) to UTC midnight ISO string.
+ * This avoids local timezone shifts that can move the calendar day.
+ */
+export function dateOnlyToUTCMidnightISOString(dateStr: string): string {
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(dateStr)) {
+    throw new Error('Invalid date format. Expected YYYY-MM-DD');
+  }
+
+  const [yearStr, monthStr, dayStr] = dateStr.split('-');
+  const year = Number(yearStr);
+  const month = Number(monthStr);
+  const day = Number(dayStr);
+
+  if (!Number.isInteger(year) || !Number.isInteger(month) || !Number.isInteger(day)) {
+    throw new Error('Invalid date value');
+  }
+
+  const utcDate = new Date(Date.UTC(year, month - 1, day, 0, 0, 0, 0));
+  if (
+    utcDate.getUTCFullYear() !== year ||
+    utcDate.getUTCMonth() !== month - 1 ||
+    utcDate.getUTCDate() !== day
+  ) {
+    throw new Error('Invalid date value');
+  }
+
+  return utcDate.toISOString();
+}
+
+/**
  * Parse ISO 8601 string to Date object for display purposes
  * @param isoString - ISO 8601 datetime string
  * @returns Date object or null if invalid
