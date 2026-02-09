@@ -39,7 +39,7 @@ describe('usePrefetchData timezone behavior', () => {
     result.current.prefetchForCalendarTab('2026-02-05');
 
     expect(prefetchSpy).toHaveBeenCalledWith(
-      expect.objectContaining({ queryKey: eventKeys.today() })
+      expect.objectContaining({ queryKey: eventKeys.todayScoped('Europe/Istanbul') })
     );
     expect(prefetchSpy).toHaveBeenCalledWith(
       expect.objectContaining({

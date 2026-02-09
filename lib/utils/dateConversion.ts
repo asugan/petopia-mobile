@@ -60,6 +60,51 @@ export function toTimeString(date: Date | null | undefined): string | undefined 
 }
 
 /**
+ * Convert Date object to datetime-local input value (YYYY-MM-DDTHH:MM)
+ * using local date/time components.
+ */
+export function toLocalDateTimeInputValue(
+  date: Date | null | undefined
+): string | undefined {
+  if (!date || !(date instanceof Date) || isNaN(date.getTime())) {
+    return undefined;
+  }
+
+  const datePart = toISODateString(date);
+  const timePart = toTimeString(date);
+
+  if (!datePart || !timePart) {
+    return undefined;
+  }
+
+  return `${datePart}T${timePart}`;
+}
+
+/**
+ * Extract date-only component from an ISO-like datetime string.
+ */
+export function extractISODatePart(value: string | null | undefined): string | undefined {
+  if (!value) {
+    return undefined;
+  }
+
+  const match = value.match(/^(\d{4}-\d{2}-\d{2})(?:T|$)/);
+  return match?.[1];
+}
+
+/**
+ * Extract time (HH:MM) from an ISO-like datetime string.
+ */
+export function extractISOTimePart(value: string | null | undefined): string | undefined {
+  if (!value) {
+    return undefined;
+  }
+
+  const match = value.match(/^\d{4}-\d{2}-\d{2}T(\d{2}:\d{2})/);
+  return match?.[1];
+}
+
+/**
  * Combine separate date and time strings into full ISO 8601 datetime in UTC
  * @param dateStr - Date string in YYYY-MM-DD format
  * @param timeStr - Time string in HH:MM format
@@ -146,6 +191,37 @@ export function dateOnlyToUTCMidnightISOString(dateStr: string): string {
 }
 
 /**
+ * Parse local date string (YYYY-MM-DD) without UTC conversion.
+ * Returns a Date at local midnight for the provided calendar day.
+ */
+export function parseLocalDate(dateString: string | null | undefined): Date | null {
+  if (!dateString || !/^\d{4}-\d{2}-\d{2}$/.test(dateString)) {
+    return null;
+  }
+
+  const [yearStr, monthStr, dayStr] = dateString.split('-');
+  const year = Number(yearStr);
+  const month = Number(monthStr);
+  const day = Number(dayStr);
+
+  if (!Number.isInteger(year) || !Number.isInteger(month) || !Number.isInteger(day)) {
+    return null;
+  }
+
+  const localDate = new Date(year, month - 1, day, 0, 0, 0, 0);
+
+  if (
+    localDate.getFullYear() !== year ||
+    localDate.getMonth() !== month - 1 ||
+    localDate.getDate() !== day
+  ) {
+    return null;
+  }
+
+  return localDate;
+}
+
+/**
  * Parse ISO 8601 string to Date object for display purposes
  * @param isoString - ISO 8601 datetime string
  * @returns Date object or null if invalid
@@ -154,6 +230,12 @@ export function parseISODate(isoString: string | null | undefined): Date | null 
   if (!isoString) {
     return null;
   }
+
+  const localDate = parseLocalDate(isoString);
+  if (localDate) {
+    return localDate;
+  }
+
   const date = new Date(isoString);
   if (isNaN(date.getTime())) {
     return null;
@@ -170,13 +252,17 @@ export function splitISODateTime(isoString: string | null | undefined): { date: 
   if (!isoString) {
     return null;
   }
-  const parts = isoString.slice(0, 16).split('T');
-  if (parts.length !== 2) {
+
+  const datePart = extractISODatePart(isoString);
+  const timePart = extractISOTimePart(isoString);
+
+  if (!datePart || !timePart) {
     return null;
   }
+
   return {
-    date: parts[0],
-    time: parts[1],
+    date: datePart,
+    time: timePart,
   };
 }
 

@@ -18,7 +18,10 @@ export const eventKeys = {
   calendarScoped: (date: string, timezone?: string) =>
     [...baseEventKeys.all, 'calendar', date, { timezone }] as const,
   upcoming: () => [...baseEventKeys.all, 'upcoming'] as const,
+  upcomingScoped: (timezone?: string) =>
+    [...baseEventKeys.all, 'upcoming', { timezone }] as const,
   today: () => [...baseEventKeys.all, 'today'] as const,
+  todayScoped: (timezone?: string) => [...baseEventKeys.all, 'today', { timezone }] as const,
   type: (petId: string, type: string) => [...baseEventKeys.all, 'type', petId, type] as const,
 };
 

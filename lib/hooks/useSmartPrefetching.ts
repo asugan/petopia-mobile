@@ -89,7 +89,7 @@ export function useSmartPrefetching() {
         case 'healthTabFocus':
           // Prefetch upcoming events and today's events
           queryClient.prefetchQuery({
-            queryKey: eventKeys.upcoming(),
+            queryKey: eventKeys.upcomingScoped(timezone),
             queryFn: () =>
               unwrapApiResponse(
                 import('@/lib/services/eventService').then(m =>
@@ -101,7 +101,7 @@ export function useSmartPrefetching() {
           });
 
           queryClient.prefetchQuery({
-            queryKey: eventKeys.today(),
+            queryKey: eventKeys.todayScoped(timezone),
             queryFn: () =>
               unwrapApiResponse(
                 import('@/lib/services/eventService').then(m =>
@@ -116,7 +116,7 @@ export function useSmartPrefetching() {
         case 'backgroundRefresh':
           // Refresh critical data in background
           queryClient.prefetchQuery({
-            queryKey: eventKeys.upcoming(),
+            queryKey: eventKeys.upcomingScoped(timezone),
             queryFn: () =>
               unwrapApiResponse(
                 import('@/lib/services/eventService').then(m =>
@@ -191,7 +191,7 @@ export function useSmartPrefetching() {
     // Morning: prefetch today's events and feeding schedules
     if (hour >= 6 && hour < 12) {
       queryClient.prefetchQuery({
-        queryKey: eventKeys.today(),
+        queryKey: eventKeys.todayScoped(timezone),
         queryFn: () =>
           unwrapApiResponse(
             import('@/lib/services/eventService').then(m =>

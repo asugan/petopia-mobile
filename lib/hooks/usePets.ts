@@ -9,6 +9,11 @@ import { useConditionalQuery } from './core/useConditionalQuery';
 import { useAuthQueryEnabled } from './useAuthQueryEnabled';
 import { downgradeKeys, eventKeys, expenseKeys, feedingScheduleKeys, healthRecordKeys, petKeys } from './queryKeys';
 
+const isUpcomingOrTodayEventQuery = (queryKey: readonly unknown[]) =>
+  Array.isArray(queryKey) &&
+  queryKey[0] === eventKeys.all[0] &&
+  (queryKey[1] === 'upcoming' || queryKey[1] === 'today');
+
 export { petKeys } from './queryKeys';
 
 interface PetFilters extends QueryFilters {
@@ -157,8 +162,9 @@ export function useDeletePet() {
         queryClient.invalidateQueries({ queryKey: feedingScheduleKeys.today() });
         queryClient.invalidateQueries({ queryKey: feedingScheduleKeys.next() });
         queryClient.invalidateQueries({ queryKey: eventKeys.lists() });
-        queryClient.invalidateQueries({ queryKey: eventKeys.upcoming() });
-        queryClient.invalidateQueries({ queryKey: eventKeys.today() });
+        queryClient.invalidateQueries({
+          predicate: (query) => isUpcomingOrTodayEventQuery(query.queryKey),
+        });
         queryClient.invalidateQueries({
           predicate: (query) =>
             Array.isArray(query.queryKey) &&

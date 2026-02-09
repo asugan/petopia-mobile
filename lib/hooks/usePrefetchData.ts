@@ -82,7 +82,7 @@ export function usePrefetchData() {
     if (!enabled) return;
 
     queryClient.prefetchQuery({
-      queryKey: eventKeys.upcoming(),
+      queryKey: eventKeys.upcomingScoped(timezone),
       queryFn: () =>
         unwrapApiResponse(
           import('@/lib/services/eventService').then(m =>
@@ -98,7 +98,7 @@ export function usePrefetchData() {
     if (!enabled) return;
 
     queryClient.prefetchQuery({
-      queryKey: eventKeys.today(),
+      queryKey: eventKeys.todayScoped(timezone),
       queryFn: () =>
         unwrapApiResponse(
           import('@/lib/services/eventService').then(m => m.eventService.getTodayEvents(timezone)),

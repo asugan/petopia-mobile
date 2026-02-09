@@ -3,6 +3,7 @@ import { EVENT_TYPES } from '@/constants';
 import {
   combineDateTimeToISOInTimeZone,
   dateOnlyToUTCMidnightISOString,
+  toLocalDateTimeInputValue,
 } from '@/lib/utils/dateConversion';
 import { resolveEffectiveTimezone } from '@/lib/utils/timezone';
 import { utcDateStringSchema } from '@/lib/schemas/core/dateSchemas';
@@ -310,7 +311,7 @@ export type UpdateEventInput = z.infer<ReturnType<typeof updateEventSchema>>;
 // Helper function to get current datetime string in ISO format
 export const getCurrentDateTimeString = (): string => {
   const now = new Date();
-  return now.toISOString().slice(0, 16); // Format: YYYY-MM-DDTHH:MM
+  return toLocalDateTimeInputValue(now) ?? '';
 };
 
 // Helper function to add minimum time to current date
@@ -318,7 +319,7 @@ export const getMinimumEventDateTime = (): string => {
   const now = new Date();
   // Add 1 minute to current time as minimum
   const minimumTime = new Date(now.getTime() + 60000);
-  return minimumTime.toISOString().slice(0, 16);
+  return toLocalDateTimeInputValue(minimumTime) ?? '';
 };
 
 // Default form values

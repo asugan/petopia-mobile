@@ -8,6 +8,11 @@ import { eventKeys } from './queryKeys';
 import type { RecurrenceRule, RecurrenceRuleData, UpdateRecurrenceRuleData } from '@/lib/schemas/recurrenceSchema';
 import type { Event } from '@/lib/types';
 
+const isUpcomingOrTodayEventQuery = (queryKey: readonly unknown[]) =>
+  Array.isArray(queryKey) &&
+  queryKey[0] === eventKeys.all[0] &&
+  (queryKey[1] === 'upcoming' || queryKey[1] === 'today');
+
 // Query keys for recurrence rules
 export const recurrenceKeys = {
   all: ['recurrence-rules'] as const,
@@ -82,8 +87,9 @@ export const useCreateRecurrenceRule = () => {
       queryClient.invalidateQueries({ queryKey: recurrenceKeys.lists() });
       // Invalidate events since new ones were created
       queryClient.invalidateQueries({ queryKey: eventKeys.lists() });
-      queryClient.invalidateQueries({ queryKey: eventKeys.upcoming() });
-      queryClient.invalidateQueries({ queryKey: eventKeys.today() });
+      queryClient.invalidateQueries({
+        predicate: (query) => isUpcomingOrTodayEventQuery(query.queryKey),
+      });
       // Invalidate all calendar queries
       queryClient.invalidateQueries({
         predicate: (query) =>
@@ -117,7 +123,9 @@ export const useUpdateRecurrenceRule = () => {
       queryClient.invalidateQueries({ queryKey: recurrenceKeys.lists() });
       // Invalidate events since they were updated
       queryClient.invalidateQueries({ queryKey: eventKeys.lists() });
-      queryClient.invalidateQueries({ queryKey: eventKeys.upcoming() });
+      queryClient.invalidateQueries({
+        predicate: (query) => isUpcomingOrTodayEventQuery(query.queryKey),
+      });
       // Invalidate all calendar queries
       queryClient.invalidateQueries({
         predicate: (query) =>
@@ -149,8 +157,9 @@ export const useDeleteRecurrenceRule = () => {
       queryClient.invalidateQueries({ queryKey: recurrenceKeys.all });
       // Invalidate events since they were deleted
       queryClient.invalidateQueries({ queryKey: eventKeys.lists() });
-      queryClient.invalidateQueries({ queryKey: eventKeys.upcoming() });
-      queryClient.invalidateQueries({ queryKey: eventKeys.today() });
+      queryClient.invalidateQueries({
+        predicate: (query) => isUpcomingOrTodayEventQuery(query.queryKey),
+      });
       // Invalidate all calendar queries
       queryClient.invalidateQueries({
         predicate: (query) =>
@@ -182,8 +191,9 @@ export const useRegenerateRecurrenceEvents = () => {
       queryClient.invalidateQueries({ queryKey: recurrenceKeys.events(id) });
       // Invalidate all events
       queryClient.invalidateQueries({ queryKey: eventKeys.lists() });
-      queryClient.invalidateQueries({ queryKey: eventKeys.upcoming() });
-      queryClient.invalidateQueries({ queryKey: eventKeys.today() });
+      queryClient.invalidateQueries({
+        predicate: (query) => isUpcomingOrTodayEventQuery(query.queryKey),
+      });
     },
   });
 };
@@ -206,8 +216,9 @@ export const useAddRecurrenceException = () => {
     onSuccess: (data, variables) => {
       // Invalidate events
       queryClient.invalidateQueries({ queryKey: eventKeys.lists() });
-      queryClient.invalidateQueries({ queryKey: eventKeys.upcoming() });
-      queryClient.invalidateQueries({ queryKey: eventKeys.today() });
+      queryClient.invalidateQueries({
+        predicate: (query) => isUpcomingOrTodayEventQuery(query.queryKey),
+      });
       // Invalidate specific rule events
       queryClient.invalidateQueries({ queryKey: recurrenceKeys.events(variables.id) });
     },
