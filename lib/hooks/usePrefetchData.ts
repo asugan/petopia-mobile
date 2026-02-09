@@ -3,10 +3,12 @@ import { eventKeys, feedingScheduleKeys, healthRecordKeys, petKeys } from './que
 import { unwrapApiResponse } from './core/unwrapApiResponse';
 import { toISODateStringWithFallback } from '@/lib/utils/dateConversion';
 import { useAuthQueryEnabled } from './useAuthQueryEnabled';
+import { useUserTimezone } from './useUserTimezone';
 
 export function usePrefetchData() {
   const queryClient = useQueryClient();
   const { enabled } = useAuthQueryEnabled();
+  const timezone = useUserTimezone();
 
   const prefetchPetDetails = (petId: string) => {
     if (!enabled) return;
@@ -141,11 +143,11 @@ export function usePrefetchData() {
     const todayKey = toISODateStringWithFallback(new Date());
     if (date && date !== todayKey) {
       queryClient.prefetchQuery({
-        queryKey: eventKeys.calendar(date),
+        queryKey: eventKeys.calendarScoped(date, timezone),
         queryFn: () =>
           unwrapApiResponse(
             import('@/lib/services/eventService').then(m =>
-              m.eventService.getEventsByDate(date)
+              m.eventService.getEventsByDate(date, timezone)
             ),
             { defaultValue: [] }
           ),

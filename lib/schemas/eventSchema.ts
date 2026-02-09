@@ -431,8 +431,6 @@ export const transformFormDataToRecurrenceRule = (
 
     // Date boundaries
     startDate: recurrenceStartDate,
-    endDate: formData.recurrence.endDate 
-      ? new Date(formData.recurrence.endDate).toISOString() 
-      : undefined,
+    endDate: formData.recurrence.endDate || undefined,
   };
 };

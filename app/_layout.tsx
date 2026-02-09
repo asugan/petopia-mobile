@@ -30,6 +30,7 @@ import { useReminderScheduler } from '@/hooks/useReminderScheduler';
 import { createToastConfig } from '@/lib/toast/toastConfig';
 import { SUBSCRIPTION_ROUTES, TAB_ROUTES } from '@/constants/routes';
 import { LAYOUT } from '@/constants';
+import { detectDeviceTimezone } from '@/lib/utils/timezone';
 import "../lib/i18n";
 import { AnimatedSplashScreen } from '@/components/SplashScreen/AnimatedSplashScreen';
 
@@ -280,11 +281,12 @@ function RootLayoutContent() {
 
     const rescheduleUpcomingReminders = async () => {
       const deviceTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+      const safeDeviceTimezone = deviceTimezone || detectDeviceTimezone();
       const storedTimezone = await AsyncStorage.getItem(TIMEZONE_STORAGE_KEY);
-      const timezoneForSignature = deviceTimezone || storedTimezone || 'unknown';
+      const timezoneForSignature = safeDeviceTimezone || storedTimezone || 'unknown';
 
-      if (deviceTimezone && storedTimezone !== deviceTimezone) {
-        await AsyncStorage.setItem(TIMEZONE_STORAGE_KEY, deviceTimezone);
+      if (safeDeviceTimezone && storedTimezone !== safeDeviceTimezone) {
+        await AsyncStorage.setItem(TIMEZONE_STORAGE_KEY, safeDeviceTimezone);
       }
 
       const quietKey = [

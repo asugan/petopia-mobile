@@ -1,3 +1,5 @@
+import { detectDeviceTimezone } from '@/lib/utils/timezone';
+
 /**
  * Recurrence Constants
  * Defines recurrence frequencies, default times, and related configurations
@@ -145,9 +147,5 @@ export const generateDailyTimes = (count: number): string[] => {
  * Get user's timezone
  */
 export const getUserTimezone = (): string => {
-  try {
-    return Intl.DateTimeFormat().resolvedOptions().timeZone;
-  } catch {
-    return 'UTC';
-  }
+  return detectDeviceTimezone();
 };

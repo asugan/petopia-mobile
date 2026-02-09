@@ -5,6 +5,7 @@ import { eventKeys, feedingScheduleKeys } from './queryKeys';
 import { unwrapApiResponse } from './core/unwrapApiResponse';
 import { toISODateStringWithFallback } from '@/lib/utils/dateConversion';
 import { useAuthQueryEnabled } from './useAuthQueryEnabled';
+import { useUserTimezone } from './useUserTimezone';
 
 interface PrefetchStrategy {
   priority: 'high' | 'medium' | 'low';
@@ -16,6 +17,7 @@ export function useSmartPrefetching() {
   const queryClient = useQueryClient();
   const { prefetchRelatedData } = usePrefetchData();
   const { enabled } = useAuthQueryEnabled();
+  const timezone = useUserTimezone();
 
   const prefetchStrategies = useMemo<Record<string, PrefetchStrategy>>(() => ({
     // When user spends time on pet list, prefetch details
@@ -221,18 +223,18 @@ export function useSmartPrefetching() {
       const tomorrowKey = toISODateStringWithFallback(tomorrow);
 
       queryClient.prefetchQuery({
-        queryKey: eventKeys.calendar(tomorrowKey),
+        queryKey: eventKeys.calendarScoped(tomorrowKey, timezone),
         queryFn: () =>
           unwrapApiResponse(
             import('@/lib/services/eventService').then(m =>
-              m.eventService.getEventsByDate(tomorrowKey)
+              m.eventService.getEventsByDate(tomorrowKey, timezone)
             ),
             { defaultValue: [] }
           ),
         staleTime: 2 * 60 * 1000,
       });
     }
-  }, [enabled, queryClient]);
+  }, [enabled, queryClient, timezone]);
 
   return {
     prefetchOnInteraction,

@@ -68,7 +68,7 @@ const isCalendarQuery = (queryKey: readonly unknown[]) =>
 
 const buildCalendarQueryKey = (date: string, timezone?: string) => {
   const safeTimezone = normalizeTimezone(timezone);
-  return [...eventKeys.calendar(date), { timezone: safeTimezone }] as const;
+  return eventKeys.calendarScoped(date, safeTimezone);
 };
 
 export const useEvent = (id?: string, options?: { enabled?: boolean }) => {

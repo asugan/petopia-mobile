@@ -72,17 +72,42 @@ export const detectDeviceTimezone = (): string => {
   try {
     const calendars = Localization.getCalendars();
     if (calendars.length > 0 && calendars[0].timeZone) {
-      return calendars[0].timeZone;
+      const fromCalendar = normalizeTimezone(calendars[0].timeZone);
+      if (fromCalendar) {
+        return fromCalendar;
+      }
     }
   } catch {
     // noop
   }
 
   try {
-    return Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC';
+    return normalizeTimezone(Intl.DateTimeFormat().resolvedOptions().timeZone) || 'UTC';
   } catch {
     return 'UTC';
   }
+};
+
+export const isValidTimezone = (timezone: string): boolean => {
+  try {
+    Intl.DateTimeFormat(undefined, { timeZone: timezone });
+    return true;
+  } catch {
+    return false;
+  }
+};
+
+export const normalizeTimezone = (timezone?: string | null): string | undefined => {
+  const trimmed = timezone?.trim();
+  if (!trimmed) {
+    return undefined;
+  }
+
+  return isValidTimezone(trimmed) ? trimmed : undefined;
+};
+
+export const resolveEffectiveTimezone = (timezone?: string | null): string => {
+  return normalizeTimezone(timezone) ?? detectDeviceTimezone();
 };
 
 export const getSupportedTimezones = (): string[] => {

@@ -5,6 +5,7 @@ import i18n from "@/lib/i18n";
 import { lightTheme, darkTheme } from "@/lib/theme/themes";
 import { userSettingsService } from "@/lib/services/userSettingsService";
 import { getCurrencySymbol as getCurrencySymbolUtil } from "@/lib/utils/currency";
+import { detectDeviceTimezone, isValidTimezone } from "@/lib/utils/timezone";
 import type { Theme, ThemeMode } from "@/lib/theme/types";
 import type {
   SupportedCurrency,
@@ -47,7 +48,7 @@ const defaultSettings: UserSettings = {
   id: "",
   userId: "",
   baseCurrency: "USD",
-  timezone: Intl.DateTimeFormat().resolvedOptions().timeZone || "UTC",
+  timezone: detectDeviceTimezone(),
   language: "en",
   theme: "dark",
   notificationsEnabled: true,
@@ -109,10 +110,9 @@ export const useUserSettingsStore = create<
               setQuietHoursEnabled(settings.quietHoursEnabled);
             }
 
-            const deviceTimezone =
-              Intl.DateTimeFormat().resolvedOptions().timeZone || "UTC";
+            const deviceTimezone = detectDeviceTimezone();
 
-            if (!settings.timezone || settings.timezone === "UTC") {
+            if (!settings.timezone || !isValidTimezone(settings.timezone)) {
               const updateResponse = await userSettingsService.updateSettings({
                 timezone: deviceTimezone,
               });

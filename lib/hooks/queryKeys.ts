@@ -15,6 +15,8 @@ const baseEventKeys = createQueryKeys('events');
 export const eventKeys = {
   ...baseEventKeys,
   calendar: (date: string) => [...baseEventKeys.all, 'calendar', date] as const,
+  calendarScoped: (date: string, timezone?: string) =>
+    [...baseEventKeys.all, 'calendar', date, { timezone }] as const,
   upcoming: () => [...baseEventKeys.all, 'upcoming'] as const,
   today: () => [...baseEventKeys.all, 'today'] as const,
   type: (petId: string, type: string) => [...baseEventKeys.all, 'type', petId, type] as const,
