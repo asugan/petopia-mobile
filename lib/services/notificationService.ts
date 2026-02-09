@@ -3,6 +3,7 @@ import type { Href } from 'expo-router';
 import { Platform } from 'react-native';
 import * as Device from 'expo-device';
 import * as Application from 'expo-application';
+import Constants from 'expo-constants';
 import { Event, FeedingSchedule } from '../types';
 import { EVENT_TYPE_DEFAULT_REMINDERS } from '../../constants/eventIcons';
 import { QUIET_HOURS_WINDOW } from '@/constants/reminders';
@@ -10,6 +11,7 @@ import { EVENT_REMINDER_PRESET_MINUTES, NOTIFICATION_CHANNELS, NOTIFICATION_SCRE
 import i18n from '@/lib/i18n';
 import * as SecureStore from 'expo-secure-store';
 import { api } from '../api/client';
+import { ENV } from '@/lib/config/env';
 import { useUserSettingsStore } from '@/stores/userSettingsStore';
 import { toZonedTime, fromZonedTime, formatInTimeZone as formatInTimeZoneTz } from 'date-fns-tz';
 import { calculateNextFeedingTime } from '@/lib/utils/feedingReminderTime';
@@ -99,6 +101,7 @@ export class NotificationService {
   private readonly pushRegistrationStorageKey = 'pushTokenRegisteredWithBackend';
   private readonly pushRegistrationVerifiedAtStorageKey = 'pushTokenRegisteredVerifiedAt';
   private readonly pushRegistrationCacheTtlMs = 5 * 60 * 1000;
+  private readonly maxApiRetryAttempts = 3;
 
   private constructor() {
     this.notificationChannelPromise = this.setupNotificationChannel();
@@ -144,7 +147,8 @@ export class NotificationService {
           sound: 'default',
           description: 'Notifications for feeding schedules and reminders',
         });
-      } catch {
+      } catch (error) {
+        this.logNotificationError('setupNotificationChannel', error);
       }
     }
   }
@@ -189,6 +193,28 @@ export class NotificationService {
     return { isRegistered, isFresh };
   }
 
+  private async withRetry<T>(fn: () => Promise<T>): Promise<T> {
+    let lastError: unknown;
+
+    for (let attempt = 1; attempt <= this.maxApiRetryAttempts; attempt++) {
+      try {
+        return await fn();
+      } catch (error) {
+        lastError = error;
+        if (attempt < this.maxApiRetryAttempts) {
+          await new Promise((resolve) => setTimeout(resolve, attempt * 500));
+        }
+      }
+    }
+
+    throw lastError;
+  }
+
+  private logNotificationError(scope: string, error: unknown): void {
+    const message = error instanceof Error ? error.message : String(error);
+    console.warn(`[notification] ${scope}: ${message}`);
+  }
+
   setNavigationHandler(handler: (target: Href) => void) {
     this.navigationHandler = handler;
   }
@@ -219,7 +245,8 @@ export class NotificationService {
       }
 
       return true;
-    } catch {
+    } catch (error) {
+      this.logNotificationError('requestPermissions', error);
       return false;
     }
   }
@@ -232,7 +259,8 @@ export class NotificationService {
     try {
       const permissions = await Notifications.getPermissionsAsync();
       return isNotificationPermissionGranted(permissions);
-    } catch {
+    } catch (error) {
+      this.logNotificationError('areNotificationsEnabled', error);
       return false;
     }
   }
@@ -324,7 +352,8 @@ export class NotificationService {
 
 
       return notificationId;
-    } catch {
+    } catch (error) {
+      this.logNotificationError('scheduleEventReminder', error);
       return null;
     }
   }
@@ -336,7 +365,8 @@ export class NotificationService {
   async cancelNotification(notificationId: string): Promise<void> {
     try {
       await Notifications.cancelScheduledNotificationAsync(notificationId);
-    } catch {
+    } catch (error) {
+      this.logNotificationError('cancelNotification', error);
     }
   }
 
@@ -356,7 +386,8 @@ export class NotificationService {
         await Notifications.cancelScheduledNotificationAsync(notification.identifier);
       }
 
-    } catch {
+    } catch (error) {
+      this.logNotificationError('cancelEventNotifications', error);
     }
   }
 
@@ -366,7 +397,8 @@ export class NotificationService {
   async cancelAllNotifications(): Promise<void> {
     try {
       await Notifications.cancelAllScheduledNotificationsAsync();
-    } catch {
+    } catch (error) {
+      this.logNotificationError('cancelAllNotifications', error);
     }
   }
 
@@ -378,7 +410,8 @@ export class NotificationService {
     try {
       const notifications = await Notifications.getAllScheduledNotificationsAsync();
       return notifications;
-    } catch {
+    } catch (error) {
+      this.logNotificationError('getAllScheduledNotifications', error);
       return [];
     }
   }
@@ -394,7 +427,8 @@ export class NotificationService {
       return allNotifications.filter(
         notification => notification.content.data?.eventId === eventId
       );
-    } catch {
+    } catch (error) {
+      this.logNotificationError('getEventNotifications', error);
       return [];
     }
   }
@@ -601,7 +635,8 @@ export class NotificationService {
       });
 
       return notificationId;
-    } catch {
+    } catch (error) {
+      this.logNotificationError('scheduleFeedingReminder', error);
       return null;
     }
   }
@@ -613,7 +648,8 @@ export class NotificationService {
   async cancelFeedingReminder(notificationId: string): Promise<void> {
     try {
       await Notifications.cancelScheduledNotificationAsync(notificationId);
-    } catch {
+    } catch (error) {
+      this.logNotificationError('cancelFeedingReminder', error);
     }
   }
 
@@ -655,7 +691,8 @@ export class NotificationService {
         },
         trigger: Platform.OS === 'android' ? { channelId: this.feedingChannelId } : null,
       });
-    } catch {
+    } catch (error) {
+      this.logNotificationError('sendImmediateFeedingReminder', error);
     }
   }
 
@@ -776,7 +813,8 @@ export class NotificationService {
       }
 
       return stats;
-    } catch {
+    } catch (error) {
+      this.logNotificationError('getNotificationStats', error);
       return { total: 0, byType: {} };
     }
   }
@@ -831,17 +869,9 @@ export class NotificationService {
         return false;
       }
 
-      // Get Expo push token - handle both old and new API
-      let expoPushToken: string;
-      try {
-        const tokenResult = await Notifications.getExpoPushTokenAsync();
-        // New API returns string directly, old API returns object with data property
-        expoPushToken = typeof tokenResult === 'string' ? tokenResult : tokenResult?.data;
-      } catch {
-        // Fallback for older expo-notifications versions
-        const tokenResult = await Notifications.getExpoPushTokenAsync();
-        expoPushToken = typeof tokenResult === 'string' ? tokenResult : tokenResult?.data || '';
-      }
+      const projectId = Constants.expoConfig?.extra?.eas?.projectId ?? Constants.easConfig?.projectId;
+      const tokenResult = await Notifications.getExpoPushTokenAsync(projectId ? { projectId } : undefined);
+      const expoPushToken = typeof tokenResult === 'string' ? tokenResult : tokenResult?.data || '';
 
       if (!expoPushToken) {
         return false;
@@ -860,13 +890,15 @@ export class NotificationService {
       const appVersion = Application.nativeApplicationVersion || undefined;
 
       // Register with backend
-      await api.post('/api/push/devices', {
-        expoPushToken,
-        deviceId,
-        platform,
-        deviceName,
-        appVersion,
-      });
+      await this.withRetry(() =>
+        api.post(ENV.ENDPOINTS.PUSH_DEVICES, {
+          expoPushToken,
+          deviceId,
+          platform,
+          deviceName,
+          appVersion,
+        })
+      );
 
       // Store the token locally
       await SecureStore.setItemAsync(this.pushTokenStorageKey, expoPushToken);
@@ -874,7 +906,8 @@ export class NotificationService {
       await SecureStore.setItemAsync('deviceId', deviceId);
 
       return true;
-    } catch {
+    } catch (error) {
+      this.logNotificationError('registerPushTokenWithBackend', error);
       return false;
     }
   }
@@ -889,16 +922,15 @@ export class NotificationService {
         return true;
       }
 
-      await api.delete('/api/push/devices', {
-        data: { deviceId },
-      });
+      await this.withRetry(() => api.delete(ENV.ENDPOINTS.PUSH_DEVICES, { deviceId }));
 
       await SecureStore.deleteItemAsync(this.pushTokenStorageKey);
       await SecureStore.deleteItemAsync('deviceId');
       await this.setPushRegistrationCache(false);
 
       return true;
-    } catch {
+    } catch (error) {
+      this.logNotificationError('unregisterPushTokenFromBackend', error);
       return false;
     }
   }
@@ -916,7 +948,8 @@ export class NotificationService {
       }
 
       return this.verifyPushTokenRegistration();
-    } catch {
+    } catch (error) {
+      this.logNotificationError('isPushTokenRegistered', error);
       return false;
     }
   }
@@ -928,18 +961,22 @@ export class NotificationService {
   async verifyPushTokenRegistration(): Promise<boolean> {
     try {
       const storedToken = await SecureStore.getItemAsync(this.pushTokenStorageKey);
-      if (!storedToken) {
+      const deviceId = await SecureStore.getItemAsync('deviceId');
+      if (!storedToken || !deviceId) {
         await this.setPushRegistrationCache(false);
         return false;
       }
 
-      const response = await api.get<{ deviceId: string }[]>('/api/push/devices');
-      const isRegistered = Array.isArray(response.data) && response.data.length > 0;
+      const response = await this.withRetry(() => api.get<{ deviceId: string }[]>(ENV.ENDPOINTS.PUSH_DEVICES));
+      const isRegistered =
+        Array.isArray(response.data) &&
+        response.data.some((device) => String(device.deviceId) === deviceId);
       
       await this.setPushRegistrationCache(isRegistered);
       
       return isRegistered;
-    } catch {
+    } catch (error) {
+      this.logNotificationError('verifyPushTokenRegistration', error);
       await this.setPushRegistrationCache(false);
       return false;
     }
@@ -968,7 +1005,8 @@ export class NotificationService {
         }
         return String(data?.scheduleId) === scheduleId;
       });
-    } catch {
+    } catch (error) {
+      this.logNotificationError('getFeedingNotifications', error);
       return [];
     }
   }
@@ -979,7 +1017,8 @@ export class NotificationService {
       for (const notification of notifications) {
         await Notifications.cancelScheduledNotificationAsync(notification.identifier);
       }
-    } catch {
+    } catch (error) {
+      this.logNotificationError('cancelFeedingNotifications', error);
     }
   }
 
@@ -994,7 +1033,8 @@ export class NotificationService {
       for (const reminder of reminders) {
         await Notifications.cancelScheduledNotificationAsync(reminder.identifier);
       }
-    } catch {
+    } catch (error) {
+      this.logNotificationError('cancelEventAndFeedingNotifications', error);
     }
   }
 
@@ -1024,12 +1064,13 @@ export class NotificationService {
    */
   async sendTestNotification(): Promise<boolean> {
     try {
-      await api.post('/api/push/test', {
+      await this.withRetry(() => api.post(ENV.ENDPOINTS.PUSH_TEST, {
         title: 'Petopia Test',
-        body: 'Test bildirimi başarılı! Artık etkinlik hatırlatmaları alabileceksiniz.',
-      });
+        body: 'Push notifications are configured successfully.',
+      }));
       return true;
-    } catch {
+    } catch (error) {
+      this.logNotificationError('sendTestNotification', error);
       return false;
     }
   }

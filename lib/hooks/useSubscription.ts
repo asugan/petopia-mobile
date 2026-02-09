@@ -1,5 +1,6 @@
 import { useCallback, useState } from 'react';
-import Purchases, {
+import Purchases from 'react-native-purchases';
+import type {
   CustomerInfo,
   PurchasesOfferings,
   PurchasesPackage,
@@ -16,7 +17,8 @@ import {
 import { getRevenueCatEntitlementIdOptional } from '@/lib/revenuecat/config';
 import { showToast } from '@/lib/toast/showToast';
 import { useTracking } from '@/lib/posthog';
-import { SUBSCRIPTION_EVENTS, SubscriptionEventProperties } from '@/lib/posthog/subscriptionEvents';
+import { SUBSCRIPTION_EVENTS } from '@/lib/posthog/subscriptionEvents';
+import type { SubscriptionEventProperties } from '@/lib/posthog/subscriptionEvents';
 
 export type SubscriptionStatusType = 'pro' | 'trial' | 'free';
 

@@ -49,6 +49,7 @@ export default defineConfig({
       { find: /^@expo\/vector-icons$/, replacement: path.resolve(__dirname, './__tests__/mocks/vector-icons.ts') },
       { find: /^react-native-purchases$/, replacement: path.resolve(__dirname, './__tests__/mocks/react-native-purchases.ts') },
       { find: /^react-native-purchases-ui$/, replacement: path.resolve(__dirname, './__tests__/mocks/react-native-purchases-ui.ts') },
+      { find: /^posthog-react-native$/, replacement: path.resolve(__dirname, './__tests__/mocks/posthog-react-native.ts') },
       { find: /^react-native-toast-message$/, replacement: path.resolve(__dirname, './__tests__/mocks/react-native-toast-message.ts') },
       { find: '@', replacement: path.resolve(__dirname, './') },
     ],

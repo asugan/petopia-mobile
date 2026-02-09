@@ -41,7 +41,12 @@ export const ENV = {
     NEXT_FEEDING: "/api/feeding-schedules/next",
     FEEDING_SCHEDULE_NOTIFICATIONS: (id: string) => `/api/feeding-schedules/${id}/notifications`,
     FEEDING_SCHEDULE_REMINDER: (id: string) => `/api/feeding-schedules/${id}/reminder`,
+    FEEDING_SCHEDULE_CANCEL_REMINDER: (id: string) => `/api/feeding-schedules/${id}/reminder`,
     FEEDING_SCHEDULE_COMPLETE: (id: string) => `/api/feeding-schedules/${id}/complete`,
+
+    // Push endpoints
+    PUSH_DEVICES: '/api/push/devices',
+    PUSH_TEST: '/api/push/test',
 
     // User Budget endpoints (NEW SIMPLIFIED SYSTEM)
     BUDGET: "/api/budget",

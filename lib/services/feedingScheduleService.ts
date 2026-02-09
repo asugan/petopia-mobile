@@ -32,6 +32,11 @@ export interface FeedingCompletionResponse {
   nextFeedingTime?: string;
 }
 
+export interface CancelFeedingReminderResponse {
+  success: boolean;
+  message?: string;
+}
+
 export interface FeedingScheduleNotificationsResponse {
   success: boolean;
   notifications: FeedingNotification[];
@@ -494,6 +499,39 @@ export class FeedingScheduleService {
         error: {
           code: 'COMPLETE_FEEDING_ERROR',
           message: 'serviceResponse.feedingSchedule.completeFeedingError',
+        },
+      };
+    }
+  }
+
+  async cancelFeedingReminder(id: string): Promise<ApiResponse<CancelFeedingReminderResponse>> {
+    try {
+      const response = await api.delete<CancelFeedingReminderResponse>(
+        ENV.ENDPOINTS.FEEDING_SCHEDULE_CANCEL_REMINDER(id)
+      );
+
+      return {
+        success: true,
+        data: response.data,
+        message: 'serviceResponse.feedingSchedule.cancelReminderSuccess',
+      };
+    } catch (error) {
+      if (error instanceof ApiError) {
+        return {
+          success: false,
+          error: {
+            code: error.code || 'CANCEL_REMINDER_ERROR',
+            message: 'serviceResponse.feedingSchedule.cancelReminderError',
+            details: { rawMessage: error.message },
+          },
+        };
+      }
+
+      return {
+        success: false,
+        error: {
+          code: 'CANCEL_REMINDER_ERROR',
+          message: 'serviceResponse.feedingSchedule.cancelReminderError',
         },
       };
     }

@@ -208,6 +208,14 @@ export function useFeedingReminders() {
     },
   });
 
+  const cancelBackendReminder = useMutation({
+    mutationFn: (scheduleId: string) => feedingScheduleService.cancelFeedingReminder(scheduleId),
+    onSuccess: (_, scheduleId) => {
+      queryClient.invalidateQueries({ queryKey: feedingReminderKeys.notifications(scheduleId) });
+      queryClient.invalidateQueries({ queryKey: feedingReminderKeys.pending() });
+    },
+  });
+
   /**
    * Schedule reminder with automatic fallback
    * Tries backend first, falls back to local if not registered
@@ -240,15 +248,13 @@ export function useFeedingReminders() {
   const cancelReminder = useCallback(
     async (schedule: FeedingSchedule, reminderMinutes: number = 15) => {
       if (pushTokenRegistered) {
-        // Backend handles cancellation
-        // (Could add an endpoint for this if needed)
-        return;
+        return cancelBackendReminder.mutateAsync(schedule._id);
       } else {
         // Use local cancellation
         return cancelLocalReminder(schedule, reminderMinutes);
       }
     },
-    [pushTokenRegistered, cancelLocalReminder]
+    [pushTokenRegistered, cancelLocalReminder, cancelBackendReminder]
   );
 
   return {
