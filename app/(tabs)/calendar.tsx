@@ -9,8 +9,8 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { useTranslation } from "react-i18next";
 import { addMonths, subMonths, addWeeks, subWeeks } from "date-fns";
 import { MonthView } from "@/components/calendar/MonthView";
-import { toISODateString } from "@/lib/utils/dateConversion";
 import { formatInTimeZone } from "@/lib/utils/date";
+import { toLocalDateKey } from "@/lib/utils/timezoneDate";
 import { WeekView } from "@/components/calendar/WeekView";
 import {
   EventsBottomSheet,
@@ -71,7 +71,7 @@ export default function CalendarScreen() {
 
   const { data: upcomingEvents = [] } = useUpcomingEvents();
   const userTimezone = useUserTimezone();
-  const formattedDate = toISODateString(currentDate) ?? "";
+  const formattedDate = toLocalDateKey(currentDate, userTimezone);
   const {
     data: selectedDateEvents = [],
     isLoading: isLoadingSelected,

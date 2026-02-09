@@ -10,6 +10,7 @@ import { EventForm } from './forms/EventForm';
 import { useCreateEvent, useUpdateEvent } from '../lib/hooks/useEvents';
 import { useCreateRecurrenceRule, useUpdateRecurrenceRule } from '../lib/hooks/useRecurrence';
 import { usePets } from '../lib/hooks/usePets';
+import { useUserTimezone } from '@/lib/hooks/useUserTimezone';
 import { ReminderPresetKey } from '@/constants/reminders';
 import { showToast } from '@/lib/toast/showToast';
 
@@ -42,6 +43,7 @@ export function EventModal({
   const createRecurrenceRuleMutation = useCreateRecurrenceRule();
   const updateRecurrenceRuleMutation = useUpdateRecurrenceRule();
   const { data: pets = [] } = usePets();
+  const userTimezone = useUserTimezone();
 
 
   const handleSubmit = React.useCallback(async (data: EventFormData) => {
@@ -69,7 +71,7 @@ export function EventModal({
           showToast({ type: 'success', title: t('serviceResponse.recurrence.updateSuccess') });
         } else {
           // Edit single event (normal behavior or editType === 'single')
-          const apiData = transformFormDataToAPI(data);
+          const apiData = transformFormDataToAPI(data, userTimezone);
           await updateEventMutation.mutateAsync({
             _id: event._id,
             data: { ...apiData, reminderPresetKey, reminder: reminderEnabled }
@@ -78,7 +80,7 @@ export function EventModal({
         }
       } else {
         // Yeni tek seferlik event oluşturma
-        const apiData = transformFormDataToAPI(data);
+        const apiData = transformFormDataToAPI(data, userTimezone);
         await createEventMutation.mutateAsync({
           ...apiData,
           reminderPresetKey,
@@ -100,7 +102,7 @@ export function EventModal({
     } finally {
       setLoading(false);
     }
-  }, [event, editType, createEventMutation, updateEventMutation, createRecurrenceRuleMutation, updateRecurrenceRuleMutation, onSuccess, onClose, t]);
+  }, [event, editType, createEventMutation, updateEventMutation, createRecurrenceRuleMutation, updateRecurrenceRuleMutation, onSuccess, onClose, t, userTimezone]);
 
   const handleClose = React.useCallback(() => {
     if (!loading) {

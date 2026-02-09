@@ -9,6 +9,8 @@ import { useAuthQueryEnabled } from './useAuthQueryEnabled';
 import { FeedingSchedule } from '../types';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { CACHE_TIMES } from '../config/queryConfig';
+import { useUserTimezone } from './useUserTimezone';
+import { toLocalDateKey } from '@/lib/utils/timezoneDate';
 
 // ============================================================================
 // QUERY KEYS
@@ -89,6 +91,7 @@ export function useFeedingScheduleNotifications(scheduleId: string) {
  */
 export function useFeedingReminders() {
   const { enabled } = useFeedingReminderSettings();
+  const userTimezone = useUserTimezone();
   const [pushTokenRegistered, setPushTokenRegistered] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const queryClient = useQueryClient();
@@ -111,9 +114,9 @@ export function useFeedingReminders() {
   // Clear reminded schedules cache on day change to prevent memory leak
   useEffect(() => {
     const LAST_CLEAR_KEY = '__lastClearDate__';
-    
+
     const clearCacheOnDayChange = () => {
-      const today = new Date().toISOString().split('T')[0];
+      const today = toLocalDateKey(new Date(), userTimezone);
       const lastClearDate = (remindedSchedules.current as Record<string, boolean | string>)[LAST_CLEAR_KEY] as string | undefined;
       
       if (lastClearDate !== today) {
@@ -132,7 +135,7 @@ export function useFeedingReminders() {
     return () => {
       clearInterval(interval);
     };
-  }, []);
+  }, [userTimezone]);
 
   /**
    * Schedule a local feeding reminder
@@ -146,7 +149,7 @@ export function useFeedingReminders() {
       const scheduleKey = `feeding-reminder:${schedule._id}:${reminderMinutes}`;
 
       // Check if already reminded today
-      const today = new Date().toISOString().split('T')[0];
+      const today = toLocalDateKey(new Date(), userTimezone);
       const lastReminded = await AsyncStorage.getItem(`${scheduleKey}:date`);
       if (lastReminded === today && remindedSchedules.current[scheduleKey]) {
         return null;
@@ -162,7 +165,7 @@ export function useFeedingReminders() {
 
       return notificationId;
     },
-    [enabled, pushTokenRegistered]
+    [enabled, pushTokenRegistered, userTimezone]
   );
 
   /**

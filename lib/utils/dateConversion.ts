@@ -1,3 +1,6 @@
+import { fromZonedTime } from 'date-fns-tz';
+import { resolveEffectiveTimezone } from '@/lib/utils/timezone';
+
 /**
  * Centralized date conversion utilities for consistent ISO 8601 handling
  * between the mobile app and backend API
@@ -82,6 +85,34 @@ export function combineDateTimeToISO(dateStr: string, timeStr: string): string {
 
   // Convert to UTC ISO string
   return localDate.toISOString();
+}
+
+/**
+ * Combine date and time strings in a specific timezone and convert to UTC ISO
+ */
+export function combineDateTimeToISOInTimeZone(
+  dateStr: string,
+  timeStr: string,
+  timezone: string
+): string {
+  if (!dateStr || !timeStr) {
+    throw new Error('Both date and time are required');
+  }
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(dateStr)) {
+    throw new Error('Invalid date format. Expected YYYY-MM-DD');
+  }
+  if (!/^\d{2}:\d{2}$/.test(timeStr)) {
+    throw new Error('Invalid time format. Expected HH:MM');
+  }
+
+  const tz = resolveEffectiveTimezone(timezone);
+  const utcDate = fromZonedTime(`${dateStr}T${timeStr}:00`, tz);
+
+  if (isNaN(utcDate.getTime())) {
+    throw new Error('Invalid date or time values');
+  }
+
+  return utcDate.toISOString();
 }
 
 /**

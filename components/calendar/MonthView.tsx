@@ -11,15 +11,12 @@ import {
   eachDayOfInterval,
   format,
   isSameMonth,
-  isToday,
-  isSameDay,
 } from "date-fns";
 import { tr, enUS } from "date-fns/locale";
-import { toZonedTime } from "date-fns-tz";
 import { Event } from "../../lib/types";
 import { getEventColor } from "@/lib/utils/eventColors";
-import { toISODateString } from "@/lib/utils/dateConversion";
 import { useUserTimezone } from "@/lib/hooks/useUserTimezone";
+import { isSameLocalDate, toLocalDateKey } from "@/lib/utils/timezoneDate";
 
 interface MonthViewProps {
   currentDate: Date;
@@ -57,13 +54,12 @@ export function MonthView({
   }, [currentDate]);
 
   const getEventsForDay = (day: Date) => {
-    const dayStr = toISODateString(day);
-    if (!dayStr) return [];
+    const dayKey = toLocalDateKey(day, userTimezone);
+    if (!dayKey) return [];
 
     return events.filter((event) => {
-      const zonedDate = toZonedTime(event.startTime, userTimezone);
-      const eventDateStr = toISODateString(zonedDate);
-      return eventDateStr === dayStr;
+      const eventDayKey = toLocalDateKey(event.startTime, userTimezone);
+      return eventDayKey === dayKey;
     });
   };
 
@@ -83,8 +79,10 @@ export function MonthView({
   const renderDay = (day: Date) => {
     const dayEvents = getEventsForDay(day);
     const isCurrentMonth = isSameMonth(day, currentDate);
-    const isTodayDate = isToday(day);
-    const isSelected = selectedDate ? isSameDay(day, selectedDate) : false;
+    const isTodayDate = isSameLocalDate(day, new Date(), userTimezone);
+    const isSelected = selectedDate
+      ? isSameLocalDate(day, selectedDate, userTimezone)
+      : false;
     const hasEvents = dayEvents.length > 0;
     const dayNumber = format(day, "d");
 
@@ -92,12 +90,14 @@ export function MonthView({
       ? getEventColor(dayEvents[0].type, theme)
       : "transparent";
 
+    const dayKey = toLocalDateKey(day, userTimezone) || format(day, "yyyy-MM-dd");
+
     return (
       <Pressable
         key={day.toISOString()}
         style={styles.dayCell}
         onPress={() => onDayPress(day)}
-        testID={`${testID}-day-${format(day, "yyyy-MM-dd")}`}
+        testID={`${testID}-day-${dayKey}`}
       >
         <View
           style={[

@@ -274,9 +274,12 @@ export class EventService {
   /**
    * Yaklaşan eventleri getirir
    */
-  async getUpcomingEvents(): Promise<ApiResponse<Event[]>> {
+  async getUpcomingEvents(timezone?: string): Promise<ApiResponse<Event[]>> {
     try {
-      const response = await api.get<Event[]>(ENV.ENDPOINTS.UPCOMING_EVENTS);
+      const endpoint = timezone
+        ? `${ENV.ENDPOINTS.UPCOMING_EVENTS}?timezone=${encodeURIComponent(timezone)}`
+        : ENV.ENDPOINTS.UPCOMING_EVENTS;
+      const response = await api.get<Event[]>(endpoint);
 
       return {
         success: true,
@@ -306,9 +309,12 @@ export class EventService {
   /**
    * Bugünün eventlerini getirir
    */
-  async getTodayEvents(): Promise<ApiResponse<Event[]>> {
+  async getTodayEvents(timezone?: string): Promise<ApiResponse<Event[]>> {
     try {
-      const response = await api.get<Event[]>(ENV.ENDPOINTS.TODAY_EVENTS);
+      const endpoint = timezone
+        ? `${ENV.ENDPOINTS.TODAY_EVENTS}?timezone=${encodeURIComponent(timezone)}`
+        : ENV.ENDPOINTS.TODAY_EVENTS;
+      const response = await api.get<Event[]>(endpoint);
 
       return {
         success: true,

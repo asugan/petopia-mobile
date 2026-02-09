@@ -1,6 +1,10 @@
 import { z } from 'zod';
 import { EVENT_TYPES } from '@/constants';
-import { combineDateTimeToISO, dateOnlyToUTCMidnightISOString } from '@/lib/utils/dateConversion';
+import {
+  combineDateTimeToISOInTimeZone,
+  dateOnlyToUTCMidnightISOString,
+} from '@/lib/utils/dateConversion';
+import { resolveEffectiveTimezone } from '@/lib/utils/timezone';
 import { utcDateStringSchema } from '@/lib/schemas/core/dateSchemas';
 import { t } from '@/lib/schemas/core/i18n';
 import { objectIdSchema } from '@/lib/schemas/core/validators';
@@ -13,7 +17,7 @@ export { EVENT_TYPES };
 export type EventType = (typeof EVENT_TYPES)[keyof typeof EVENT_TYPES];
 
 // Form input schema (matches the form structure with separate date/time fields)
-export const eventFormSchema = () =>
+export const eventFormSchema = (timezone?: string) =>
   z
     .object({
       title: z
@@ -79,12 +83,17 @@ export const eventFormSchema = () =>
       recurrence: recurrenceSettingsSchema().optional(),
     })
     .superRefine((data, ctx) => {
+      const effectiveTimezone = resolveEffectiveTimezone(timezone);
 
       // Validate start time is in the future
       if (data.startDate && data.startTime) {
         let startDateTime: string;
         try {
-          startDateTime = combineDateTimeToISO(data.startDate, data.startTime);
+          startDateTime = combineDateTimeToISOInTimeZone(
+            data.startDate,
+            data.startTime,
+            effectiveTimezone,
+          );
         } catch {
           ctx.addIssue({
             code: z.ZodIssueCode.custom,
@@ -111,7 +120,11 @@ export const eventFormSchema = () =>
       if (data.reminder && data.startDate && data.startTime) {
         let startDateTime: string;
         try {
-          startDateTime = combineDateTimeToISO(data.startDate, data.startTime);
+          startDateTime = combineDateTimeToISOInTimeZone(
+            data.startDate,
+            data.startTime,
+            effectiveTimezone,
+          );
         } catch {
           ctx.addIssue({
             code: z.ZodIssueCode.custom,
@@ -369,9 +382,16 @@ export const getEventTypeSpecificRules = (eventType: string) => {
 };
 
 // Helper function to transform form data to API format
-export const transformFormDataToAPI = (formData: EventFormData): EventData => {
+export const transformFormDataToAPI = (
+  formData: EventFormData,
+  timezone?: string
+): EventData => {
   // Combine date and time into ISO datetime strings
-  const startTime = combineDateTimeToISO(formData.startDate, formData.startTime);
+  const startTime = combineDateTimeToISOInTimeZone(
+    formData.startDate,
+    formData.startTime,
+    resolveEffectiveTimezone(timezone),
+  );
 
   return {
     title: formData.title,

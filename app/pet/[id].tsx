@@ -5,7 +5,7 @@ import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTranslation } from 'react-i18next';
-import { format, differenceInYears, differenceInMonths } from 'date-fns';
+import { differenceInYears, differenceInMonths } from 'date-fns';
 import { tr, enUS } from 'date-fns/locale';
 import { Ionicons, MaterialCommunityIcons, MaterialIcons } from '@expo/vector-icons';
 
@@ -119,12 +119,22 @@ export default function PetDetailScreen() {
   const nextFeedingSchedule = useMemo(() => {
     if (!feedingSchedules.length) return null;
 
-    const nextTime = getNextFeedingTime(feedingSchedules);
+    const nextTime = getNextFeedingTime(feedingSchedules, userTimezone);
     if (!nextTime) return null;
 
-    const dayNames = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
-    const dayName = dayNames[nextTime.getDay()];
-    const hhmm = format(nextTime, 'HH:mm');
+    const isoDayToName: Record<number, string> = {
+      1: 'monday',
+      2: 'tuesday',
+      3: 'wednesday',
+      4: 'thursday',
+      5: 'friday',
+      6: 'saturday',
+      7: 'sunday',
+    };
+    const dayName =
+      isoDayToName[Number(formatInTimeZone(nextTime, userTimezone, 'i'))] ??
+      'monday';
+    const hhmm = formatInTimeZone(nextTime, userTimezone, 'HH:mm');
 
     return (
       feedingSchedules.find((schedule) =>
@@ -137,11 +147,11 @@ export default function PetDetailScreen() {
         .sort((a, b) => a.time.localeCompare(b.time))[0] ??
       null
     );
-  }, [feedingSchedules]);
+  }, [feedingSchedules, userTimezone]);
 
   const nextFeedingTime = useMemo(() => {
-    return getNextFeedingTime(feedingSchedules);
-  }, [feedingSchedules]);
+    return getNextFeedingTime(feedingSchedules, userTimezone);
+  }, [feedingSchedules, userTimezone]);
 
   const timeUntilFeeding = useMemo(() => {
     if (!nextFeedingTime) return null;
@@ -160,8 +170,8 @@ export default function PetDetailScreen() {
   }, [nextFeedingTime, t]);
 
   const previousFeedingTime = useMemo(() => {
-    return getPreviousFeedingTime(feedingSchedules);
-  }, [feedingSchedules]);
+    return getPreviousFeedingTime(feedingSchedules, userTimezone);
+  }, [feedingSchedules, userTimezone]);
 
   const feedingProgress = useMemo(() => {
     if (!nextFeedingTime || !previousFeedingTime) return 0;

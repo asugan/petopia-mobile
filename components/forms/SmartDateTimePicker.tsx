@@ -1,7 +1,9 @@
 import { Text } from '@/components/ui';
 import { useTheme } from '@/lib/theme';
-import { combineDateTimeToISO } from '@/lib/utils/dateConversion';
-import { format, isAfter } from 'date-fns';
+import { useUserTimezone } from '@/lib/hooks/useUserTimezone';
+import { formatInTimeZone } from '@/lib/utils/date';
+import { combineDateTimeToISOInTimeZone } from '@/lib/utils/dateConversion';
+import { isAfter } from 'date-fns';
 import { enUS, tr } from 'date-fns/locale';
 import React, { useEffect } from 'react';
 import { useFormContext, useWatch } from 'react-hook-form';
@@ -35,6 +37,7 @@ export const SmartDateTimePicker = ({
   const { control, setValue } = useFormContext();
   const { t, i18n } = useTranslation();
   const { theme } = useTheme();
+  const userTimezone = useUserTimezone();
 
   // Watch both date and time values
   const dateValue = useWatch({ control, name: dateName });
@@ -88,13 +91,17 @@ export const SmartDateTimePicker = ({
         // Normalize values to expected formats
         const normalizedDate = normalizeDateValue(dateValue);
         const normalizedTime = normalizeTimeValue(timeValue);
-        const isoDateTime = combineDateTimeToISO(normalizedDate, normalizedTime);
+        const isoDateTime = combineDateTimeToISOInTimeZone(
+          normalizedDate,
+          normalizedTime,
+          userTimezone,
+        );
         setValue(combinedOutputName, isoDateTime);
       } catch {
         // Don't set invalid value, just log the error
       }
     }
-  }, [dateValue, timeValue, combinedOutputName, setValue]);
+  }, [dateValue, timeValue, combinedOutputName, setValue, userTimezone]);
 
   // Combine date and time for validation
   const getCombinedDateTime = () => {
@@ -105,11 +112,12 @@ export const SmartDateTimePicker = ({
       const normalizedDate = normalizeDateValue(dateValue);
       const normalizedTime = normalizeTimeValue(timeValue);
 
-      // Parse the normalized values
-      const [year, month, day] = normalizedDate.split('-').map(Number);
-      const [hours, minutes] = normalizedTime.split(':').map(Number);
-
-      const date = new Date(year, month - 1, day, hours, minutes);
+      const isoDateTime = combineDateTimeToISOInTimeZone(
+        normalizedDate,
+        normalizedTime,
+        userTimezone,
+      );
+      const date = new Date(isoDateTime);
 
       // Validate the date
       if (isNaN(date.getTime())) {
@@ -130,18 +138,21 @@ export const SmartDateTimePicker = ({
       const normalizedDate = normalizeDateValue(dateValue);
       const normalizedTime = normalizeTimeValue(timeValue);
 
-      // Parse the normalized values
-      const [year, month, day] = normalizedDate.split('-').map(Number);
-      const [hours, minutes] = normalizedTime.split(':').map(Number);
-
-      const date = new Date(year, month - 1, day, hours, minutes);
+      const isoDateTime = combineDateTimeToISOInTimeZone(
+        normalizedDate,
+        normalizedTime,
+        userTimezone,
+      );
+      const date = new Date(isoDateTime);
 
       // Validate the date before formatting
       if (isNaN(date.getTime())) {
         return '';
       }
 
-      return format(date, 'dd MMMM yyyy HH:mm', { locale });
+      return formatInTimeZone(date, userTimezone, 'dd MMMM yyyy HH:mm', {
+        locale,
+      });
     } catch {
       return '';
     }

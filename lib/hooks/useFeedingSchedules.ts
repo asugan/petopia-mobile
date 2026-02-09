@@ -15,6 +15,7 @@ import { getNextFeedingTime } from '@/lib/schemas/feedingScheduleSchema';
 import { usePets } from './usePets';
 import { formatDistanceToNow } from 'date-fns';
 import { tr, enUS } from 'date-fns/locale';
+import { useUserTimezone } from './useUserTimezone';
 
 export { feedingScheduleKeys } from './queryKeys';
 
@@ -118,6 +119,7 @@ export const useActiveFeedingSchedulesByPet = (petId: string) => {
 export const useNextFeedingWithDetails = (language: string = 'en') => {
   const { data: nextFeedingSchedule = null, isLoading: isLoadingSchedule } = useNextFeeding();
   const { data: pets = [], isLoading: isLoadingPets } = usePets();
+  const userTimezone = useUserTimezone();
 
   return useMemo(() => {
     const isLoading = isLoadingSchedule || isLoadingPets;
@@ -132,7 +134,7 @@ export const useNextFeedingWithDetails = (language: string = 'en') => {
       };
     }
 
-    const nextFeedingTime = getNextFeedingTime([nextFeedingSchedule]);
+    const nextFeedingTime = getNextFeedingTime([nextFeedingSchedule], userTimezone);
     const pet = pets.find(p => p._id === nextFeedingSchedule.petId) || null;
     const locale = language === 'tr' ? tr : enUS;
     const timeUntil = nextFeedingTime
@@ -146,7 +148,7 @@ export const useNextFeedingWithDetails = (language: string = 'en') => {
       timeUntil,
       isLoading,
     };
-  }, [nextFeedingSchedule, pets, isLoadingSchedule, isLoadingPets, language]);
+  }, [nextFeedingSchedule, pets, isLoadingSchedule, isLoadingPets, language, userTimezone]);
 };
 
 // Mutations

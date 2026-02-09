@@ -105,10 +105,11 @@ export const useCalendarEvents = (
 
 export const useUpcomingEvents = () => {
   const { enabled } = useAuthQueryEnabled();
+  const timezone = useUserTimezone();
 
   return useResources<Event>({
     queryKey: eventKeys.upcoming(),
-    queryFn: () => eventService.getUpcomingEvents(),
+    queryFn: () => eventService.getUpcomingEvents(timezone),
     enabled,
     staleTime: CACHE_TIMES.SHORT,
     refetchInterval: CACHE_TIMES.MEDIUM,
@@ -117,10 +118,11 @@ export const useUpcomingEvents = () => {
 
 export const useTodayEvents = () => {
   const { enabled } = useAuthQueryEnabled();
+  const timezone = useUserTimezone();
 
   return useResources<Event>({
     queryKey: eventKeys.today(),
-    queryFn: () => eventService.getTodayEvents(),
+    queryFn: () => eventService.getTodayEvents(timezone),
     enabled,
     staleTime: CACHE_TIMES.VERY_SHORT,
     refetchInterval: CACHE_TIMES.VERY_SHORT,

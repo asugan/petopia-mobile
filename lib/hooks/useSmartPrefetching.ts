@@ -3,7 +3,7 @@ import { useQueryClient } from '@tanstack/react-query';
 import { usePrefetchData } from './usePrefetchData';
 import { eventKeys, feedingScheduleKeys } from './queryKeys';
 import { unwrapApiResponse } from './core/unwrapApiResponse';
-import { toISODateStringWithFallback } from '@/lib/utils/dateConversion';
+import { toLocalDateKey } from '@/lib/utils/timezoneDate';
 import { useAuthQueryEnabled } from './useAuthQueryEnabled';
 import { useUserTimezone } from './useUserTimezone';
 
@@ -93,7 +93,7 @@ export function useSmartPrefetching() {
             queryFn: () =>
               unwrapApiResponse(
                 import('@/lib/services/eventService').then(m =>
-                  m.eventService.getUpcomingEvents()
+                  m.eventService.getUpcomingEvents(timezone)
                 ),
                 { defaultValue: [] }
               ),
@@ -105,7 +105,7 @@ export function useSmartPrefetching() {
             queryFn: () =>
               unwrapApiResponse(
                 import('@/lib/services/eventService').then(m =>
-                  m.eventService.getTodayEvents()
+                  m.eventService.getTodayEvents(timezone)
                 ),
                 { defaultValue: [] }
               ),
@@ -120,7 +120,7 @@ export function useSmartPrefetching() {
             queryFn: () =>
               unwrapApiResponse(
                 import('@/lib/services/eventService').then(m =>
-                  m.eventService.getUpcomingEvents()
+                  m.eventService.getUpcomingEvents(timezone)
                 ),
                 { defaultValue: [] }
               ),
@@ -148,7 +148,7 @@ export function useSmartPrefetching() {
     } else {
       setTimeout(executePrefetch, config.timeout);
     }
-  }, [enabled, queryClient, prefetchRelatedData, prefetchStrategies]);
+  }, [enabled, queryClient, prefetchRelatedData, prefetchStrategies, timezone]);
 
   // Prefetch based on user navigation patterns
   const prefetchOnNavigation = useCallback((
@@ -195,7 +195,7 @@ export function useSmartPrefetching() {
         queryFn: () =>
           unwrapApiResponse(
             import('@/lib/services/eventService').then(m =>
-              m.eventService.getTodayEvents()
+              m.eventService.getTodayEvents(timezone)
             ),
             { defaultValue: [] }
           ),
@@ -220,7 +220,7 @@ export function useSmartPrefetching() {
       const tomorrow = new Date();
       tomorrow.setDate(tomorrow.getDate() + 1);
 
-      const tomorrowKey = toISODateStringWithFallback(tomorrow);
+      const tomorrowKey = toLocalDateKey(tomorrow, timezone);
 
       queryClient.prefetchQuery({
         queryKey: eventKeys.calendarScoped(tomorrowKey, timezone),

@@ -79,6 +79,16 @@ vi.mock('expo-localization', () => ({
   getCalendars: () => [],
 }));
 
+// Mock static image assets required through constants/images
+vi.mock('@/assets/images/cat_avatar.webp', () => ({ default: 1 }));
+vi.mock('@/assets/images/dog_avatar.webp', () => ({ default: 1 }));
+vi.mock('@/assets/images/bird_avatar.webp', () => ({ default: 1 }));
+vi.mock('@/assets/images/rabbit_avatar.webp', () => ({ default: 1 }));
+vi.mock('@/assets/images/hamster_avatar.webp', () => ({ default: 1 }));
+vi.mock('@/assets/images/fish_avatar.webp', () => ({ default: 1 }));
+vi.mock('@/assets/images/reptile_avatar.webp', () => ({ default: 1 }));
+vi.mock('@/assets/images/other_avatar.webp', () => ({ default: 1 }));
+
 // Mock React Navigation
 vi.mock(
   '@react-navigation/native',

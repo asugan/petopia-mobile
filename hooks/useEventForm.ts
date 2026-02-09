@@ -6,8 +6,9 @@ import {
   type EventFormData,
 } from '../lib/schemas/eventSchema';
 import { Event } from '../lib/types';
-import { toISODateString, toTimeString } from '../lib/utils/dateConversion';
 import { useEventReminderStore } from '@/stores/eventReminderStore';
+import { useUserTimezone } from '@/lib/hooks/useUserTimezone';
+import { formatInTimeZone } from '@/lib/utils/date';
 
 export type UseEventFormReturn = UseFormReturn<EventFormData> & {
   form: UseFormReturn<EventFormData>;
@@ -19,6 +20,7 @@ export type UseEventFormReturn = UseFormReturn<EventFormData> & {
 // Main hook for event form - handles both create and edit modes
 export const useEventForm = (event?: Event, initialPetId?: string): UseEventFormReturn => {
   const presetSelections = useEventReminderStore(state => state.presetSelections);
+  const userTimezone = useUserTimezone();
 
   // Default values - parse datetime for date/time pickers
   const defaultValues: EventFormData = React.useMemo(() => {
@@ -27,8 +29,8 @@ export const useEventForm = (event?: Event, initialPetId?: string): UseEventForm
       ? new Date(event.startTime)
       : new Date(Date.now() + 60000); // Now + 1 minute
 
-    const startDate = toISODateString(startDateTime) || '';
-    const startTime = toTimeString(startDateTime) || '';
+    const startDate = formatInTimeZone(startDateTime, userTimezone, 'yyyy-MM-dd');
+    const startTime = formatInTimeZone(startDateTime, userTimezone, 'HH:mm');
     const presetSelection = event
       ? (presetSelections[event._id] ?? event.reminderPreset)
       : undefined;
@@ -49,10 +51,10 @@ export const useEventForm = (event?: Event, initialPetId?: string): UseEventForm
       frequency: event?.frequency || undefined,
       isRecurring: false,
     };
-  }, [event, initialPetId, presetSelections]);
+  }, [event, initialPetId, presetSelections, userTimezone]);
 
   const form = useForm<EventFormData>({
-    resolver: zodResolver(eventFormSchema()) as Resolver<EventFormData>,
+    resolver: zodResolver(eventFormSchema(userTimezone)) as Resolver<EventFormData>,
     defaultValues,
     mode: 'onChange', // Validate on change for better UX
     reValidateMode: 'onChange',
