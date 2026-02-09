@@ -73,8 +73,7 @@ const isUpcomingQuery = (queryKey: readonly unknown[]) =>
   queryKey[1] === "upcoming";
 
 const buildCalendarQueryKey = (date: string, timezone?: string) => {
-  const safeTimezone = normalizeTimezone(timezone);
-  return eventKeys.calendarScoped(date, safeTimezone);
+  return eventKeys.calendarScoped(date, timezone);
 };
 
 export const useEvent = (id?: string, options?: { enabled?: boolean }) => {
@@ -96,9 +95,18 @@ export const useCalendarEvents = (
   options?: { enabled?: boolean; timezone?: string },
 ) => {
   const { enabled } = useAuthQueryEnabled();
+  const queryClient = useQueryClient();
   const timezone = normalizeTimezone(options?.timezone);
   const isEnabled =
     options?.enabled !== undefined ? options.enabled && !!date : !!date;
+
+  useEffect(() => {
+    if (!date) {
+      return;
+    }
+
+    void queryClient.invalidateQueries({ queryKey: eventKeys.calendar(date) });
+  }, [date, queryClient, timezone]);
 
   return useConditionalQuery<Event[]>({
     queryKey: buildCalendarQueryKey(date, timezone),

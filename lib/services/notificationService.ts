@@ -516,7 +516,14 @@ export class NotificationService {
    * @returns Notification identifier or null if failed
    */
   async scheduleFeedingReminder(
-    schedule: { _id: string; petId: string; time: string; foodType: string; amount: string; days?: string },
+    schedule: {
+      _id: string;
+      petId: string;
+      time: string;
+      foodType: string;
+      amount: string;
+      days?: string | string[];
+    },
     reminderMinutes: number = 15
   ): Promise<string | null> {
     try {

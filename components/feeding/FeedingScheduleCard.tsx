@@ -4,7 +4,7 @@ import { Text, IconButton, Switch } from '@/components/ui';
 import { useTheme } from '@/lib/theme';
 import { useTranslation } from 'react-i18next';
 import { FeedingSchedule } from '../../lib/types';
-import { formatTimeForDisplay } from '../../lib/schemas/feedingScheduleSchema';
+import { formatTimeForDisplay, normalizeFeedingDays } from '../../lib/schemas/feedingScheduleSchema';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 
 interface FeedingScheduleCardProps {
@@ -35,8 +35,7 @@ export function FeedingScheduleCard({
   const { t } = useTranslation();
   const { theme } = useTheme();
 
-  // Parse days string into array
-  const daysArray = schedule.days.split(',').map(d => d.trim());
+  const daysArray = normalizeFeedingDays(schedule.days);
 
   const handlePress = React.useCallback(() => {
     onPress?.(schedule);

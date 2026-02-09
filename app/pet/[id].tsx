@@ -16,7 +16,13 @@ import { usePet, useDeletePet } from '@/lib/hooks/usePets';
 import { useEvents } from '@/lib/hooks/useEvents';
 import { useHealthRecords } from '@/lib/hooks/useHealthRecords';
 import { useActiveFeedingSchedulesByPet } from '@/lib/hooks/useFeedingSchedules';
-import { formatTimeForDisplay, getNextFeedingTime, getPreviousFeedingTime } from '@/lib/schemas/feedingScheduleSchema';
+import {
+  formatTimeForDisplay,
+  getNextFeedingTime,
+  getPreviousFeedingTime,
+  normalizeFeedingDays,
+  type DayOfWeek,
+} from '@/lib/schemas/feedingScheduleSchema';
 import { PetModal } from '@/components/PetModal';
 import { showToast } from '@/lib/toast/showToast';
 import { TAB_ROUTES } from '@/constants/routes';
@@ -140,7 +146,7 @@ export default function PetDetailScreen() {
       feedingSchedules.find((schedule) =>
         schedule.isActive &&
         schedule.time === hhmm &&
-        schedule.days.toLowerCase().includes(dayName)
+        normalizeFeedingDays(schedule.days).includes(dayName as DayOfWeek)
       ) ??
       [...feedingSchedules]
         .filter((schedule) => schedule.isActive)

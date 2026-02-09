@@ -44,4 +44,10 @@ describe('eventService timezone query params', () => {
     expect(mockGet).toHaveBeenNthCalledWith(1, '/api/events/today');
     expect(mockGet).toHaveBeenNthCalledWith(2, '/api/events/upcoming');
   });
+
+  it('keeps old endpoint format when timezone is invalid', async () => {
+    await eventService.getTodayEvents('Invalid/Timezone');
+
+    expect(mockGet).toHaveBeenCalledWith('/api/events/today');
+  });
 });

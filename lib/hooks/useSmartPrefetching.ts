@@ -15,7 +15,11 @@ interface PrefetchStrategy {
 
 export function useSmartPrefetching() {
   const queryClient = useQueryClient();
-  const { prefetchRelatedData } = usePrefetchData();
+  const {
+    prefetchRelatedData,
+    prefetchUpcomingEvents = () => {},
+    prefetchTodayEvents = () => {},
+  } = usePrefetchData();
   const { enabled } = useAuthQueryEnabled();
   const timezone = useUserTimezone();
 
@@ -87,30 +91,8 @@ export function useSmartPrefetching() {
           break;
 
         case 'healthTabFocus':
-          // Prefetch upcoming events and today's events
-          queryClient.prefetchQuery({
-            queryKey: eventKeys.upcomingScoped(timezone),
-            queryFn: () =>
-              unwrapApiResponse(
-                import('@/lib/services/eventService').then(m =>
-                  m.eventService.getUpcomingEvents(timezone)
-                ),
-                { defaultValue: [] }
-              ),
-            staleTime: 2 * 60 * 1000,
-          });
-
-          queryClient.prefetchQuery({
-            queryKey: eventKeys.todayScoped(timezone),
-            queryFn: () =>
-              unwrapApiResponse(
-                import('@/lib/services/eventService').then(m =>
-                  m.eventService.getTodayEvents(timezone)
-                ),
-                { defaultValue: [] }
-              ),
-            staleTime: 1 * 60 * 1000,
-          });
+          prefetchUpcomingEvents();
+          prefetchTodayEvents();
           break;
 
         case 'backgroundRefresh':
@@ -148,7 +130,15 @@ export function useSmartPrefetching() {
     } else {
       setTimeout(executePrefetch, config.timeout);
     }
-  }, [enabled, queryClient, prefetchRelatedData, prefetchStrategies, timezone]);
+  }, [
+    enabled,
+    queryClient,
+    prefetchRelatedData,
+    prefetchStrategies,
+    prefetchTodayEvents,
+    prefetchUpcomingEvents,
+    timezone,
+  ]);
 
   // Prefetch based on user navigation patterns
   const prefetchOnNavigation = useCallback((
@@ -190,17 +180,7 @@ export function useSmartPrefetching() {
 
     // Morning: prefetch today's events and feeding schedules
     if (hour >= 6 && hour < 12) {
-      queryClient.prefetchQuery({
-        queryKey: eventKeys.todayScoped(timezone),
-        queryFn: () =>
-          unwrapApiResponse(
-            import('@/lib/services/eventService').then(m =>
-              m.eventService.getTodayEvents(timezone)
-            ),
-            { defaultValue: [] }
-          ),
-        staleTime: 1 * 60 * 1000,
-      });
+      prefetchTodayEvents();
 
       queryClient.prefetchQuery({
         queryKey: feedingScheduleKeys.today(),
@@ -234,7 +214,7 @@ export function useSmartPrefetching() {
         staleTime: 2 * 60 * 1000,
       });
     }
-  }, [enabled, queryClient, timezone]);
+  }, [enabled, prefetchTodayEvents, queryClient, timezone]);
 
   return {
     prefetchOnInteraction,

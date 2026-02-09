@@ -16,16 +16,13 @@ export type FoodType = (typeof FOOD_TYPES)[keyof typeof FOOD_TYPES];
 // Valid day names for validation
 const VALID_DAYS = Object.values(DAYS_OF_WEEK);
 
-// Helper function to validate days string (comma-separated day names)
-const isValidDaysString = (days: string): boolean => {
-  if (!days || days.trim() === '') return false;
+export const normalizeFeedingDays = (days: string | string[] | undefined | null): DayOfWeek[] => {
+  const rawDays = Array.isArray(days) ? days : typeof days === 'string' ? days.split(',') : [];
+  const normalized = rawDays
+    .map((day) => day.trim().toLowerCase())
+    .filter((day): day is DayOfWeek => VALID_DAYS.includes(day as DayOfWeek));
 
-  const dayArray = days.split(',').map((d) => d.trim().toLowerCase());
-
-  // Check if all days are valid
-  return (
-    dayArray.every((day) => VALID_DAYS.includes(day as DayOfWeek)) && dayArray.length > 0
-  );
+  return Array.from(new Set(normalized));
 };
 
 // Form input schema (for create/edit forms with multi-select days)
@@ -66,7 +63,7 @@ export const feedingScheduleFormSchema = () =>
 // Type inference from the form schema
 export type FeedingScheduleFormData = z.infer<ReturnType<typeof feedingScheduleFormSchema>>;
 
-// API schema (matches backend expectations with comma-separated days string)
+// API schema (array-first; still accepts legacy comma-separated string)
 export const feedingScheduleSchema = () =>
   z.object({
     petId: z
@@ -88,12 +85,12 @@ export const feedingScheduleSchema = () =>
       .min(1, { message: t('forms.validation.feedingSchedule.amountRequired') })
       .max(50, { message: t('forms.validation.feedingSchedule.amountMax') }),
 
-    days: z
-      .string()
-      .min(1, { message: t('forms.validation.feedingSchedule.daysRequired') })
-      .refine(isValidDaysString, {
-        error: () => t('forms.validation.feedingSchedule.daysInvalidFormat'),
-      }),
+    days: z.preprocess(
+      (value) => normalizeFeedingDays(value as string | string[] | undefined),
+      z
+        .array(z.enum(Object.values(DAYS_OF_WEEK) as [string, ...string[]]))
+        .min(1, { message: t('forms.validation.feedingSchedule.daysRequired') })
+    ),
 
     isActive: z.boolean().optional().default(true),
   });
@@ -133,10 +130,10 @@ export const updateFeedingScheduleSchema = () =>
       .optional(),
 
     days: z
-      .string()
-      .refine(isValidDaysString, {
-        error: () => t('forms.validation.feedingSchedule.daysInvalid'),
-      })
+      .preprocess(
+        (value) => normalizeFeedingDays(value as string | string[] | undefined),
+        z.array(z.enum(Object.values(DAYS_OF_WEEK) as [string, ...string[]]))
+      )
       .optional(),
 
     isActive: z.boolean().optional(),
@@ -148,15 +145,12 @@ export type UpdateFeedingScheduleInput = z.infer<ReturnType<typeof updateFeeding
 
 // Helper function to transform form data to API format
 export const transformFormDataToAPI = (formData: FeedingScheduleFormData): FeedingScheduleData => {
-  // Convert days array to comma-separated string
-  const daysString = formData.daysArray.join(',');
-
   return {
     petId: formData.petId,
     time: formData.time,
     foodType: formData.foodType,
     amount: formData.amount,
-    days: daysString,
+    days: formData.daysArray,
     isActive: formData.isActive ?? true,
   };
 };
@@ -165,10 +159,7 @@ export const transformFormDataToAPI = (formData: FeedingScheduleFormData): Feedi
 export const transformAPIDataToForm = (
   apiData: FeedingScheduleData
 ): FeedingScheduleFormData => {
-  // Convert comma-separated days string to array
-  const daysArray = apiData.days.split(',').map((d) => d.trim()) as (
-    (typeof DAYS_OF_WEEK)[keyof typeof DAYS_OF_WEEK]
-  )[];
+  const daysArray = normalizeFeedingDays(apiData.days);
 
   return {
     petId: apiData.petId,
@@ -210,7 +201,7 @@ export const formatTimeForDisplay = (time: string): string => {
 
 // Helper function to get next feeding time
 export const getNextFeedingTime = (
-  schedules: { time: string; days: string; isActive: boolean }[],
+  schedules: { time: string; days: string | string[]; isActive: boolean }[],
   timezone?: string
 ): Date | null => {
   const now = new Date();
@@ -227,11 +218,8 @@ export const getNextFeedingTime = (
     7: 'sunday',
   };
 
-  const includesDay = (days: string, dayName: string) =>
-    days
-      .split(',')
-      .map((value) => value.trim().toLowerCase())
-      .includes(dayName);
+  const includesDay = (days: string | string[], dayName: string) =>
+    normalizeFeedingDays(days).includes(dayName as DayOfWeek);
 
   const buildDateTime = (dayDate: Date, time: string) => {
     const dayKey = toLocalDateKey(dayDate, tz);
@@ -256,7 +244,7 @@ export const getNextFeedingTime = (
 };
 
 export const getPreviousFeedingTime = (
-  schedules: { time: string; days: string; isActive: boolean }[],
+  schedules: { time: string; days: string | string[]; isActive: boolean }[],
   timezone?: string
 ): Date | null => {
   const now = new Date();
@@ -273,11 +261,8 @@ export const getPreviousFeedingTime = (
     7: 'sunday',
   };
 
-  const includesDay = (days: string, dayName: string) =>
-    days
-      .split(',')
-      .map((value) => value.trim().toLowerCase())
-      .includes(dayName);
+  const includesDay = (days: string | string[], dayName: string) =>
+    normalizeFeedingDays(days).includes(dayName as DayOfWeek);
 
   const buildDateTime = (dayDate: Date, time: string) => {
     const dayKey = toLocalDateKey(dayDate, tz);

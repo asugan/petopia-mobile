@@ -1,3 +1,4 @@
+import { normalizeTimezone } from '@/lib/utils/timezone';
 import { createQueryKeys } from './core/createQueryKeys';
 
 // Pets
@@ -15,13 +16,20 @@ const baseEventKeys = createQueryKeys('events');
 export const eventKeys = {
   ...baseEventKeys,
   calendar: (date: string) => [...baseEventKeys.all, 'calendar', date] as const,
-  calendarScoped: (date: string, timezone?: string) =>
-    [...baseEventKeys.all, 'calendar', date, { timezone }] as const,
+  calendarScoped: (date: string, timezone?: string) => {
+    const safeTimezone = normalizeTimezone(timezone);
+    return [...baseEventKeys.all, 'calendar', date, { timezone: safeTimezone }] as const;
+  },
   upcoming: () => [...baseEventKeys.all, 'upcoming'] as const,
-  upcomingScoped: (timezone?: string) =>
-    [...baseEventKeys.all, 'upcoming', { timezone }] as const,
+  upcomingScoped: (timezone?: string) => {
+    const safeTimezone = normalizeTimezone(timezone);
+    return [...baseEventKeys.all, 'upcoming', { timezone: safeTimezone }] as const;
+  },
   today: () => [...baseEventKeys.all, 'today'] as const,
-  todayScoped: (timezone?: string) => [...baseEventKeys.all, 'today', { timezone }] as const,
+  todayScoped: (timezone?: string) => {
+    const safeTimezone = normalizeTimezone(timezone);
+    return [...baseEventKeys.all, 'today', { timezone: safeTimezone }] as const;
+  },
   type: (petId: string, type: string) => [...baseEventKeys.all, 'type', petId, type] as const,
 };
 
