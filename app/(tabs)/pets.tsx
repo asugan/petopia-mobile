@@ -66,7 +66,7 @@ export default function PetsScreen() {
 
   const handleAddPet = async () => {
     if (!isProUser && allPets.length >= 1) {
-      router.push(SUBSCRIPTION_ROUTES.main);
+      router.push(`${SUBSCRIPTION_ROUTES.main}?source=pets_add_limit`);
       return;
     }
     setSelectedPetState(undefined);
@@ -74,7 +74,7 @@ export default function PetsScreen() {
   };
 
   const handleUpgradePress = async () => {
-    router.push(SUBSCRIPTION_ROUTES.main);
+    router.push(`${SUBSCRIPTION_ROUTES.main}?source=pets_limit_card`);
   };
 
   const handleModalSuccess = () => {

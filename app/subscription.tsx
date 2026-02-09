@@ -1,8 +1,8 @@
 import { View, StyleSheet, ScrollView, Linking } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useTranslation } from 'react-i18next';
-import { useRouter } from 'expo-router';
-import { useState } from 'react';
+import { useRouter, useLocalSearchParams } from 'expo-router';
+import { useEffect, useMemo, useState } from 'react';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { Text, Button, Card, IconButton } from '@/components/ui';
 import { useTheme } from '@/lib/theme';
@@ -12,6 +12,8 @@ import { SubscriptionCard } from '@/components/subscription';
 import { SuccessSubscriptionModal } from '@/components/subscription/SuccessSubscriptionModal';
 import { subscriptionStyles } from '@/lib/styles/subscription';
 import { TAB_ROUTES } from '@/constants/routes';
+import { useTracking } from '@/lib/posthog';
+import { SUBSCRIPTION_EVENTS } from '@/lib/posthog/subscriptionEvents';
 
 /**
  * Subscription screen with RevenueCat paywall
@@ -21,25 +23,40 @@ export default function SubscriptionScreen() {
   const { t } = useTranslation();
   const { theme } = useTheme();
   const router = useRouter();
+  const params = useLocalSearchParams<{ source?: string }>();
   const [modalVisible, setModalVisible] = useState(false);
   const [isTrialSuccess, setIsTrialSuccess] = useState(false);
+  const source = useMemo(
+    () => (typeof params.source === 'string' ? params.source : 'direct'),
+    [params.source]
+  );
+  const { trackEvent } = useTracking();
   const {
     isPaidSubscription,
     isLoading,
     restorePurchases,
     presentPaywall,
+    canStartTrial,
   } = useSubscription();
   const { data: publicConfig } = usePublicConfig();
   const legalTermsUrl = publicConfig?.legal.termsUrl ?? null;
   const legalPrivacyUrl = publicConfig?.legal.privacyUrl ?? null;
   const showLegalLinks = Boolean(legalTermsUrl || legalPrivacyUrl);
 
+  useEffect(() => {
+    trackEvent(SUBSCRIPTION_EVENTS.PAYWALL_VIEW, {
+      screen: 'subscription',
+      source,
+      trial_eligible: canStartTrial,
+    });
+  }, [canStartTrial, source, trackEvent]);
+
   const handleRestore = async () => {
-    await restorePurchases();
+    await restorePurchases({ screen: 'subscription', source });
   };
 
   const handlePresentPaywall = async () => {
-    const success = await presentPaywall();
+    const success = await presentPaywall(undefined, { screen: 'subscription', source });
     if (success) {
       setModalVisible(true);
     }
@@ -73,8 +90,19 @@ export default function SubscriptionScreen() {
   };
 
   const handleBack = () => {
+    trackEvent(SUBSCRIPTION_EVENTS.PAYWALL_CLOSE, {
+      screen: 'subscription',
+      source,
+      reason: 'back_button',
+    });
     router.back();
   };
+
+  const trustPoints = [
+    t('subscription.trust.cancelAnytime'),
+    t('subscription.trust.billedByStore'),
+    t('subscription.trust.secureCheckout'),
+  ];
 
   // Pro features list
   const proFeatures = [
@@ -135,6 +163,17 @@ export default function SubscriptionScreen() {
         >
           {t('subscription.note')}
         </Text>
+
+        <View style={styles.trustList}>
+          {trustPoints.map((point) => (
+            <View key={point} style={styles.trustItem}>
+              <MaterialCommunityIcons name="check-circle-outline" size={16} color={theme.colors.primary} />
+              <Text variant="bodySmall" style={{ color: theme.colors.onSurfaceVariant, flex: 1 }}>
+                {point}
+              </Text>
+            </View>
+          ))}
+        </View>
 
         {/* Features List - Show if not paid */}
         {!isPaidSubscription && (
@@ -263,5 +302,14 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: 8,
     marginTop: 8,
+  },
+  trustList: {
+    marginBottom: 12,
+    gap: 8,
+  },
+  trustItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
   },
 });

@@ -35,7 +35,7 @@
     "linkOpenError": "Odkaz nebylo možné otevřít. Zkuste to prosím znovu.",
     "logoutConfirm": "Opravdu se chcete odhlásit?",
     "logoutSuccess": "Úspěšně odhlášeno",
-    "freeTrialNotice": "Přihlaste se pomocí sociálních médií, synchronizujte svá data do cloudu a používejte je na všech svých zařízeních."
+    "freeTrialNotice": "Začněte zdarma s jedním mazlíčkem a odemkněte Pro, až budete chtít spravovat celou svou zvířecí rodinu bez omezení."
   },
   "navigation": {
     "home": "Domů",
@@ -174,7 +174,7 @@
   "limits": {
     "pets": {
       "title": "Přidejte neomezeně mazlíčků",
-      "subtitle": "S Pro verzí můžete spravovat celou svou rodinu na jednom místě.",
+      "subtitle": "Mějte zdravotní historii, připomínky a záznamy každého mazlíčka na jednom spolehlivém místě.",
       "cta": "Upgradovat na Pro"
     },
     "care": {
@@ -182,7 +182,7 @@
     },
     "budgets": {
       "title": "Chytré sledování rozpočtu",
-      "subtitle": "S Pro verzí můžete spravovat měsíční rozpočty a upozornění na jednom místě.",
+      "subtitle": "Odhalte rostoucí výdaje včas a předejděte nečekaným účtům za veterináře díky proaktivním upozorněním.",
       "cta": "Upgradovat na Pro"
     }
   },
@@ -1316,7 +1316,7 @@
     "screen3": {
       "title": "Jste připraveni!",
       "description": "Vše je připraveno ke správě péče a zdravotních dat vašeho mazlíčka.",
-      "trialNotice": "Přidejte svého mazlíčka a začněte!",
+      "trialNotice": "Přidejte svého prvního mazlíčka hned teď a Pro odemkněte, až budete potřebovat více.",
       "addPet": "Přidat mazlíčka",
       "skipPet": "Udělat později",
       "addYourFirstPet": "Přidat svého prvního mazlíčka"
@@ -1490,7 +1490,7 @@
     "confirmStartTrialMessage": "14 dní bezplatných Pro funkcí. Není vyžadována platební karta.",
     "confirmStartTrialAction": "Zahájit zkušební verzi",
     "upgrade": "Upgradovat na Pro",
-    "upgradePrompt": "Odemknout všechny funkce s Pro",
+    "upgradePrompt": "Nezmeškejte úkoly péče a mějte všechny mazlíčky přehledně uspořádané s Pro",
     "upgradeBeforeTrialEnds": "Upgradovat před koncem zkušební verze",
     "manageSubscription": "Spravovat předplatné",
     "cancelSubscription": "Zrušit předplatné",
@@ -1518,24 +1518,24 @@
     "unlockFeature": "Odemknout {{feature}}",
     "modal": {
       "title": "Prémiová funkce",
-      "description": "Tato funkce je dostupná pouze pro Pro členy",
-      "featureDescription": "{{feature}} je k dispozici pouze pro Pro členy",
-      "upgradeNow": "Upgradovat nyní",
+      "description": "Upgradujte na Pro a mějte všechny mazlíčky, připomínky i zdravotní záznamy v jednom pracovním toku.",
+      "featureDescription": "Upgradujte na Pro, odemkněte {{feature}} a udržte svůj režim konzistentní.",
+      "upgradeNow": "Zobrazit tarify",
       "maybeLater": "Možná později",
-      "includes": "Pro členství obsahuje:"
+      "includes": "Pro vám pomůže s:"
     },
     "features": {
       "title": "Pro funkce",
       "unlimited": "Neomezeně mazlíčků",
-      "unlimitedDesc": "Přidávejte a spravujte všechny své mazlíčky na jednom místě",
+      "unlimitedDesc": "Mějte všechny profily, záznamy a poznámky o mazlíčcích pohromadě",
       "feedingSchedules": "Neomezené plány krmení",
-      "feedingSchedulesDesc": "Vytvářejte neomezené plány krmení pro všechny své mazlíčky",
+      "feedingSchedulesDesc": "Vytvářejte spolehlivé rutiny pro každého mazlíčka bez omezení plánů",
       "budgetTracking": "Sledování rozpočtu a upozornění",
-      "budgetTrackingDesc": "Nastavujte měsíční rozpočty, sledujte výdaje a dostávejte upozornění",
+      "budgetTrackingDesc": "Včas zachyťte rostoucí náklady díky měsíčním rozpočtovým upozorněním",
       "export": "Export dat",
-      "exportDesc": "Exportujte výdaje do CSV nebo PDF, generujte veterinární souhrny",
+      "exportDesc": "Sdílejte přehledné reporty s rodinou nebo veterinářem",
       "priority": "Prioritní podpora",
-      "priorityDesc": "Získejte pomoc, když ji potřebujete",
+      "priorityDesc": "Získejte rychlejší pomoc, když je to urgentní",
       "petManagement": "Správa mazlíčků",
       "healthRecords": "Zdravotní záznamy",
       "calendar": "Kalendář a události",
@@ -1545,7 +1545,7 @@
     },
     "paywall": {
       "title": "Odemknout Petopia Petcare Pro",
-      "subtitle": "Získejte z Petopia Petcare maximum"
+      "subtitle": "Mějte péči, připomínky i výdaje každého mazlíčka pod kontrolou"
     },
     "success": {
       "title": "Předplatné úspěšné!",
@@ -1557,7 +1557,12 @@
       "message": "Vaše 14denní bezplatná zkušební verze začala. Užívejte si všechny Pro funkce!",
       "button": "Přejít na domovskou stránku"
     },
-    "note": "Platba bude účtována na váš účet App Store / Google Play. Předplatné se automaticky obnovuje, pokud není zrušeno alespoň 24 hodin před koncem aktuálního období. Předplatné můžete spravovat nebo zrušit v nastavení svého účtu App Store / Google Play."
+    "note": "Platba bude účtována přes váš účet App Store / Google Play. Předplatné se automaticky obnovuje, pokud není zrušeno alespoň 24 hodin před koncem aktuálního období. Spravovat nebo zrušit jej můžete kdykoli v nastavení účtu obchodu.",
+    "trust": {
+      "cancelAnytime": "Předplatné můžete kdykoli zrušit v nastavení App Store / Google Play",
+      "billedByStore": "Platba je bezpečně zpracována přes váš účet v obchodě s aplikacemi",
+      "secureCheckout": "V aplikaci není potřeba ručně zadávat údaje platební karty"
+    }
   },
   "downgrade": {
     "title": "Vyberte svého mazlíčka",

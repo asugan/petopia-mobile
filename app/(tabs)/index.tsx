@@ -43,7 +43,7 @@ function HomeScreenContent() {
   }, [processPendingPet, data.pets?.length, isInitialized]);
 
   const handleUpgradePress = async () => {
-    router.push(SUBSCRIPTION_ROUTES.main);
+    router.push(`${SUBSCRIPTION_ROUTES.main}?source=home_limit_card`);
   };
 
   // Hook must be called unconditionally before any early returns

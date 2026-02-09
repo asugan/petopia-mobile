@@ -35,7 +35,7 @@
     "linkOpenError": "Nu s-a putut deschide link-ul. Te rugăm să încerci din nou.",
     "logoutConfirm": "Ești sigur că vrei să te deconectezi?",
     "logoutSuccess": "Deconectare reușită",
-    "freeTrialNotice": "Autentifică-te cu rețelele sociale, sincronizează datele în cloud și folosește-le pe toate dispozitivele tale."
+    "freeTrialNotice": "Începe gratuit cu un singur animal de companie, apoi deblochează Pro când vrei să gestionezi întreaga ta familie de animale fără limite."
   },
   "navigation": {
     "home": "Acasă",
@@ -174,7 +174,7 @@
   "limits": {
     "pets": {
       "title": "Adaugă animale nelimitate",
-      "subtitle": "Gestionează-ți întreaga familie într-un singur loc cu Pro.",
+      "subtitle": "Păstrează istoricul de sănătate, mementourile și înregistrările fiecărui animal într-un singur loc de încredere.",
       "cta": "Treci la Pro"
     },
     "care": {
@@ -182,7 +182,7 @@
     },
     "budgets": {
       "title": "Urmărire inteligentă a bugetului",
-      "subtitle": "Gestionează bugetele lunare și alertele într-un singur loc cu Pro.",
+      "subtitle": "Depistează din timp depășirile de buget și evită facturile veterinare neașteptate cu alerte proactive.",
       "cta": "Treci la Pro"
     }
   },
@@ -1316,7 +1316,7 @@
     "screen3": {
       "title": "Ești gata!",
       "description": "Totul este pregătit pentru a gestiona datele de îngrijire și sănătate ale animalului tău.",
-      "trialNotice": "Adaugă-ți animalul acum pentru a începe!",
+      "trialNotice": "Adaugă acum primul tău animal de companie, apoi deblochează Pro când ai nevoie de mai mult.",
       "addPet": "Adaugă animalul tău",
       "skipPet": "Fă-o mai târziu",
       "addYourFirstPet": "Adaugă primul tău animal"
@@ -1490,7 +1490,7 @@
     "confirmStartTrialMessage": "14 zile de funcționalități Pro gratuite. Nu este necesar card de credit.",
     "confirmStartTrialAction": "Începe proba",
     "upgrade": "Treci la Pro",
-    "upgradePrompt": "Deblochează toate funcțiile cu Pro",
+    "upgradePrompt": "Nu rata sarcinile de îngrijire și păstrează toate animalele organizate cu Pro",
     "upgradeBeforeTrialEnds": "Treci la Pro înainte de finalul probei",
     "manageSubscription": "Gestionează abonamentul",
     "cancelSubscription": "Anulează abonamentul",
@@ -1518,24 +1518,24 @@
     "unlockFeature": "Deblochează {{feature}}",
     "modal": {
       "title": "Funcționalitate Premium",
-      "description": "Această funcție este disponibilă doar pentru membrii Pro",
-      "featureDescription": "{{feature}} este disponibilă doar pentru membrii Pro",
-      "upgradeNow": "Treci la Pro acum",
+      "description": "Fă upgrade la Pro pentru a avea toate animalele, mementourile și datele medicale într-un singur flux.",
+      "featureDescription": "Fă upgrade la Pro pentru a debloca {{feature}} și a-ți menține rutina consecventă.",
+      "upgradeNow": "Vezi planurile",
       "maybeLater": "Poate mai târziu",
-      "includes": "Abonamentul Pro include:"
+      "includes": "Pro te ajută cu:"
     },
     "features": {
       "title": "Funcții Pro",
       "unlimited": "Animale nelimitate",
-      "unlimitedDesc": "Adaugă și gestionează toate animalele tale",
+      "unlimitedDesc": "Păstrează toate profilele, înregistrările și notițele animalelor la un loc",
       "feedingSchedules": "Programe de hrănire nelimitate",
-      "feedingSchedulesDesc": "Creează programe de hrănire nelimitate",
+      "feedingSchedulesDesc": "Construiește rutine fiabile pentru fiecare animal fără limite de programare",
       "budgetTracking": "Urmărire buget și alerte",
-      "budgetTrackingDesc": "Setează bugete lunare și primește alerte",
+      "budgetTrackingDesc": "Observă din timp creșterea costurilor cu alerte lunare de buget",
       "export": "Export date",
-      "exportDesc": "Exportă cheltuielile în CSV sau PDF",
+      "exportDesc": "Distribuie rapoarte clare cu familia sau cu veterinarul",
       "priority": "Asistență prioritară",
-      "priorityDesc": "Primește ajutor când ai nevoie",
+      "priorityDesc": "Primești ajutor mai rapid când este urgent",
       "petManagement": "Management animale",
       "healthRecords": "Dosare medicale",
       "calendar": "Calendar și evenimente",
@@ -1545,7 +1545,7 @@
     },
     "paywall": {
       "title": "Deblochează Petopia Petcare Pro",
-      "subtitle": "Profită la maximum de Petopia Petcare"
+      "subtitle": "Rămâi la zi cu îngrijirea, mementourile și cheltuielile fiecărui animal"
     },
     "success": {
       "title": "Abonare reușită!",
@@ -1557,7 +1557,12 @@
       "message": "Proba ta gratuită de 14 zile a început. Bucură-te de funcțiile Pro!",
       "button": "Mergi la Acasă"
     },
-    "note": "Plata va fi debitată din contul tău App Store / Google Play. Abonamentele se reînnoiesc automat dacă nu sunt anulate cu cel puțin 24 de ore înainte de finalul perioadei curente."
+    "note": "Plata este facturată prin contul tău App Store / Google Play. Abonamentele se reînnoiesc automat dacă nu sunt anulate cu cel puțin 24 de ore înainte de finalul perioadei curente. Le poți gestiona sau anula oricând din setările contului din store.",
+    "trust": {
+      "cancelAnytime": "Poți anula oricând din setările App Store / Google Play",
+      "billedByStore": "Facturarea este procesată în siguranță prin contul tău din magazinul de aplicații",
+      "secureCheckout": "Nu este necesară introducerea manuală a cardului în aplicație"
+    }
   },
   "downgrade": {
     "title": "Alege-ți animalul",

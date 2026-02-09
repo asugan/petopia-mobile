@@ -35,7 +35,7 @@
     "linkOpenError": "Không thể mở liên kết. Vui lòng thử lại.",
     "logoutConfirm": "Bạn có chắc chắn muốn đăng xuất?",
     "logoutSuccess": "Đăng xuất thành công",
-    "freeTrialNotice": "Đăng nhập bằng mạng xã hội, đồng bộ dữ liệu lên đám mây và sử dụng trên tất cả các thiết bị của bạn."
+    "freeTrialNotice": "Bắt đầu miễn phí với 1 thú cưng, sau đó mở khóa Pro khi bạn muốn quản lý cả gia đình thú cưng không giới hạn."
   },
   "navigation": {
     "home": "Trang chủ",
@@ -174,7 +174,7 @@
   "limits": {
     "pets": {
       "title": "Thêm thú cưng không giới hạn",
-      "subtitle": "Quản lý cả gia đình thú cưng tại một nơi với Pro.",
+      "subtitle": "Giữ dòng thời gian sức khỏe, nhắc nhở và hồ sơ của từng thú cưng trong một nơi đáng tin cậy.",
       "cta": "Nâng cấp lên Pro"
     },
     "care": {
@@ -182,7 +182,7 @@
     },
     "budgets": {
       "title": "Theo dõi ngân sách thông minh",
-      "subtitle": "Quản lý ngân sách hàng tháng và cảnh báo tại một nơi với Pro.",
+      "subtitle": "Phát hiện chi tiêu vượt mức sớm và tránh hóa đơn thú y bất ngờ với cảnh báo chủ động.",
       "cta": "Nâng cấp lên Pro"
     }
   },
@@ -1316,7 +1316,7 @@
     "screen3": {
       "title": "Bạn đã sẵn sàng!",
       "description": "Mọi thứ đã sẵn sàng để quản lý dữ liệu chăm sóc và sức khỏe thú cưng của bạn.",
-      "trialNotice": "Thêm thú cưng của bạn ngay để bắt đầu!",
+      "trialNotice": "Thêm thú cưng đầu tiên ngay bây giờ, rồi mở khóa Pro khi bạn cần nhiều hơn.",
       "addPet": "Thêm thú cưng của bạn",
       "skipPet": "Để sau",
       "addYourFirstPet": "Thêm thú cưng đầu tiên của bạn"
@@ -1490,7 +1490,7 @@
     "confirmStartTrialMessage": "14 ngày trải nghiệm các tính năng Pro miễn phí. Không cần thẻ tín dụng.",
     "confirmStartTrialAction": "Bắt đầu dùng thử",
     "upgrade": "Nâng cấp lên Pro",
-    "upgradePrompt": "Mở khóa tất cả tính năng với Pro",
+    "upgradePrompt": "Đừng bỏ lỡ việc chăm sóc và giữ mọi thú cưng luôn ngăn nắp với Pro",
     "upgradeBeforeTrialEnds": "Nâng cấp trước khi hết hạn dùng thử",
     "manageSubscription": "Quản lý đăng ký",
     "cancelSubscription": "Hủy đăng ký",
@@ -1518,24 +1518,24 @@
     "unlockFeature": "Mở khóa {{feature}}",
     "modal": {
       "title": "Tính năng cao cấp",
-      "description": "Tính năng này chỉ dành cho thành viên Pro",
-      "featureDescription": "{{feature}} chỉ dành cho thành viên Pro",
-      "upgradeNow": "Nâng cấp ngay",
+      "description": "Nâng cấp lên Pro để quản lý tất cả thú cưng, nhắc nhở và hồ sơ sức khỏe trong một quy trình duy nhất.",
+      "featureDescription": "Nâng cấp lên Pro để mở khóa {{feature}} và duy trì thói quen ổn định.",
+      "upgradeNow": "Xem gói",
       "maybeLater": "Để sau",
-      "includes": "Gói thành viên Pro bao gồm:"
+      "includes": "Pro giúp bạn:"
     },
     "features": {
       "title": "Tính năng Pro",
       "unlimited": "Thú cưng không giới hạn",
-      "unlimitedDesc": "Thêm và quản lý tất cả thú cưng của bạn tại một nơi",
+      "unlimitedDesc": "Giữ tất cả hồ sơ, dữ liệu và ghi chú thú cưng ở cùng một nơi",
       "feedingSchedules": "Lịch trình ăn uống không giới hạn",
-      "feedingSchedulesDesc": "Tạo vô số lịch trình ăn uống cho tất cả thú cưng",
+      "feedingSchedulesDesc": "Xây dựng thói quen đáng tin cậy cho từng thú cưng mà không giới hạn lịch",
       "budgetTracking": "Theo dõi ngân sách & Cảnh báo",
-      "budgetTrackingDesc": "Thiết lập ngân sách hàng tháng, theo dõi chi phí và nhận cảnh báo",
+      "budgetTrackingDesc": "Phát hiện chi phí tăng sớm với cảnh báo ngân sách hàng tháng",
       "export": "Xuất dữ liệu",
-      "exportDesc": "Xuất chi phí ra CSV hoặc PDF, tạo tóm tắt thú y",
+      "exportDesc": "Chia sẻ báo cáo rõ ràng với gia đình hoặc bác sĩ thú y",
       "priority": "Hỗ trợ ưu tiên",
-      "priorityDesc": "Nhận trợ giúp ngay khi bạn cần",
+      "priorityDesc": "Nhận hỗ trợ nhanh hơn khi khẩn cấp",
       "petManagement": "Quản lý thú cưng",
       "healthRecords": "Hồ sơ sức khỏe",
       "calendar": "Lịch & Sự kiện",
@@ -1545,7 +1545,7 @@
     },
     "paywall": {
       "title": "Mở khóa Petopia Petcare Pro",
-      "subtitle": "Tận dụng tối đa Petopia Petcare"
+      "subtitle": "Luôn theo sát việc chăm sóc, nhắc nhở và chi tiêu của từng thú cưng"
     },
     "success": {
       "title": "Đăng ký thành công!",
@@ -1557,7 +1557,12 @@
       "message": "Gói dùng thử miễn phí 14 ngày đã bắt đầu. Tận hưởng các tính năng Pro!",
       "button": "Quay về trang chủ"
     },
-    "note": "Thanh toán sẽ được tính vào tài khoản App Store / Google Play của bạn. Gói đăng ký sẽ tự động gia hạn trừ khi bị hủy ít nhất 24 giờ trước khi kết thúc kỳ hạn hiện tại. Bạn có thể quản lý hoặc hủy đăng ký trong cài đặt tài khoản App Store / Google Play."
+    "note": "Thanh toán được tính qua tài khoản App Store / Google Play của bạn. Gói đăng ký sẽ tự động gia hạn trừ khi được hủy ít nhất 24 giờ trước khi kỳ hiện tại kết thúc. Bạn có thể quản lý hoặc hủy bất cứ lúc nào trong phần cài đặt tài khoản cửa hàng.",
+    "trust": {
+      "cancelAnytime": "Bạn có thể hủy bất cứ lúc nào trong phần cài đặt App Store / Google Play",
+      "billedByStore": "Thanh toán được xử lý an toàn thông qua tài khoản cửa hàng ứng dụng của bạn",
+      "secureCheckout": "Không cần nhập thủ công thông tin thẻ tín dụng trong ứng dụng"
+    }
   },
   "downgrade": {
     "title": "Chọn thú cưng của bạn",

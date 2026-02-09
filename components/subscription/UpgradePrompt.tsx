@@ -6,6 +6,8 @@ import { Text, Button, Card } from '@/components/ui';
 import { useTheme } from '@/lib/theme';
 import { useSubscription } from '@/lib/hooks/useSubscription';
 import { SUBSCRIPTION_ROUTES } from '@/constants/routes';
+import { useTracking } from '@/lib/posthog';
+import { SUBSCRIPTION_EVENTS } from '@/lib/posthog/subscriptionEvents';
 
 interface UpgradePromptProps {
   /**
@@ -51,6 +53,7 @@ export function UpgradePrompt({
   const { t } = useTranslation();
   const router = useRouter();
   const { theme } = useTheme();
+  const { trackEvent } = useTracking();
   const {
     isProUser,
     isTrialActive,
@@ -64,7 +67,12 @@ export function UpgradePrompt({
   }
 
   const handleUpgrade = async () => {
-    router.push(SUBSCRIPTION_ROUTES.main);
+    trackEvent(SUBSCRIPTION_EVENTS.PURCHASE_STARTED, {
+      screen: 'upgrade_prompt',
+      source: `upgrade_prompt_${variant}`,
+      trigger: 'open_subscription_screen',
+    });
+    router.push(`${SUBSCRIPTION_ROUTES.main}?source=upgrade_prompt_${variant}`);
   };
 
   const displayMessage = message ?? (

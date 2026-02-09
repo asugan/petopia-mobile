@@ -35,7 +35,7 @@
     "linkOpenError": "Linkkiä ei voitu avata. Yritä uudelleen.",
     "logoutConfirm": "Oletko varma, että haluat kirjautua ulos?",
     "logoutSuccess": "Uloskirjautuminen onnistui",
-    "freeTrialNotice": "Kirjaudu sisään sosiaalisen median tunnuksilla, synkronoi tietosi pilveen ja käytä niitä kaikilla laitteillasi."
+    "freeTrialNotice": "Aloita ilmaiseksi yhdellä lemmikillä ja avaa Pro, kun haluat hallita koko lemmikkiperhettäsi ilman rajoja."
   },
   "navigation": {
     "home": "Koti",
@@ -174,7 +174,7 @@
   "limits": {
     "pets": {
       "title": "Lisää rajattomasti lemmikkejä",
-      "subtitle": "Hallitse koko perhettäsi yhdessä paikassa Pron avulla.",
+      "subtitle": "Pidä jokaisen lemmikin terveyshistoria, muistutukset ja tiedot yhdessä luotettavassa paikassa.",
       "cta": "Päivitä Prohon"
     },
     "care": {
@@ -182,7 +182,7 @@
     },
     "budgets": {
       "title": "Älykäs budjetin seuranta",
-      "subtitle": "Hallitse kuukausibudjetteja ja hälytyksiä yhdessä paikassa Pron avulla.",
+      "subtitle": "Havaitse ylikulutus ajoissa ja vältä yllättävät eläinlääkärikulut ennakoivien hälytysten avulla.",
       "cta": "Päivitä Prohon"
     }
   },
@@ -1316,7 +1316,7 @@
     "screen3": {
       "title": "Olet valmis!",
       "description": "Kaikki on valmista lemmikkisi hoidon ja terveystietojen hallintaan.",
-      "trialNotice": "Lisää lemmikkisi nyt aloittaaksesi!",
+      "trialNotice": "Lisää ensimmäinen lemmikkisi nyt ja avaa Pro, kun tarvitset enemmän.",
       "addPet": "Lisää lemmikkisi",
       "skipPet": "Tee se myöhemmin",
       "addYourFirstPet": "Lisää ensimmäinen lemmikkisi"
@@ -1490,7 +1490,7 @@
     "confirmStartTrialMessage": "14 päivää ilmaisia Pro-ominaisuuksia. Luottokorttia ei tarvita.",
     "confirmStartTrialAction": "Aloita kokeilu",
     "upgrade": "Päivitä Prohon",
-    "upgradePrompt": "Avaa kaikki ominaisuudet Pron avulla",
+    "upgradePrompt": "Älä missaa hoitotehtäviä ja pidä kaikki lemmikit järjestyksessä Pron avulla",
     "upgradeBeforeTrialEnds": "Päivitä ennen kokeilun päättymistä",
     "manageSubscription": "Hallitse tilausta",
     "cancelSubscription": "Peruuta tilaus",
@@ -1518,24 +1518,24 @@
     "unlockFeature": "Avaa {{feature}}",
     "modal": {
       "title": "Premium-ominaisuus",
-      "description": "Tämä ominaisuus on vain Pro-jäsenille",
-      "featureDescription": "{{feature}} on vain Pro-jäsenille",
-      "upgradeNow": "Päivitä nyt",
+      "description": "Päivitä Prohon, jotta kaikki lemmikit, muistutukset ja terveystiedot ovat yhdessä työnkulussa.",
+      "featureDescription": "Päivitä Prohon avataksesi {{feature}} ja pitääksesi rutiinisi yhtenäisenä.",
+      "upgradeNow": "Näytä paketit",
       "maybeLater": "Ehkä myöhemmin",
-      "includes": "Pro-jäsenyys sisältää:"
+      "includes": "Pro auttaa sinua näissä:"
     },
     "features": {
       "title": "Pro-ominaisuudet",
       "unlimited": "Rajattomasti lemmikkejä",
-      "unlimitedDesc": "Lisää ja hallitse kaikkia lemmikkejäsi yhdessä paikassa",
+      "unlimitedDesc": "Pidä kaikkien lemmikkien profiilit, tiedot ja muistiinpanot yhdessä",
       "feedingSchedules": "Rajattomat ruokinta-aikataulut",
-      "feedingSchedulesDesc": "Luo rajattomasti ruokinta-aikatauluja kaikille lemmikeillesi",
+      "feedingSchedulesDesc": "Rakenna luotettavat rutiinit jokaiselle lemmikille ilman aikataulurajoja",
       "budgetTracking": "Budjetin seuranta & hälytykset",
-      "budgetTrackingDesc": "Aseta kuukausibudjetteja, seuraa kuluja ja saa hälytyksiä",
+      "budgetTrackingDesc": "Havaitse kasvavat kulut ajoissa kuukausittaisten budjettihälytysten avulla",
       "export": "Tietojen vienti",
-      "exportDesc": "Vie kulut CSV- tai PDF-muodossa, luo eläinlääkärin yhteenvetoja",
+      "exportDesc": "Jaa selkeät raportit perheen tai eläinlääkärin kanssa",
       "priority": "Ensisijainen tuki",
-      "priorityDesc": "Saa apua nopeasti",
+      "priorityDesc": "Saat nopeammin apua, kun on kiire",
       "petManagement": "Lemmikkien hallinta",
       "healthRecords": "Terveyskertomukset",
       "calendar": "Kalenteri & tapahtumat",
@@ -1545,7 +1545,7 @@
     },
     "paywall": {
       "title": "Avaa Petopia Petcare Pro",
-      "subtitle": "Ota kaikki irti Petopia Petcaresta"
+      "subtitle": "Pysy perillä jokaisen lemmikin hoidosta, muistutuksista ja kuluista"
     },
     "success": {
       "title": "Tilaus onnistui!",
@@ -1557,7 +1557,12 @@
       "message": "14 päivän ilmainen kokeilusi on alkanut. Nauti kaikista Pro-ominaisuuksista!",
       "button": "Mene etusivulle"
     },
-    "note": "Maksu veloitetaan App Store / Google Play -tililtäsi. Tilaukset uusiutuvat automaattisesti, ellei niitä peruuteta vähintään 24 tuntia ennen nykyisen jakson päättymistä. Voit hallita tai peruuttaa tilauksesi App Store / Google Play -tilisi asetuksista."
+    "note": "Maksu veloitetaan App Store / Google Play -tililtäsi. Tilaukset uusiutuvat automaattisesti, ellei niitä peruuteta vähintään 24 tuntia ennen nykyisen jakson päättymistä. Voit hallita tai peruuttaa tilauksen milloin tahansa kauppatilin asetuksista.",
+    "trust": {
+      "cancelAnytime": "Voit peruuttaa milloin tahansa App Storen / Google Playn asetuksista",
+      "billedByStore": "Laskutus hoidetaan turvallisesti sovelluskauppatilisi kautta",
+      "secureCheckout": "Sovelluksessa ei tarvitse syöttää korttitietoja manuaalisesti"
+    }
   },
   "downgrade": {
     "title": "Valitse lemmikkisi",

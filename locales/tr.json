@@ -35,7 +35,7 @@
     "linkOpenError": "Bağlantı açılamadı. Lütfen tekrar deneyin.",
     "logoutConfirm": "Çıkış yapmak istediğinizden emin misiniz?",
     "logoutSuccess": "Başarıyla çıkış yapıldı",
-    "freeTrialNotice": "Sosyal medya ile giriş yapın, bilgilerinizi buluta senkronize edin ve tüm cihazlarınızda kullanın."
+    "freeTrialNotice": "1 pet ile ücretsiz başlayın, daha fazlasına ihtiyaç duyduğunuzda Pro'ya geçin."
   },
   "navigation": {
     "home": "Ana Sayfa",
@@ -174,7 +174,7 @@
   "limits": {
     "pets": {
       "title": "Sınırsız Dost Ekle",
-      "subtitle": "Pro ile tüm ailenizi tek bir yerden yönetin.",
+      "subtitle": "Tüm dostlarının sağlık geçmişini ve hatırlatmalarını tek yerde düzenli tut.",
       "cta": "Pro'ya Geç"
     },
     "care": {
@@ -182,7 +182,7 @@
     },
     "budgets": {
       "title": "Akıllı Bütçe Takibi",
-      "subtitle": "Pro ile aylık bütçe ve uyarıları tek yerden yönetin.",
+      "subtitle": "Aylık harcamaları erken fark edin, sürpriz veteriner giderlerini azaltın.",
       "cta": "Pro'ya Geç"
     }
   },
@@ -1316,7 +1316,7 @@
     "screen3": {
       "title": "Artık Hazırsınız!",
       "description": "Evcil hayvanınızın bakım ve sağlık verilerini yönetmek için her şey hazır.",
-      "trialNotice": "Hemen petinizi ekleyerek başlayın!",
+      "trialNotice": "İlk petini şimdi ekle, daha fazlası için dilediğinde Pro'ya geç.",
       "addPet": "Petini Ekle",
       "skipPet": "Sonra Yaparım",
       "addYourFirstPet": "İlk Petini Ekle"
@@ -1490,7 +1490,7 @@
     "confirmStartTrialMessage": "14 gün ücretsiz Pro özellikler. Kredi kartı gerekmez.",
     "confirmStartTrialAction": "Denemeyi Başlat",
     "upgrade": "Pro'ya Yükselt",
-    "upgradePrompt": "Tüm özellikleri Pro ile açın",
+    "upgradePrompt": "Bakım rutinini kaçırmadan yönetmek için Pro'ya geç",
     "upgradeBeforeTrialEnds": "Deneme Bitmeden Yükseltin",
     "manageSubscription": "Aboneliği Yönet",
     "cancelSubscription": "Aboneliği İptal Et",
@@ -1518,24 +1518,24 @@
     "unlockFeature": "{{feature}} Özelliğini Aç",
     "modal": {
       "title": "Premium Özellik",
-      "description": "Bu özellik sadece Pro üyeleri için kullanılabilir",
-      "featureDescription": "{{feature}} sadece Pro üyeleri için kullanılabilir",
-      "upgradeNow": "Şimdi Yükselt",
+      "description": "Tüm petlerini, hatırlatmalarını ve kayıtlarını tek akışta yönetmek için Pro'ya geçin.",
+      "featureDescription": "{{feature}} özelliğini açıp düzenli bakım akışını korumak için Pro'ya geçin.",
+      "upgradeNow": "Planları Gör",
       "maybeLater": "Belki Sonra",
-      "includes": "Pro üyeliği şunları içerir:"
+      "includes": "Pro ile şunları yaparsınız:"
     },
     "features": {
       "title": "Pro Özellikler",
       "unlimited": "Sınırsız Pet",
-      "unlimitedDesc": "Tüm evcil dostlarınızı tek yerden yönetin",
+      "unlimitedDesc": "Tüm pet profillerini ve kayıtlarını tek yerde toplayın",
       "feedingSchedules": "Sınırsız Besleme Programı",
-      "feedingSchedulesDesc": "Tüm dostlarınız için sınırsız besleme programı oluşturun",
+      "feedingSchedulesDesc": "Her pet için düzenli rutinler kurun, plan sınırına takılmayın",
       "budgetTracking": "Bütçe Takibi ve Uyarılar",
-      "budgetTrackingDesc": "Aylık bütçe belirleyin, harcamaları izleyin ve limit uyarıları alın",
+      "budgetTrackingDesc": "Artan harcamaları erkenden fark edip bütçeyi kontrol edin",
       "export": "Veri Dışa Aktarma",
-      "exportDesc": "Harcamaları CSV veya PDF olarak dışa aktarın, veteriner özeti oluşturun",
+      "exportDesc": "Aile veya veterinerle paylaşmak için anlaşılır raporlar oluşturun",
       "priority": "Öncelikli Destek",
-      "priorityDesc": "İhtiyacınız olduğunda yardım alın",
+      "priorityDesc": "Acil durumlarda daha hızlı destek alın",
       "petManagement": "Pet Yönetimi",
       "healthRecords": "Sağlık Kayıtları",
       "calendar": "Takvim ve Etkinlikler",
@@ -1545,7 +1545,7 @@
     },
     "paywall": {
       "title": "Petopia Petcare Pro'yu Açın",
-      "subtitle": "Petopia Petcare'dan en iyi şekilde faydalanın"
+      "subtitle": "Tüm petlerde bakım, hatırlatma ve harcama takibini tek yerden yönetin"
     },
     "success": {
       "title": "Abonelik Başarılı!",
@@ -1557,7 +1557,12 @@
       "message": "14 günlük ücretsiz denemeniz başladı. Tüm Pro özelliklerin keyfini çıkarın!",
       "button": "Anasayfaya Dön"
     },
-    "note": "Ödeme App Store / Google Play hesabınızdan tahsil edilecektir. Abonelikler, mevcut dönemin sonundan en az 24 saat önce iptal edilmediği sürece otomatik olarak yenilenir. Aboneliğinizi App Store / Google Play hesap ayarlarınızdan yönetebilir veya iptal edebilirsiniz."
+    "note": "Ödeme App Store / Google Play hesabınızdan tahsil edilir. Abonelikler, mevcut dönemin bitiminden en az 24 saat önce iptal edilmediği sürece otomatik yenilenir. Aboneliğinizi mağaza hesap ayarlarından istediğiniz zaman yönetebilir veya iptal edebilirsiniz.",
+    "trust": {
+      "cancelAnytime": "App Store / Google Play ayarlarından istediğiniz zaman iptal edin",
+      "billedByStore": "Ödeme altyapısı güvenli şekilde mağaza hesabınız üzerinden çalışır",
+      "secureCheckout": "Uygulama içinde manuel kart bilgisi girmeniz gerekmez"
+    }
   },
   "downgrade": {
     "title": "Evcil Hayvanınızı Seçin",

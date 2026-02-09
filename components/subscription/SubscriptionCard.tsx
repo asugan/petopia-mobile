@@ -95,7 +95,7 @@ export function SubscriptionCard({ showManageButton = true, compact = false, onU
       if (onUpgrade) {
         await onUpgrade();
       } else {
-        router.push(SUBSCRIPTION_ROUTES.main);
+        router.push(`${SUBSCRIPTION_ROUTES.main}?source=subscription_card_upgrade`);
       }
     } catch (error) {
       console.error('Upgrade error:', error);
@@ -126,7 +126,7 @@ export function SubscriptionCard({ showManageButton = true, compact = false, onU
       if (onUpgrade) {
         await onUpgrade();
       } else {
-        router.push(SUBSCRIPTION_ROUTES.main);
+        router.push(`${SUBSCRIPTION_ROUTES.main}?source=subscription_card`);
       }
     } catch (error) {
       console.error('Navigation error:', error);
@@ -281,7 +281,10 @@ export function SubscriptionCard({ showManageButton = true, compact = false, onU
                       {
                         text: t('subscription.confirmStartTrialAction'),
                         onPress: async () => {
-                          await startTrial();
+                          await startTrial({
+                            screen: 'subscription_card',
+                            source: 'subscription_card',
+                          });
                           onTrialStartSuccess?.();
                         },
                       },

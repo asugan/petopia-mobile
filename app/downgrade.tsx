@@ -45,7 +45,7 @@ export default function DowngradeScreen() {
   };
 
   const handleUpgrade = () => {
-    router.push(SUBSCRIPTION_ROUTES.main);
+    router.push(`${SUBSCRIPTION_ROUTES.main}?source=downgrade_screen`);
   };
 
   if (isLoadingStatus) {

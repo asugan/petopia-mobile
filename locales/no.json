@@ -35,7 +35,7 @@
     "linkOpenError": "Kunne ikke åpne lenken. Vennligst prøv igjen.",
     "logoutConfirm": "Er du sikker på at du vil logge ut?",
     "logoutSuccess": "Logget ut vellykket",
-    "freeTrialNotice": "Logg inn med sosiale medier, synkroniser dataene dine til skyen, og bruk dem på alle enhetene dine."
+    "freeTrialNotice": "Start gratis med ett kjæledyr, og lås opp Pro når du vil administrere hele kjæledyrfamilien uten begrensninger."
   },
   "navigation": {
     "home": "Hjem",
@@ -174,7 +174,7 @@
   "limits": {
     "pets": {
       "title": "Legg til ubegrenset antall kjæledyr",
-      "subtitle": "Administrer hele familien din på ett sted med Pro.",
+      "subtitle": "Hold helsehistorikk, påminnelser og journaler for hvert kjæledyr samlet på ett pålitelig sted.",
       "cta": "Oppgrader til Pro"
     },
     "care": {
@@ -182,7 +182,7 @@
     },
     "budgets": {
       "title": "Smart budsjettsporing",
-      "subtitle": "Administrer månedlige budsjetter og varsler på ett sted med Pro.",
+      "subtitle": "Oppdag overforbruk tidlig og unngå uventede veterinærregninger med proaktive varsler.",
       "cta": "Oppgrader til Pro"
     }
   },
@@ -1316,7 +1316,7 @@
     "screen3": {
       "title": "Du er klar!",
       "description": "Alt er klart for å administrere omsorg og helse for kjæledyret ditt.",
-      "trialNotice": "Legg til kjæledyret ditt nå for å komme i gang!",
+      "trialNotice": "Legg til ditt første kjæledyr nå, og lås opp Pro når du trenger mer.",
       "addPet": "Legg til kjæledyr",
       "skipPet": "Gjør det senere",
       "addYourFirstPet": "Legg til ditt første kjæledyr"
@@ -1490,7 +1490,7 @@
     "confirmStartTrialMessage": "14 dager med gratis Pro-funksjoner. Ingen kredittkort kreves.",
     "confirmStartTrialAction": "Start prøveperiode",
     "upgrade": "Oppgrader til Pro",
-    "upgradePrompt": "Lås opp alle funksjoner med Pro",
+    "upgradePrompt": "Ikke gå glipp av omsorgsoppgaver, og hold alle kjæledyr organisert med Pro",
     "upgradeBeforeTrialEnds": "Oppgrader før prøveperioden slutter",
     "manageSubscription": "Administrer abonnement",
     "cancelSubscription": "Avbryt abonnement",
@@ -1518,24 +1518,24 @@
     "unlockFeature": "Lås opp {{feature}}",
     "modal": {
       "title": "Premium-funksjon",
-      "description": "Denne funksjonen er bare tilgjengelig for Pro-medlemmer",
-      "featureDescription": "{{feature}} er bare tilgjengelig for Pro-medlemmer",
-      "upgradeNow": "Oppgrader nå",
+      "description": "Oppgrader til Pro for å samle alle kjæledyr, påminnelser og helsedata i én arbeidsflyt.",
+      "featureDescription": "Oppgrader til Pro for å låse opp {{feature}} og holde rutinen din konsekvent.",
+      "upgradeNow": "Se planer",
       "maybeLater": "Kanskje senere",
-      "includes": "Pro-medlemskap inkluderer:"
+      "includes": "Pro hjelper deg med:"
     },
     "features": {
       "title": "Pro-funksjoner",
       "unlimited": "Ubegrenset antall kjæledyr",
-      "unlimitedDesc": "Legg til og administrer alle kjæledyrene dine på ett sted",
+      "unlimitedDesc": "Hold alle kjæledyrprofiler, journaler og notater samlet",
       "feedingSchedules": "Ubegrensede fôringsplaner",
-      "feedingSchedulesDesc": "Opprett ubegrensede fôringsplaner for alle kjæledyrene dine",
+      "feedingSchedulesDesc": "Bygg stabile rutiner for hvert kjæledyr uten begrensninger i planlegging",
       "budgetTracking": "Budsjettsporing og varsler",
-      "budgetTrackingDesc": "Sett månedlige budsjetter, spor utgifter og få varsler",
+      "budgetTrackingDesc": "Oppdag økende kostnader tidlig med månedlige budsjettvarsler",
       "export": "Dataeksport",
-      "exportDesc": "Eksporter utgifter til CSV eller PDF, generer veterinærsammendrag",
+      "exportDesc": "Del tydelige rapporter med familie eller veterinær",
       "priority": "Prioritert støtte",
-      "priorityDesc": "Få hjelp når du trenger det",
+      "priorityDesc": "Få raskere hjelp når det haster",
       "petManagement": "Kjæledyradministrasjon",
       "healthRecords": "Helsejournaler",
       "calendar": "Kalender og hendelser",
@@ -1545,7 +1545,7 @@
     },
     "paywall": {
       "title": "Lås opp Petopia Petcare Pro",
-      "subtitle": "Få mest mulig ut av Petopia Petcare"
+      "subtitle": "Hold deg oppdatert på omsorg, påminnelser og utgifter for hvert kjæledyr"
     },
     "success": {
       "title": "Abonnement vellykket!",
@@ -1557,7 +1557,12 @@
       "message": "Din 14-dagers gratis prøveperiode har startet. Nyt alle Pro-funksjoner!",
       "button": "Gå til hjemsiden"
     },
-    "note": "Betalingen vil bli belastet din App Store / Google Play-konto. Abonnementer fornyes automatisk med mindre de sies opp minst 24 timer før slutten av gjeldende periode. Du kan administrere eller avbryte abonnementet ditt i kontoinnstillingene dine i App Store / Google Play."
+    "note": "Betaling belastes via App Store / Google Play-kontoen din. Abonnementer fornyes automatisk med mindre de kanselleres minst 24 timer før slutten av gjeldende periode. Du kan administrere eller kansellere når som helst i butikkonto-innstillingene dine.",
+    "trust": {
+      "cancelAnytime": "Du kan når som helst avslutte i innstillingene for App Store / Google Play",
+      "billedByStore": "Fakturering håndteres trygt via appbutikk-kontoen din",
+      "secureCheckout": "Du trenger ikke å skrive inn kortinformasjon manuelt i appen"
+    }
   },
   "downgrade": {
     "title": "Velg ditt kjæledyr",

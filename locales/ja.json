@@ -35,7 +35,7 @@
     "linkOpenError": "リンクを開けませんでした。もう一度お試しください。",
     "logoutConfirm": "ログアウトしてもよろしいですか？",
     "logoutSuccess": "ログアウトしました",
-    "freeTrialNotice": "SNSでログインし、データをクラウドに同期して、すべてのデバイスで使用しましょう。"
+    "freeTrialNotice": "まずは1匹まで無料で始めて、必要になったらProをアンロックして、家族のペット全員を制限なく管理しましょう。"
   },
   "navigation": {
     "home": "ホーム",
@@ -174,7 +174,7 @@
   "limits": {
     "pets": {
       "title": "ペットを無制限に追加",
-      "subtitle": "Pro版ですべてのペットを一か所で管理しましょう。",
+      "subtitle": "各ペットの健康履歴、リマインダー、記録を1つの信頼できる場所にまとめて管理できます。",
       "cta": "Proにアップグレード"
     },
     "care": {
@@ -182,7 +182,7 @@
     },
     "budgets": {
       "title": "スマート家計管理",
-      "subtitle": "Pro版で月次予算とアラートを一か所で管理しましょう。",
+      "subtitle": "先回りのアラートで支出の増加を早めに把握し、突然の動物病院費用を避けましょう。",
       "cta": "Proにアップグレード"
     }
   },
@@ -1316,7 +1316,7 @@
     "screen3": {
       "title": "準備完了！",
       "description": "ペットのケアと健康データの管理準備が整いました。",
-      "trialNotice": "今すぐペットを追加して始めましょう！",
+      "trialNotice": "今すぐ最初のペットを追加し、さらに必要になったらProをアンロックしましょう。",
       "addPet": "ペットを追加",
       "skipPet": "後で行う",
       "addYourFirstPet": "最初のペットを追加"
@@ -1490,7 +1490,7 @@
     "confirmStartTrialMessage": "Pro機能を14日間無料で利用できます。クレジットカードは不要です。",
     "confirmStartTrialAction": "トライアル開始",
     "upgrade": "Proにアップグレード",
-    "upgradePrompt": "Proですべての機能をアンロック",
+    "upgradePrompt": "ケアタスクを見逃さず、Proですべてのペットを整理して管理",
     "upgradeBeforeTrialEnds": "トライアル終了前にアップグレード",
     "manageSubscription": "サブスクリプション管理",
     "cancelSubscription": "サブスクリプションをキャンセル",
@@ -1518,24 +1518,24 @@
     "unlockFeature": "{{feature}}をアンロック",
     "modal": {
       "title": "プレミアム機能",
-      "description": "この機能はProメンバー限定です",
-      "featureDescription": "{{feature}}はProメンバー限定です",
-      "upgradeNow": "今すぐアップグレード",
+      "description": "Proにアップグレードすると、すべてのペット、リマインダー、健康記録を1つの流れで管理できます。",
+      "featureDescription": "Proにアップグレードして{{feature}}を解放し、日々のルーティンを安定して続けましょう。",
+      "upgradeNow": "プランを見る",
       "maybeLater": "後で",
-      "includes": "Proメンバーシップに含まれるもの:"
+      "includes": "Proでできること:"
     },
     "features": {
       "title": "Pro機能",
       "unlimited": "ペット無制限",
-      "unlimitedDesc": "すべてのペットを一か所で追加・管理",
+      "unlimitedDesc": "すべてのペットプロフィール、記録、メモを1か所に集約",
       "feedingSchedules": "無制限の食事スケジュール",
-      "feedingSchedulesDesc": "すべてのペットに無制限の食事スケジュールを作成",
+      "feedingSchedulesDesc": "スケジュール制限なしで、各ペットに信頼できるルーティンを作成",
       "budgetTracking": "予算追跡 & アラート",
-      "budgetTrackingDesc": "月次予算の設定、支出の追跡、支出アラートの受信",
+      "budgetTrackingDesc": "月次予算アラートでコスト増を早めに把握",
       "export": "データエクスポート",
-      "exportDesc": "支出をCSVまたはPDFでエクスポート、獣医サマリーを生成",
+      "exportDesc": "家族や獣医と分かりやすいレポートを共有",
       "priority": "優先サポート",
-      "priorityDesc": "必要なときに助けを得る",
+      "priorityDesc": "緊急時により速いサポートを受けられる",
       "petManagement": "ペット管理",
       "healthRecords": "健康記録",
       "calendar": "カレンダー & イベント",
@@ -1545,7 +1545,7 @@
     },
     "paywall": {
       "title": "Petopia Petcare Proをアンロック",
-      "subtitle": "Petopia Petcareを最大限に活用"
+      "subtitle": "すべてのペットのケア、リマインダー、支出をしっかり把握"
     },
     "success": {
       "title": "サブスクリプション成功！",
@@ -1557,7 +1557,12 @@
       "message": "14日間の無料トライアルが始まりました。すべてのPro機能をお楽しみください！",
       "button": "ホームへ"
     },
-    "note": "支払いはApp Store / Google Playアカウントに請求されます。現在の期間が終了する少なくとも24時間前にキャンセルされない限り、サブスクリプションは自動的に更新されます。App Store / Google Playアカウント設定でサブスクリプションを管理またはキャンセルできます。"
+    "note": "お支払いはApp Store / Google Playアカウントに請求されます。サブスクリプションは、現在の期間終了の24時間前までに解約しない限り自動更新されます。ストアのアカウント設定からいつでも管理・解約できます。",
+    "trust": {
+      "cancelAnytime": "App Store / Google Play の設定からいつでも解約できます",
+      "billedByStore": "請求はアプリストアのアカウントを通じて安全に処理されます",
+      "secureCheckout": "アプリ内でクレジットカード情報を手入力する必要はありません"
+    }
   },
   "downgrade": {
     "title": "ペットを選択",

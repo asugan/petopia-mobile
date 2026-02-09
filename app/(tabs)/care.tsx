@@ -123,7 +123,7 @@ export default function CareScreen() {
 
   const handleAddSchedule = async () => {
     if (!isProUser && activeFeedingSchedules.length >= 1) {
-      router.push(SUBSCRIPTION_ROUTES.main);
+      router.push(`${SUBSCRIPTION_ROUTES.main}?source=care_add_schedule_limit`);
       return;
     }
 
@@ -150,7 +150,7 @@ export default function CareScreen() {
 
   const handleToggleActive = async (schedule: FeedingSchedule, isActive: boolean) => {
     if (isActive && !schedule.isActive && !isProUser && activeFeedingSchedules.length >= 1) {
-      router.push(SUBSCRIPTION_ROUTES.main);
+      router.push(`${SUBSCRIPTION_ROUTES.main}?source=care_activate_schedule_limit`);
       return;
     }
 
@@ -181,7 +181,7 @@ export default function CareScreen() {
   };
 
   const handleFeedingUpgradePress = async () => {
-    router.push(SUBSCRIPTION_ROUTES.main);
+    router.push(`${SUBSCRIPTION_ROUTES.main}?source=care_feeding_limit_banner`);
   };
 
   const renderHealthContent = () => {

@@ -35,7 +35,7 @@
     "linkOpenError": "Nije moguće otvoriti poveznicu. Pokušajte ponovno.",
     "logoutConfirm": "Jeste li sigurni da se želite odjaviti?",
     "logoutSuccess": "Uspješna odjava",
-    "freeTrialNotice": "Prijavite se putem društvenih mreža, sinkronizirajte podatke s oblakom i koristite ih na svim uređajima."
+    "freeTrialNotice": "Započnite besplatno s jednim ljubimcem, a zatim otključajte Pro kada želite upravljati cijelom obitelji ljubimaca bez ograničenja."
   },
   "navigation": {
     "home": "Početna",
@@ -174,7 +174,7 @@
   "limits": {
     "pets": {
       "title": "Dodajte neograničen broj ljubimaca",
-      "subtitle": "Upravljajte cijelom obitelji na jednom mjestu uz Pro.",
+      "subtitle": "Držite zdravstvenu kronologiju, podsjetnike i zapise svakog ljubimca na jednom pouzdanom mjestu.",
       "cta": "Nadogradi na Pro"
     },
     "care": {
@@ -182,7 +182,7 @@
     },
     "budgets": {
       "title": "Pametno praćenje proračuna",
-      "subtitle": "Upravljajte mjesečnim proračunima i upozorenjima na jednom mjestu uz Pro.",
+      "subtitle": "Rano uočite prekomjernu potrošnju i izbjegnite neočekivane veterinarske troškove uz proaktivna upozorenja.",
       "cta": "Nadogradi na Pro"
     }
   },
@@ -1316,7 +1316,7 @@
     "screen3": {
       "title": "Spremni ste!",
       "description": "Sve je spremno za upravljanje podacima o njezi i zdravlju vašeg ljubimca.",
-      "trialNotice": "Dodajte svog ljubimca sada kako biste započeli!",
+      "trialNotice": "Dodajte svog prvog ljubimca sada, a Pro otključajte kada vam zatreba više.",
       "addPet": "Dodaj svog ljubimca",
       "skipPet": "Učini to kasnije",
       "addYourFirstPet": "Dodaj svog prvog ljubimca"
@@ -1490,7 +1490,7 @@
     "confirmStartTrialMessage": "14 dana besplatnih Pro značajki. Kreditna kartica nije potrebna.",
     "confirmStartTrialAction": "Započni probno razdoblje",
     "upgrade": "Nadogradi na Pro",
-    "upgradePrompt": "Otključajte sve značajke uz Pro",
+    "upgradePrompt": "Ne propuštajte zadatke njege i držite sve ljubimce organiziranima uz Pro",
     "upgradeBeforeTrialEnds": "Nadogradite prije isteka probnog razdoblja",
     "manageSubscription": "Upravljanje pretplatom",
     "cancelSubscription": "Otkaži pretplatu",
@@ -1518,24 +1518,24 @@
     "unlockFeature": "Otključaj {{feature}}",
     "modal": {
       "title": "Premium značajka",
-      "description": "Ova značajka je dostupna samo za Pro članove",
-      "featureDescription": "{{feature}} je dostupan samo za Pro članove",
-      "upgradeNow": "Nadogradi sada",
+      "description": "Nadogradite na Pro kako biste sve ljubimce, podsjetnike i zdravstvene zapise držali u jednom tijeku rada.",
+      "featureDescription": "Nadogradite na Pro da otključate {{feature}} i održite rutinu dosljednom.",
+      "upgradeNow": "Pogledaj planove",
       "maybeLater": "Možda kasnije",
-      "includes": "Pro članstvo uključuje:"
+      "includes": "Pro vam pomaže u:"
     },
     "features": {
       "title": "Pro značajke",
       "unlimited": "Neograničen broj ljubimaca",
-      "unlimitedDesc": "Dodajte i upravljajte svim svojim ljubimcima na jednom mjestu",
+      "unlimitedDesc": "Držite sve profile, zapise i bilješke o ljubimcima na jednom mjestu",
       "feedingSchedules": "Neograničeni rasporedi hranjenja",
-      "feedingSchedulesDesc": "Izradite neograničene rasporede hranjenja za sve ljubimce",
+      "feedingSchedulesDesc": "Izgradite pouzdane rutine za svakog ljubimca bez ograničenja rasporeda",
       "budgetTracking": "Praćenje proračuna i upozorenja",
-      "budgetTrackingDesc": "Postavite proračune, pratite troškove i primajte upozorenja",
+      "budgetTrackingDesc": "Rano otkrijte rast troškova uz mjesečna budžetska upozorenja",
       "export": "Izvoz podataka",
-      "exportDesc": "Izvezite troškove u CSV ili PDF, generirajte veterinarske sažetke",
+      "exportDesc": "Dijelite jasna izvješća s obitelji ili veterinarom",
       "priority": "Prioritetna podrška",
-      "priorityDesc": "Dobijte pomoć kada vam je potrebna",
+      "priorityDesc": "Dobijte bržu pomoć kada je hitno",
       "petManagement": "Upravljanje ljubimcima",
       "healthRecords": "Zdravstveni kartoni",
       "calendar": "Kalendar i događaji",
@@ -1545,7 +1545,7 @@
     },
     "paywall": {
       "title": "Otključajte Petopia Petcare Pro",
-      "subtitle": "Izvucite maksimum iz Petopia Petcare"
+      "subtitle": "Ostanite u tijeku s njegom, podsjetnicima i troškovima za svakog ljubimca"
     },
     "success": {
       "title": "Pretplata uspješna!",
@@ -1557,7 +1557,12 @@
       "message": "Vaše 14-dnevno besplatno probno razdoblje je počelo. Uživajte u Pro značajkama!",
       "button": "Idi na početnu stranicu"
     },
-    "note": "Plaćanje će biti naplaćeno s vašeg App Store / Google Play računa. Pretplate se automatski obnavljaju osim ako se ne otkažu najmanje 24 sata prije kraja trenutnog razdoblja. Svojom pretplatom možete upravljati ili je otkazati u postavkama računa App Store / Google Play."
+    "note": "Plaćanje se naplaćuje putem vašeg App Store / Google Play računa. Pretplate se automatski obnavljaju osim ako ih ne otkažete najmanje 24 sata prije kraja trenutnog razdoblja. Možete ih upravljati ili otkazati u bilo kojem trenutku u postavkama računa trgovine.",
+    "trust": {
+      "cancelAnytime": "Pretplatu možete otkazati u bilo kojem trenutku u postavkama App Store / Google Play",
+      "billedByStore": "Naplata se sigurno obrađuje putem vašeg računa trgovine aplikacija",
+      "secureCheckout": "U aplikaciji nije potrebno ručno unositi podatke kartice"
+    }
   },
   "downgrade": {
     "title": "Odaberite svog ljubimca",

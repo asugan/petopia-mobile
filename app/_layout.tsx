@@ -53,7 +53,7 @@ function SubscriptionGate({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     setOnProRequired(() => {
       queryClient.invalidateQueries({ predicate: (query) => query.queryKey[0] === 'subscription' });
-      void presentPaywall();
+      void presentPaywall(undefined, { screen: 'system', source: 'api_pro_required' });
     });
   }, [presentPaywall]);
 

@@ -35,7 +35,7 @@
     "linkOpenError": "Tidak dapat membuka tautan. Silakan coba lagi.",
     "logoutConfirm": "Apakah Anda yakin ingin keluar?",
     "logoutSuccess": "Berhasil keluar",
-    "freeTrialNotice": "Masuk dengan media sosial, sinkronkan data Anda ke cloud, dan gunakan di semua perangkat Anda."
+    "freeTrialNotice": "Mulai gratis dengan satu hewan peliharaan, lalu buka Pro saat Anda ingin mengelola seluruh keluarga hewan peliharaan tanpa batas."
   },
   "navigation": {
     "home": "Beranda",
@@ -174,7 +174,7 @@
   "limits": {
     "pets": {
       "title": "Tambah Hewan Tanpa Batas",
-      "subtitle": "Kelola seluruh keluarga Anda di satu tempat dengan Pro.",
+      "subtitle": "Simpan riwayat kesehatan, pengingat, dan catatan setiap hewan peliharaan di satu tempat yang andal.",
       "cta": "Upgrade ke Pro"
     },
     "care": {
@@ -182,7 +182,7 @@
     },
     "budgets": {
       "title": "Pelacakan Anggaran Cerdas",
-      "subtitle": "Kelola anggaran bulanan dan peringatan di satu tempat dengan Pro.",
+      "subtitle": "Deteksi pemborosan lebih awal dan hindari tagihan dokter hewan yang mengejutkan dengan peringatan proaktif.",
       "cta": "Upgrade ke Pro"
     }
   },
@@ -1316,7 +1316,7 @@
     "screen3": {
       "title": "Anda Siap!",
       "description": "Semuanya siap untuk mengelola data perawatan dan kesehatan hewan peliharaan Anda.",
-      "trialNotice": "Tambah hewan Anda sekarang untuk memulai!",
+      "trialNotice": "Tambahkan hewan peliharaan pertama Anda sekarang, lalu buka Pro saat Anda butuh lebih banyak.",
       "addPet": "Tambah Hewan Anda",
       "skipPet": "Nanti saja",
       "addYourFirstPet": "Tambah Hewan Pertama Anda"
@@ -1503,7 +1503,7 @@
     "confirmStartTrialMessage": "14 hari fitur Pro gratis. Tidak perlu kartu kredit.",
     "confirmStartTrialAction": "Mulai Percobaan",
     "upgrade": "Upgrade ke Pro",
-    "upgradePrompt": "Buka semua fitur dengan Pro",
+    "upgradePrompt": "Jangan lewatkan tugas perawatan dan tetap rapikan semua hewan peliharaan dengan Pro",
     "upgradeBeforeTrialEnds": "Upgrade Sebelum Percobaan Berakhir",
     "manageSubscription": "Kelola Berlangganan",
     "cancelSubscription": "Batalkan Berlangganan",
@@ -1531,24 +1531,24 @@
     "unlockFeature": "Buka {{feature}}",
     "modal": {
       "title": "Fitur Premium",
-      "description": "Fitur ini hanya tersedia untuk anggota Pro",
-      "featureDescription": "{{feature}} hanya tersedia untuk anggota Pro",
-      "upgradeNow": "Upgrade Sekarang",
+      "description": "Upgrade ke Pro untuk menyatukan semua hewan peliharaan, pengingat, dan catatan kesehatan dalam satu alur kerja.",
+      "featureDescription": "Upgrade ke Pro untuk membuka {{feature}} dan menjaga rutinitas Anda tetap konsisten.",
+      "upgradeNow": "Lihat paket",
       "maybeLater": "Nanti Saja",
-      "includes": "Keanggotaan Pro mencakup:"
+      "includes": "Pro membantu Anda untuk:"
     },
     "features": {
       "title": "Fitur Pro",
       "unlimited": "Hewan Peliharaan Tanpa Batas",
-      "unlimitedDesc": "Tambahkan dan kelola semua hewan peliharaan Anda di satu tempat",
+      "unlimitedDesc": "Simpan semua profil, catatan, dan catatan kecil hewan peliharaan dalam satu tempat",
       "feedingSchedules": "Jadwal Makan Tanpa Batas",
-      "feedingSchedulesDesc": "Buat jadwal makan tanpa batas untuk semua hewan peliharaan Anda",
+      "feedingSchedulesDesc": "Bangun rutinitas yang andal untuk setiap hewan tanpa batas jadwal",
       "budgetTracking": "Pelacakan & Peringatan Anggaran",
-      "budgetTrackingDesc": "Atur anggaran bulanan, lacak pengeluaran, dan dapatkan peringatan pengeluaran",
+      "budgetTrackingDesc": "Tangkap kenaikan biaya lebih awal dengan peringatan anggaran bulanan",
       "export": "Ekspor Data",
-      "exportDesc": "Ekspor pengeluaran ke CSV atau PDF, buat ringkasan dokter hewan",
+      "exportDesc": "Bagikan laporan yang jelas dengan keluarga atau dokter hewan Anda",
       "priority": "Prioritas Dukungan",
-      "priorityDesc": "Dapatkan bantuan saat Anda membutuhkan",
+      "priorityDesc": "Dapatkan bantuan lebih cepat saat mendesak",
       "petManagement": "Kelola Hewan",
       "healthRecords": "Catatan Kesehatan",
       "calendar": "Kalender & Acara",
@@ -1558,7 +1558,7 @@
     },
     "paywall": {
       "title": "Buka Kunci Petopia Petcare Pro",
-      "subtitle": "Dapatkan yang terbaik dari Petopia Petcare"
+      "subtitle": "Tetap terkontrol untuk perawatan, pengingat, dan pengeluaran tiap hewan peliharaan"
     },
     "success": {
       "title": "Berlangganan Berhasil!",
@@ -1570,6 +1570,11 @@
       "message": "Percobaan gratis 14 hari Anda telah dimulai. Nikmati semua fitur Pro!",
       "button": "Ke Beranda"
     },
-    "note": "Pembayaran akan dikenakan ke akun App Store / Google Play Anda. Langganan diperpanjang secara otomatis kecuali dibatalkan minimal 24 jam sebelum periode saat ini berakhir. Anda dapat mengelola atau membatalkan langganan di pengaturan akun App Store / Google Play Anda."
+    "note": "Pembayaran ditagihkan melalui akun App Store / Google Play Anda. Langganan diperpanjang otomatis kecuali dibatalkan setidaknya 24 jam sebelum akhir periode berjalan. Anda dapat mengelola atau membatalkan kapan saja dari pengaturan akun toko Anda.",
+    "trust": {
+      "cancelAnytime": "Batalkan kapan saja dari pengaturan App Store / Google Play",
+      "billedByStore": "Penagihan diproses dengan aman melalui akun toko aplikasi Anda",
+      "secureCheckout": "Tidak perlu memasukkan detail kartu kredit secara manual di dalam aplikasi"
+    }
   }
 }

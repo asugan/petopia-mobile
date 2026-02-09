@@ -1,4 +1,5 @@
 import { Modal, View, StyleSheet, Pressable, ScrollView, useWindowDimensions } from 'react-native';
+import { useEffect } from 'react';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTranslation } from 'react-i18next';
 import { useRouter } from 'expo-router';
@@ -8,6 +9,8 @@ import { useTheme } from '@/lib/theme';
 import { useSubscription } from '@/lib/hooks/useSubscription';
 import { SubscriptionCard } from './SubscriptionCard';
 import { SUBSCRIPTION_ROUTES } from '@/constants/routes';
+import { useTracking } from '@/lib/posthog';
+import { SUBSCRIPTION_EVENTS } from '@/lib/posthog/subscriptionEvents';
 
 interface SubscriptionModalProps {
   visible: boolean;
@@ -28,13 +31,34 @@ export function SubscriptionModal({ visible, onClose, featureName }: Subscriptio
   const { height } = useWindowDimensions();
   const insets = useSafeAreaInsets();
   const { isLoading, canStartTrial } = useSubscription();
+  const { trackEvent } = useTracking();
+
+  useEffect(() => {
+    if (!visible) return;
+
+    trackEvent(SUBSCRIPTION_EVENTS.PAYWALL_VIEW, {
+      screen: 'subscription_modal',
+      source: 'feature_gate_modal',
+      trial_eligible: canStartTrial,
+    });
+  }, [canStartTrial, trackEvent, visible]);
 
   const handleUpgrade = () => {
+    trackEvent(SUBSCRIPTION_EVENTS.PURCHASE_STARTED, {
+      screen: 'subscription_modal',
+      source: 'feature_gate_modal',
+      trigger: 'open_subscription_screen',
+    });
     onClose();
-    router.push(SUBSCRIPTION_ROUTES.main);
+    router.push(`${SUBSCRIPTION_ROUTES.main}?source=feature_gate_modal`);
   };
 
   const handleClose = () => {
+    trackEvent(SUBSCRIPTION_EVENTS.PAYWALL_CLOSE, {
+      screen: 'subscription_modal',
+      source: 'feature_gate_modal',
+      reason: 'dismiss',
+    });
     onClose();
   };
 

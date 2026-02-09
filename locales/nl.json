@@ -35,7 +35,7 @@
     "linkOpenError": "Kon de link niet openen. Probeer het opnieuw.",
     "logoutConfirm": "Weet je zeker dat je wilt uitloggen?",
     "logoutSuccess": "Succesvol uitgelogd",
-    "freeTrialNotice": "Log in met sociale media, synchroniseer je gegevens met de cloud en gebruik het op al je apparaten."
+    "freeTrialNotice": "Begin gratis met één huisdier en ontgrendel Pro wanneer je je hele huisdierfamilie zonder limieten wilt beheren."
   },
   "navigation": {
     "home": "Home",
@@ -174,7 +174,7 @@
   "limits": {
     "pets": {
       "title": "Onbeperkt Huisdieren Toevoegen",
-      "subtitle": "Beheer je hele familie op één plek met Pro.",
+      "subtitle": "Houd de gezondheidstijdlijn, herinneringen en gegevens van elk huisdier op één betrouwbare plek.",
       "cta": "Upgrade naar Pro"
     },
     "care": {
@@ -182,7 +182,7 @@
     },
     "budgets": {
       "title": "Slimme Budgetbewaking",
-      "subtitle": "Beheer maandelijkse budgetten en waarschuwingen op één plek met Pro.",
+      "subtitle": "Signaleer oplopende uitgaven vroeg en voorkom onverwachte dierenartsrekeningen met proactieve meldingen.",
       "cta": "Upgrade naar Pro"
     }
   },
@@ -1316,7 +1316,7 @@
     "screen3": {
       "title": "Je Bent Er Klaar Voor!",
       "description": "Alles is gereed om de zorg en gezondheidsgegevens van je huisdier te beheren.",
-      "trialNotice": "Voeg nu je huisdier toe om te beginnen!",
+      "trialNotice": "Voeg nu je eerste huisdier toe en ontgrendel Pro wanneer je meer nodig hebt.",
       "addPet": "Huisdier Toevoegen",
       "skipPet": "Later doen",
       "addYourFirstPet": "Voeg Je Eerste Huisdier Toe"
@@ -1490,7 +1490,7 @@
     "confirmStartTrialMessage": "14 dagen gratis Pro-functies. Geen creditcard nodig.",
     "confirmStartTrialAction": "Start Proefperiode",
     "upgrade": "Upgrade naar Pro",
-    "upgradePrompt": "Ontgrendel alle functies met Pro",
+    "upgradePrompt": "Mis geen zorgtaken en houd al je huisdieren georganiseerd met Pro",
     "upgradeBeforeTrialEnds": "Upgrade voor Einde Proefperiode",
     "manageSubscription": "Abonnement Beheren",
     "cancelSubscription": "Abonnement Opzeggen",
@@ -1518,24 +1518,24 @@
     "unlockFeature": "Ontgrendel {{feature}}",
     "modal": {
       "title": "Premium Functie",
-      "description": "Deze functie is alleen beschikbaar voor Pro-leden",
-      "featureDescription": "{{feature}} is alleen beschikbaar voor Pro-leden",
-      "upgradeNow": "Nu Upgraden",
+      "description": "Upgrade naar Pro om alle huisdieren, herinneringen en gezondheidsgegevens in één workflow te beheren.",
+      "featureDescription": "Upgrade naar Pro om {{feature}} te ontgrendelen en je routine consistent te houden.",
+      "upgradeNow": "Bekijk plannen",
       "maybeLater": "Misschien Later",
-      "includes": "Pro-lidmaatschap bevat:"
+      "includes": "Pro helpt je met:"
     },
     "features": {
       "title": "Pro Functies",
       "unlimited": "Onbeperkt Huisdieren",
-      "unlimitedDesc": "Voeg al je huisdieren toe en beheer ze op één plek",
+      "unlimitedDesc": "Bewaar alle huisdierprofielen, gegevens en notities samen op één plek",
       "feedingSchedules": "Onbeperkt Voedingsschema's",
-      "feedingSchedulesDesc": "Maak onbeperkt voedingsschema's aan voor al je huisdieren",
+      "feedingSchedulesDesc": "Bouw betrouwbare routines voor elk huisdier zonder planningslimieten",
       "budgetTracking": "Budgetbewaking & Alerts",
-      "budgetTrackingDesc": "Stel maandelijkse budgetten in en ontvang waarschuwingen",
+      "budgetTrackingDesc": "Zie stijgende kosten vroeg met maandelijkse budgetmeldingen",
       "export": "Gegevensexport",
-      "exportDesc": "Exporteer uitgaven naar CSV of PDF",
+      "exportDesc": "Deel duidelijke rapporten met familie of dierenarts",
       "priority": "Prioritaire Ondersteuning",
-      "priorityDesc": "Krijg hulp wanneer je het nodig hebt",
+      "priorityDesc": "Krijg sneller hulp wanneer het urgent is",
       "petManagement": "Huisdierbeheer",
       "healthRecords": "Medische Dossiers",
       "calendar": "Agenda & Evenementen",
@@ -1545,7 +1545,7 @@
     },
     "paywall": {
       "title": "Ontgrendel Petopia Petcare Pro",
-      "subtitle": "Haal het meeste uit Petopia Petcare"
+      "subtitle": "Blijf bovenop zorg, herinneringen en uitgaven voor elk huisdier"
     },
     "success": {
       "title": "Abonnement Geslaagd!",
@@ -1557,7 +1557,12 @@
       "message": "Je 14-daagse gratis proefperiode is gestart. Geniet van alle Pro-functies!",
       "button": "Naar de Homepage"
     },
-    "note": "Betaling wordt in rekening gebracht op je App Store / Google Play account. Abonnementen worden automatisch verlengd tenzij opgezegd minstens 24 uur voor het einde van de huidige periode."
+    "note": "Betaling verloopt via je App Store / Google Play-account. Abonnementen worden automatisch verlengd, tenzij je minimaal 24 uur voor het einde van de huidige periode opzegt. Je kunt op elk moment beheren of opzeggen via je store-accountinstellingen.",
+    "trust": {
+      "cancelAnytime": "Je kunt op elk moment opzeggen via de instellingen van App Store / Google Play",
+      "billedByStore": "Facturatie wordt veilig afgehandeld via je appstore-account",
+      "secureCheckout": "Geen handmatige invoer van creditcardgegevens in de app nodig"
+    }
   },
   "downgrade": {
     "title": "Kies Je Huisdier",

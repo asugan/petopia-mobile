@@ -35,7 +35,7 @@
     "linkOpenError": "Impossible d'ouvrir le lien. Veuillez réessayer.",
     "logoutConfirm": "Êtes-vous sûr de vouloir vous déconnecter ?",
     "logoutSuccess": "Déconnexion réussie",
-    "freeTrialNotice": "Connectez-vous avec les réseaux sociaux, synchronisez vos données sur le cloud et utilisez-les sur tous vos appareils."
+    "freeTrialNotice": "Commencez gratuitement avec un animal, puis débloquez Pro quand vous voulez gérer toute votre famille d'animaux sans limites."
   },
   "navigation": {
     "home": "Accueil",
@@ -174,7 +174,7 @@
   "limits": {
     "pets": {
       "title": "Ajouter des animaux illimités",
-      "subtitle": "Gérez toute votre famille au même endroit avec Pro.",
+      "subtitle": "Conservez l'historique de santé, les rappels et les dossiers de chaque animal dans un seul endroit fiable.",
       "cta": "Passer à Pro"
     },
     "care": {
@@ -182,7 +182,7 @@
     },
     "budgets": {
       "title": "Suivi budgétaire intelligent",
-      "subtitle": "Gérez vos budgets mensuels et vos alertes au même endroit avec Pro.",
+      "subtitle": "Repérez les dépassements tôt et évitez les factures vétérinaires imprévues grâce à des alertes proactives.",
       "cta": "Passer à Pro"
     }
   },
@@ -1316,7 +1316,7 @@
     "screen3": {
       "title": "Vous êtes prêt !",
       "description": "Tout est prêt pour gérer les soins et les données de santé de votre animal.",
-      "trialNotice": "Ajoutez votre animal maintenant pour commencer !",
+      "trialNotice": "Ajoutez votre premier animal maintenant, puis débloquez Pro quand vous en aurez besoin davantage.",
       "addPet": "Ajouter votre animal",
       "skipPet": "Plus tard",
       "addYourFirstPet": "Ajouter votre premier animal"
@@ -1490,7 +1490,7 @@
     "confirmStartTrialMessage": "14 jours de fonctionnalités Pro gratuites. Aucune carte de crédit requise.",
     "confirmStartTrialAction": "Démarrer l'essai",
     "upgrade": "Passer à Pro",
-    "upgradePrompt": "Débloquez toutes les fonctionnalités avec Pro",
+    "upgradePrompt": "Ne manquez plus les tâches de soin et gardez tous vos animaux bien organisés avec Pro",
     "upgradeBeforeTrialEnds": "Passez à Pro avant la fin de l'essai",
     "manageSubscription": "Gérer l'abonnement",
     "cancelSubscription": "Résilier l'abonnement",
@@ -1518,24 +1518,24 @@
     "unlockFeature": "Débloquer {{feature}}",
     "modal": {
       "title": "Fonctionnalité Premium",
-      "description": "Cette fonctionnalité est réservée aux membres Pro",
-      "featureDescription": "{{feature}} est réservé aux membres Pro",
-      "upgradeNow": "Passer à Pro maintenant",
+      "description": "Passez à Pro pour gérer tous vos animaux, rappels et dossiers de santé dans un flux unique.",
+      "featureDescription": "Passez à Pro pour débloquer {{feature}} et garder votre routine cohérente.",
+      "upgradeNow": "Voir les offres",
       "maybeLater": "Peut-être plus tard",
-      "includes": "L'abonnement Pro inclut :"
+      "includes": "Pro vous aide à :"
     },
     "features": {
       "title": "Fonctionnalités Pro",
       "unlimited": "Animaux illimités",
-      "unlimitedDesc": "Ajoutez et gérez tous vos animaux au même endroit",
+      "unlimitedDesc": "Regrouper tous les profils, dossiers et notes de vos animaux au même endroit",
       "feedingSchedules": "Programmes d'alimentation illimités",
-      "feedingSchedulesDesc": "Créez des programmes d'alimentation illimités pour tous vos animaux",
+      "feedingSchedulesDesc": "Créer des routines fiables pour chaque animal sans limite de planning",
       "budgetTracking": "Suivi budgétaire & Alertes",
-      "budgetTrackingDesc": "Définissez des budgets mensuels, suivez les dépenses et recevez des alertes",
+      "budgetTrackingDesc": "Détecter la hausse des coûts tôt grâce aux alertes budgétaires mensuelles",
       "export": "Exportation de données",
-      "exportDesc": "Exportez les dépenses en CSV ou PDF, générez des résumés vétérinaires",
+      "exportDesc": "Partager des rapports clairs avec la famille ou votre vétérinaire",
       "priority": "Support prioritaire",
-      "priorityDesc": "Obtenez de l'aide quand vous en avez besoin",
+      "priorityDesc": "Obtenir une aide plus rapide quand c'est urgent",
       "petManagement": "Gestion des animaux",
       "healthRecords": "Carnets de santé",
       "calendar": "Calendrier & Événements",
@@ -1545,7 +1545,7 @@
     },
     "paywall": {
       "title": "Débloquez Petopia Petcare Pro",
-      "subtitle": "Profitez au maximum de Petopia Petcare"
+      "subtitle": "Gardez le contrôle des soins, rappels et dépenses pour chaque animal"
     },
     "success": {
       "title": "Abonnement réussi !",
@@ -1557,7 +1557,12 @@
       "message": "Votre essai gratuit de 14 jours a commencé. Profitez de toutes les fonctionnalités Pro !",
       "button": "Aller à l'accueil"
     },
-    "note": "Le paiement sera débité de votre compte App Store / Google Play. Les abonnements se renouvellent automatiquement sauf s'ils sont annulés au moins 24 heures avant la fin de la période en cours. Vous pouvez gérer ou résilier votre abonnement dans les paramètres de votre compte App Store / Google Play."
+    "note": "Le paiement est facturé via votre compte App Store / Google Play. Les abonnements se renouvellent automatiquement, sauf annulation au moins 24 heures avant la fin de la période en cours. Vous pouvez les gérer ou les annuler à tout moment dans les réglages de votre compte store.",
+    "trust": {
+      "cancelAnytime": "Vous pouvez annuler à tout moment depuis les réglages App Store / Google Play",
+      "billedByStore": "La facturation est gérée de manière sécurisée via votre compte de boutique d'apps",
+      "secureCheckout": "Aucune saisie manuelle de carte bancaire n'est nécessaire dans l'application"
+    }
   },
   "downgrade": {
     "title": "Choisissez votre animal",

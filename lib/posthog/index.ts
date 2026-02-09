@@ -16,14 +16,14 @@ export function useTracking() {
 
   const trackEvent = useCallback(
     (eventName: string, properties?: PostHogEventProperties) => {
-      posthog.capture(eventName, properties);
+      posthog?.capture(eventName, properties);
     },
     [posthog]
   );
 
   const trackScreen = useCallback(
     (screenName: string, properties?: PostHogEventProperties) => {
-      posthog.capture('$screen', {
+      posthog?.capture('$screen', {
         $screen_name: screenName,
         ...properties,
       });
