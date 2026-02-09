@@ -10,7 +10,7 @@ import i18n from '@/lib/i18n';
 import * as SecureStore from 'expo-secure-store';
 import { api } from '../api/client';
 import { useUserSettingsStore } from '@/stores/userSettingsStore';
-import { toZonedTime, fromZonedTime } from 'date-fns-tz';
+import { toZonedTime, fromZonedTime, formatInTimeZone as formatInTimeZoneTz } from 'date-fns-tz';
 import { calculateNextFeedingTime } from '@/lib/utils/feedingReminderTime';
 import { resolveEffectiveTimezone } from '@/lib/utils/timezone';
 
@@ -550,10 +550,11 @@ export class NotificationService {
       const notificationTitle = i18n.t('notifications.feedingReminderTitle', {
         emoji: foodTypeEmoji,
       });
+      const reminderClockTime = formatInTimeZoneTz(feedingTime, timezone, 'HH:mm');
       const notificationBody = i18n.t('notifications.feedingReminderBody', {
         foodType: foodTypeLabel,
         amount: schedule.amount,
-        time: i18n.t('events.atTime', { time: feedingTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) }),
+        time: i18n.t('events.atTime', { time: reminderClockTime }),
       });
 
       await this.ensureNotificationChannel();

@@ -7,7 +7,6 @@ import * as Notifications from 'expo-notifications';
 import * as SplashScreen from 'expo-splash-screen';
 import { Stack, useRouter, useSegments } from "expo-router";
 import { QueryClient, QueryClientProvider, focusManager } from '@tanstack/react-query';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import Toast from 'react-native-toast-message';
 import { ApiErrorBoundary } from "@/lib/components/ApiErrorBoundary";
 import { MOBILE_QUERY_CONFIG } from "@/lib/config/queryConfig";
@@ -31,7 +30,6 @@ import { useReminderScheduler } from '@/hooks/useReminderScheduler';
 import { createToastConfig } from '@/lib/toast/toastConfig';
 import { SUBSCRIPTION_ROUTES, TAB_ROUTES } from '@/constants/routes';
 import { LAYOUT } from '@/constants';
-import { detectDeviceTimezone } from '@/lib/utils/timezone';
 import "../lib/i18n";
 import { AnimatedSplashScreen } from '@/components/SplashScreen/AnimatedSplashScreen';
 
@@ -180,7 +178,6 @@ function RootLayoutContent() {
   const { data: upcomingEvents = [] } = useUpcomingEvents();
   const { data: activeFeedingSchedules = [] } = useActiveFeedingSchedules();
   const { scheduleChainForEvent } = useReminderScheduler();
-  const TIMEZONE_STORAGE_KEY = 'last-known-timezone';
   const rescheduleSignatureRef = useRef<string | null>(null);
   const preferenceSyncInFlightRef = useRef(false);
 
@@ -282,13 +279,7 @@ function RootLayoutContent() {
     }
 
     const rescheduleUpcomingReminders = async () => {
-      const safeDeviceTimezone = detectDeviceTimezone();
-      const storedTimezone = await AsyncStorage.getItem(TIMEZONE_STORAGE_KEY);
-      const timezoneForSignature = safeDeviceTimezone || storedTimezone || 'unknown';
-
-      if (safeDeviceTimezone && storedTimezone !== safeDeviceTimezone) {
-        await AsyncStorage.setItem(TIMEZONE_STORAGE_KEY, safeDeviceTimezone);
-      }
+      const timezoneForSignature = settings?.timezone ?? 'unknown';
 
       const quietKey = [
         quietHoursEnabled,
@@ -358,6 +349,7 @@ function RootLayoutContent() {
     scheduleChainForEvent,
     quietHours,
     quietHoursEnabled,
+    settings?.timezone,
   ]);
 
   const isDark = theme.mode === 'dark';
