@@ -105,7 +105,9 @@ export const useCalendarEvents = (
       return;
     }
 
-    void queryClient.invalidateQueries({ queryKey: eventKeys.calendar(date) });
+    void queryClient.invalidateQueries({
+      predicate: (query) => isCalendarQueryForDate(query.queryKey, date),
+    });
   }, [date, queryClient, timezone]);
 
   return useConditionalQuery<Event[]>({

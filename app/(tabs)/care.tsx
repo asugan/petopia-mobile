@@ -29,13 +29,16 @@ import { useRequestDeduplication } from '@/lib/hooks/useRequestCancellation';
 import NotificationPermissionPrompt from '@/components/NotificationPermissionPrompt';
 import { registerPushTokenWithBackend } from '@/lib/services/notificationService';
 import { SUBSCRIPTION_ROUTES, FEATURE_ROUTES } from '@/constants/routes';
+import { useUserTimezone } from '@/lib/hooks/useUserTimezone';
+import { formatInTimeZone } from '@/lib/utils/date';
 
 
 type CareTabValue = 'health' | 'feeding';
 
 export default function CareScreen() {
   const { theme } = useTheme();
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const userTimezone = useUserTimezone();
   const { isProUser } = useSubscription();
   const router = useRouter();
   const [activeTab, setActiveTab] = useState<CareTabValue>('health');
@@ -92,6 +95,7 @@ export default function CareScreen() {
 
   // Filter health records by type (all records since we removed type filter)
   const filteredHealthRecords = healthRecords;
+  const healthDateFormat = i18n.language === 'tr' ? 'dd.MM.yyyy' : 'MM/dd/yyyy';
 
   // Filter feeding schedules by selected pet
   const feedingSchedules = selectedPetId
@@ -283,7 +287,7 @@ export default function CareScreen() {
                     color={theme.colors.onSurfaceVariant}
                   />
                   <Text variant="labelSmall" style={{ color: theme.colors.onSurfaceVariant }}>
-                    {new Date(record.date).toLocaleDateString('tr-TR')}
+                    {formatInTimeZone(record.date, userTimezone, healthDateFormat)}
                   </Text>
                 </View>
               </View>

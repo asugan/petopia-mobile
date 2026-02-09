@@ -12,28 +12,16 @@ import type {
   MonthlyExpense,
   YearlyExpense
 } from '@/lib/types';
+import { normalizeToISOString } from '@/lib/utils/dateConversion';
 
 /**
  * Date utility functions for safe date handling
  */
-function isDate(value: unknown): value is Date {
-  return value instanceof Date && !isNaN(value.getTime());
-}
-
 function convertDateToISOString(dateValue: Date | string | null | undefined): string | undefined {
   if (!dateValue) {
     return undefined;
   }
-
-  if (isDate(dateValue)) {
-    return dateValue.toISOString();
-  }
-
-  if (typeof dateValue === 'string') {
-    return dateValue;
-  }
-
-  return undefined;
+  return normalizeToISOString(dateValue);
 }
 
 /**

@@ -7,6 +7,8 @@ import { useTheme } from '@/lib/theme';
 import { useSubscription } from '@/lib/hooks/useSubscription';
 import { REVENUECAT_CONFIG } from '@/lib/revenuecat/config';
 import { SUBSCRIPTION_ROUTES } from '@/constants/routes';
+import { useUserTimezone } from '@/lib/hooks/useUserTimezone';
+import { formatInTimeZone } from '@/lib/utils/date';
 
 interface SubscriptionCardProps {
   showManageButton?: boolean;
@@ -20,8 +22,9 @@ interface SubscriptionCardProps {
  * Used in Settings screen and other places where subscription info is needed
  */
 export function SubscriptionCard({ showManageButton = true, compact = false, onUpgrade, onTrialStartSuccess }: SubscriptionCardProps) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { theme } = useTheme();
+  const timezone = useUserTimezone();
   const router = useRouter();
   const {
     subscriptionStatus,
@@ -43,12 +46,11 @@ export function SubscriptionCard({ showManageButton = true, compact = false, onU
   const formatDate = (dateString: string | null): string => {
     if (!dateString) return '';
     try {
-      const date = new Date(dateString);
-      return date.toLocaleDateString(undefined, {
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric',
-      });
+      return formatInTimeZone(
+        dateString,
+        timezone,
+        i18n.language === 'tr' ? 'd MMMM yyyy' : 'MMMM d, yyyy'
+      );
     } catch {
       return dateString;
     }

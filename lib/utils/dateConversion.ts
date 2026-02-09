@@ -310,16 +310,24 @@ export function normalizeToISOString(value: Date | string | number | null | unde
   }
 
   if (typeof value === 'string') {
-    // Already a string, validate it's a valid date
-    const date = new Date(value);
+    const trimmed = value.trim();
+    if (!trimmed) {
+      return undefined;
+    }
+
+    if (/^\d{4}-\d{2}-\d{2}$/.test(trimmed)) {
+      return dateOnlyToUTCMidnightISOString(trimmed);
+    }
+
+    if (trimmed.includes('T') && !/(Z|[+-]\d{2}(?::?\d{2})?)$/.test(trimmed)) {
+      return undefined;
+    }
+
+    const date = new Date(trimmed);
     if (isNaN(date.getTime())) {
       return undefined;
     }
-    // If it's already ISO format, return as-is
-    if (value.includes('T')) {
-      return value;
-    }
-    // Otherwise convert to full ISO
+
     return date.toISOString();
   }
 

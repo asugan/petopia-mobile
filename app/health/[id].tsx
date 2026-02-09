@@ -19,19 +19,20 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { useTheme } from '@/lib/theme';
 import { useDeleteHealthRecord, useHealthRecord } from '@/lib/hooks/useHealthRecords';
 import { usePet } from '@/lib/hooks/usePets';
-import { useUserSettingsStore } from '@/stores/userSettingsStore';
 import { showToast } from '@/lib/toast/showToast';
 import { HealthRecordForm } from '@/components/forms/HealthRecordForm';
 import LoadingSpinner from '@/components/LoadingSpinner';
 import EmptyState from '@/components/EmptyState';
 import { TURKCE_LABELS } from '@/constants';
 import { FALLBACK_IMAGES, PET_TYPE_AVATARS } from '@/constants/images';
+import { useUserTimezone } from '@/lib/hooks/useUserTimezone';
+import { formatInTimeZone } from '@/lib/utils/date';
 
 const { width } = Dimensions.get('window');
 const FOOTER_HEIGHT = 80;
 
 export default function HealthRecordDetailScreen() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { theme } = useTheme();
   const insets = useSafeAreaInsets();
   const { id } = useLocalSearchParams();
@@ -39,8 +40,8 @@ export default function HealthRecordDetailScreen() {
 
   const [isEditModalVisible, setIsEditModalVisible] = useState(false);
   const [editFormKey, setEditFormKey] = useState(0);
-  const { settings } = useUserSettingsStore();
-  const dateLocale = settings?.language === 'tr' ? 'tr-TR' : 'en-US';
+  const userTimezone = useUserTimezone();
+  const dateFormat = i18n.language === 'tr' ? 'dd.MM.yyyy' : 'MM/dd/yyyy';
 
   const deleteMutation = useDeleteHealthRecord();
   const { data: healthRecord, isLoading, refetch } = useHealthRecord(id as string);
@@ -293,7 +294,7 @@ export default function HealthRecordDetailScreen() {
     const shareContent = [
       healthRecord.title,
       `${t('pets.type')}: ${TURKCE_LABELS.HEALTH_RECORD_TYPES[healthRecord.type as keyof typeof TURKCE_LABELS.HEALTH_RECORD_TYPES]}`,
-      `${t('events.date')}: ${new Date(healthRecord.date).toLocaleDateString(dateLocale)}`,
+      `${t('events.date')}: ${formatInTimeZone(healthRecord.date, userTimezone, dateFormat)}`,
     ].join('\n');
 
     try {
@@ -367,7 +368,7 @@ export default function HealthRecordDetailScreen() {
               </View>
               <Text style={styles.titleText}>{healthRecord.title}</Text>
               <Text style={styles.subtitleText}>
-                {new Date(healthRecord.date).toLocaleDateString(dateLocale)} • {t(`healthRecordTypes.${healthRecord.type}`, healthRecord.type)}
+                {formatInTimeZone(healthRecord.date, userTimezone, dateFormat)} • {t(`healthRecordTypes.${healthRecord.type}`, healthRecord.type)}
               </Text>
             </View>
           </ImageBackground>
@@ -403,7 +404,7 @@ export default function HealthRecordDetailScreen() {
             <View style={styles.gridCard}>
               <View>
                 <Text style={styles.cardLabel}>{t('events.date')}</Text>
-                <Text style={styles.cardValue}>{new Date(healthRecord.date).toLocaleDateString(dateLocale)}</Text>
+                <Text style={styles.cardValue}>{formatInTimeZone(healthRecord.date, userTimezone, dateFormat)}</Text>
               </View>
               <MaterialCommunityIcons name="calendar-blank" size={20} color={theme.colors.primary} />
             </View>

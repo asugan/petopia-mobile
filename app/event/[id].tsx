@@ -171,9 +171,14 @@ export default function EventDetailScreen() {
         // Delete only this occurrence via exception
         try {
           if (event.recurrenceRuleId) {
+            const parsedExceptionDate = new Date(event.startTime);
+            const exceptionDate = Number.isNaN(parsedExceptionDate.getTime())
+              ? String(event.startTime)
+              : parsedExceptionDate.toISOString();
+
             await addRecurrenceExceptionMutation.mutateAsync({
               id: event.recurrenceRuleId,
-              date: event.startTime.toString(),
+              date: exceptionDate,
             });
             showToast({ type: 'success', title: t('events.eventDeleted') });
             router.back();

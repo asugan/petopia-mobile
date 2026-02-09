@@ -3,6 +3,7 @@ import { Platform, View, Text, TouchableOpacity, StyleSheet } from 'react-native
 import ReactNativeDateTimePicker, { type DateTimePickerEvent } from '@react-native-community/datetimepicker';
 import { Text as PaperText, } from '@/components/ui';
 import { useTheme } from '@/lib/theme';
+import { useTranslation } from 'react-i18next';
 
 interface DateTimePickerProps {
   value: Date;
@@ -29,6 +30,8 @@ export function DateTimePicker({
 }: DateTimePickerProps) {
   const [isPickerVisible, setPickerVisible] = useState(false);
   const { theme } = useTheme();
+  const { i18n } = useTranslation();
+  const locale = i18n.language === 'tr' ? 'tr-TR' : 'en-US';
 
   const showPicker = () => {
     if (!disabled) {
@@ -65,12 +68,12 @@ export function DateTimePicker({
 
   const formatDate = (date: Date) => {
     if (mode === 'time') {
-      return date.toLocaleTimeString('tr-TR', {
+      return date.toLocaleTimeString(locale, {
         hour: '2-digit',
         minute: '2-digit',
       });
     } else if (mode === 'datetime') {
-      return date.toLocaleString('tr-TR', {
+      return date.toLocaleString(locale, {
         day: '2-digit',
         month: '2-digit',
         year: 'numeric',
@@ -78,7 +81,7 @@ export function DateTimePicker({
         minute: '2-digit',
       });
     } else {
-      return date.toLocaleDateString('tr-TR', {
+      return date.toLocaleDateString(locale, {
         day: '2-digit',
         month: '2-digit',
         year: 'numeric',
