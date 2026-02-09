@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { feedingScheduleService, type FeedingNotification } from '../services/feedingScheduleService';
-import { isPushTokenRegistered, scheduleFeedingReminder, cancelFeedingReminder } from '../services/notificationService';
+import { getNotificationDeliveryChannel, scheduleFeedingReminder, cancelFeedingReminder } from '../services/notificationService';
 import { useUserSettingsStore } from '@/stores/userSettingsStore';
 import { createQueryKeys } from './core/createQueryKeys';
 import { useConditionalQuery } from './core/useConditionalQuery';
@@ -161,8 +161,8 @@ export function useFeedingReminders() {
   // Check if push token is registered with backend
   const checkPushTokenStatus = useCallback(async () => {
     try {
-      const registered = await isPushTokenRegistered();
-      setPushTokenRegistered(registered);
+      const deliveryChannel = await getNotificationDeliveryChannel();
+      setPushTokenRegistered(deliveryChannel === 'backend');
     } catch {
       setPushTokenRegistered(false);
     }
@@ -297,7 +297,11 @@ export function useFeedingReminders() {
     async (schedule: FeedingSchedule, reminderMinutes: number = 15) => {
       setIsLoading(true);
       try {
-        if (pushTokenRegistered) {
+        const deliveryChannel = await getNotificationDeliveryChannel();
+        const useBackend = deliveryChannel === 'backend';
+        setPushTokenRegistered(useBackend);
+
+        if (useBackend) {
           // Backend handles push notifications
           return await triggerBackendReminder.mutateAsync({ scheduleId: schedule._id, reminderMinutes });
         } else {
@@ -308,7 +312,7 @@ export function useFeedingReminders() {
         setIsLoading(false);
       }
     },
-    [pushTokenRegistered, scheduleLocalReminder, triggerBackendReminder]
+    [scheduleLocalReminder, triggerBackendReminder]
   );
 
   /**

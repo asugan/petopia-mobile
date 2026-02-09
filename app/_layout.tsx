@@ -26,6 +26,7 @@ import { useUserSettingsStore } from '@/stores/userSettingsStore';
 import { useEventReminderStore } from '@/stores/eventReminderStore';
 import { useOnboardingStore } from '@/stores/onboardingStore';
 import { useUpcomingEvents } from '@/lib/hooks/useEvents';
+import { useActiveFeedingSchedules } from '@/lib/hooks/useFeedingSchedules';
 import { useReminderScheduler } from '@/hooks/useReminderScheduler';
 import { createToastConfig } from '@/lib/toast/toastConfig';
 import { SUBSCRIPTION_ROUTES, TAB_ROUTES } from '@/constants/routes';
@@ -177,6 +178,7 @@ function RootLayoutContent() {
   const quietHours = useEventReminderStore((state) => state.quietHours);
   const quietHoursEnabled = useEventReminderStore((state) => state.quietHoursEnabled);
   const { data: upcomingEvents = [] } = useUpcomingEvents();
+  const { data: activeFeedingSchedules = [] } = useActiveFeedingSchedules();
   const { scheduleChainForEvent } = useReminderScheduler();
   const TIMEZONE_STORAGE_KEY = 'last-known-timezone';
   const rescheduleSignatureRef = useRef<string | null>(null);
@@ -311,16 +313,41 @@ function RootLayoutContent() {
         .sort()
         .join('|');
 
-      const nextSignature = `${timezoneForSignature}|${quietKey}|${eventsSignature}`;
+      const feedingSignature = activeFeedingSchedules
+        .map((schedule) =>
+          [
+            schedule._id,
+            schedule.time,
+            schedule.days,
+            schedule.reminderMinutesBefore ?? 15,
+            schedule.isActive ? 1 : 0,
+          ].join(':')
+        )
+        .sort()
+        .join('|');
+
+      const nextSignature = `${timezoneForSignature}|${quietKey}|${eventsSignature}|${feedingSignature}`;
       if (rescheduleSignatureRef.current === nextSignature) {
         return;
       }
       rescheduleSignatureRef.current = nextSignature;
 
+      const deliveryChannel = await notificationService.getNotificationDeliveryChannel();
+      if (deliveryChannel === 'backend') {
+        await notificationService.cancelEventAndFeedingNotifications();
+        return;
+      }
+
       for (const event of upcomingEvents) {
         if (event.reminder) {
           await scheduleChainForEvent(event, event.reminderPreset);
         }
+      }
+
+      for (const schedule of activeFeedingSchedules) {
+        await notificationService.syncFeedingReminderForSchedule(schedule, {
+          deliveryChannel: 'local',
+        });
       }
     };
 
@@ -328,6 +355,7 @@ function RootLayoutContent() {
   }, [
     isAuthenticated,
     upcomingEvents,
+    activeFeedingSchedules,
     scheduleChainForEvent,
     quietHours,
     quietHoursEnabled,

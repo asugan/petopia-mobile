@@ -3,14 +3,14 @@ import type { Href } from 'expo-router';
 import { Platform } from 'react-native';
 import * as Device from 'expo-device';
 import * as Application from 'expo-application';
-import { Event } from '../types';
+import { Event, FeedingSchedule } from '../types';
 import { EVENT_TYPE_DEFAULT_REMINDERS } from '../../constants/eventIcons';
 import { REMINDER_PRESETS, QUIET_HOURS_WINDOW } from '@/constants/reminders';
 import i18n from '@/lib/i18n';
 import * as SecureStore from 'expo-secure-store';
 import { api } from '../api/client';
 import { useUserSettingsStore } from '@/stores/userSettingsStore';
-import { toZonedTime, fromZonedTime } from 'date-fns-tz';
+import { toZonedTime, fromZonedTime, formatInTimeZone } from 'date-fns-tz';
 
 /**
  * Notification Service - Handles all push notification operations
@@ -89,6 +89,10 @@ export class NotificationService {
   };
   private notificationChannelPromise: Promise<void> | null = null;
   private navigationHandler?: (target: Href) => void;
+  private readonly pushTokenStorageKey = 'expoPushToken';
+  private readonly pushRegistrationStorageKey = 'pushTokenRegisteredWithBackend';
+  private readonly pushRegistrationVerifiedAtStorageKey = 'pushTokenRegisteredVerifiedAt';
+  private readonly pushRegistrationCacheTtlMs = 5 * 60 * 1000;
 
   private constructor() {
     this.notificationChannelPromise = this.setupNotificationChannel();
@@ -141,6 +145,79 @@ export class NotificationService {
     }
 
     await this.notificationChannelPromise;
+  }
+
+  private getUserTimezone(): string {
+    const settings = useUserSettingsStore.getState().settings;
+    return settings?.timezone || Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC';
+  }
+
+  private async setPushRegistrationCache(isRegistered: boolean): Promise<void> {
+    if (isRegistered) {
+      await SecureStore.setItemAsync(this.pushRegistrationStorageKey, 'true');
+      await SecureStore.setItemAsync(this.pushRegistrationVerifiedAtStorageKey, Date.now().toString());
+      return;
+    }
+
+    await SecureStore.deleteItemAsync(this.pushRegistrationStorageKey);
+    await SecureStore.deleteItemAsync(this.pushRegistrationVerifiedAtStorageKey);
+  }
+
+  private async getCachedPushRegistrationStatus(): Promise<{ isRegistered: boolean; isFresh: boolean }> {
+    const cachedStatus = await SecureStore.getItemAsync(this.pushRegistrationStorageKey);
+    const storedToken = await SecureStore.getItemAsync(this.pushTokenStorageKey);
+    const verifiedAtRaw = await SecureStore.getItemAsync(this.pushRegistrationVerifiedAtStorageKey);
+
+    const isRegistered = cachedStatus === 'true' && !!storedToken;
+    const verifiedAt = verifiedAtRaw ? Number(verifiedAtRaw) : NaN;
+    const isFresh = Number.isFinite(verifiedAt) && Date.now() - verifiedAt < this.pushRegistrationCacheTtlMs;
+
+    return { isRegistered, isFresh };
+  }
+
+  private calculateNextFeedingTime(time: string, days: string, timezone: string): Date | null {
+    const now = new Date();
+    const [hours, minutes] = time.split(':').map(Number);
+
+    if (hours === undefined || minutes === undefined) {
+      return null;
+    }
+
+    const dayNames = [
+      'sunday',
+      'monday',
+      'tuesday',
+      'wednesday',
+      'thursday',
+      'friday',
+      'saturday',
+    ];
+
+    const nowInTz = toZonedTime(now, timezone);
+    const todayDayIndex = nowInTz.getDay();
+    const todayName = dayNames[todayDayIndex] ?? 'sunday';
+    const normalizedDays = days.toLowerCase();
+
+    const todayDateStr = formatInTimeZone(now, timezone, 'yyyy-MM-dd');
+    const todayFeedingTimeUTC = fromZonedTime(`${todayDateStr}T${time}:00`, timezone);
+
+    if (normalizedDays.includes(todayName) && todayFeedingTimeUTC > now) {
+      return todayFeedingTimeUTC;
+    }
+
+    for (let i = 1; i <= 7; i++) {
+      const nextDayDate = new Date(nowInTz);
+      nextDayDate.setDate(nowInTz.getDate() + i);
+      const nextDayIndex = nextDayDate.getDay();
+      const nextDayName = dayNames[nextDayIndex] ?? 'sunday';
+
+      if (normalizedDays.includes(nextDayName)) {
+        const nextDayDateStr = formatInTimeZone(nextDayDate, timezone, 'yyyy-MM-dd');
+        return fromZonedTime(`${nextDayDateStr}T${time}:00`, timezone);
+      }
+    }
+
+    return null;
   }
 
   setNavigationHandler(handler: (target: Href) => void) {
@@ -262,6 +339,9 @@ export class NotificationService {
             petId: event.petId,
             eventType: event.type,
             screen: 'event',
+            source: 'local',
+            entityType: 'event',
+            entityId: event._id,
           },
           sound: 'default',
           priority: Notifications.AndroidNotificationPriority.HIGH,
@@ -479,7 +559,7 @@ export class NotificationService {
    * @returns Notification identifier or null if failed
    */
   async scheduleFeedingReminder(
-    schedule: { _id: string; petId: string; time: string; foodType: string; amount: string },
+    schedule: { _id: string; petId: string; time: string; foodType: string; amount: string; days?: string },
     reminderMinutes: number = 15
   ): Promise<string | null> {
     try {
@@ -488,8 +568,17 @@ export class NotificationService {
         return null;
       }
 
+      const timezone = this.getUserTimezone();
+      const parsedFeedingTime = new Date(schedule.time);
+      const feedingTime = Number.isNaN(parsedFeedingTime.getTime())
+        ? (schedule.days ? this.calculateNextFeedingTime(schedule.time, schedule.days, timezone) : null)
+        : parsedFeedingTime;
+
+      if (!feedingTime) {
+        return null;
+      }
+
       // Calculate trigger time
-      const feedingTime = new Date(schedule.time);
       const triggerDate = new Date(feedingTime.getTime() - reminderMinutes * 60 * 1000);
 
       // Don't schedule if trigger time is in the past
@@ -520,6 +609,9 @@ export class NotificationService {
             petId: schedule.petId,
             scheduleTime: schedule.time,
             screen: 'feeding',
+            source: 'local',
+            entityType: 'feeding',
+            entityId: schedule._id,
           },
           sound: 'default',
           priority: Notifications.AndroidNotificationPriority.HIGH,
@@ -780,9 +872,8 @@ export class NotificationService {
       });
 
       // Store the token locally
-      await SecureStore.setItemAsync('expoPushToken', expoPushToken);
-      // Mark as registered with backend (avoids network call on every reminder check)
-      await SecureStore.setItemAsync('pushTokenRegisteredWithBackend', 'true');
+      await SecureStore.setItemAsync(this.pushTokenStorageKey, expoPushToken);
+      await this.setPushRegistrationCache(true);
       await SecureStore.setItemAsync('deviceId', deviceId);
 
       return true;
@@ -805,9 +896,9 @@ export class NotificationService {
         data: { deviceId },
       });
 
-      await SecureStore.deleteItemAsync('expoPushToken');
+      await SecureStore.deleteItemAsync(this.pushTokenStorageKey);
       await SecureStore.deleteItemAsync('deviceId');
-      await SecureStore.deleteItemAsync('pushTokenRegisteredWithBackend');
+      await this.setPushRegistrationCache(false);
 
       return true;
     } catch {
@@ -822,16 +913,12 @@ export class NotificationService {
    */
   async isPushTokenRegistered(): Promise<boolean> {
     try {
-      // First check local cache (fast path - no network call)
-      const cachedStatus = await SecureStore.getItemAsync('pushTokenRegisteredWithBackend');
-      if (cachedStatus === 'true') {
-        // Verify token still exists locally
-        const storedToken = await SecureStore.getItemAsync('expoPushToken');
-        return !!storedToken;
+      const { isRegistered, isFresh } = await this.getCachedPushRegistrationStatus();
+      if (isRegistered && isFresh) {
+        return true;
       }
 
-      // No cached status - token not registered or cache cleared
-      return false;
+      return this.verifyPushTokenRegistration();
     } catch {
       return false;
     }
@@ -843,26 +930,96 @@ export class NotificationService {
    */
   async verifyPushTokenRegistration(): Promise<boolean> {
     try {
-      const storedToken = await SecureStore.getItemAsync('expoPushToken');
+      const storedToken = await SecureStore.getItemAsync(this.pushTokenStorageKey);
       if (!storedToken) {
-        await SecureStore.deleteItemAsync('pushTokenRegisteredWithBackend');
+        await this.setPushRegistrationCache(false);
         return false;
       }
 
       const response = await api.get<{ deviceId: string }[]>('/api/push/devices');
       const isRegistered = Array.isArray(response.data) && response.data.length > 0;
       
-      // Update cache based on server response
-      if (isRegistered) {
-        await SecureStore.setItemAsync('pushTokenRegisteredWithBackend', 'true');
-      } else {
-        await SecureStore.deleteItemAsync('pushTokenRegisteredWithBackend');
-      }
+      await this.setPushRegistrationCache(isRegistered);
       
       return isRegistered;
     } catch {
+      await this.setPushRegistrationCache(false);
       return false;
     }
+  }
+
+  async getNotificationDeliveryChannel(options?: { forceVerify?: boolean }): Promise<'backend' | 'local'> {
+    if (options?.forceVerify) {
+      const verified = await this.verifyPushTokenRegistration();
+      return verified ? 'backend' : 'local';
+    }
+
+    const registered = await this.isPushTokenRegistered();
+    return registered ? 'backend' : 'local';
+  }
+
+  async getFeedingNotifications(scheduleId?: string): Promise<Notifications.NotificationRequest[]> {
+    try {
+      const notifications = await Notifications.getAllScheduledNotificationsAsync();
+      return notifications.filter((notification) => {
+        const data = notification.content.data;
+        if (data?.screen !== 'feeding') {
+          return false;
+        }
+        if (!scheduleId) {
+          return true;
+        }
+        return String(data?.scheduleId) === scheduleId;
+      });
+    } catch {
+      return [];
+    }
+  }
+
+  async cancelFeedingNotifications(scheduleId?: string): Promise<void> {
+    try {
+      const notifications = await this.getFeedingNotifications(scheduleId);
+      for (const notification of notifications) {
+        await Notifications.cancelScheduledNotificationAsync(notification.identifier);
+      }
+    } catch {
+    }
+  }
+
+  async cancelEventAndFeedingNotifications(): Promise<void> {
+    try {
+      const notifications = await Notifications.getAllScheduledNotificationsAsync();
+      const reminders = notifications.filter((notification) => {
+        const screen = notification.content.data?.screen;
+        return screen === 'event' || screen === 'feeding';
+      });
+
+      for (const reminder of reminders) {
+        await Notifications.cancelScheduledNotificationAsync(reminder.identifier);
+      }
+    } catch {
+    }
+  }
+
+  async syncFeedingReminderForSchedule(
+    schedule: Pick<FeedingSchedule, '_id' | 'petId' | 'time' | 'foodType' | 'amount' | 'days'> &
+      Partial<Pick<FeedingSchedule, 'isActive' | 'reminderMinutesBefore'>>,
+    options?: { deliveryChannel?: 'backend' | 'local'; forceVerify?: boolean }
+  ): Promise<string | null> {
+    await this.cancelFeedingNotifications(schedule._id);
+
+    if (schedule.isActive === false) {
+      return null;
+    }
+
+    const deliveryChannel =
+      options?.deliveryChannel ?? (await this.getNotificationDeliveryChannel({ forceVerify: options?.forceVerify }));
+
+    if (deliveryChannel === 'backend') {
+      return null;
+    }
+
+    return this.scheduleFeedingReminder(schedule, schedule.reminderMinutesBefore ?? 15);
   }
 
   /**
@@ -913,6 +1070,9 @@ export const isPushTokenRegistered = () =>
 export const verifyPushTokenRegistration = () =>
   notificationService.verifyPushTokenRegistration();
 
+export const getNotificationDeliveryChannel = (options?: { forceVerify?: boolean }) =>
+  notificationService.getNotificationDeliveryChannel(options);
+
 export const sendTestNotification = () =>
   notificationService.sendTestNotification();
 
@@ -924,6 +1084,15 @@ export const scheduleFeedingReminder = (
 
 export const cancelFeedingReminder = (notificationId: string) =>
   notificationService.cancelFeedingReminder(notificationId);
+
+export const cancelFeedingNotifications = (scheduleId?: string) =>
+  notificationService.cancelFeedingNotifications(scheduleId);
+
+export const syncFeedingReminderForSchedule = (
+  schedule: Pick<FeedingSchedule, '_id' | 'petId' | 'time' | 'foodType' | 'amount' | 'days'> &
+    Partial<Pick<FeedingSchedule, 'isActive' | 'reminderMinutesBefore'>>,
+  options?: { deliveryChannel?: 'backend' | 'local'; forceVerify?: boolean }
+) => notificationService.syncFeedingReminderForSchedule(schedule, options);
 
 export const sendImmediateFeedingReminder = (
   schedule: { _id: string; petId: string; time: string; foodType: string; amount: string }

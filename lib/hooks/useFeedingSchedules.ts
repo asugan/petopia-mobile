@@ -1,4 +1,5 @@
 import { feedingScheduleService } from '@/lib/services/feedingScheduleService';
+import { cancelFeedingNotifications, syncFeedingReminderForSchedule } from '@/lib/services/notificationService';
 import { CreateFeedingScheduleInput, FeedingSchedule, UpdateFeedingScheduleInput } from '@/lib/types';
 import { ApiResponse } from '@/lib/api/client';
 import { CACHE_TIMES } from '@/lib/config/queryConfig';
@@ -166,6 +167,8 @@ export const useCreateFeedingSchedule = () => {
           queryClient.setQueryData(feedingScheduleKeys.activeByPet(newSchedule.petId), (old: FeedingSchedule[] | undefined) =>
             old ? [...old, newSchedule] : [newSchedule]
           );
+
+          void syncFeedingReminderForSchedule(newSchedule);
         }
       },
       onSettled: (newSchedule) => {
@@ -189,7 +192,11 @@ export const useUpdateFeedingSchedule = () => {
     {
       listQueryKey: feedingScheduleKeys.lists(),
       detailQueryKey: feedingScheduleKeys.detail,
-      onSettled: () => {
+      onSettled: (data) => {
+        if (data) {
+          void syncFeedingReminderForSchedule(data);
+        }
+
         queryClient.invalidateQueries({ queryKey: feedingScheduleKeys.lists() });
         queryClient.invalidateQueries({ queryKey: feedingScheduleKeys.active() });
         queryClient.invalidateQueries({ queryKey: feedingScheduleKeys.today() });
@@ -208,6 +215,8 @@ export const useDeleteFeedingSchedule = () => {
       listQueryKey: feedingScheduleKeys.lists(),
       detailQueryKey: feedingScheduleKeys.detail,
       onSuccess: (_data, id) => {
+        void cancelFeedingNotifications(id);
+
         // Remove from active schedules
         queryClient.setQueryData(feedingScheduleKeys.active(), (old: FeedingSchedule[] | undefined) =>
           old?.filter(schedule => schedule._id !== id)
@@ -293,7 +302,11 @@ export const useToggleFeedingSchedule = () => {
         queryClient.setQueryData(feedingScheduleKeys.detail(variables.id), context.previousSchedule);
       }
     },
-    onSettled: () => {
+    onSettled: (data) => {
+      if (data) {
+        void syncFeedingReminderForSchedule(data);
+      }
+
       queryClient.invalidateQueries({ queryKey: feedingScheduleKeys.lists() });
       queryClient.invalidateQueries({ queryKey: feedingScheduleKeys.active() });
       queryClient.invalidateQueries({ queryKey: feedingScheduleKeys.today() });
