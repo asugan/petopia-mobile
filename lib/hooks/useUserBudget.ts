@@ -359,6 +359,11 @@ export function useBudgetAlertNotifications() {
         { severity: alert.notificationPayload.severity }
       );
 
+      await userBudgetService.acknowledgeBudgetAlert({
+        severity: alert.notificationPayload.severity,
+        percentage: alert.percentage ?? 0,
+      });
+
       notifiedCache.current[periodKey] = true;
       await AsyncStorage.setItem(periodKey, "true");
     };

@@ -228,6 +228,43 @@ export class UserBudgetService {
     }
   }
 
+  async acknowledgeBudgetAlert(payload: {
+    severity: 'warning' | 'critical';
+    percentage: number;
+  }): Promise<ApiResponse<{ acknowledged: boolean; periodKey?: string }>> {
+    try {
+      const response = await api.post<{ acknowledged: boolean; periodKey?: string }>(
+        ENV.ENDPOINTS.BUDGET_ALERTS_ACK,
+        payload
+      );
+
+      return {
+        success: true,
+        data: response.data!,
+        message: 'serviceResponse.budget.ackAlertsSuccess',
+      };
+    } catch (error) {
+      if (error instanceof ApiError) {
+        return {
+          success: false,
+          error: {
+            code: error.code || 'ACK_ALERTS_ERROR',
+            message: 'serviceResponse.budget.ackAlertsError',
+            details: { rawMessage: error.message },
+          },
+        };
+      }
+
+      return {
+        success: false,
+        error: {
+          code: 'ACK_ALERTS_ERROR',
+          message: 'serviceResponse.budget.ackAlertsError',
+        },
+      };
+    }
+  }
+
   /**
    * Get pet spending breakdown for the current budget period
    * This is a helper method that extracts pet breakdown from budget status

@@ -39,7 +39,6 @@ import {
   useUserBudgetStatus,
   useSetUserBudget,
   useDeleteUserBudget,
-  useBudgetAlertNotifications,
 } from "@/lib/hooks/useUserBudget";
 import ExpenseCard from "@/components/ExpenseCard";
 import ExpenseFormModal from "@/components/ExpenseFormModal";
@@ -153,7 +152,6 @@ export default function FinanceScreen() {
   // Fetch user budget (new simplified system)
   const { data: budget, isLoading: budgetLoading } = useUserBudget();
   const { data: budgetStatus } = useUserBudgetStatus();
-  useBudgetAlertNotifications();
 
   // Mutations
   const createExpenseMutation = useCreateExpense();

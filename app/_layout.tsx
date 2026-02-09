@@ -27,6 +27,7 @@ import { useOnboardingStore } from '@/stores/onboardingStore';
 import { useUpcomingEvents } from '@/lib/hooks/useEvents';
 import { useActiveFeedingSchedules } from '@/lib/hooks/useFeedingSchedules';
 import { useReminderScheduler } from '@/hooks/useReminderScheduler';
+import { useBudgetAlertNotifications } from '@/lib/hooks/useUserBudget';
 import { createToastConfig } from '@/lib/toast/toastConfig';
 import { SUBSCRIPTION_ROUTES, TAB_ROUTES } from '@/constants/routes';
 import { LAYOUT } from '@/constants';
@@ -178,6 +179,7 @@ function RootLayoutContent() {
   const { data: upcomingEvents = [] } = useUpcomingEvents();
   const { data: activeFeedingSchedules = [] } = useActiveFeedingSchedules();
   const { scheduleChainForEvent } = useReminderScheduler();
+  useBudgetAlertNotifications();
   const rescheduleSignatureRef = useRef<string | null>(null);
   const preferenceSyncInFlightRef = useRef(false);
 

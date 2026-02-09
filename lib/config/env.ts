@@ -47,6 +47,7 @@ export const ENV = {
     BUDGET: "/api/budget",
     BUDGET_STATUS: "/api/budget/status",
     BUDGET_ALERTS: "/api/budget/alerts",
+    BUDGET_ALERTS_ACK: "/api/budget/alerts/ack",
     BUDGET_ALERTS_CHECK: "/api/budget/alerts/check",
     BUDGET_ALERTS_NOTIFY: "/api/budget/alerts/notify",
     BUDGET_ALERTS_STATUS: "/api/budget/alerts/status",

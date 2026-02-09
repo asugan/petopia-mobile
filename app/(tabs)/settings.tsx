@@ -6,7 +6,11 @@ import { LargeTitle } from "@/components/LargeTitle";
 import { DateTimePicker } from "@/components/DateTimePicker";
 import { useAuth } from "@/lib/auth";
 import { accountService } from "@/lib/services/accountService";
-import { notificationService, registerPushTokenWithBackend } from "@/lib/services/notificationService";
+import {
+  notificationService,
+  registerPushTokenWithBackend,
+  unregisterPushTokenFromBackend,
+} from "@/lib/services/notificationService";
 import { useAuthStore } from "@/stores/authStore";
 import { useEventReminderStore } from "@/stores/eventReminderStore";
 import { SupportedCurrency, useUserSettingsStore } from "@/stores/userSettingsStore";
@@ -53,6 +57,7 @@ export default function SettingsScreen() {
   ), [settings?.quietHours]);
   const notificationsEnabled = settings?.notificationsEnabled ?? true;
   const budgetNotificationsEnabled = settings?.budgetNotificationsEnabled ?? true;
+  const feedingRemindersEnabled = settings?.feedingRemindersEnabled ?? true;
   const notificationsActive = notificationsEnabled && notificationPermissionEnabled;
   const setQuietHoursEnabled = useEventReminderStore((state) => state.setQuietHoursEnabled);
   const setQuietHours = useEventReminderStore((state) => state.setQuietHours);
@@ -77,6 +82,7 @@ export default function SettingsScreen() {
         // Only auto-disable backend if system is disabled (one-time sync)
         if (!hasSyncedPermission.current && !enabled && settings?.notificationsEnabled === true) {
           hasSyncedPermission.current = true;
+          void unregisterPushTokenFromBackend();
           await updateSettings({ notificationsEnabled: false });
         }
       } catch (error) {
@@ -127,6 +133,7 @@ export default function SettingsScreen() {
         });
         await notificationService.cancelAllNotifications();
         clearAllReminderState();
+        void unregisterPushTokenFromBackend();
         await updateSettings({ notificationsEnabled: false });
       }
     } catch (error) {
@@ -142,6 +149,19 @@ export default function SettingsScreen() {
     } catch (error) {
       if (__DEV__) {
         console.warn('[Settings] Budget notification toggle failed:', error);
+      }
+    }
+  };
+
+  const handleFeedingReminderToggle = async (value: boolean) => {
+    try {
+      await updateSettings({ feedingRemindersEnabled: value });
+      if (!value) {
+        await notificationService.cancelFeedingNotifications();
+      }
+    } catch (error) {
+      if (__DEV__) {
+        console.warn('[Settings] Feeding reminder toggle failed:', error);
       }
     }
   };
@@ -452,6 +472,25 @@ export default function SettingsScreen() {
                 <Switch
                   value={budgetNotificationsEnabled}
                   onValueChange={handleBudgetNotificationToggle}
+                  disabled={isNotificationLoading || !settings || !notificationsActive}
+                  color={theme.colors.primary}
+                />
+              }
+            />
+            <ListItem
+              title={t("settings.feedingReminders", "Feeding reminders")}
+              description={t("settings.feedingRemindersDescription", "Meal reminder notifications for active feeding schedules")}
+              left={
+                <MaterialCommunityIcons
+                  name="food-apple"
+                  size={24}
+                  color={theme.colors.onSurfaceVariant}
+                />
+              }
+              right={
+                <Switch
+                  value={feedingRemindersEnabled}
+                  onValueChange={handleFeedingReminderToggle}
                   disabled={isNotificationLoading || !settings || !notificationsActive}
                   color={theme.colors.primary}
                 />
@@ -866,6 +905,7 @@ export default function SettingsScreen() {
         onPermissionDenied={async () => {
           setNotificationPermissionEnabled(false);
           setPermissionRefreshKey((prev) => prev + 1);
+          void unregisterPushTokenFromBackend();
           await updateSettings({ notificationsEnabled: false });
         }}
       />

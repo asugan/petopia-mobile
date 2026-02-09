@@ -5,7 +5,8 @@ import * as Device from 'expo-device';
 import * as Application from 'expo-application';
 import { Event, FeedingSchedule } from '../types';
 import { EVENT_TYPE_DEFAULT_REMINDERS } from '../../constants/eventIcons';
-import { REMINDER_PRESETS, QUIET_HOURS_WINDOW } from '@/constants/reminders';
+import { QUIET_HOURS_WINDOW } from '@/constants/reminders';
+import { EVENT_REMINDER_PRESET_MINUTES, NOTIFICATION_CHANNELS, NOTIFICATION_SCREENS } from '@/constants/notificationContract';
 import i18n from '@/lib/i18n';
 import * as SecureStore from 'expo-secure-store';
 import { api } from '../api/client';
@@ -45,6 +46,8 @@ interface ReminderTimeOption {
   labelKey: string;
 }
 
+type NotificationTarget = Href | null;
+
 const isNotificationPermissionGranted = (
   permissions: Notifications.NotificationPermissionsStatus
 ): boolean => {
@@ -81,8 +84,9 @@ export const getReminderTimes = (
 
 export class NotificationService {
   private static instance: NotificationService;
-  private eventChannelId = 'event-reminders';
-  private budgetChannelId = 'budget-alerts';
+  private eventChannelId = NOTIFICATION_CHANNELS.event;
+  private feedingChannelId = NOTIFICATION_CHANNELS.feeding;
+  private budgetChannelId = NOTIFICATION_CHANNELS.budget;
   private quietHours = {
     startHour: QUIET_HOURS_WINDOW.startHour,
     startMinute: QUIET_HOURS_WINDOW.startMinute,
@@ -131,6 +135,14 @@ export class NotificationService {
           lightColor: '#FFD166',
           sound: 'default',
           description: 'Notifications for budget alerts and limits',
+        });
+        await Notifications.setNotificationChannelAsync(this.feedingChannelId, {
+          name: 'Feeding Reminders',
+          importance: Notifications.AndroidImportance.HIGH,
+          vibrationPattern: [0, 250, 250, 250],
+          lightColor: '#7BC96F',
+          sound: 'default',
+          description: 'Notifications for feeding schedules and reminders',
         });
       } catch {
       }
@@ -295,7 +307,7 @@ export class NotificationService {
             eventId: event._id,
             petId: event.petId,
             eventType: event.type,
-            screen: 'event',
+            screen: NOTIFICATION_SCREENS.event,
             source: 'local',
             entityType: 'event',
             entityId: event._id,
@@ -445,7 +457,7 @@ export class NotificationService {
    */
   async scheduleReminderChain(
     event: Event,
-    reminderTimes: readonly number[] = REMINDER_PRESETS.standard.minutes,
+    reminderTimes: readonly number[] = EVENT_REMINDER_PRESET_MINUTES.standard,
     respectQuietHours: boolean = true
   ): Promise<string[]> {
     return this.scheduleMultipleReminders(event, reminderTimes, { respectQuietHours });
@@ -500,7 +512,7 @@ export class NotificationService {
         body,
         data: {
           ...(data || {}),
-          screen: 'budget',
+          screen: NOTIFICATION_SCREENS.budget,
         },
         sound: 'default',
         priority: Notifications.AndroidNotificationPriority.HIGH,
@@ -573,7 +585,7 @@ export class NotificationService {
             scheduleId: schedule._id,
             petId: schedule.petId,
             scheduleTime: schedule.time,
-            screen: 'feeding',
+            screen: NOTIFICATION_SCREENS.feeding,
             source: 'local',
             entityType: 'feeding',
             entityId: schedule._id,
@@ -584,7 +596,7 @@ export class NotificationService {
         },
         trigger: {
           date: triggerDate,
-          channelId: this.eventChannelId,
+          channelId: this.feedingChannelId,
         },
       });
 
@@ -632,14 +644,16 @@ export class NotificationService {
           data: {
             scheduleId: schedule._id,
             petId: schedule.petId,
-            screen: 'feeding',
+            screen: NOTIFICATION_SCREENS.feeding,
+            entityType: 'feeding',
+            entityId: schedule._id,
             immediate: true,
           },
           sound: 'default',
           priority: Notifications.AndroidNotificationPriority.HIGH,
           categoryIdentifier: 'feeding-reminder',
         },
-        trigger: Platform.OS === 'android' ? { channelId: this.eventChannelId } : null,
+        trigger: Platform.OS === 'android' ? { channelId: this.feedingChannelId } : null,
       });
     } catch {
     }
@@ -700,23 +714,42 @@ export class NotificationService {
   handleNotificationResponse(response: Notifications.NotificationResponse): void {
 
     const data = response.notification.request.content.data;
+    const target = this.resolveNotificationTarget(data as Record<string, unknown> | undefined);
+    if (target && this.navigationHandler) {
+      this.navigationHandler(target);
+    }
+  }
 
-    // You can navigate to specific screens based on notification data
-    if (data?.screen === 'event' && data?.eventId) {
-      if (this.navigationHandler) {
-        this.navigationHandler({
-          pathname: '/event/[id]',
-          params: { id: String(data.eventId) },
-        });
-      }
-      return;
+  private resolveNotificationTarget(data?: Record<string, unknown>): NotificationTarget {
+    if (!data) {
+      return null;
     }
 
-    if (data?.screen === 'budget') {
-      if (this.navigationHandler) {
-        this.navigationHandler('/(tabs)/finance');
-      }
+    const screen = String(data.screen ?? '');
+    const entityType = String(data.entityType ?? '');
+    const entityId = data.entityId ? String(data.entityId) : null;
+    const eventId = data.eventId ? String(data.eventId) : null;
+
+    if ((entityType === 'event' || screen === NOTIFICATION_SCREENS.event) && (entityId || eventId)) {
+      return {
+        pathname: '/event/[id]',
+        params: { id: entityId ?? eventId ?? '' },
+      };
     }
+
+    if (entityType === 'feeding' || screen === NOTIFICATION_SCREENS.feeding) {
+      return '/(tabs)/care';
+    }
+
+    if (
+      entityType === NOTIFICATION_SCREENS.budget ||
+      screen === NOTIFICATION_SCREENS.budget ||
+      screen === NOTIFICATION_SCREENS.legacyFinance
+    ) {
+      return '/(tabs)/finance';
+    }
+
+    return null;
   }
 
   /**
@@ -927,7 +960,7 @@ export class NotificationService {
       const notifications = await Notifications.getAllScheduledNotificationsAsync();
       return notifications.filter((notification) => {
         const data = notification.content.data;
-        if (data?.screen !== 'feeding') {
+        if (data?.screen !== NOTIFICATION_SCREENS.feeding) {
           return false;
         }
         if (!scheduleId) {
@@ -955,7 +988,7 @@ export class NotificationService {
       const notifications = await Notifications.getAllScheduledNotificationsAsync();
       const reminders = notifications.filter((notification) => {
         const screen = notification.content.data?.screen;
-        return screen === 'event' || screen === 'feeding';
+        return screen === NOTIFICATION_SCREENS.event || screen === NOTIFICATION_SCREENS.feeding;
       });
 
       for (const reminder of reminders) {
@@ -1042,7 +1075,14 @@ export const sendTestNotification = () =>
 
 // Feeding reminder exports
 export const scheduleFeedingReminder = (
-  schedule: { _id: string; petId: string; time: string; foodType: string; amount: string; days?: string },
+  schedule: {
+    _id: string;
+    petId: string;
+    time: string;
+    foodType: string;
+    amount: string;
+    days?: string | string[];
+  },
   reminderMinutes?: number
 ) => notificationService.scheduleFeedingReminder(schedule, reminderMinutes);
 

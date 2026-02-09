@@ -104,7 +104,16 @@ describe('useUpcomingEvents timezone cache behavior', () => {
     await waitFor(() => expect(result.current.isSuccess).toBe(true));
 
     expect(eventService.getEventsByDate).toHaveBeenCalledWith('2026-02-12', 'Europe/Istanbul');
-    expect(invalidateSpy).toHaveBeenCalledWith({ queryKey: eventKeys.calendar('2026-02-12') });
+    expect(invalidateSpy).toHaveBeenCalledWith(
+      expect.objectContaining({ predicate: expect.any(Function) })
+    );
+
+    const invalidateArg = invalidateSpy.mock.calls[0]?.[0] as
+      | { predicate?: (query: { queryKey: readonly unknown[] }) => boolean }
+      | undefined;
+    expect(invalidateArg?.predicate?.({ queryKey: eventKeys.calendar('2026-02-12') } as any)).toBe(
+      true
+    );
 
     rerender({ timezone: 'America/New_York' });
 

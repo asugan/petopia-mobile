@@ -7,7 +7,11 @@ import { Image } from "expo-image";
 import { Text } from "@/components/ui";
 import { useTheme } from "@/lib/theme";
 import { useSubscription } from "@/lib/hooks/useSubscription";
-import { notificationService, registerPushTokenWithBackend } from "@/lib/services/notificationService";
+import {
+  notificationService,
+  registerPushTokenWithBackend,
+  unregisterPushTokenFromBackend,
+} from "@/lib/services/notificationService";
 import { showToast } from "@/lib/toast/showToast";
 import { useEventReminderStore } from "@/stores/eventReminderStore";
 import { useUserSettingsStore } from "@/stores/userSettingsStore";
@@ -105,6 +109,7 @@ export const HeaderActions = () => {
         });
         await notificationService.cancelAllNotifications();
         clearAllReminderState();
+        void unregisterPushTokenFromBackend();
         await updateSettings({ notificationsEnabled: false });
       } else {
         const granted = await requestPermission();
@@ -203,6 +208,7 @@ export const HeaderActions = () => {
           await updateSettings({ notificationsEnabled: true });
         }}
         onPermissionDenied={async () => {
+          void unregisterPushTokenFromBackend();
           await updateSettings({ notificationsEnabled: false });
         }}
       />
