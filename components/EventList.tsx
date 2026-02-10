@@ -3,13 +3,14 @@ import { View, StyleSheet, FlatList, RefreshControl, ActivityIndicator } from 'r
 import { Text, Searchbar, Chip, Button } from '@/components/ui';
 import { useTheme } from '@/lib/theme';
 import { useTranslation } from 'react-i18next';
-import { format, startOfDay, endOfDay, addDays } from 'date-fns';
+import { format, addDays } from 'date-fns';
 import { tr, enUS } from 'date-fns/locale';
 import { Event } from '../lib/types';
 import { createEventTypeOptions } from '../constants';
 import { EventCard } from './EventCard';
 import { useUserTimezone } from '@/lib/hooks/useUserTimezone';
 import { formatInTimeZone } from '@/lib/utils/date';
+import { toLocalDateKey } from '@/lib/utils/timezoneDate';
 
 interface EventListProps {
   events: Event[];
@@ -65,44 +66,39 @@ export function EventList({
     if (searchQuery.trim()) {
       const query = searchQuery.toLowerCase().trim();
       filtered = filtered.filter(event =>
-        event.title.toLowerCase().includes(query) ||
-        event.description?.toLowerCase().includes(query) ||
-        event.location?.toLowerCase().includes(query) ||
-        event.notes?.toLowerCase().includes(query)
+        event.title.toLowerCase().includes(query)
       );
     }
 
     // Date filter
     const now = new Date();
-    const todayStart = startOfDay(now);
-    const todayEnd = endOfDay(now);
-    const tomorrowStart = startOfDay(addDays(now, 1));
-    const tomorrowEnd = endOfDay(addDays(now, 1));
-    const weekEnd = endOfDay(addDays(now, 7));
+    const todayKey = toLocalDateKey(now, userTimezone);
+    const tomorrowKey = toLocalDateKey(addDays(now, 1), userTimezone);
+    const weekEndKey = toLocalDateKey(addDays(now, 7), userTimezone);
 
     switch (selectedFilter) {
       case 'today':
         filtered = filtered.filter(event => {
-          const eventDate = new Date(event.startTime);
-          return eventDate >= todayStart && eventDate <= todayEnd;
+          const eventDayKey = toLocalDateKey(event.startTime, userTimezone);
+          return eventDayKey === todayKey;
         });
         break;
       case 'tomorrow':
         filtered = filtered.filter(event => {
-          const eventDate = new Date(event.startTime);
-          return eventDate >= tomorrowStart && eventDate <= tomorrowEnd;
+          const eventDayKey = toLocalDateKey(event.startTime, userTimezone);
+          return eventDayKey === tomorrowKey;
         });
         break;
       case 'week':
         filtered = filtered.filter(event => {
-          const eventDate = new Date(event.startTime);
-          return eventDate >= todayStart && eventDate <= weekEnd;
+          const eventDayKey = toLocalDateKey(event.startTime, userTimezone);
+          return eventDayKey >= todayKey && eventDayKey <= weekEndKey;
         });
         break;
       case 'upcoming':
         filtered = filtered.filter(event => {
-          const eventDate = new Date(event.startTime);
-          return eventDate >= todayStart && event.status === 'upcoming';
+          const eventDayKey = toLocalDateKey(event.startTime, userTimezone);
+          return eventDayKey >= todayKey && event.status === 'upcoming';
         });
         break;
       case 'completed':
@@ -112,8 +108,8 @@ export function EventList({
         break;
       case 'past':
         filtered = filtered.filter(event => {
-          const eventDate = new Date(event.startTime);
-          return eventDate < todayStart;
+          const eventDayKey = toLocalDateKey(event.startTime, userTimezone);
+          return eventDayKey < todayKey;
         });
         break;
       // 'all' doesn't filter by date
@@ -134,14 +130,14 @@ export function EventList({
     });
 
     return filtered;
-  }, [events, searchQuery, selectedFilter, selectedEventType]);
+  }, [events, searchQuery, selectedFilter, selectedEventType, userTimezone]);
 
   // Group events by date
   const groupedEvents = useMemo(() => {
     const groups: { [date: string]: Event[] } = {};
 
     filteredEvents.forEach(event => {
-      const dateKey = formatInTimeZone(event.startTime, userTimezone, 'yyyy-MM-dd');
+      const dateKey = toLocalDateKey(event.startTime, userTimezone);
 
       if (!groups[dateKey]) {
         groups[dateKey] = [];
@@ -166,7 +162,14 @@ export function EventList({
       return t('eventList.yesterday');
     } else {
       // Parse the date string safely or format a date object
-      return format(new Date(dateString), 'dd MMMM yyyy', { locale });
+      const [yearStr, monthStr, dayStr] = dateString.split('-');
+      const displayDate = new Date(
+        Number(yearStr),
+        Number(monthStr) - 1,
+        Number(dayStr),
+        12,
+      );
+      return format(displayDate, 'dd MMMM yyyy', { locale });
     }
   }, [locale, t, userTimezone]);
 
@@ -340,13 +343,13 @@ export function EventList({
         keyExtractor={(item) => item._id}
         renderItem={({ item, index }) => {
           const showSectionHeader = index === 0 ||
-            formatInTimeZone(item.startTime, userTimezone, 'yyyy-MM-dd') !==
-            formatInTimeZone(filteredEvents[index - 1].startTime, userTimezone, 'yyyy-MM-dd');
+            toLocalDateKey(item.startTime, userTimezone) !==
+            toLocalDateKey(filteredEvents[index - 1].startTime, userTimezone);
 
           return (
             <View>
               {showSectionHeader && renderSectionHeader({
-                section: { title: formatInTimeZone(item.startTime, userTimezone, 'yyyy-MM-dd') }
+                section: { title: toLocalDateKey(item.startTime, userTimezone) }
               })}
               {renderEvent({ item })}
             </View>

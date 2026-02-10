@@ -41,12 +41,18 @@ export const ENV = {
     NEXT_FEEDING: "/api/feeding-schedules/next",
     FEEDING_SCHEDULE_NOTIFICATIONS: (id: string) => `/api/feeding-schedules/${id}/notifications`,
     FEEDING_SCHEDULE_REMINDER: (id: string) => `/api/feeding-schedules/${id}/reminder`,
+    FEEDING_SCHEDULE_CANCEL_REMINDER: (id: string) => `/api/feeding-schedules/${id}/reminder`,
     FEEDING_SCHEDULE_COMPLETE: (id: string) => `/api/feeding-schedules/${id}/complete`,
+
+    // Push endpoints
+    PUSH_DEVICES: '/api/push/devices',
+    PUSH_TEST: '/api/push/test',
 
     // User Budget endpoints (NEW SIMPLIFIED SYSTEM)
     BUDGET: "/api/budget",
     BUDGET_STATUS: "/api/budget/status",
     BUDGET_ALERTS: "/api/budget/alerts",
+    BUDGET_ALERTS_ACK: "/api/budget/alerts/ack",
     BUDGET_ALERTS_CHECK: "/api/budget/alerts/check",
     BUDGET_ALERTS_NOTIFY: "/api/budget/alerts/notify",
     BUDGET_ALERTS_STATUS: "/api/budget/alerts/status",
@@ -69,6 +75,7 @@ export const ENV = {
     SUBSCRIPTION_DOWNGRADE_STATUS: "/api/subscription/downgrade-status", // Check if downgrade required
     SUBSCRIPTION_TRIAL_STATUS: "/api/subscription/trial-status", // Deprecated
     SUBSCRIPTION_START_TRIAL: "/api/subscription/start-trial",
+    SUBSCRIPTION_VERIFY: "/api/subscription/verify",
     SUBSCRIPTION_DEACTIVATE_TRIAL: "/api/subscription/deactivate-trial", // Deprecated
 
     // Pet downgrade endpoint

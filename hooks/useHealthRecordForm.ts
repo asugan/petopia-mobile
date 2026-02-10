@@ -6,7 +6,6 @@ import {
   type HealthRecordCreateFormInput,
   HealthRecordCreateFormSchema,
 } from '../lib/schemas/healthRecordSchema';
-import { type Currency } from '../lib/schemas/expenseSchema';
 import { HealthRecord } from '../lib/types';
 
 // Form hook types
@@ -46,17 +45,8 @@ export const useHealthRecordForm = (
       petId,
       type: initialData?.type || 'checkup',
       title: initialData?.title || '',
-      description: initialData?.description || '',
       date: initialData?.date || new Date(),
-      veterinarian: initialData?.veterinarian || '',
-      clinic: initialData?.clinic || '',
-      cost: initialData?.cost || undefined,
-      currency: initialData?.currency as Currency | undefined,
-      amountBase: initialData?.amountBase || undefined,
-      baseCurrency: initialData?.baseCurrency as Currency | undefined,
-      notes: initialData?.notes || '',
       treatmentPlan: initialData?.treatmentPlan || [],
-      nextVisitDate: initialData?.nextVisitDate || undefined,
     };
   }, [petId, initialData]);
 

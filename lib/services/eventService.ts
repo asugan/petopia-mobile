@@ -1,11 +1,21 @@
 import { api, ApiError, ApiResponse } from "../api/client";
 import { ENV } from "../config/env";
 import type { Event, CreateEventInput, UpdateEventInput } from "../types";
+import { normalizeTimezone } from "@/lib/utils/timezone";
 
 /**
  * Event Service - Tüm event API operasyonlarını yönetir
  */
 export class EventService {
+  private withTimezone(endpoint: string, timezone?: string): string {
+    const safeTimezone = normalizeTimezone(timezone);
+    if (!safeTimezone) {
+      return endpoint;
+    }
+
+    return `${endpoint}?timezone=${encodeURIComponent(safeTimezone)}`;
+  }
+
   /**
    * Yeni event oluşturur
    */
@@ -240,9 +250,7 @@ export class EventService {
     timezone?: string,
   ): Promise<ApiResponse<Event[]>> {
     try {
-      const endpoint = timezone
-        ? `${ENV.ENDPOINTS.EVENTS_BY_DATE(date)}?timezone=${encodeURIComponent(timezone)}`
-        : ENV.ENDPOINTS.EVENTS_BY_DATE(date);
+      const endpoint = this.withTimezone(ENV.ENDPOINTS.EVENTS_BY_DATE(date), timezone);
 
       const response = await api.get<Event[]>(endpoint);
 
@@ -274,9 +282,10 @@ export class EventService {
   /**
    * Yaklaşan eventleri getirir
    */
-  async getUpcomingEvents(): Promise<ApiResponse<Event[]>> {
+  async getUpcomingEvents(timezone?: string): Promise<ApiResponse<Event[]>> {
     try {
-      const response = await api.get<Event[]>(ENV.ENDPOINTS.UPCOMING_EVENTS);
+      const endpoint = this.withTimezone(ENV.ENDPOINTS.UPCOMING_EVENTS, timezone);
+      const response = await api.get<Event[]>(endpoint);
 
       return {
         success: true,
@@ -306,9 +315,10 @@ export class EventService {
   /**
    * Bugünün eventlerini getirir
    */
-  async getTodayEvents(): Promise<ApiResponse<Event[]>> {
+  async getTodayEvents(timezone?: string): Promise<ApiResponse<Event[]>> {
     try {
-      const response = await api.get<Event[]>(ENV.ENDPOINTS.TODAY_EVENTS);
+      const endpoint = this.withTimezone(ENV.ENDPOINTS.TODAY_EVENTS, timezone);
+      const response = await api.get<Event[]>(endpoint);
 
       return {
         success: true,

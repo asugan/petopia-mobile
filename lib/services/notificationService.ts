@@ -3,14 +3,19 @@ import type { Href } from 'expo-router';
 import { Platform } from 'react-native';
 import * as Device from 'expo-device';
 import * as Application from 'expo-application';
-import { Event } from '../types';
+import Constants from 'expo-constants';
+import { Event, FeedingSchedule } from '../types';
 import { EVENT_TYPE_DEFAULT_REMINDERS } from '../../constants/eventIcons';
-import { REMINDER_PRESETS, QUIET_HOURS_WINDOW } from '@/constants/reminders';
+import { QUIET_HOURS_WINDOW } from '@/constants/reminders';
+import { EVENT_REMINDER_PRESET_MINUTES, NOTIFICATION_CHANNELS, NOTIFICATION_SCREENS } from '@/constants/notificationContract';
 import i18n from '@/lib/i18n';
 import * as SecureStore from 'expo-secure-store';
 import { api } from '../api/client';
+import { ENV } from '@/lib/config/env';
 import { useUserSettingsStore } from '@/stores/userSettingsStore';
-import { toZonedTime, fromZonedTime } from 'date-fns-tz';
+import { toZonedTime, fromZonedTime, formatInTimeZone as formatInTimeZoneTz } from 'date-fns-tz';
+import { calculateNextFeedingTime } from '@/lib/utils/feedingReminderTime';
+import { resolveEffectiveTimezone } from '@/lib/utils/timezone';
 
 /**
  * Notification Service - Handles all push notification operations
@@ -42,6 +47,8 @@ interface ReminderTimeOption {
   value: number;
   labelKey: string;
 }
+
+type NotificationTarget = Href | null;
 
 const isNotificationPermissionGranted = (
   permissions: Notifications.NotificationPermissionsStatus
@@ -79,8 +86,9 @@ export const getReminderTimes = (
 
 export class NotificationService {
   private static instance: NotificationService;
-  private eventChannelId = 'event-reminders';
-  private budgetChannelId = 'budget-alerts';
+  private eventChannelId = NOTIFICATION_CHANNELS.event;
+  private feedingChannelId = NOTIFICATION_CHANNELS.feeding;
+  private budgetChannelId = NOTIFICATION_CHANNELS.budget;
   private quietHours = {
     startHour: QUIET_HOURS_WINDOW.startHour,
     startMinute: QUIET_HOURS_WINDOW.startMinute,
@@ -89,6 +97,11 @@ export class NotificationService {
   };
   private notificationChannelPromise: Promise<void> | null = null;
   private navigationHandler?: (target: Href) => void;
+  private readonly pushTokenStorageKey = 'expoPushToken';
+  private readonly pushRegistrationStorageKey = 'pushTokenRegisteredWithBackend';
+  private readonly pushRegistrationVerifiedAtStorageKey = 'pushTokenRegisteredVerifiedAt';
+  private readonly pushRegistrationCacheTtlMs = 5 * 60 * 1000;
+  private readonly maxApiRetryAttempts = 3;
 
   private constructor() {
     this.notificationChannelPromise = this.setupNotificationChannel();
@@ -126,7 +139,16 @@ export class NotificationService {
           sound: 'default',
           description: 'Notifications for budget alerts and limits',
         });
-      } catch {
+        await Notifications.setNotificationChannelAsync(this.feedingChannelId, {
+          name: 'Feeding Reminders',
+          importance: Notifications.AndroidImportance.HIGH,
+          vibrationPattern: [0, 250, 250, 250],
+          lightColor: '#7BC96F',
+          sound: 'default',
+          description: 'Notifications for feeding schedules and reminders',
+        });
+      } catch (error) {
+        this.logNotificationError('setupNotificationChannel', error);
       }
     }
   }
@@ -141,6 +163,56 @@ export class NotificationService {
     }
 
     await this.notificationChannelPromise;
+  }
+
+  private getUserTimezone(): string {
+    const settings = useUserSettingsStore.getState().settings;
+    return resolveEffectiveTimezone(settings?.timezone);
+  }
+
+  private async setPushRegistrationCache(isRegistered: boolean): Promise<void> {
+    if (isRegistered) {
+      await SecureStore.setItemAsync(this.pushRegistrationStorageKey, 'true');
+      await SecureStore.setItemAsync(this.pushRegistrationVerifiedAtStorageKey, Date.now().toString());
+      return;
+    }
+
+    await SecureStore.deleteItemAsync(this.pushRegistrationStorageKey);
+    await SecureStore.deleteItemAsync(this.pushRegistrationVerifiedAtStorageKey);
+  }
+
+  private async getCachedPushRegistrationStatus(): Promise<{ isRegistered: boolean; isFresh: boolean }> {
+    const cachedStatus = await SecureStore.getItemAsync(this.pushRegistrationStorageKey);
+    const storedToken = await SecureStore.getItemAsync(this.pushTokenStorageKey);
+    const verifiedAtRaw = await SecureStore.getItemAsync(this.pushRegistrationVerifiedAtStorageKey);
+
+    const isRegistered = cachedStatus === 'true' && !!storedToken;
+    const verifiedAt = verifiedAtRaw ? Number(verifiedAtRaw) : NaN;
+    const isFresh = Number.isFinite(verifiedAt) && Date.now() - verifiedAt < this.pushRegistrationCacheTtlMs;
+
+    return { isRegistered, isFresh };
+  }
+
+  private async withRetry<T>(fn: () => Promise<T>): Promise<T> {
+    let lastError: unknown;
+
+    for (let attempt = 1; attempt <= this.maxApiRetryAttempts; attempt++) {
+      try {
+        return await fn();
+      } catch (error) {
+        lastError = error;
+        if (attempt < this.maxApiRetryAttempts) {
+          await new Promise((resolve) => setTimeout(resolve, attempt * 500));
+        }
+      }
+    }
+
+    throw lastError;
+  }
+
+  private logNotificationError(scope: string, error: unknown): void {
+    const message = error instanceof Error ? error.message : String(error);
+    console.warn(`[notification] ${scope}: ${message}`);
   }
 
   setNavigationHandler(handler: (target: Href) => void) {
@@ -173,7 +245,8 @@ export class NotificationService {
       }
 
       return true;
-    } catch {
+    } catch (error) {
+      this.logNotificationError('requestPermissions', error);
       return false;
     }
   }
@@ -186,7 +259,8 @@ export class NotificationService {
     try {
       const permissions = await Notifications.getPermissionsAsync();
       return isNotificationPermissionGranted(permissions);
-    } catch {
+    } catch (error) {
+      this.logNotificationError('areNotificationsEnabled', error);
       return false;
     }
   }
@@ -247,7 +321,7 @@ export class NotificationService {
           eventType: eventTypeLabel,
           emoji: eventTypeEmoji,
         });
-      const notificationBody = event.description || i18n.t('notifications.reminderBody', {
+      const notificationBody = i18n.t('notifications.reminderBody', {
         eventType: eventTypeLabel,
       });
 
@@ -261,7 +335,10 @@ export class NotificationService {
             eventId: event._id,
             petId: event.petId,
             eventType: event.type,
-            screen: 'event',
+            screen: NOTIFICATION_SCREENS.event,
+            source: 'local',
+            entityType: 'event',
+            entityId: event._id,
           },
           sound: 'default',
           priority: Notifications.AndroidNotificationPriority.HIGH,
@@ -275,7 +352,8 @@ export class NotificationService {
 
 
       return notificationId;
-    } catch {
+    } catch (error) {
+      this.logNotificationError('scheduleEventReminder', error);
       return null;
     }
   }
@@ -287,7 +365,8 @@ export class NotificationService {
   async cancelNotification(notificationId: string): Promise<void> {
     try {
       await Notifications.cancelScheduledNotificationAsync(notificationId);
-    } catch {
+    } catch (error) {
+      this.logNotificationError('cancelNotification', error);
     }
   }
 
@@ -307,7 +386,8 @@ export class NotificationService {
         await Notifications.cancelScheduledNotificationAsync(notification.identifier);
       }
 
-    } catch {
+    } catch (error) {
+      this.logNotificationError('cancelEventNotifications', error);
     }
   }
 
@@ -317,7 +397,8 @@ export class NotificationService {
   async cancelAllNotifications(): Promise<void> {
     try {
       await Notifications.cancelAllScheduledNotificationsAsync();
-    } catch {
+    } catch (error) {
+      this.logNotificationError('cancelAllNotifications', error);
     }
   }
 
@@ -329,7 +410,8 @@ export class NotificationService {
     try {
       const notifications = await Notifications.getAllScheduledNotificationsAsync();
       return notifications;
-    } catch {
+    } catch (error) {
+      this.logNotificationError('getAllScheduledNotifications', error);
       return [];
     }
   }
@@ -345,7 +427,8 @@ export class NotificationService {
       return allNotifications.filter(
         notification => notification.content.data?.eventId === eventId
       );
-    } catch {
+    } catch (error) {
+      this.logNotificationError('getEventNotifications', error);
       return [];
     }
   }
@@ -408,7 +491,7 @@ export class NotificationService {
    */
   async scheduleReminderChain(
     event: Event,
-    reminderTimes: readonly number[] = REMINDER_PRESETS.standard.minutes,
+    reminderTimes: readonly number[] = EVENT_REMINDER_PRESET_MINUTES.standard,
     respectQuietHours: boolean = true
   ): Promise<string[]> {
     return this.scheduleMultipleReminders(event, reminderTimes, { respectQuietHours });
@@ -463,7 +546,7 @@ export class NotificationService {
         body,
         data: {
           ...(data || {}),
-          screen: 'budget',
+          screen: NOTIFICATION_SCREENS.budget,
         },
         sound: 'default',
         priority: Notifications.AndroidNotificationPriority.HIGH,
@@ -479,7 +562,14 @@ export class NotificationService {
    * @returns Notification identifier or null if failed
    */
   async scheduleFeedingReminder(
-    schedule: { _id: string; petId: string; time: string; foodType: string; amount: string },
+    schedule: {
+      _id: string;
+      petId: string;
+      time: string;
+      foodType: string;
+      amount: string;
+      days?: string | string[];
+    },
     reminderMinutes: number = 15
   ): Promise<string | null> {
     try {
@@ -488,8 +578,17 @@ export class NotificationService {
         return null;
       }
 
+      const timezone = this.getUserTimezone();
+      const parsedFeedingTime = new Date(schedule.time);
+      const feedingTime = Number.isNaN(parsedFeedingTime.getTime())
+        ? (schedule.days ? calculateNextFeedingTime(schedule.time, schedule.days, timezone) : null)
+        : parsedFeedingTime;
+
+      if (!feedingTime) {
+        return null;
+      }
+
       // Calculate trigger time
-      const feedingTime = new Date(schedule.time);
       const triggerDate = new Date(feedingTime.getTime() - reminderMinutes * 60 * 1000);
 
       // Don't schedule if trigger time is in the past
@@ -504,10 +603,11 @@ export class NotificationService {
       const notificationTitle = i18n.t('notifications.feedingReminderTitle', {
         emoji: foodTypeEmoji,
       });
+      const reminderClockTime = formatInTimeZoneTz(feedingTime, timezone, 'HH:mm');
       const notificationBody = i18n.t('notifications.feedingReminderBody', {
         foodType: foodTypeLabel,
         amount: schedule.amount,
-        time: i18n.t('events.time.atTime', { time: feedingTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) }),
+        time: i18n.t('events.atTime', { time: reminderClockTime }),
       });
 
       await this.ensureNotificationChannel();
@@ -519,7 +619,10 @@ export class NotificationService {
             scheduleId: schedule._id,
             petId: schedule.petId,
             scheduleTime: schedule.time,
-            screen: 'feeding',
+            screen: NOTIFICATION_SCREENS.feeding,
+            source: 'local',
+            entityType: 'feeding',
+            entityId: schedule._id,
           },
           sound: 'default',
           priority: Notifications.AndroidNotificationPriority.HIGH,
@@ -527,12 +630,13 @@ export class NotificationService {
         },
         trigger: {
           date: triggerDate,
-          channelId: this.eventChannelId,
+          channelId: this.feedingChannelId,
         },
       });
 
       return notificationId;
-    } catch {
+    } catch (error) {
+      this.logNotificationError('scheduleFeedingReminder', error);
       return null;
     }
   }
@@ -544,7 +648,8 @@ export class NotificationService {
   async cancelFeedingReminder(notificationId: string): Promise<void> {
     try {
       await Notifications.cancelScheduledNotificationAsync(notificationId);
-    } catch {
+    } catch (error) {
+      this.logNotificationError('cancelFeedingReminder', error);
     }
   }
 
@@ -575,16 +680,19 @@ export class NotificationService {
           data: {
             scheduleId: schedule._id,
             petId: schedule.petId,
-            screen: 'feeding',
+            screen: NOTIFICATION_SCREENS.feeding,
+            entityType: 'feeding',
+            entityId: schedule._id,
             immediate: true,
           },
           sound: 'default',
           priority: Notifications.AndroidNotificationPriority.HIGH,
           categoryIdentifier: 'feeding-reminder',
         },
-        trigger: Platform.OS === 'android' ? { channelId: this.eventChannelId } : null,
+        trigger: Platform.OS === 'android' ? { channelId: this.feedingChannelId } : null,
       });
-    } catch {
+    } catch (error) {
+      this.logNotificationError('sendImmediateFeedingReminder', error);
     }
   }
 
@@ -643,23 +751,42 @@ export class NotificationService {
   handleNotificationResponse(response: Notifications.NotificationResponse): void {
 
     const data = response.notification.request.content.data;
+    const target = this.resolveNotificationTarget(data as Record<string, unknown> | undefined);
+    if (target && this.navigationHandler) {
+      this.navigationHandler(target);
+    }
+  }
 
-    // You can navigate to specific screens based on notification data
-    if (data?.screen === 'event' && data?.eventId) {
-      if (this.navigationHandler) {
-        this.navigationHandler({
-          pathname: '/event/[id]',
-          params: { id: String(data.eventId) },
-        });
-      }
-      return;
+  private resolveNotificationTarget(data?: Record<string, unknown>): NotificationTarget {
+    if (!data) {
+      return null;
     }
 
-    if (data?.screen === 'budget') {
-      if (this.navigationHandler) {
-        this.navigationHandler('/(tabs)/finance');
-      }
+    const screen = String(data.screen ?? '');
+    const entityType = String(data.entityType ?? '');
+    const entityId = data.entityId ? String(data.entityId) : null;
+    const eventId = data.eventId ? String(data.eventId) : null;
+
+    if ((entityType === 'event' || screen === NOTIFICATION_SCREENS.event) && (entityId || eventId)) {
+      return {
+        pathname: '/event/[id]',
+        params: { id: entityId ?? eventId ?? '' },
+      };
     }
+
+    if (entityType === 'feeding' || screen === NOTIFICATION_SCREENS.feeding) {
+      return '/(tabs)/care';
+    }
+
+    if (
+      entityType === NOTIFICATION_SCREENS.budget ||
+      screen === NOTIFICATION_SCREENS.budget ||
+      screen === NOTIFICATION_SCREENS.legacyFinance
+    ) {
+      return '/(tabs)/finance';
+    }
+
+    return null;
   }
 
   /**
@@ -686,7 +813,8 @@ export class NotificationService {
       }
 
       return stats;
-    } catch {
+    } catch (error) {
+      this.logNotificationError('getNotificationStats', error);
       return { total: 0, byType: {} };
     }
   }
@@ -695,8 +823,7 @@ export class NotificationService {
    * Push triggers out of quiet hours (22:00–08:00)
    */
   private adjustForQuietHours(triggerDate: Date): Date {
-    const settings = useUserSettingsStore.getState().settings;
-    const timezone = settings?.timezone || Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC';
+    const timezone = this.getUserTimezone();
     
     // Convert absolute trigger time to user's wall-clock time
     const zonedTrigger = toZonedTime(triggerDate, timezone);
@@ -742,17 +869,9 @@ export class NotificationService {
         return false;
       }
 
-      // Get Expo push token - handle both old and new API
-      let expoPushToken: string;
-      try {
-        const tokenResult = await Notifications.getExpoPushTokenAsync();
-        // New API returns string directly, old API returns object with data property
-        expoPushToken = typeof tokenResult === 'string' ? tokenResult : tokenResult?.data;
-      } catch {
-        // Fallback for older expo-notifications versions
-        const tokenResult = await Notifications.getExpoPushTokenAsync();
-        expoPushToken = typeof tokenResult === 'string' ? tokenResult : tokenResult?.data || '';
-      }
+      const projectId = Constants.expoConfig?.extra?.eas?.projectId ?? Constants.easConfig?.projectId;
+      const tokenResult = await Notifications.getExpoPushTokenAsync(projectId ? { projectId } : undefined);
+      const expoPushToken = typeof tokenResult === 'string' ? tokenResult : tokenResult?.data || '';
 
       if (!expoPushToken) {
         return false;
@@ -771,22 +890,24 @@ export class NotificationService {
       const appVersion = Application.nativeApplicationVersion || undefined;
 
       // Register with backend
-      await api.post('/api/push/devices', {
-        expoPushToken,
-        deviceId,
-        platform,
-        deviceName,
-        appVersion,
-      });
+      await this.withRetry(() =>
+        api.post(ENV.ENDPOINTS.PUSH_DEVICES, {
+          expoPushToken,
+          deviceId,
+          platform,
+          deviceName,
+          appVersion,
+        })
+      );
 
       // Store the token locally
-      await SecureStore.setItemAsync('expoPushToken', expoPushToken);
-      // Mark as registered with backend (avoids network call on every reminder check)
-      await SecureStore.setItemAsync('pushTokenRegisteredWithBackend', 'true');
+      await SecureStore.setItemAsync(this.pushTokenStorageKey, expoPushToken);
+      await this.setPushRegistrationCache(true);
       await SecureStore.setItemAsync('deviceId', deviceId);
 
       return true;
-    } catch {
+    } catch (error) {
+      this.logNotificationError('registerPushTokenWithBackend', error);
       return false;
     }
   }
@@ -801,16 +922,15 @@ export class NotificationService {
         return true;
       }
 
-      await api.delete('/api/push/devices', {
-        data: { deviceId },
-      });
+      await this.withRetry(() => api.delete(ENV.ENDPOINTS.PUSH_DEVICES, { deviceId }));
 
-      await SecureStore.deleteItemAsync('expoPushToken');
+      await SecureStore.deleteItemAsync(this.pushTokenStorageKey);
       await SecureStore.deleteItemAsync('deviceId');
-      await SecureStore.deleteItemAsync('pushTokenRegisteredWithBackend');
+      await this.setPushRegistrationCache(false);
 
       return true;
-    } catch {
+    } catch (error) {
+      this.logNotificationError('unregisterPushTokenFromBackend', error);
       return false;
     }
   }
@@ -822,17 +942,14 @@ export class NotificationService {
    */
   async isPushTokenRegistered(): Promise<boolean> {
     try {
-      // First check local cache (fast path - no network call)
-      const cachedStatus = await SecureStore.getItemAsync('pushTokenRegisteredWithBackend');
-      if (cachedStatus === 'true') {
-        // Verify token still exists locally
-        const storedToken = await SecureStore.getItemAsync('expoPushToken');
-        return !!storedToken;
+      const { isRegistered, isFresh } = await this.getCachedPushRegistrationStatus();
+      if (isRegistered && isFresh) {
+        return true;
       }
 
-      // No cached status - token not registered or cache cleared
-      return false;
-    } catch {
+      return this.verifyPushTokenRegistration();
+    } catch (error) {
+      this.logNotificationError('isPushTokenRegistered', error);
       return false;
     }
   }
@@ -843,26 +960,103 @@ export class NotificationService {
    */
   async verifyPushTokenRegistration(): Promise<boolean> {
     try {
-      const storedToken = await SecureStore.getItemAsync('expoPushToken');
-      if (!storedToken) {
-        await SecureStore.deleteItemAsync('pushTokenRegisteredWithBackend');
+      const storedToken = await SecureStore.getItemAsync(this.pushTokenStorageKey);
+      const deviceId = await SecureStore.getItemAsync('deviceId');
+      if (!storedToken || !deviceId) {
+        await this.setPushRegistrationCache(false);
         return false;
       }
 
-      const response = await api.get<{ deviceId: string }[]>('/api/push/devices');
-      const isRegistered = Array.isArray(response.data) && response.data.length > 0;
+      const response = await this.withRetry(() => api.get<{ deviceId: string }[]>(ENV.ENDPOINTS.PUSH_DEVICES));
+      const isRegistered =
+        Array.isArray(response.data) &&
+        response.data.some((device) => String(device.deviceId) === deviceId);
       
-      // Update cache based on server response
-      if (isRegistered) {
-        await SecureStore.setItemAsync('pushTokenRegisteredWithBackend', 'true');
-      } else {
-        await SecureStore.deleteItemAsync('pushTokenRegisteredWithBackend');
-      }
+      await this.setPushRegistrationCache(isRegistered);
       
       return isRegistered;
-    } catch {
+    } catch (error) {
+      this.logNotificationError('verifyPushTokenRegistration', error);
+      await this.setPushRegistrationCache(false);
       return false;
     }
+  }
+
+  async getNotificationDeliveryChannel(options?: { forceVerify?: boolean }): Promise<'backend' | 'local'> {
+    if (options?.forceVerify) {
+      const verified = await this.verifyPushTokenRegistration();
+      return verified ? 'backend' : 'local';
+    }
+
+    const registered = await this.isPushTokenRegistered();
+    return registered ? 'backend' : 'local';
+  }
+
+  async getFeedingNotifications(scheduleId?: string): Promise<Notifications.NotificationRequest[]> {
+    try {
+      const notifications = await Notifications.getAllScheduledNotificationsAsync();
+      return notifications.filter((notification) => {
+        const data = notification.content.data;
+        if (data?.screen !== NOTIFICATION_SCREENS.feeding) {
+          return false;
+        }
+        if (!scheduleId) {
+          return true;
+        }
+        return String(data?.scheduleId) === scheduleId;
+      });
+    } catch (error) {
+      this.logNotificationError('getFeedingNotifications', error);
+      return [];
+    }
+  }
+
+  async cancelFeedingNotifications(scheduleId?: string): Promise<void> {
+    try {
+      const notifications = await this.getFeedingNotifications(scheduleId);
+      for (const notification of notifications) {
+        await Notifications.cancelScheduledNotificationAsync(notification.identifier);
+      }
+    } catch (error) {
+      this.logNotificationError('cancelFeedingNotifications', error);
+    }
+  }
+
+  async cancelEventAndFeedingNotifications(): Promise<void> {
+    try {
+      const notifications = await Notifications.getAllScheduledNotificationsAsync();
+      const reminders = notifications.filter((notification) => {
+        const screen = notification.content.data?.screen;
+        return screen === NOTIFICATION_SCREENS.event || screen === NOTIFICATION_SCREENS.feeding;
+      });
+
+      for (const reminder of reminders) {
+        await Notifications.cancelScheduledNotificationAsync(reminder.identifier);
+      }
+    } catch (error) {
+      this.logNotificationError('cancelEventAndFeedingNotifications', error);
+    }
+  }
+
+  async syncFeedingReminderForSchedule(
+    schedule: Pick<FeedingSchedule, '_id' | 'petId' | 'time' | 'foodType' | 'amount' | 'days'> &
+      Partial<Pick<FeedingSchedule, 'isActive' | 'reminderMinutesBefore'>>,
+    options?: { deliveryChannel?: 'backend' | 'local'; forceVerify?: boolean }
+  ): Promise<string | null> {
+    await this.cancelFeedingNotifications(schedule._id);
+
+    if (schedule.isActive === false) {
+      return null;
+    }
+
+    const deliveryChannel =
+      options?.deliveryChannel ?? (await this.getNotificationDeliveryChannel({ forceVerify: options?.forceVerify }));
+
+    if (deliveryChannel === 'backend') {
+      return null;
+    }
+
+    return this.scheduleFeedingReminder(schedule, schedule.reminderMinutesBefore ?? 15);
   }
 
   /**
@@ -870,12 +1064,13 @@ export class NotificationService {
    */
   async sendTestNotification(): Promise<boolean> {
     try {
-      await api.post('/api/push/test', {
+      await this.withRetry(() => api.post(ENV.ENDPOINTS.PUSH_TEST, {
         title: 'Petopia Test',
-        body: 'Test bildirimi başarılı! Artık etkinlik hatırlatmaları alabileceksiniz.',
-      });
+        body: 'Push notifications are configured successfully.',
+      }));
       return true;
-    } catch {
+    } catch (error) {
+      this.logNotificationError('sendTestNotification', error);
       return false;
     }
   }
@@ -913,17 +1108,36 @@ export const isPushTokenRegistered = () =>
 export const verifyPushTokenRegistration = () =>
   notificationService.verifyPushTokenRegistration();
 
+export const getNotificationDeliveryChannel = (options?: { forceVerify?: boolean }) =>
+  notificationService.getNotificationDeliveryChannel(options);
+
 export const sendTestNotification = () =>
   notificationService.sendTestNotification();
 
 // Feeding reminder exports
 export const scheduleFeedingReminder = (
-  schedule: { _id: string; petId: string; time: string; foodType: string; amount: string },
+  schedule: {
+    _id: string;
+    petId: string;
+    time: string;
+    foodType: string;
+    amount: string;
+    days?: string | string[];
+  },
   reminderMinutes?: number
 ) => notificationService.scheduleFeedingReminder(schedule, reminderMinutes);
 
 export const cancelFeedingReminder = (notificationId: string) =>
   notificationService.cancelFeedingReminder(notificationId);
+
+export const cancelFeedingNotifications = (scheduleId?: string) =>
+  notificationService.cancelFeedingNotifications(scheduleId);
+
+export const syncFeedingReminderForSchedule = (
+  schedule: Pick<FeedingSchedule, '_id' | 'petId' | 'time' | 'foodType' | 'amount' | 'days'> &
+    Partial<Pick<FeedingSchedule, 'isActive' | 'reminderMinutesBefore'>>,
+  options?: { deliveryChannel?: 'backend' | 'local'; forceVerify?: boolean }
+) => notificationService.syncFeedingReminderForSchedule(schedule, options);
 
 export const sendImmediateFeedingReminder = (
   schedule: { _id: string; petId: string; time: string; foodType: string; amount: string }

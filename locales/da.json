@@ -35,7 +35,7 @@
     "linkOpenError": "Kunne ikke åbne linket. Prøv venligst igen.",
     "logoutConfirm": "Er du sikker på, at du vil logge ud?",
     "logoutSuccess": "Logget ud med succes",
-    "freeTrialNotice": "Log ind med sociale medier, synkroniser dine data til skyen, og brug dem på alle dine enheder."
+    "freeTrialNotice": "Start gratis med ét kæledyr, og lås op for Pro, når du vil administrere hele din kæledyrsfamilie uden begrænsninger."
   },
   "navigation": {
     "home": "Hjem",
@@ -174,7 +174,7 @@
   "limits": {
     "pets": {
       "title": "Tilføj ubegrænset antal kæledyr",
-      "subtitle": "Administrer hele din familie ét sted med Pro.",
+      "subtitle": "Saml hvert kæledyrs sundhedshistorik, påmindelser og journaler på ét pålideligt sted.",
       "cta": "Opgrader til Pro"
     },
     "care": {
@@ -182,7 +182,7 @@
     },
     "budgets": {
       "title": "Smart budgetsporing",
-      "subtitle": "Administrer månedlige budgetter og advarsler ét sted med Pro.",
+      "subtitle": "Opdag overforbrug tidligt og undgå uventede dyrlægeregninger med proaktive advarsler.",
       "cta": "Opgrader til Pro"
     }
   },
@@ -494,6 +494,8 @@
     "appSettings": "App-indstillinger",
     "notifications": "Underretninger",
     "reminderNotifications": "Aktiver påmindelsesunderretninger",
+    "feedingReminders": "Fodringspåmindelser",
+    "feedingRemindersDescription": "Måltidspåmindelser for aktive fodringsplaner",
     "budgetNotifications": "Budgetunderretninger",
     "budgetNotificationsDescription": "Advarsler, når du nærmer dig din budgetgrænse",
     "quietHours": "Stilletid",
@@ -610,7 +612,9 @@
       "croatian": "Croatian",
       "ukrainian": "Ukrainsk",
       "indonesian": "Bahasa Indonesia"
-    }
+    },
+    "timezone": "Tidszone",
+    "selectTimezone": "Vælg tidszone"
   },
   "common": {
     "loading": "Indlæser...",
@@ -669,7 +673,9 @@
     "noNotes": "Ingen noter",
     "hoursMinutes": "{{hours}}t {{minutes}}m",
     "minutesOnly": "{{minutes}}m",
-    "timeLeft": "{{time}} tilbage"
+    "timeLeft": "{{time}} tilbage",
+    "search": "Søg",
+    "info": "Info"
   },
   "errors": {
     "loadingFailed": "Indlæsning mislykkedes",
@@ -872,6 +878,7 @@
       "steps": {
         "basicInfo": "Grundlæggende information",
         "physicalDetails": "Fysiske detaljer",
+        "breedWeight": "Race og Vægt",
         "photo": "Foto"
       },
       "sections": {
@@ -1310,10 +1317,15 @@
     "screen3": {
       "title": "Du er klar!",
       "description": "Alt er klar til at administrere dit kæledyrs pleje og sundhedsdata.",
-      "trialNotice": "Tilføj dit kæledyr nu for at komme i gang!",
+      "trialNotice": "Tilføj dit første kæledyr nu, og lås op for Pro, når du får brug for mere.",
       "addPet": "Tilføj dit kæledyr",
       "skipPet": "Gør det senere",
       "addYourFirstPet": "Tilføj dit første kæledyr"
+    },
+    "language": {
+      "title": "Vælg sprog, valuta og tidszone",
+      "description": "Vi bruger dine valg på de næste skærme og synkroniserer dem efter login. Du kan altid ændre alt i Indstillinger.",
+      "continue": "Fortsæt"
     }
   },
   "serviceResponse": {
@@ -1479,7 +1491,7 @@
     "confirmStartTrialMessage": "14 dages gratis Pro-funktioner. Intet kreditkort påkrævet.",
     "confirmStartTrialAction": "Start prøveperiode",
     "upgrade": "Opgrader til Pro",
-    "upgradePrompt": "Lås op for alle funktioner med Pro",
+    "upgradePrompt": "Gå ikke glip af plejeopgaver, og hold alle dine kæledyr organiseret med Pro",
     "upgradeBeforeTrialEnds": "Opgrader før prøveperioden slutter",
     "manageSubscription": "Administrer abonnement",
     "cancelSubscription": "Annuller abonnement",
@@ -1507,24 +1519,24 @@
     "unlockFeature": "Lås op for {{feature}}",
     "modal": {
       "title": "Premium funktion",
-      "description": "Denne funktion er kun tilgængelig for Pro-medlemmer",
-      "featureDescription": "{{feature}} er kun tilgængelig for Pro-medlemmer",
-      "upgradeNow": "Opgrader nu",
+      "description": "Opgrader til Pro for at samle alle kæledyr, påmindelser og sundhedsdata i ét workflow.",
+      "featureDescription": "Opgrader til Pro for at låse {{feature}} op og holde din rutine konsekvent.",
+      "upgradeNow": "Se planer",
       "maybeLater": "Måske senere",
-      "includes": "Pro-medlemskab inkluderer:"
+      "includes": "Pro hjælper dig med:"
     },
     "features": {
       "title": "Pro funktioner",
       "unlimited": "Ubegrænset antal kæledyr",
-      "unlimitedDesc": "Tilføj og administrer alle dine kæledyr ét sted",
+      "unlimitedDesc": "Hold alle kæledyrsprofiler, journaler og noter samlet",
       "feedingSchedules": "Ubegrænsede fodringsplaner",
-      "feedingSchedulesDesc": "Opret ubegrænsede fodringsplaner for alle dine kæledyr",
+      "feedingSchedulesDesc": "Byg stabile rutiner for hvert kæledyr uden begrænsninger på planer",
       "budgetTracking": "Budgetsporing & advarsler",
-      "budgetTrackingDesc": "Indstil månedlige budgetter, spor udgifter og få advarsler",
+      "budgetTrackingDesc": "Fang stigende udgifter tidligt med månedlige budgetadvarsler",
       "export": "Dataeksport",
-      "exportDesc": "Eksporter udgifter til CSV eller PDF, generer dyrlægeoversigter",
+      "exportDesc": "Del klare rapporter med familie eller dyrlæge",
       "priority": "Prioriteret support",
-      "priorityDesc": "Få hjælp, når du har brug for det",
+      "priorityDesc": "Få hurtigere hjælp, når noget haster",
       "petManagement": "Kæledyrsstyring",
       "healthRecords": "Sundhedsjournaler",
       "calendar": "Kalender & begivenheder",
@@ -1534,7 +1546,7 @@
     },
     "paywall": {
       "title": "Lås op for Petopia Petcare Pro",
-      "subtitle": "Få mest muligt ud af Petopia Petcare"
+      "subtitle": "Hold styr på pleje, påmindelser og udgifter for hvert kæledyr"
     },
     "success": {
       "title": "Abonnement gennemført!",
@@ -1546,7 +1558,14 @@
       "message": "Din 14-dages gratis prøveperiode er startet. Nyd alle Pro-funktioner!",
       "button": "Gå til forsiden"
     },
-    "note": "Betalingen vil blive debiteret din App Store / Google Play-konto. Abonnementer fornyes automatisk, medmindre de annulleres mindst 24 timer før udgangen af den nuværende periode. Du kan administrere eller annullere dit abonnement i dine kontoindstillinger i App Store / Google Play."
+    "note": "Betaling opkræves via din App Store / Google Play-konto. Abonnementer fornyes automatisk, medmindre de annulleres mindst 24 timer før udløb af den aktuelle periode. Du kan administrere eller annullere når som helst i din butiks kontoindstillinger.",
+    "trust": {
+      "cancelAnytime": "Du kan til enhver tid annullere i indstillingerne for App Store / Google Play",
+      "billedByStore": "Betaling håndteres sikkert via din konto i appbutikken",
+      "secureCheckout": "Du behøver ikke indtaste kortoplysninger manuelt i appen"
+    },
+    "verifyingPurchase": "Kob modtaget. Bekraefter dit abonnement...",
+    "verificationTakingLong": "Dit kob bliver bekraeftet. Adgang laases op automatisk om fa sekunder."
   },
   "downgrade": {
     "title": "Vælg dit kæledyr",

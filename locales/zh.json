@@ -35,7 +35,7 @@
     "linkOpenError": "无法打开链接。请重试。",
     "logoutConfirm": "您确定要退出登录吗？",
     "logoutSuccess": "成功退出登录",
-    "freeTrialNotice": "使用社交媒体登录，将您的数据同步到云端，并在您的所有设备上使用。"
+    "freeTrialNotice": "先免费管理1只宠物，等你需要时再解锁 Pro，无限制管理你的全部宠物。"
   },
   "navigation": {
     "home": "首页",
@@ -174,7 +174,7 @@
   "limits": {
     "pets": {
       "title": "添加无限数量的宠物",
-      "subtitle": "使用 Pro 版在一个地方管理您的整个家庭。",
+      "subtitle": "将每只宠物的健康时间线、提醒和记录集中在一个可靠的地方。",
       "cta": "升级到 Pro"
     },
     "care": {
@@ -182,7 +182,7 @@
     },
     "budgets": {
       "title": "智能预算跟踪",
-      "subtitle": "使用 Pro 版在一个地方管理每月预算和警报。",
+      "subtitle": "通过主动提醒及早发现超支，避免突发的宠物医疗账单。",
       "cta": "升级到 Pro"
     }
   },
@@ -494,6 +494,8 @@
     "appSettings": "应用设置",
     "notifications": "通知",
     "reminderNotifications": "启用提醒通知",
+    "feedingReminders": "喂食提醒",
+    "feedingRemindersDescription": "针对启用中的喂食计划的进食提醒通知",
     "budgetNotifications": "预算通知",
     "budgetNotificationsDescription": "接近预算限额时发出警报",
     "quietHours": "静音时间",
@@ -610,7 +612,9 @@
       "ukrainian": "乌克兰语",
       "indonesian": "Bahasa Indonesia"
     },
-    "selectCurrency": "选择货币"
+    "selectCurrency": "选择货币",
+    "timezone": "时区",
+    "selectTimezone": "选择时区"
   },
   "common": {
     "loading": "加载中...",
@@ -669,7 +673,9 @@
     "noNotes": "无备注",
     "hoursMinutes": "{{hours}}小时 {{minutes}}分钟",
     "minutesOnly": "{{minutes}}分钟",
-    "timeLeft": "剩余 {{time}}"
+    "timeLeft": "剩余 {{time}}",
+    "search": "搜索",
+    "info": "信息"
   },
   "errors": {
     "loadingFailed": "加载失败",
@@ -713,8 +719,7 @@
     "bath": "洗澡",
     "vaccination": "接种疫苗",
     "medication": "用药",
-    "other": "其他",
-    "vet_visit": "Vet Visit"
+    "other": "其他"
   },
   "recurrence": {
     "settings": "重复设置",
@@ -873,6 +878,7 @@
       "steps": {
         "basicInfo": "基本信息",
         "physicalDetails": "体格详情",
+        "breedWeight": "品种和体重",
         "photo": "照片"
       },
       "sections": {
@@ -1311,10 +1317,15 @@
     "screen3": {
       "title": "您准备好了！",
       "description": "一切准备就绪，可以管理您宠物的护理和健康数据。",
-      "trialNotice": "立即添加您的宠物以开始使用！",
+      "trialNotice": "现在就添加你的第一只宠物，需要更多时再解锁 Pro。",
       "addPet": "添加您的宠物",
       "skipPet": "以后再说",
       "addYourFirstPet": "添加您的第一只宠物"
+    },
+    "language": {
+      "title": "选择您的语言、货币和时区",
+      "description": "我们会在接下来的页面使用您的选择，并在登录后进行同步。您可以随时在设置中修改全部内容。",
+      "continue": "继续"
     }
   },
   "serviceResponse": {
@@ -1480,7 +1491,7 @@
     "confirmStartTrialMessage": "14 天免费 Pro 功能体验。无需信用卡。",
     "confirmStartTrialAction": "开始试用",
     "upgrade": "升级到 Pro",
-    "upgradePrompt": "使用 Pro 解锁所有功能",
+    "upgradePrompt": "不错过任何照护任务，用 Pro 有条理地管理所有宠物",
     "upgradeBeforeTrialEnds": "试用结束前升级",
     "manageSubscription": "管理订阅",
     "cancelSubscription": "取消订阅",
@@ -1508,24 +1519,24 @@
     "unlockFeature": "解锁 {{feature}}",
     "modal": {
       "title": "高级功能",
-      "description": "此功能仅对 Pro 会员开放",
-      "featureDescription": "{{feature}} 仅对 Pro 会员开放",
-      "upgradeNow": "立即升级",
+      "description": "升级到 Pro，将所有宠物、提醒和健康记录放到同一工作流中管理。",
+      "featureDescription": "升级到 Pro，解锁 {{feature}}，并保持稳定的照护节奏。",
+      "upgradeNow": "查看套餐",
       "maybeLater": "以后再说",
-      "includes": "Pro 会员包含："
+      "includes": "Pro 可以帮你："
     },
     "features": {
       "title": "Pro 功能",
       "unlimited": "无限宠物数量",
-      "unlimitedDesc": "在一个地方添加和管理您的所有宠物",
+      "unlimitedDesc": "把所有宠物档案、记录和备注集中管理",
       "feedingSchedules": "无限喂养时间表",
-      "feedingSchedulesDesc": "为您所有的宠物创建无限的喂养时间表",
+      "feedingSchedulesDesc": "为每只宠物建立可靠日程，不受计划数量限制",
       "budgetTracking": "预算跟踪和警报",
-      "budgetTrackingDesc": "设置每月预算、跟踪支出并获取消费警报",
+      "budgetTrackingDesc": "通过每月预算提醒尽早发现成本上涨",
       "export": "数据导出",
-      "exportDesc": "将支出导出为 CSV 或 PDF，生成兽医摘要",
+      "exportDesc": "向家人或兽医分享清晰报告",
       "priority": "优先支持",
-      "priorityDesc": "在需要时获得帮助",
+      "priorityDesc": "紧急时获得更快支持",
       "petManagement": "宠物管理",
       "healthRecords": "健康记录",
       "calendar": "日历和活动",
@@ -1535,7 +1546,7 @@
     },
     "paywall": {
       "title": "解锁 Petopia Petcare Pro",
-      "subtitle": "充分利用 Petopia Petcare"
+      "subtitle": "全面掌握每只宠物的照护、提醒与支出"
     },
     "success": {
       "title": "订阅成功！",
@@ -1547,7 +1558,14 @@
       "message": "您的 14 天免费试用已开始。享受所有 Pro 功能！",
       "button": "转到首页"
     },
-    "note": "款项将从您的 App Store / Google Play 帐户中扣除。除非在当前周期结束前至少 24 小时取消，否则订阅将自动续订。您可以在 App Store / Google Play 帐户设置中管理或取消订阅。"
+    "note": "费用将通过你的 App Store / Google Play 账户扣款。除非在当前周期结束前至少 24 小时取消，否则订阅会自动续订。你可随时在商店账户设置中管理或取消订阅。",
+    "trust": {
+      "cancelAnytime": "可随时在 App Store / Google Play 设置中取消",
+      "billedByStore": "账单将通过您的应用商店账户安全处理",
+      "secureCheckout": "无需在应用内手动输入信用卡信息"
+    },
+    "verifyingPurchase": "已收到购买请求，正在验证您的订阅...",
+    "verificationTakingLong": "正在验证您的购买，访问权限将在几秒内自动开通。"
   },
   "downgrade": {
     "title": "选择您的宠物",

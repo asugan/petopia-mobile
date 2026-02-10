@@ -1,6 +1,8 @@
 import { Event, FeedingSchedule } from '@/lib/types';
 import { formatDistanceToNow, format } from 'date-fns';
 import { tr, enUS } from 'date-fns/locale';
+import { calculateNextFeedingTime } from '@/lib/utils/feedingReminderTime';
+import { resolveEffectiveTimezone } from '@/lib/utils/timezone';
 
 export interface NextActivity {
   label: string;
@@ -16,6 +18,7 @@ export interface ActivityCalculationParams {
   events: Event[];
   feedingSchedules: FeedingSchedule[];
   locale?: string;
+  timezone?: string;
 }
 
 /**
@@ -91,9 +94,11 @@ export const formatActivityTime = (time: Date, locale: string = 'en'): string =>
 export const getNextActivityForPet = ({
   events,
   feedingSchedules,
-  locale = 'en'
+  locale = 'en',
+  timezone,
 }: ActivityCalculationParams): NextActivity | null => {
   const now = new Date();
+  const effectiveTimezone = resolveEffectiveTimezone(timezone);
   const activities: NextActivity[] = [];
 
   // Process events (vet appointments and other events)
@@ -149,25 +154,15 @@ export const getNextActivityForPet = ({
     // Calculate next feeding times for each active schedule
     const nextFeedings = activeFeedingSchedules
       .map(schedule => {
-        // Get the next feeding time based on the schedule
-        const scheduleTime = new Date(schedule.time);
-
-        // Validate the schedule time is valid
-        if (isNaN(scheduleTime.getTime())) {
-          return null;
-        }
-
-        let nextFeedingTime = new Date(
-          now.getFullYear(),
-          now.getMonth(),
-          now.getDate(),
-          scheduleTime.getHours(),
-          scheduleTime.getMinutes()
+        const nextFeedingTime = calculateNextFeedingTime(
+          schedule.time,
+          schedule.days,
+          effectiveTimezone,
+          now
         );
 
-        // If the time has passed today, schedule for tomorrow
-        if (nextFeedingTime <= now) {
-          nextFeedingTime = new Date(nextFeedingTime.getTime() + 24 * 60 * 60 * 1000);
+        if (!nextFeedingTime) {
+          return null;
         }
 
         return {

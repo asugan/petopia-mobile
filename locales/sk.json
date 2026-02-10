@@ -35,7 +35,7 @@
     "linkOpenError": "Nepodarilo sa otvoriť odkaz. Skúste to prosím znova.",
     "logoutConfirm": "Naozaj sa chcete odhlásiť?",
     "logoutSuccess": "Úspešne odhlásený",
-    "freeTrialNotice": "Prihláste sa pomocou sociálnych sietí, synchronizujte svoje údaje do cloudu a používajte ich vo všetkých svojich zariadeniach."
+    "freeTrialNotice": "Začnite zadarmo s jedným miláčikom a odomknite Pro, keď budete chcieť spravovať celú rodinu miláčikov bez obmedzení."
   },
   "navigation": {
     "home": "Domov",
@@ -174,7 +174,7 @@
   "limits": {
     "pets": {
       "title": "Pridajte neobmedzene zvieratiek",
-      "subtitle": "Spravujte celú svoju rodinu na jednom mieste s Pro.",
+      "subtitle": "Majte zdravotnú históriu, pripomienky a záznamy každého miláčika na jednom spoľahlivom mieste.",
       "cta": "Prejsť na Pro"
     },
     "care": {
@@ -182,7 +182,7 @@
     },
     "budgets": {
       "title": "Inteligentné sledovanie rozpočtu",
-      "subtitle": "Spravujte mesačné rozpočty a upozornenia na jednom mieste s Pro.",
+      "subtitle": "Odhaľte rastúce výdavky včas a vyhnite sa nečakaným veterinárnym účtom vďaka proaktívnym upozorneniam.",
       "cta": "Prejsť na Pro"
     }
   },
@@ -494,6 +494,8 @@
     "appSettings": "Nastavenia aplikácie",
     "notifications": "Upozornenia",
     "reminderNotifications": "Povoliť upozornenia pripomienok",
+    "feedingReminders": "Pripomienky kŕmenia",
+    "feedingRemindersDescription": "Upozornenia na pripomenutie jedla pre aktívne plány kŕmenia",
     "budgetNotifications": "Upozornenia na rozpočet",
     "budgetNotificationsDescription": "Upozornenia, keď sa blížite k limitu rozpočtu",
     "quietHours": "Tiché hodiny",
@@ -610,7 +612,9 @@
       "croatian": "Croatian",
       "ukrainian": "Ukrajinčina",
       "indonesian": "Bahasa Indonesia"
-    }
+    },
+    "timezone": "Časové pásmo",
+    "selectTimezone": "Vyberte časové pásmo"
   },
   "common": {
     "loading": "Načítava sa...",
@@ -669,7 +673,9 @@
     "noNotes": "Žiadne poznámky",
     "hoursMinutes": "{{hours}}h {{minutes}}m",
     "minutesOnly": "{{minutes}}m",
-    "timeLeft": "zostáva {{time}}"
+    "timeLeft": "zostáva {{time}}",
+    "search": "Hľadať",
+    "info": "Informacia"
   },
   "errors": {
     "loadingFailed": "Načítanie zlyhalo",
@@ -872,6 +878,7 @@
       "steps": {
         "basicInfo": "Základné informácie",
         "physicalDetails": "Fyzické detaily",
+        "breedWeight": "Plemeno a Hmotnosť",
         "photo": "Fotka"
       },
       "sections": {
@@ -1310,10 +1317,15 @@
     "screen3": {
       "title": "Ste pripravení!",
       "description": "Všetko je pripravené na správu údajov o starostlivosti a zdraví vášho miláčika.",
-      "trialNotice": "Pridajte svoje zvieratko teraz a začnite!",
+      "trialNotice": "Pridajte svojho prvého miláčika hneď teraz a Pro odomknite, keď budete potrebovať viac.",
       "addPet": "Pridať zvieratko",
       "skipPet": "Urobiť neskôr",
       "addYourFirstPet": "Pridať prvé zvieratko"
+    },
+    "language": {
+      "title": "Vyberte jazyk, menu a časové pásmo",
+      "description": "Vaše voľby použijeme na ďalších obrazovkách a po prihlásení ich zosynchronizujeme. Všetko môžete kedykoľvek zmeniť v Nastaveniach.",
+      "continue": "Pokračovať"
     }
   },
   "serviceResponse": {
@@ -1479,7 +1491,7 @@
     "confirmStartTrialMessage": "14 dní bezplatných funkcií Pro. Nevyžaduje sa platobná karta.",
     "confirmStartTrialAction": "Spustiť skúšobnú verziu",
     "upgrade": "Prejsť na Pro",
-    "upgradePrompt": "Odomknite všetky funkcie s Pro",
+    "upgradePrompt": "Nezmeškajte úlohy starostlivosti a majte všetkých miláčikov organizovaných s Pro",
     "upgradeBeforeTrialEnds": "Prejdite na Pro pred koncom skúšobnej verzie",
     "manageSubscription": "Spravovať predplatné",
     "cancelSubscription": "Zrušiť predplatné",
@@ -1507,24 +1519,24 @@
     "unlockFeature": "Odomknúť {{feature}}",
     "modal": {
       "title": "Prémiová funkcia",
-      "description": "Táto funkcia je dostupná iba pre členov Pro",
-      "featureDescription": "{{feature}} je k dispozícii iba pre členov Pro",
-      "upgradeNow": "Prejsť na Pro teraz",
+      "description": "Upgradujte na Pro a majte všetkých miláčikov, pripomienky aj zdravotné záznamy v jednom pracovnom toku.",
+      "featureDescription": "Upgradujte na Pro, odomknite {{feature}} a udržte svoju rutinu konzistentnú.",
+      "upgradeNow": "Zobraziť plány",
       "maybeLater": "Možno neskôr",
-      "includes": "Členstvo Pro zahŕňa:"
+      "includes": "Pro vám pomôže s:"
     },
     "features": {
       "title": "Funkcie Pro",
       "unlimited": "Neobmedzene zvieratiek",
-      "unlimitedDesc": "Pridajte a spravujte všetky svoje zvieratká na jednom mieste",
+      "unlimitedDesc": "Majte všetky profily, záznamy a poznámky o miláčikoch na jednom mieste",
       "feedingSchedules": "Neobmedzene plánov kŕmenia",
-      "feedingSchedulesDesc": "Vytvorte neobmedzené plány kŕmenia pre všetky vaše zvieratká",
+      "feedingSchedulesDesc": "Vytvorte spoľahlivé rutiny pre každého miláčika bez obmedzení plánov",
       "budgetTracking": "Sledovanie rozpočtu a upozornenia",
-      "budgetTrackingDesc": "Nastavte mesačné rozpočty, sledujte výdavky a dostávajte upozornenia",
+      "budgetTrackingDesc": "Zachyťte rast nákladov včas vďaka mesačným rozpočtovým upozorneniam",
       "export": "Export dát",
-      "exportDesc": "Exportujte výdavky do CSV alebo PDF, generujte súhrny pre veterinára",
+      "exportDesc": "Zdieľajte prehľadné reporty s rodinou alebo veterinárom",
       "priority": "Prioritná podpora",
-      "priorityDesc": "Získajte pomoc, keď ju potrebujete",
+      "priorityDesc": "Získajte rýchlejšiu pomoc, keď je to urgentné",
       "petManagement": "Správa zvieratiek",
       "healthRecords": "Zdravotné záznamy",
       "calendar": "Kalendár a udalosti",
@@ -1534,7 +1546,7 @@
     },
     "paywall": {
       "title": "Odomknite Petopia Petcare Pro",
-      "subtitle": "Využite Petopia Petcare naplno"
+      "subtitle": "Majte pod kontrolou starostlivosť, pripomienky a výdavky každého miláčika"
     },
     "success": {
       "title": "Predplatné úspešné!",
@@ -1546,7 +1558,14 @@
       "message": "Vaša 14-dňová skúšobná verzia zdarma sa začala. Užívajte si všetky funkcie Pro!",
       "button": "Prejsť na domovskú obrazovku"
     },
-    "note": "Platba bude zúčtovaná z vášho účtu App Store / Google Play. Predplatné sa automaticky obnovuje, pokiaľ nie je zrušené aspoň 24 hodín pred koncom aktuálneho obdobia. Svoje predplatné môžete spravovať alebo zrušiť v nastaveniach svojho účtu App Store / Google Play."
+    "note": "Platba sa účtuje cez váš účet App Store / Google Play. Predplatné sa automaticky obnovuje, ak ho nezrušíte aspoň 24 hodín pred koncom aktuálneho obdobia. Spravovať alebo zrušiť ho môžete kedykoľvek v nastaveniach účtu obchodu.",
+    "trust": {
+      "cancelAnytime": "Predplatné môžete kedykoľvek zrušiť v nastaveniach App Store / Google Play",
+      "billedByStore": "Platba sa bezpečne spracúva cez váš účet v obchode s aplikáciami",
+      "secureCheckout": "V aplikácii nie je potrebné ručne zadávať údaje karty"
+    },
+    "verifyingPurchase": "Nakup prijaty. Overujeme vase predplatne...",
+    "verificationTakingLong": "Vas nakup sa overuje. Pristup sa automaticky odomkne o niekolko sekund."
   },
   "downgrade": {
     "title": "Vyberte si svoje zvieratko",

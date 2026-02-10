@@ -1,5 +1,5 @@
 import React from 'react';
-import { ScrollView, StyleSheet, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
 import { Chip, Text } from '@/components/ui';
@@ -33,12 +33,7 @@ const HealthRecordTypePicker: React.FC<HealthRecordTypePickerProps> = ({
           {label}
         </Text>
       )}
-      <ScrollView
-        horizontal
-        showsHorizontalScrollIndicator={false}
-        contentContainerStyle={styles.chipContainer}
-        testID={testID}
-      >
+      <View style={styles.chipContainer} testID={testID}>
         {recordTypes.map((type) => {
           const isSelected = selectedType === type;
           const chipColor = HEALTH_RECORD_COLORS[type as keyof typeof HEALTH_RECORD_COLORS];
@@ -73,7 +68,7 @@ const HealthRecordTypePicker: React.FC<HealthRecordTypePickerProps> = ({
             </Chip>
           );
         })}
-      </ScrollView>
+      </View>
       {error && (
         <Text variant="bodySmall" style={[styles.error, { color: theme.colors.error }]}>
           {error}
@@ -93,11 +88,13 @@ const styles = StyleSheet.create({
   },
   chipContainer: {
     flexDirection: 'row',
+    flexWrap: 'wrap',
     gap: 8,
     paddingVertical: 4,
   },
   chip: {
-    marginRight: 8,
+    marginRight: 0,
+    marginBottom: 8,
   },
   error: {
     marginTop: 4,

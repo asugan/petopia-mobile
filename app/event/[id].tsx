@@ -171,9 +171,14 @@ export default function EventDetailScreen() {
         // Delete only this occurrence via exception
         try {
           if (event.recurrenceRuleId) {
+            const parsedExceptionDate = new Date(event.startTime);
+            const exceptionDate = Number.isNaN(parsedExceptionDate.getTime())
+              ? String(event.startTime)
+              : parsedExceptionDate.toISOString();
+
             await addRecurrenceExceptionMutation.mutateAsync({
               id: event.recurrenceRuleId,
-              date: event.startTime.toString(),
+              date: exceptionDate,
             });
             showToast({ type: 'success', title: t('events.eventDeleted') });
             router.back();
@@ -190,7 +195,7 @@ export default function EventDetailScreen() {
     try {
       const eventDate = formatInTimeZone(event.startTime, userTimezone, 'dd MMMM yyyy', { locale });
       const eventTime = formatInTimeZone(event.startTime, userTimezone, 'HH:mm', { locale });
-      const shareMessage = `📅 ${event.title}\n🐾 ${pet?.name || t('events.pet')}\n📍 ${event.location || t('events.noLocation')}\n🕐 ${eventDate} - ${eventTime}\n\n${event.description || ''}\n\n${t('events.sharedFrom')} PawPa`;
+      const shareMessage = `📅 ${event.title}\n🐾 ${pet?.name || t('events.pet')}\n🕐 ${eventDate} - ${eventTime}\n\n${t('events.sharedFrom')} PawPa`;
       await Share.share({ message: shareMessage, title: event.title });
     } catch (error) {
       console.error('Failed to share event', error);
@@ -435,7 +440,7 @@ export default function EventDetailScreen() {
               <Text style={[styles.badgeText, { color: COLORS.primary }]}>{eventTypeLabel}</Text>
             </View>
             <Text style={[styles.heroTitle, { color: COLORS.white }]}>{event.title}</Text>
-            <Text style={[styles.heroSubtitle, { color: COLORS.gray300 }]}>{event.description || t('events.eventDetails')}</Text>
+            <Text style={[styles.heroSubtitle, { color: COLORS.gray300 }]}>{eventTypeLabel}</Text>
           </View>
         </View>
 
@@ -478,25 +483,7 @@ export default function EventDetailScreen() {
               </View>
             )}
 
-            <View style={[styles.card, { backgroundColor: COLORS.surfaceDark, width: (width - 32 - 12) / 2 }]}>
-              <View style={styles.cardIconContainer}>
-                <MaterialIcons name="location-on" size={24} color={COLORS.primary} />
-              </View>
-              <View>
-                <Text style={[styles.cardLabel, { color: COLORS.gray400 }]}>{t('events.location')}</Text>
-                <Text style={[styles.cardValue, { color: COLORS.white }]} numberOfLines={1}>{event.location || t('events.noLocation')}</Text>
-              </View>
-            </View>
           </View>
-
-          {event.notes && (
-            <View style={styles.section}>
-              <Text style={[styles.sectionTitle, { color: COLORS.white }]}>{t('events.notes')}</Text>
-              <View style={[styles.notesBox, { backgroundColor: COLORS.surfaceDark }]}>
-                <Text style={[styles.notesText, { color: COLORS.gray300 }]}>{event.notes}</Text>
-              </View>
-            </View>
-          )}
 
           {event.reminder && (
             <View style={styles.section}>
@@ -754,20 +741,6 @@ const styles = StyleSheet.create({
   },
   section: {
     gap: 12,
-  },
-  sectionTitle: {
-    fontSize: 18,
-    fontWeight: '700',
-  },
-  notesBox: {
-    borderRadius: 16,
-    padding: 20,
-    borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.05)',
-  },
-  notesText: {
-    fontSize: 14,
-    lineHeight: 22,
   },
   reminderCard: {
     flexDirection: 'row',

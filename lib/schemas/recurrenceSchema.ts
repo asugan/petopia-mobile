@@ -3,6 +3,7 @@ import { EVENT_TYPES } from '@/constants';
 import { RECURRENCE_FREQUENCIES, RecurrenceFrequency } from '@/constants/recurrence';
 import { t } from '@/lib/schemas/core/i18n';
 import { objectIdSchema } from '@/lib/schemas/core/validators';
+import { detectDeviceTimezone } from '@/lib/utils/timezone';
 
 // Re-export for convenience
 export { RECURRENCE_FREQUENCIES, type RecurrenceFrequency } from '@/constants/recurrence';
@@ -84,14 +85,10 @@ export const recurrenceRuleSchema = () =>
       .min(1, { message: t('forms.validation.event.titleRequired') })
       .max(100, { message: t('forms.validation.event.titleMax') }),
 
-    description: z.string().optional(),
-
     type: z.enum(Object.values(EVENT_TYPES) as [string, ...string[]], {
       message: t('forms.validation.event.typeInvalid'),
     }),
 
-    location: z.string().optional(),
-    notes: z.string().optional(),
     reminder: z.boolean().default(false),
     reminderPreset: z.enum(['standard', 'compact', 'minimal']).optional(),
 
@@ -112,15 +109,17 @@ export const recurrenceRuleSchema = () =>
     timesPerDay: z.number().int().min(1).max(10).optional(),
     dailyTimes: z.array(z.string()).optional(),
 
-    // Duration
-    eventDurationMinutes: z.number().int().min(0).optional(),
-
     // Timezone
     timezone: z.string(),
 
     // Date boundaries
     startDate: z.string().datetime(),
-    endDate: z.string().datetime().optional(),
+    endDate: z
+      .union([
+        z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
+        z.string().datetime(),
+      ])
+      .optional(),
   });
 
 export type RecurrenceRuleData = z.infer<ReturnType<typeof recurrenceRuleSchema>>;
@@ -146,7 +145,13 @@ export type RecurrenceRule = z.infer<ReturnType<typeof RecurrenceRuleResponseSch
 export const updateRecurrenceRuleSchema = () =>
   recurrenceRuleSchema().partial().extend({
     isActive: z.boolean().optional(),
-    endDate: z.string().datetime().nullable().optional(),
+    endDate: z
+      .union([
+        z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
+        z.string().datetime(),
+      ])
+      .nullable()
+      .optional(),
   });
 
 export type UpdateRecurrenceRuleData = z.infer<ReturnType<typeof updateRecurrenceRuleSchema>>;
@@ -158,6 +163,6 @@ export const defaultRecurrenceSettings: RecurrenceSettings = {
   frequency: 'weekly',
   interval: 1,
   daysOfWeek: [1], // Monday
-  timezone: Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC',
+  timezone: detectDeviceTimezone(),
   endDate: undefined,
 };

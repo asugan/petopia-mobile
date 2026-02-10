@@ -48,14 +48,6 @@ const CompactExpenseItem: React.FC<CompactExpenseItemProps> = ({
     }
   }, [expense.date, t]);
 
-  // Truncate description if needed
-  const displayDescription = React.useMemo(() => {
-    if (!expense.description) return '';
-    return expense.description.length > 30
-      ? expense.description.substring(0, 30) + '...'
-      : expense.description;
-  }, [expense.description]);
-
   const categoryColor = categoryConfig.color.startsWith('#')
     ? categoryConfig.color
     : theme.colors[categoryConfig.color as keyof typeof theme.colors] || theme.colors.secondary;
@@ -77,15 +69,6 @@ const CompactExpenseItem: React.FC<CompactExpenseItemProps> = ({
           <Text variant="labelMedium" numberOfLines={1}>
             {t(`expenses.categories.${expense.category}`)}
           </Text>
-          {displayDescription ? (
-            <Text
-              variant="bodySmall"
-              style={{ color: theme.colors.onSurfaceVariant }}
-              numberOfLines={1}
-            >
-              {displayDescription}
-            </Text>
-          ) : null}
         </View>
       </View>
       <View style={styles.rightSection}>

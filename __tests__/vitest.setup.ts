@@ -79,6 +79,16 @@ vi.mock('expo-localization', () => ({
   getCalendars: () => [],
 }));
 
+// Mock static image assets required through constants/images
+vi.mock('@/assets/images/cat_avatar.webp', () => ({ default: 1 }));
+vi.mock('@/assets/images/dog_avatar.webp', () => ({ default: 1 }));
+vi.mock('@/assets/images/bird_avatar.webp', () => ({ default: 1 }));
+vi.mock('@/assets/images/rabbit_avatar.webp', () => ({ default: 1 }));
+vi.mock('@/assets/images/hamster_avatar.webp', () => ({ default: 1 }));
+vi.mock('@/assets/images/fish_avatar.webp', () => ({ default: 1 }));
+vi.mock('@/assets/images/reptile_avatar.webp', () => ({ default: 1 }));
+vi.mock('@/assets/images/other_avatar.webp', () => ({ default: 1 }));
+
 // Mock React Navigation
 vi.mock(
   '@react-navigation/native',
@@ -212,6 +222,35 @@ vi.mock(
   }),
 );
 
+// Mock RevenueCat SDK modules (JS bundle is not node-test friendly)
+vi.mock('react-native-purchases', () => ({
+  default: {
+    isConfigured: vi.fn().mockResolvedValue(true),
+    getOfferings: vi.fn(),
+    getCustomerInfo: vi.fn(),
+    purchasePackage: vi.fn(),
+  },
+  PURCHASES_ERROR_CODE: {
+    PURCHASE_CANCELLED_ERROR: 'PURCHASE_CANCELLED_ERROR',
+    PRODUCT_ALREADY_PURCHASED_ERROR: 'PRODUCT_ALREADY_PURCHASED_ERROR',
+  },
+}));
+
+vi.mock('react-native-purchases-ui', () => ({
+  default: {
+    presentPaywall: vi.fn(),
+    presentPaywallIfNeeded: vi.fn(),
+    presentCustomerCenter: vi.fn(),
+  },
+  PAYWALL_RESULT: {
+    PURCHASED: 'PURCHASED',
+    RESTORED: 'RESTORED',
+    CANCELLED: 'CANCELLED',
+    NOT_PRESENTED: 'NOT_PRESENTED',
+    ERROR: 'ERROR',
+  },
+}));
+
 // Mock reminder scheduler hook
 vi.mock('@/hooks/useReminderScheduler', () => ({
   useReminderScheduler: () => ({
@@ -280,7 +319,7 @@ vi.mock('@/stores/userSettingsStore', () => ({
 }));
 
 // Global test utilities
-global.fetch = vi.fn();
+globalThis.fetch = vi.fn() as typeof fetch;
 
 // Reset mocks after each test
 afterEach(() => {

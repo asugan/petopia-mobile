@@ -35,7 +35,7 @@
     "linkOpenError": "Link konnte nicht geöffnet werden. Bitte versuchen Sie es erneut.",
     "logoutConfirm": "Sind Sie sicher, dass Sie sich abmelden möchten?",
     "logoutSuccess": "Erfolgreich abgemeldet",
-    "freeTrialNotice": "Melden Sie sich mit sozialen Medien an, synchronisieren Sie Ihre Daten in der Cloud und nutzen Sie sie auf all Ihren Geräten."
+    "freeTrialNotice": "Starte kostenlos mit einem Haustier und schalte Pro frei, um später deine ganze Haustierfamilie ohne Limits zu verwalten."
   },
   "navigation": {
     "home": "Home",
@@ -174,7 +174,7 @@
   "limits": {
     "pets": {
       "title": "Unbegrenzt Tiere hinzufügen",
-      "subtitle": "Verwalten Sie Ihre ganze Familie an einem Ort mit Pro.",
+      "subtitle": "Behalte die Gesundheitschronik, Erinnerungen und Unterlagen jedes Haustiers an einem verlässlichen Ort.",
       "cta": "Auf Pro upgraden"
     },
     "care": {
@@ -182,7 +182,7 @@
     },
     "budgets": {
       "title": "Intelligente Budgetverfolgung",
-      "subtitle": "Verwalten Sie monatliche Budgets und Warnungen an einem Ort mit Pro.",
+      "subtitle": "Erkenne steigende Ausgaben frühzeitig und vermeide überraschende Tierarztrechnungen mit proaktiven Warnungen.",
       "cta": "Auf Pro upgraden"
     }
   },
@@ -494,6 +494,8 @@
     "appSettings": "App-Einstellungen",
     "notifications": "Benachrichtigungen",
     "reminderNotifications": "Erinnerungs-Benachrichtigungen aktivieren",
+    "feedingReminders": "Fütterungserinnerungen",
+    "feedingRemindersDescription": "Mahlzeit-Erinnerungsbenachrichtigungen für aktive Fütterungspläne",
     "budgetNotifications": "Budget-Benachrichtigungen",
     "budgetNotificationsDescription": "Warnung bei Erreichen des Budgetlimits",
     "quietHours": "Ruhezeiten",
@@ -610,7 +612,9 @@
       "ukrainian": "Ukrainisch",
       "indonesian": "Bahasa Indonesia"
     },
-    "selectCurrency": "Währung auswählen"
+    "selectCurrency": "Währung auswählen",
+    "timezone": "Zeitzone",
+    "selectTimezone": "Zeitzone auswählen"
   },
   "common": {
     "loading": "Lädt...",
@@ -669,7 +673,9 @@
     "noNotes": "Keine Notizen",
     "hoursMinutes": "{{hours}}Std {{minutes}}Min",
     "minutesOnly": "{{minutes}}Min",
-    "timeLeft": "{{time}} übrig"
+    "timeLeft": "{{time}} übrig",
+    "search": "Suchen",
+    "info": "Info"
   },
   "errors": {
     "loadingFailed": "Laden fehlgeschlagen",
@@ -872,6 +878,7 @@
       "steps": {
         "basicInfo": "Basis-Informationen",
         "physicalDetails": "Physische Details",
+        "breedWeight": "Rasse und Gewicht",
         "photo": "Foto"
       },
       "sections": {
@@ -1310,10 +1317,15 @@
     "screen3": {
       "title": "Sie sind bereit!",
       "description": "Alles ist bereit, um die Pflege und die Gesundheitsdaten Ihres Tieres zu verwalten.",
-      "trialNotice": "Fügen Sie jetzt Ihr Tier hinzu, um loszulegen!",
+      "trialNotice": "Füge jetzt dein erstes Haustier hinzu und schalte Pro frei, wenn du mehr brauchst.",
       "addPet": "Tier hinzufügen",
       "skipPet": "Später machen",
       "addYourFirstPet": "Erstes Tier hinzufügen"
+    },
+    "language": {
+      "title": "Wähle Sprache, Währung und Zeitzone",
+      "description": "Wir verwenden deine Auswahl in den nächsten Schritten und synchronisieren sie nach der Anmeldung. Alles kannst du jederzeit in den Einstellungen ändern.",
+      "continue": "Weiter"
     }
   },
   "serviceResponse": {
@@ -1479,7 +1491,7 @@
     "confirmStartTrialMessage": "14 Tage lang kostenlose Pro-Funktionen. Keine Kreditkarte erforderlich.",
     "confirmStartTrialAction": "Testversion starten",
     "upgrade": "Auf Pro upgraden",
-    "upgradePrompt": "Alle Funktionen mit Pro freischalten",
+    "upgradePrompt": "Verpasse keine Pflegeaufgaben und halte alle Haustiere mit Pro organisiert",
     "upgradeBeforeTrialEnds": "Vor Ende der Testversion upgraden",
     "manageSubscription": "Abonnement verwalten",
     "cancelSubscription": "Abonnement kündigen",
@@ -1507,24 +1519,24 @@
     "unlockFeature": "{{feature}} freischalten",
     "modal": {
       "title": "Premium-Funktion",
-      "description": "Diese Funktion ist nur für Pro-Mitglieder verfügbar",
-      "featureDescription": "{{feature}} ist nur für Pro-Mitglieder verfügbar",
-      "upgradeNow": "Jetzt upgraden",
+      "description": "Upgrade auf Pro, um alle Haustiere, Erinnerungen und Gesundheitsdaten in einem Ablauf zu bündeln.",
+      "featureDescription": "Upgrade auf Pro, um {{feature}} freizuschalten und deine Routine konstant zu halten.",
+      "upgradeNow": "Tarife ansehen",
       "maybeLater": "Vielleicht später",
-      "includes": "Pro-Mitgliedschaft beinhaltet:"
+      "includes": "Pro hilft dir bei:"
     },
     "features": {
       "title": "Pro-Funktionen",
       "unlimited": "Unbegrenzt Tiere",
-      "unlimitedDesc": "Alle Ihre Tiere an einem Ort verwalten",
+      "unlimitedDesc": "Alle Haustierprofile, Aufzeichnungen und Notizen an einem Ort",
       "feedingSchedules": "Unbegrenzte Fütterungspläne",
-      "feedingSchedulesDesc": "Unbegrenzte Fütterungspläne für alle Ihre Tiere erstellen",
+      "feedingSchedulesDesc": "Zuverlässige Routinen für jedes Haustier ohne Plan-Limits aufbauen",
       "budgetTracking": "Budgetverfolgung & Warnungen",
-      "budgetTrackingDesc": "Monatliche Budgets festlegen, Ausgaben verfolgen und Warnungen erhalten",
+      "budgetTrackingDesc": "Steigende Kosten früh mit monatlichen Budgetwarnungen erkennen",
       "export": "Datenexport",
-      "exportDesc": "Ausgaben als CSV oder PDF exportieren, Tierarzt-Zusammenfassungen generieren",
+      "exportDesc": "Klare Berichte mit Familie oder Tierarzt teilen",
       "priority": "Vorrangiger Support",
-      "priorityDesc": "Hilfe erhalten, wenn Sie sie brauchen",
+      "priorityDesc": "Schnellere Hilfe erhalten, wenn es dringend ist",
       "petManagement": "Tier-Management",
       "healthRecords": "Gesundheitsakten",
       "calendar": "Kalender & Ereignisse",
@@ -1534,7 +1546,7 @@
     },
     "paywall": {
       "title": "Petopia Petcare Pro freischalten",
-      "subtitle": "Holen Sie das Beste aus Petopia Petcare heraus"
+      "subtitle": "Pflege, Erinnerungen und Ausgaben für jedes Haustier im Blick behalten"
     },
     "success": {
       "title": "Abonnement erfolgreich!",
@@ -1546,7 +1558,14 @@
       "message": "Ihre 14-tägige kostenlose Testversion hat begonnen. Genießen Sie alle Pro-Funktionen!",
       "button": "Zur Startseite"
     },
-    "note": "Die Zahlung wird über Ihr App Store / Google Play Konto abgerechnet. Abonnements verlängern sich automatisch, sofern sie nicht mindestens 24 Stunden vor Ablauf des aktuellen Zeitraums gekündigt werden. Sie können Ihr Abonnement in den Kontoeinstellungen Ihres App Store / Google Play Kontos verwalten oder kündigen."
+    "note": "Die Zahlung wird über dein App Store / Google Play-Konto abgerechnet. Abonnements verlängern sich automatisch, sofern sie nicht mindestens 24 Stunden vor Ende des aktuellen Zeitraums gekündigt werden. Du kannst sie jederzeit in den Kontoeinstellungen des Stores verwalten oder kündigen.",
+    "trust": {
+      "cancelAnytime": "Jederzeit in den Einstellungen von App Store / Google Play kündbar",
+      "billedByStore": "Die Abrechnung wird sicher über dein App-Store-Konto abgewickelt",
+      "secureCheckout": "Keine manuelle Kreditkarteneingabe in der App erforderlich"
+    },
+    "verifyingPurchase": "Kauf erhalten. Dein Abonnement wird uberpruft...",
+    "verificationTakingLong": "Dein Kauf wird uberpruft. Der Zugriff wird in wenigen Sekunden automatisch freigeschaltet."
   },
   "downgrade": {
     "title": "Wählen Sie Ihr Tier",

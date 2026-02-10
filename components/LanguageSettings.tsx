@@ -12,6 +12,8 @@ import { Ionicons } from '@expo/vector-icons';
 interface LanguageSettingsProps {
   showDeviceInfo?: boolean;
   variant?: 'card' | 'embedded';
+  onSelect?: (language: SupportedLanguage) => void;
+  selectedLanguage?: SupportedLanguage;
 }
 
 // Dil bayrakları
@@ -54,17 +56,23 @@ const languageFlags: Record<SupportedLanguage, string> = {
 export function LanguageSettings({
   showDeviceInfo = false,
   variant = 'card',
+  onSelect,
+  selectedLanguage: externalSelectedLanguage,
 }: LanguageSettingsProps) {
   const { theme } = useTheme();
   const { t } = useTranslation();
   const { settings, updateSettings, isLoading } = useUserSettingsStore();
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  const currentLanguage = settings?.language || 'en';
+  const currentLanguage = externalSelectedLanguage || settings?.language || 'en';
   const supportedLanguages: SupportedLanguage[] = ['tr', 'en', 'it', 'de', 'fr', 'es', 'pt', 'ja', 'ko', 'ru', 'ar', 'he', 'ro', 'nl', 'sv', 'da', 'no', 'fi', 'cs', 'hu', 'sk', 'ca', 'hr', 'hi', 'th', 'vi', 'ms', 'zh', 'zh-TW', 'pl', 'el', 'uk', 'id'];
 
   const handleLanguageSelect = (language: SupportedLanguage) => {
-    updateSettings({ language });
+    if (onSelect) {
+      onSelect(language);
+    } else {
+      updateSettings({ language });
+    }
     setIsModalOpen(false);
   };
 

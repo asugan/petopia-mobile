@@ -16,33 +16,31 @@ import {
   useAllFeedingSchedules,
   useDeleteFeedingSchedule,
   useToggleFeedingSchedule,
-  useToggleFeedingScheduleReminder,
 } from '@/lib/hooks/useFeedingSchedules';
 import LoadingSpinner from '@/components/LoadingSpinner';
 import EmptyState from '@/components/EmptyState';
 import { HealthRecordForm } from '@/components/forms/HealthRecordForm';
 import { FeedingScheduleModal } from '@/components/FeedingScheduleModal';
 import { TURKCE_LABELS, HEALTH_RECORD_COLORS, HEALTH_RECORD_ICONS, LAYOUT } from '@/constants';
-import { useUserSettingsStore } from '@/stores/userSettingsStore';
 import type { HealthRecord, FeedingSchedule } from '@/lib/types';
-import MoneyDisplay from '@/components/ui/MoneyDisplay';
 import { showToast } from '@/lib/toast/showToast';
 import { useNotifications } from '@/lib/hooks/useNotifications';
 import { useRequestDeduplication } from '@/lib/hooks/useRequestCancellation';
 import NotificationPermissionPrompt from '@/components/NotificationPermissionPrompt';
 import { registerPushTokenWithBackend } from '@/lib/services/notificationService';
 import { SUBSCRIPTION_ROUTES, FEATURE_ROUTES } from '@/constants/routes';
+import { useUserTimezone } from '@/lib/hooks/useUserTimezone';
+import { formatInTimeZone } from '@/lib/utils/date';
 
 
 type CareTabValue = 'health' | 'feeding';
 
 export default function CareScreen() {
   const { theme } = useTheme();
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const userTimezone = useUserTimezone();
   const { isProUser } = useSubscription();
   const router = useRouter();
-  const { settings } = useUserSettingsStore();
-  const baseCurrency = settings?.baseCurrency || 'TRY';
   const [activeTab, setActiveTab] = useState<CareTabValue>('health');
   
   // Health state
@@ -57,7 +55,7 @@ export default function CareScreen() {
   const [activeSchedule, setActiveSchedule] = useState<FeedingSchedule | undefined>();
 
   // Notifications
-  const { requestPermission, isLoading: isNotificationLoading } = useNotifications();
+  const { requestPermission } = useNotifications();
   const { executeWithDeduplication } = useRequestDeduplication();
 
   // Get pets for selection
@@ -94,10 +92,10 @@ export default function CareScreen() {
   // Mutations
   const deleteScheduleMutation = useDeleteFeedingSchedule();
   const toggleScheduleMutation = useToggleFeedingSchedule();
-  const toggleReminderMutation = useToggleFeedingScheduleReminder();
 
   // Filter health records by type (all records since we removed type filter)
   const filteredHealthRecords = healthRecords;
+  const healthDateFormat = i18n.language === 'tr' ? 'dd.MM.yyyy' : 'MM/dd/yyyy';
 
   // Filter feeding schedules by selected pet
   const feedingSchedules = selectedPetId
@@ -125,7 +123,7 @@ export default function CareScreen() {
 
   const handleAddSchedule = async () => {
     if (!isProUser && activeFeedingSchedules.length >= 1) {
-      router.push(SUBSCRIPTION_ROUTES.main);
+      router.push(`${SUBSCRIPTION_ROUTES.main}?source=care_add_schedule_limit`);
       return;
     }
 
@@ -152,32 +150,28 @@ export default function CareScreen() {
 
   const handleToggleActive = async (schedule: FeedingSchedule, isActive: boolean) => {
     if (isActive && !schedule.isActive && !isProUser && activeFeedingSchedules.length >= 1) {
-      router.push(SUBSCRIPTION_ROUTES.main);
+      router.push(`${SUBSCRIPTION_ROUTES.main}?source=care_activate_schedule_limit`);
       return;
+    }
+
+    if (isActive && !schedule.isActive) {
+      const granted = await executeWithDeduplication(
+        `schedule-activation-${schedule._id}`,
+        async () => await requestPermission()
+      );
+
+      if (!granted) {
+        setActiveSchedule(schedule);
+        setShowPermissionModal(true);
+        return;
+      }
+
+      void registerPushTokenWithBackend();
     }
 
     try {
       await toggleScheduleMutation.mutateAsync({ id: schedule._id, isActive });
     } catch {
-    }
-  };
-
-  const handleToggleReminder = async (schedule: FeedingSchedule, reminderEnabled: boolean) => {
-    if (reminderEnabled) {
-      const granted = await executeWithDeduplication(
-        `reminder-toggle-${schedule._id}`,
-        async () => await requestPermission()
-      );
-
-      if (granted) {
-        void registerPushTokenWithBackend();
-        await toggleReminderMutation.mutateAsync({ id: schedule._id, enabled: true });
-      } else {
-        setActiveSchedule(schedule);
-        setShowPermissionModal(true);
-      }
-    } else {
-      await toggleReminderMutation.mutateAsync({ id: schedule._id, enabled: false });
     }
   };
 
@@ -187,7 +181,7 @@ export default function CareScreen() {
   };
 
   const handleFeedingUpgradePress = async () => {
-    router.push(SUBSCRIPTION_ROUTES.main);
+    router.push(`${SUBSCRIPTION_ROUTES.main}?source=care_feeding_limit_banner`);
   };
 
   const renderHealthContent = () => {
@@ -293,21 +287,9 @@ export default function CareScreen() {
                     color={theme.colors.onSurfaceVariant}
                   />
                   <Text variant="labelSmall" style={{ color: theme.colors.onSurfaceVariant }}>
-                    {new Date(record.date).toLocaleDateString('tr-TR')}
+                    {formatInTimeZone(record.date, userTimezone, healthDateFormat)}
                   </Text>
                 </View>
-                {record.veterinarian && (
-                  <Text variant="bodySmall" style={{ color: theme.colors.onSurfaceVariant }}>
-                    Dr. {record.veterinarian}
-                  </Text>
-                )}
-                <MoneyDisplay
-                  amount={record.cost}
-                  currency={record.currency}
-                  baseCurrency={baseCurrency}
-                  amountBase={record.amountBase}
-                  size="small"
-                />
               </View>
               <MaterialCommunityIcons
                 name="chevron-right"
@@ -347,9 +329,6 @@ export default function CareScreen() {
             onEdit={handleEditSchedule}
             onDelete={handleDeleteSchedule}
             onToggleActive={handleToggleActive}
-            onToggleReminder={handleToggleReminder}
-            reminderEnabled={schedule.remindersEnabled ?? false}
-            isReminderLoading={isNotificationLoading}
             showPetInfo={true}
             showActions
             petName={petNameById[schedule.petId]}
@@ -434,7 +413,7 @@ export default function CareScreen() {
       {activeTab === 'health' && (
         <FAB
           icon="add"
-          style={{ ...styles.fab, backgroundColor: theme.colors.secondary }}
+          style={{ ...styles.fab, backgroundColor: theme.colors.primary }}
           onPress={handleAddHealthRecord}
         />
       )}
@@ -472,8 +451,11 @@ export default function CareScreen() {
         }}
         onPermissionGranted={async () => {
           if (activeSchedule) {
-            void registerPushTokenWithBackend();
-            await toggleReminderMutation.mutateAsync({ id: activeSchedule._id, enabled: true });
+            try {
+              void registerPushTokenWithBackend();
+              await toggleScheduleMutation.mutateAsync({ id: activeSchedule._id, isActive: true });
+            } catch {
+            }
           }
           setActiveSchedule(undefined);
         }}

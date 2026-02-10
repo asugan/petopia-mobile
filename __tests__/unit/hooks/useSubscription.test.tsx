@@ -23,8 +23,7 @@ vi.mock(
     return {
       default: Purchases,
     };
-  },
-  { virtual: true }
+  }
 );
 
 vi.mock(
@@ -40,24 +39,21 @@ vi.mock(
       NOT_PRESENTED: 'NOT_PRESENTED',
       ERROR: 'ERROR',
     },
-  }),
-  { virtual: true }
+  })
 );
 
 vi.mock(
   '@/lib/revenuecat/initialize',
   () => ({
     restorePurchases: vi.fn(),
-  }),
-  { virtual: true }
+  })
 );
 
 vi.mock(
   '@/lib/utils/alert',
   () => ({
     showAlert: vi.fn(),
-  }),
-  { virtual: true }
+  })
 );
 
 vi.mock(
@@ -67,11 +63,13 @@ vi.mock(
       getSubscriptionStatus: vi.fn(),
       startTrial: vi.fn(),
     },
-  }),
-  { virtual: true }
+  })
 );
 
 describe('useSubscription', () => {
+  type WrapperProps = { children: React.ReactNode };
+  type ChildProps = { onGetOfferings: () => Promise<unknown> };
+
   const createWrapper = () => {
     const client = new QueryClient({
       defaultOptions: {
@@ -82,7 +80,7 @@ describe('useSubscription', () => {
       },
     });
 
-    return ({ children }: { children: React.ReactNode }) =>
+    return ({ children }: WrapperProps) =>
       React.createElement(QueryClientProvider, { client }, children);
   };
 
@@ -93,12 +91,10 @@ describe('useSubscription', () => {
   it('keeps getOfferings stable when unrelated store state changes', () => {
     let childRenders = 0;
 
-    const Child = React.memo(
-      ({ onGetOfferings }: { onGetOfferings: () => Promise<unknown> }) => {
+    const Child = React.memo(({ onGetOfferings }: ChildProps) => {
         childRenders += 1;
         return null;
-      }
-    );
+      });
 
     const Parent = () => {
       const { getOfferings } = useSubscription();

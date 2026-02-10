@@ -43,7 +43,7 @@ function HomeScreenContent() {
   }, [processPendingPet, data.pets?.length, isInitialized]);
 
   const handleUpgradePress = async () => {
-    router.push(SUBSCRIPTION_ROUTES.main);
+    router.push(`${SUBSCRIPTION_ROUTES.main}?source=home_limit_card`);
   };
 
   // Hook must be called unconditionally before any early returns
@@ -88,8 +88,12 @@ function HomeScreenContent() {
       style={[styles.container, { backgroundColor: theme.colors.background }]}
     >
       <ScrollView
-        style={[styles.scrollView, { padding: layout.scrollPadding }]}
-        contentContainerStyle={styles.scrollContent}
+        style={styles.scrollView}
+        contentContainerStyle={{
+          paddingHorizontal: layout.scrollPadding,
+          paddingTop: 8,
+          paddingBottom: LAYOUT.TAB_BAR_HEIGHT + 16,
+        }}
         showsVerticalScrollIndicator={false}
       >
         <LargeTitle title={t("navigation.home")} actions={<HeaderActions />} />
@@ -175,7 +179,6 @@ function HomeScreenContent() {
 const styles = StyleSheet.create({
   container: { flex: 1 },
   scrollView: { flex: 1 },
-  scrollContent: { paddingBottom: LAYOUT.TAB_BAR_HEIGHT },
   statsScrollView: { marginBottom: 24 },
   statsContainer: { gap: 12, paddingHorizontal: 0 },
   statsGrid: { flexDirection: "row", gap: 12, marginBottom: 24 },

@@ -5,7 +5,7 @@ import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTranslation } from 'react-i18next';
-import { format, differenceInYears, differenceInMonths } from 'date-fns';
+import { differenceInYears, differenceInMonths } from 'date-fns';
 import { tr, enUS } from 'date-fns/locale';
 import { Ionicons, MaterialCommunityIcons, MaterialIcons } from '@expo/vector-icons';
 
@@ -16,7 +16,13 @@ import { usePet, useDeletePet } from '@/lib/hooks/usePets';
 import { useEvents } from '@/lib/hooks/useEvents';
 import { useHealthRecords } from '@/lib/hooks/useHealthRecords';
 import { useActiveFeedingSchedulesByPet } from '@/lib/hooks/useFeedingSchedules';
-import { formatTimeForDisplay, getNextFeedingTime, getPreviousFeedingTime } from '@/lib/schemas/feedingScheduleSchema';
+import {
+  formatTimeForDisplay,
+  getNextFeedingTime,
+  getPreviousFeedingTime,
+  normalizeFeedingDays,
+  type DayOfWeek,
+} from '@/lib/schemas/feedingScheduleSchema';
 import { PetModal } from '@/components/PetModal';
 import { showToast } from '@/lib/toast/showToast';
 import { TAB_ROUTES } from '@/constants/routes';
@@ -119,29 +125,39 @@ export default function PetDetailScreen() {
   const nextFeedingSchedule = useMemo(() => {
     if (!feedingSchedules.length) return null;
 
-    const nextTime = getNextFeedingTime(feedingSchedules);
+    const nextTime = getNextFeedingTime(feedingSchedules, userTimezone);
     if (!nextTime) return null;
 
-    const dayNames = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
-    const dayName = dayNames[nextTime.getDay()];
-    const hhmm = format(nextTime, 'HH:mm');
+    const isoDayToName: Record<number, string> = {
+      1: 'monday',
+      2: 'tuesday',
+      3: 'wednesday',
+      4: 'thursday',
+      5: 'friday',
+      6: 'saturday',
+      7: 'sunday',
+    };
+    const dayName =
+      isoDayToName[Number(formatInTimeZone(nextTime, userTimezone, 'i'))] ??
+      'monday';
+    const hhmm = formatInTimeZone(nextTime, userTimezone, 'HH:mm');
 
     return (
       feedingSchedules.find((schedule) =>
         schedule.isActive &&
         schedule.time === hhmm &&
-        schedule.days.toLowerCase().includes(dayName)
+        normalizeFeedingDays(schedule.days).includes(dayName as DayOfWeek)
       ) ??
       [...feedingSchedules]
         .filter((schedule) => schedule.isActive)
         .sort((a, b) => a.time.localeCompare(b.time))[0] ??
       null
     );
-  }, [feedingSchedules]);
+  }, [feedingSchedules, userTimezone]);
 
   const nextFeedingTime = useMemo(() => {
-    return getNextFeedingTime(feedingSchedules);
-  }, [feedingSchedules]);
+    return getNextFeedingTime(feedingSchedules, userTimezone);
+  }, [feedingSchedules, userTimezone]);
 
   const timeUntilFeeding = useMemo(() => {
     if (!nextFeedingTime) return null;
@@ -160,8 +176,8 @@ export default function PetDetailScreen() {
   }, [nextFeedingTime, t]);
 
   const previousFeedingTime = useMemo(() => {
-    return getPreviousFeedingTime(feedingSchedules);
-  }, [feedingSchedules]);
+    return getPreviousFeedingTime(feedingSchedules, userTimezone);
+  }, [feedingSchedules, userTimezone]);
 
   const feedingProgress = useMemo(() => {
     if (!nextFeedingTime || !previousFeedingTime) return 0;
@@ -448,8 +464,8 @@ export default function PetDetailScreen() {
                           {formatInTimeZone(activity.startTime, userTimezone, 'HH:mm')}
                         </Text>
                       </View>
-                      <Text style={[styles.timelineDesc, { color: theme.colors.onSurfaceVariant }]}>
-                        {activity.description || activity.notes || t('common.noNotes')}
+                      <Text style={[styles.timelineDesc, { color: theme.colors.onSurfaceVariant }]}> 
+                        {t(`eventTypes.${activity.type}`, activity.type)}
                       </Text>
                     </View>
                   </View>
@@ -492,8 +508,8 @@ export default function PetDetailScreen() {
                           {formatInTimeZone(record.date, userTimezone, 'd MMM', { locale: dateLocale })}
                         </Text>
                       </View>
-                      <Text style={[styles.timelineDesc, { color: theme.colors.onSurfaceVariant }]}>
-                        {record.description || record.notes || t('common.noNotes')}
+                      <Text style={[styles.timelineDesc, { color: theme.colors.onSurfaceVariant }]}> 
+                        {record.title}
                       </Text>
                     </View>
                   </View>

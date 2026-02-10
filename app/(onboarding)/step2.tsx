@@ -202,6 +202,7 @@ export default function OnboardingStep2() {
       {/* Indicators (Designed as bars in this step) */}
       <View style={styles.indicatorContainer}>
         <View style={styles.indicatorInactive} />
+        <View style={styles.indicatorInactive} />
         <View style={styles.indicatorActive} />
         <View style={styles.indicatorInactive} />
       </View>
@@ -247,4 +248,3 @@ export default function OnboardingStep2() {
     </GestureDetector>
   );
 }
-

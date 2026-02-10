@@ -81,12 +81,17 @@ export function PetForm({
       {
         key: 'basic',
         title: t('forms.petForm.steps.basicInfo'),
-        fields: ['name', 'type', 'breed'] as (keyof PetCreateFormInput)[],
+        fields: ['name', 'type'] as (keyof PetCreateFormInput)[],
       },
       {
         key: 'details',
         title: t('forms.petForm.steps.physicalDetails'),
-        fields: ['gender', 'birthDate', 'weight'] as (keyof PetCreateFormInput)[],
+        fields: ['gender', 'birthDate'] as (keyof PetCreateFormInput)[],
+      },
+      {
+        key: 'measurements',
+        title: t('forms.petForm.steps.breedWeight', `${t('forms.petForm.breed')} & ${t('forms.petForm.weight')}`),
+        fields: ['breed', 'weight'] as (keyof PetCreateFormInput)[],
       },
       {
         key: 'photo',
@@ -167,14 +172,6 @@ export function PetForm({
               testID="pet-type-dropdown"
             />
 
-            {/* Pet Breed */}
-            <SmartInput
-              name="breed"
-              placeholder={t('forms.petForm.breedPlaceholder')}
-              maxLength={100}
-              autoCapitalize="words"
-              testID="pet-breed-input"
-            />
           </FormSection>
         )}
 
@@ -194,6 +191,20 @@ export function PetForm({
               testID="pet-birthdate-picker"
             />
 
+          </FormSection>
+        )}
+
+        {currentStep === 2 && (
+          <FormSection title={t('forms.petForm.breed')}>
+            {/* Pet Breed */}
+            <SmartInput
+              name="breed"
+              placeholder={t('forms.petForm.breedPlaceholder')}
+              maxLength={100}
+              autoCapitalize="words"
+              testID="pet-breed-input"
+            />
+
             {/* Weight */}
             <FormWeightInput
               control={form.control}
@@ -207,7 +218,7 @@ export function PetForm({
           </FormSection>
         )}
 
-        {currentStep === 2 && (
+        {currentStep === 3 && (
           <FormSection title={t('forms.petForm.sections.photo')}>
             <SmartPetPhotoPicker name="profilePhoto" disabled={loading} />
           </FormSection>

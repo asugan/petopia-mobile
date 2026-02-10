@@ -7,7 +7,6 @@ import * as Notifications from 'expo-notifications';
 import * as SplashScreen from 'expo-splash-screen';
 import { Stack, useRouter, useSegments } from "expo-router";
 import { QueryClient, QueryClientProvider, focusManager } from '@tanstack/react-query';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import Toast from 'react-native-toast-message';
 import { ApiErrorBoundary } from "@/lib/components/ApiErrorBoundary";
 import { MOBILE_QUERY_CONFIG } from "@/lib/config/queryConfig";
@@ -24,8 +23,11 @@ import { AuthProvider } from "@/providers/AuthProvider";
 import { SubscriptionProvider } from "@/providers/SubscriptionProvider";
 import { useUserSettingsStore } from '@/stores/userSettingsStore';
 import { useEventReminderStore } from '@/stores/eventReminderStore';
+import { useOnboardingStore } from '@/stores/onboardingStore';
 import { useUpcomingEvents } from '@/lib/hooks/useEvents';
+import { useActiveFeedingSchedules } from '@/lib/hooks/useFeedingSchedules';
 import { useReminderScheduler } from '@/hooks/useReminderScheduler';
+import { useBudgetAlertNotifications } from '@/lib/hooks/useUserBudget';
 import { createToastConfig } from '@/lib/toast/toastConfig';
 import { SUBSCRIPTION_ROUTES, TAB_ROUTES } from '@/constants/routes';
 import { LAYOUT } from '@/constants';
@@ -51,7 +53,7 @@ function SubscriptionGate({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     setOnProRequired(() => {
       queryClient.invalidateQueries({ predicate: (query) => query.queryKey[0] === 'subscription' });
-      void presentPaywall();
+      void presentPaywall(undefined, { screen: 'system', source: 'api_pro_required' });
     });
   }, [presentPaywall]);
 
@@ -155,13 +157,31 @@ function OnlineManagerProvider({ children }: { children: React.ReactNode }) {
 function RootLayoutContent() {
   const router = useRouter();
   const { isAuthenticated } = useAuth();
-  const { initialize, theme, setAuthenticated, clear } = useUserSettingsStore();
+  const {
+    initialize,
+    theme,
+    setAuthenticated,
+    clear,
+    settings,
+    updateSettings,
+    updateBaseCurrency,
+  } = useUserSettingsStore();
+  const {
+    hasSeenOnboarding,
+    preferredLanguage,
+    preferredCurrency,
+    preferredTimezone,
+    preferencesSynced,
+    markPreferencesSynced,
+  } = useOnboardingStore();
   const quietHours = useEventReminderStore((state) => state.quietHours);
   const quietHoursEnabled = useEventReminderStore((state) => state.quietHoursEnabled);
   const { data: upcomingEvents = [] } = useUpcomingEvents();
+  const { data: activeFeedingSchedules = [] } = useActiveFeedingSchedules();
   const { scheduleChainForEvent } = useReminderScheduler();
-  const TIMEZONE_STORAGE_KEY = 'last-known-timezone';
+  useBudgetAlertNotifications();
   const rescheduleSignatureRef = useRef<string | null>(null);
+  const preferenceSyncInFlightRef = useRef(false);
 
   useEffect(() => {
     setAuthenticated(isAuthenticated);
@@ -174,6 +194,67 @@ function RootLayoutContent() {
       clear();
     }
   }, [isAuthenticated, initialize, clear]);
+
+  useEffect(() => {
+    if (!isAuthenticated || !hasSeenOnboarding || !settings) {
+      return;
+    }
+
+    if (preferencesSynced || preferenceSyncInFlightRef.current) {
+      return;
+    }
+
+    const shouldUpdateLanguage =
+      !!preferredLanguage && preferredLanguage !== settings.language;
+    const shouldUpdateCurrency =
+      !!preferredCurrency && preferredCurrency !== settings.baseCurrency;
+    const shouldUpdateTimezone =
+      !!preferredTimezone && preferredTimezone !== settings.timezone;
+
+    if (!shouldUpdateLanguage && !shouldUpdateCurrency && !shouldUpdateTimezone) {
+      markPreferencesSynced(true);
+      return;
+    }
+
+    preferenceSyncInFlightRef.current = true;
+
+    const syncPreferences = async () => {
+      try {
+        if ((shouldUpdateLanguage && preferredLanguage) || (shouldUpdateTimezone && preferredTimezone)) {
+          await updateSettings({
+            ...(shouldUpdateLanguage && preferredLanguage
+              ? { language: preferredLanguage }
+              : {}),
+            ...(shouldUpdateTimezone && preferredTimezone
+              ? { timezone: preferredTimezone }
+              : {}),
+          });
+        }
+
+        if (shouldUpdateCurrency && preferredCurrency) {
+          await updateBaseCurrency(preferredCurrency);
+        }
+
+        markPreferencesSynced(true);
+      } catch {
+      } finally {
+        preferenceSyncInFlightRef.current = false;
+      }
+    };
+
+    void syncPreferences();
+  }, [
+    isAuthenticated,
+    hasSeenOnboarding,
+    settings,
+    preferredLanguage,
+    preferredCurrency,
+    preferredTimezone,
+    preferencesSynced,
+    markPreferencesSynced,
+    updateSettings,
+    updateBaseCurrency,
+  ]);
 
   useEffect(() => {
     notificationService.setQuietHours(quietHours);
@@ -200,13 +281,7 @@ function RootLayoutContent() {
     }
 
     const rescheduleUpcomingReminders = async () => {
-      const deviceTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
-      const storedTimezone = await AsyncStorage.getItem(TIMEZONE_STORAGE_KEY);
-      const timezoneForSignature = deviceTimezone || storedTimezone || 'unknown';
-
-      if (deviceTimezone && storedTimezone !== deviceTimezone) {
-        await AsyncStorage.setItem(TIMEZONE_STORAGE_KEY, deviceTimezone);
-      }
+      const timezoneForSignature = settings?.timezone ?? 'unknown';
 
       const quietKey = [
         quietHoursEnabled,
@@ -230,16 +305,41 @@ function RootLayoutContent() {
         .sort()
         .join('|');
 
-      const nextSignature = `${timezoneForSignature}|${quietKey}|${eventsSignature}`;
+      const feedingSignature = activeFeedingSchedules
+        .map((schedule) =>
+          [
+            schedule._id,
+            schedule.time,
+            schedule.days,
+            schedule.reminderMinutesBefore ?? 15,
+            schedule.isActive ? 1 : 0,
+          ].join(':')
+        )
+        .sort()
+        .join('|');
+
+      const nextSignature = `${timezoneForSignature}|${quietKey}|${eventsSignature}|${feedingSignature}`;
       if (rescheduleSignatureRef.current === nextSignature) {
         return;
       }
       rescheduleSignatureRef.current = nextSignature;
 
+      const deliveryChannel = await notificationService.getNotificationDeliveryChannel();
+      if (deliveryChannel === 'backend') {
+        await notificationService.cancelEventAndFeedingNotifications();
+        return;
+      }
+
       for (const event of upcomingEvents) {
         if (event.reminder) {
           await scheduleChainForEvent(event, event.reminderPreset);
         }
+      }
+
+      for (const schedule of activeFeedingSchedules) {
+        await notificationService.syncFeedingReminderForSchedule(schedule, {
+          deliveryChannel: 'local',
+        });
       }
     };
 
@@ -247,9 +347,11 @@ function RootLayoutContent() {
   }, [
     isAuthenticated,
     upcomingEvents,
+    activeFeedingSchedules,
     scheduleChainForEvent,
     quietHours,
     quietHoursEnabled,
+    settings?.timezone,
   ]);
 
   const isDark = theme.mode === 'dark';

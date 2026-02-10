@@ -2,16 +2,15 @@ import { Tabs, useRouter, useSegments } from 'expo-router';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useTheme } from '@/lib/theme';
 import { useTranslation } from 'react-i18next';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useEffect } from 'react';
 import { authClient } from '@/lib/auth/client';
 import { useOnboardingStore } from '@/stores/onboardingStore';
 import { ONBOARDING_ROUTES, AUTH_ROUTES } from '@/constants/routes';
+import { CustomTabBar } from '@/components/navigation/CustomTabBar';
 
 export default function TabLayout() {
   const { theme } = useTheme();
   const { t } = useTranslation();
-  const insets = useSafeAreaInsets();
   const router = useRouter();
   const segments = useSegments();
 
@@ -39,28 +38,16 @@ export default function TabLayout() {
     return null;
   }
 
-  const TAB_BAR_HEIGHT = 60;
-
   return (
     <Tabs
       screenOptions={{
-        tabBarActiveTintColor: theme.colors.primary,
-        tabBarInactiveTintColor: theme.colors.onSurface,
-        tabBarStyle: {
-          backgroundColor: theme.colors.surface,
-          borderTopColor: theme.colors.outline,
-          paddingBottom: insets.bottom,
-          height: TAB_BAR_HEIGHT + insets.bottom,
-        },
-        tabBarLabelStyle: {
-          fontSize: 12,
-          fontWeight: '600',
-        },
+        tabBarHideOnKeyboard: true,
         headerShown: false,
         sceneStyle: {
           backgroundColor: theme.colors.background,
         },
       }}
+      tabBar={(props) => <CustomTabBar {...props} />}
     >
       <Tabs.Screen
         name="index"

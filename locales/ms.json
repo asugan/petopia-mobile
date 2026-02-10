@@ -35,7 +35,7 @@
     "linkOpenError": "Tidak dapat membuka pautan. Sila cuba lagi.",
     "logoutConfirm": "Adakah anda pasti mahu log keluar?",
     "logoutSuccess": "Berjaya log keluar",
-    "freeTrialNotice": "Log masuk dengan media sosial, selaraskan data anda ke awan, dan gunakannya di semua peranti anda."
+    "freeTrialNotice": "Mulakan percuma dengan seekor haiwan peliharaan, kemudian buka Pro apabila anda mahu mengurus seluruh keluarga haiwan peliharaan tanpa had."
   },
   "navigation": {
     "home": "Laman Utama",
@@ -174,7 +174,7 @@
   "limits": {
     "pets": {
       "title": "Tambah Haiwan Tanpa Had",
-      "subtitle": "Urus seluruh keluarga anda di satu tempat dengan Pro.",
+      "subtitle": "Simpan garis masa kesihatan, peringatan dan rekod setiap haiwan peliharaan di satu tempat yang boleh dipercayai.",
       "cta": "Naik Taraf ke Pro"
     },
     "care": {
@@ -182,7 +182,7 @@
     },
     "budgets": {
       "title": "Penjejakan Bajet Pintar",
-      "subtitle": "Urus bajet bulanan dan amaran di satu tempat dengan Pro.",
+      "subtitle": "Kesan perbelanjaan berlebihan lebih awal dan elakkan bil veterinar mengejut dengan amaran proaktif.",
       "cta": "Naik Taraf ke Pro"
     }
   },
@@ -494,6 +494,8 @@
     "appSettings": "Tetapan Aplikasi",
     "notifications": "Notifikasi",
     "reminderNotifications": "Aktifkan notifikasi peringatan",
+    "feedingReminders": "Peringatan pemberian makan",
+    "feedingRemindersDescription": "Pemberitahuan peringatan waktu makan untuk jadual pemberian makan aktif",
     "budgetNotifications": "Notifikasi bajet",
     "budgetNotificationsDescription": "Amaran apabila anda menghampiri had bajet",
     "quietHours": "Waktu Tenang",
@@ -610,7 +612,9 @@
       "ukrainian": "Bahasa Ukraine",
       "indonesian": "Bahasa Indonesia"
     },
-    "selectCurrency": "Pilih mata wang"
+    "selectCurrency": "Pilih mata wang",
+    "timezone": "Zon waktu",
+    "selectTimezone": "Pilih zon waktu"
   },
   "common": {
     "loading": "Memuatkan...",
@@ -669,7 +673,9 @@
     "noNotes": "Tiada nota",
     "hoursMinutes": "{{hours}}j {{minutes}}m",
     "minutesOnly": "{{minutes}}m",
-    "timeLeft": "{{time}} tinggal"
+    "timeLeft": "{{time}} tinggal",
+    "search": "Cari",
+    "info": "Maklumat"
   },
   "errors": {
     "loadingFailed": "Pemuatan Gagal",
@@ -872,6 +878,7 @@
       "steps": {
         "basicInfo": "Maklumat Asas",
         "physicalDetails": "Butiran Fizikal",
+        "breedWeight": "Baka dan Berat",
         "photo": "Foto"
       },
       "sections": {
@@ -1310,10 +1317,15 @@
     "screen3": {
       "title": "Anda Sudah Bersedia!",
       "description": "Segala-galanya sedia untuk mengurus data penjagaan dan kesihatan haiwan anda.",
-      "trialNotice": "Tambah haiwan anda sekarang untuk bermula!",
+      "trialNotice": "Tambah haiwan peliharaan pertama anda sekarang, kemudian buka Pro apabila anda perlukan lebih banyak.",
       "addPet": "Tambah Haiwan Anda",
       "skipPet": "Buat kemudian",
       "addYourFirstPet": "Tambah Haiwan Pertama Anda"
+    },
+    "language": {
+      "title": "Pilih bahasa, mata wang dan zon waktu anda",
+      "description": "Kami akan menggunakan pilihan anda pada skrin seterusnya dan menyegerakkannya selepas log masuk. Anda boleh ubah semuanya pada bila-bila masa dalam Tetapan.",
+      "continue": "Teruskan"
     }
   },
   "serviceResponse": {
@@ -1479,7 +1491,7 @@
     "confirmStartTrialMessage": "14 hari ciri Pro percuma. Tiada kad kredit diperlukan.",
     "confirmStartTrialAction": "Mula Percubaan",
     "upgrade": "Naik Taraf ke Pro",
-    "upgradePrompt": "Buka semua ciri dengan Pro",
+    "upgradePrompt": "Jangan terlepas tugasan penjagaan dan kekalkan semua haiwan peliharaan teratur dengan Pro",
     "upgradeBeforeTrialEnds": "Naik Taraf Sebelum Percubaan Tamat",
     "manageSubscription": "Urus Langganan",
     "cancelSubscription": "Batal Langganan",
@@ -1507,24 +1519,24 @@
     "unlockFeature": "Buka {{feature}}",
     "modal": {
       "title": "Ciri Premium",
-      "description": "Ciri ini hanya tersedia untuk ahli Pro",
-      "featureDescription": "{{feature}} hanya tersedia untuk ahli Pro",
-      "upgradeNow": "Naik Taraf Sekarang",
+      "description": "Naik taraf ke Pro untuk menyatukan semua haiwan peliharaan, peringatan dan rekod kesihatan dalam satu aliran kerja.",
+      "featureDescription": "Naik taraf ke Pro untuk membuka {{feature}} dan mengekalkan rutin anda konsisten.",
+      "upgradeNow": "Lihat pelan",
       "maybeLater": "Mungkin Kemudian",
-      "includes": "Keahlian Pro termasuk:"
+      "includes": "Pro membantu anda dengan:"
     },
     "features": {
       "title": "Ciri Pro",
       "unlimited": "Haiwan Tanpa Had",
-      "unlimitedDesc": "Tambah dan urus semua haiwan anda di satu tempat",
+      "unlimitedDesc": "Simpan semua profil, rekod dan nota haiwan peliharaan di satu tempat",
       "feedingSchedules": "Jadual Pemakanan Tanpa Had",
-      "feedingSchedulesDesc": "Cipta jadual pemakanan tanpa had untuk semua haiwan anda",
+      "feedingSchedulesDesc": "Bina rutin yang boleh dipercayai untuk setiap haiwan tanpa had jadual",
       "budgetTracking": "Penjejakan Bajet & Amaran",
-      "budgetTrackingDesc": "Tetapkan bajet bulanan, jejak perbelanjaan, dan dapatkan amaran",
+      "budgetTrackingDesc": "Kesan kenaikan kos awal dengan amaran bajet bulanan",
       "export": "Eksport Data",
-      "exportDesc": "Eksport perbelanjaan ke CSV atau PDF, jana ringkasan veterinar",
+      "exportDesc": "Kongsi laporan yang jelas dengan keluarga atau doktor haiwan anda",
       "priority": "Sokongan Utama",
-      "priorityDesc": "Dapatkan bantuan apabila anda memerlukannya",
+      "priorityDesc": "Dapatkan bantuan lebih pantas apabila mendesak",
       "petManagement": "Pengurusan Haiwan",
       "healthRecords": "Rekod Kesihatan",
       "calendar": "Kalendar & Acara",
@@ -1534,7 +1546,7 @@
     },
     "paywall": {
       "title": "Buka Petopia Petcare Pro",
-      "subtitle": "Dapatkan yang terbaik daripada Petopia Petcare"
+      "subtitle": "Kekal memantau penjagaan, peringatan dan perbelanjaan setiap haiwan peliharaan"
     },
     "success": {
       "title": "Langganan Berjaya!",
@@ -1546,7 +1558,14 @@
       "message": "Percubaan percuma 14 hari anda telah bermula. Nikmati semua ciri Pro!",
       "button": "Pergi ke Laman Utama"
     },
-    "note": "Pembayaran akan dicaj ke akaun App Store / Google Play anda. Langganan diperbaharui secara automatik kecuali dibatalkan sekurang-kurangnya 24 jam sebelum tamat tempoh semasa. Anda boleh mengurus atau membatalkan langganan anda dalam tetapan akaun App Store / Google Play anda."
+    "note": "Pembayaran dicaj melalui akaun App Store / Google Play anda. Langganan akan diperbaharui secara automatik melainkan dibatalkan sekurang-kurangnya 24 jam sebelum tamat tempoh semasa. Anda boleh mengurus atau membatalkan pada bila-bila masa daripada tetapan akaun kedai anda.",
+    "trust": {
+      "cancelAnytime": "Batalkan pada bila-bila masa melalui tetapan App Store / Google Play",
+      "billedByStore": "Pengebilan diproses dengan selamat melalui akaun gedung aplikasi anda",
+      "secureCheckout": "Tiada kemasukan manual kad kredit diperlukan dalam aplikasi"
+    },
+    "verifyingPurchase": "Pembelian diterima. Sedang mengesahkan langganan anda...",
+    "verificationTakingLong": "Pembelian anda sedang disahkan. Akses akan dibuka secara automatik dalam beberapa saat."
   },
   "downgrade": {
     "title": "Pilih Haiwan Anda",

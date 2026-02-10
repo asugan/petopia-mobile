@@ -35,7 +35,7 @@
     "linkOpenError": "Impossibile aprire il link. Per favore riprova.",
     "logoutConfirm": "Sei sicuro di voler uscire?",
     "logoutSuccess": "Disconnessione effettuata con successo",
-    "freeTrialNotice": "Accedi con i social media, sincronizza i tuoi dati nel cloud e usali su tutti i tuoi dispositivi."
+    "freeTrialNotice": "Inizia gratis con un solo animale, poi sblocca Pro quando vuoi gestire tutta la tua famiglia di animali senza limiti."
   },
   "navigation": {
     "home": "Home",
@@ -174,7 +174,7 @@
   "limits": {
     "pets": {
       "title": "Aggiungi Animali Illimitati",
-      "subtitle": "Gestisci tutta la tua famiglia in un unico posto con Pro.",
+      "subtitle": "Tieni cronologia salute, promemoria e registri di ogni animale in un unico posto affidabile.",
       "cta": "Passa a Pro"
     },
     "care": {
@@ -182,7 +182,7 @@
     },
     "budgets": {
       "title": "Monitoraggio Smart del Budget",
-      "subtitle": "Gestisci budget mensili e avvisi in un unico posto con Pro.",
+      "subtitle": "Individua presto gli eccessi di spesa ed evita fatture veterinarie impreviste con avvisi proattivi.",
       "cta": "Passa a Pro"
     }
   },
@@ -494,6 +494,8 @@
     "appSettings": "Impostazioni App",
     "notifications": "Notifiche",
     "reminderNotifications": "Abilita notifiche promemoria",
+    "feedingReminders": "Promemoria alimentazione",
+    "feedingRemindersDescription": "Notifiche promemoria dei pasti per i piani di alimentazione attivi",
     "budgetNotifications": "Notifiche budget",
     "budgetNotificationsDescription": "Avvisi quando ti avvicini al limite del tuo budget",
     "quietHours": "Ore di Silenzio",
@@ -610,7 +612,9 @@
       "ukrainian": "Ucraino",
       "indonesian": "Bahasa Indonesia"
     },
-    "selectCurrency": "Seleziona valuta"
+    "selectCurrency": "Seleziona valuta",
+    "timezone": "Fuso orario",
+    "selectTimezone": "Seleziona fuso orario"
   },
   "common": {
     "loading": "Caricamento...",
@@ -669,7 +673,9 @@
     "noNotes": "Nessuna nota",
     "hoursMinutes": "{{hours}}o {{minutes}}m",
     "minutesOnly": "{{minutes}}m",
-    "timeLeft": "{{time}} rimanenti"
+    "timeLeft": "{{time}} rimanenti",
+    "search": "Cerca",
+    "info": "Informazione"
   },
   "errors": {
     "loadingFailed": "Caricamento Fallito",
@@ -872,6 +878,7 @@
       "steps": {
         "basicInfo": "Informazioni di Base",
         "physicalDetails": "Dettagli Fisici",
+        "breedWeight": "Razza e Peso",
         "photo": "Foto"
       },
       "sections": {
@@ -1310,10 +1317,15 @@
     "screen3": {
       "title": "Sei Pronto!",
       "description": "Tutto è pronto per gestire la cura e i dati sanitari del tuo animale.",
-      "trialNotice": "Aggiungi subito il tuo animale per iniziare!",
+      "trialNotice": "Aggiungi ora il tuo primo animale, poi sblocca Pro quando ne avrai bisogno.",
       "addPet": "Aggiungi il tuo Animale",
       "skipPet": "Fallo più tardi",
       "addYourFirstPet": "Aggiungi il tuo Primo Animale"
+    },
+    "language": {
+      "title": "Scegli lingua, valuta e fuso orario",
+      "description": "Useremo le tue scelte nelle schermate successive e le sincronizzeremo dopo l'accesso. Puoi modificare tutto in qualsiasi momento nelle Impostazioni.",
+      "continue": "Continua"
     }
   },
   "serviceResponse": {
@@ -1479,7 +1491,7 @@
     "confirmStartTrialMessage": "14 giorni di funzionalità Pro gratuite. Nessuna carta di credito richiesta.",
     "confirmStartTrialAction": "Inizia Prova",
     "upgrade": "Passa a Pro",
-    "upgradePrompt": "Sblocca tutte le funzionalità con Pro",
+    "upgradePrompt": "Non perdere attività di cura e tieni tutti i tuoi animali organizzati con Pro",
     "upgradeBeforeTrialEnds": "Aggiorna prima della fine della prova",
     "manageSubscription": "Gestisci Abbonamento",
     "cancelSubscription": "Annulla Abbonamento",
@@ -1507,24 +1519,24 @@
     "unlockFeature": "Sblocca {{feature}}",
     "modal": {
       "title": "Funzionalità Premium",
-      "description": "Questa funzionalità è disponibile solo per i membri Pro",
-      "featureDescription": "{{feature}} è disponibile solo per i membri Pro",
-      "upgradeNow": "Aggiorna Ora",
+      "description": "Passa a Pro per gestire tutti gli animali, i promemoria e i registri sanitari in un unico flusso.",
+      "featureDescription": "Passa a Pro per sbloccare {{feature}} e mantenere la tua routine costante.",
+      "upgradeNow": "Vedi piani",
       "maybeLater": "Forse più tardi",
-      "includes": "L'abbonamento Pro include:"
+      "includes": "Pro ti aiuta con:"
     },
     "features": {
       "title": "Funzionalità Pro",
       "unlimited": "Animali Illimitati",
-      "unlimitedDesc": "Aggiungi e gestisci tutti i tuoi animali in un unico posto",
+      "unlimitedDesc": "Tieni insieme tutti i profili, registri e note dei tuoi animali",
       "feedingSchedules": "Programmi Alimentari Illimitati",
-      "feedingSchedulesDesc": "Crea programmi alimentari illimitati per tutti i tuoi animali",
+      "feedingSchedulesDesc": "Crea routine affidabili per ogni animale senza limiti di pianificazione",
       "budgetTracking": "Monitoraggio Budget e Avvisi",
-      "budgetTrackingDesc": "Imposta budget mensili, monitora le spese e ricevi avvisi di spesa",
+      "budgetTrackingDesc": "Individua presto l'aumento dei costi con avvisi di budget mensili",
       "export": "Esportazione Dati",
-      "exportDesc": "Esporta le spese in CSV o PDF, genera riepiloghi veterinari",
+      "exportDesc": "Condividi report chiari con la famiglia o il veterinario",
       "priority": "Supporto Prioritario",
-      "priorityDesc": "Ricevi aiuto quando ne hai bisogno",
+      "priorityDesc": "Ricevi aiuto più rapido quando è urgente",
       "petManagement": "Gestione Animali",
       "healthRecords": "Cartelle Cliniche",
       "calendar": "Calendario ed Eventi",
@@ -1534,7 +1546,7 @@
     },
     "paywall": {
       "title": "Sblocca Petopia Petcare Pro",
-      "subtitle": "Ottieni il massimo da Petopia Petcare"
+      "subtitle": "Resta sempre sul pezzo con cura, promemoria e spese per ogni animale"
     },
     "success": {
       "title": "Abbonamento Riuscito!",
@@ -1546,7 +1558,14 @@
       "message": "La tua prova gratuita di 14 giorni è iniziata. Goditi tutte le funzionalità Pro!",
       "button": "Vai alla Homepage"
     },
-    "note": "Il pagamento verrà addebitato sul tuo account App Store / Google Play. Gli abbonamenti si rinnovano automaticamente a meno che non vengano annullati almeno 24 ore prima della fine del periodo corrente. Puoi gestire o annullare il tuo abbonamento nelle impostazioni del tuo account App Store / Google Play."
+    "note": "Il pagamento viene addebitato sul tuo account App Store / Google Play. Gli abbonamenti si rinnovano automaticamente, salvo cancellazione almeno 24 ore prima della fine del periodo corrente. Puoi gestire o annullare in qualsiasi momento dalle impostazioni dell'account dello store.",
+    "trust": {
+      "cancelAnytime": "Puoi annullare in qualsiasi momento dalle impostazioni di App Store / Google Play",
+      "billedByStore": "La fatturazione è gestita in modo sicuro tramite il tuo account dello store",
+      "secureCheckout": "Nessun inserimento manuale della carta di credito all'interno dell'app"
+    },
+    "verifyingPurchase": "Acquisto ricevuto. Verifica del tuo abbonamento in corso...",
+    "verificationTakingLong": "Il tuo acquisto e in verifica. L'accesso verra sbloccato automaticamente tra pochi secondi."
   },
   "downgrade": {
     "title": "Scegli il tuo Animale",

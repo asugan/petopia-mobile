@@ -95,16 +95,6 @@ const ExpenseCard: React.FC<ExpenseCardProps> = ({
           </View>
         </View>
 
-        {expense.description && (
-          <Text
-            variant="bodyMedium"
-            style={[styles.description, { color: theme.colors.onSurfaceVariant }]}
-            numberOfLines={2}
-          >
-            {expense.description}
-          </Text>
-        )}
-
         <View style={styles.footer}>
           <View style={styles.tags}>
             {expense.paymentMethod && (
@@ -121,23 +111,6 @@ const ExpenseCard: React.FC<ExpenseCardProps> = ({
                 textStyle={{ fontSize: 12, color: theme.colors.onSurfaceVariant }}
               >
                 {t(`expenses.paymentMethods.${expense.paymentMethod}`, expense.paymentMethod)}
-              </Chip>
-            )}
-            {expense.vendor && (
-              <Chip
-                mode="outlined"
-                compact
-                style={[
-                  styles.chip,
-                  {
-                    borderColor: theme.colors.outlineVariant,
-                    backgroundColor: theme.colors.surface,
-                  },
-                ]}
-                textStyle={{ fontSize: 12, color: theme.colors.onSurfaceVariant }}
-                icon="store"
-              >
-                {expense.vendor}
               </Chip>
             )}
           </View>
@@ -221,10 +194,6 @@ const styles = StyleSheet.create({
   baseAmount: {
     marginTop: 2,
     marginLeft: 8,
-  },
-  description: {
-    marginBottom: 12,
-    lineHeight: 20,
   },
   footer: {
     flexDirection: 'row',

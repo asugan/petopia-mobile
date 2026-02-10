@@ -35,7 +35,7 @@
     "linkOpenError": "Nie można otworzyć linku. Spróbuj ponownie.",
     "logoutConfirm": "Czy na pewno chcesz się wylogować?",
     "logoutSuccess": "Pomyślnie wylogowano",
-    "freeTrialNotice": "Zaloguj się przez media społecznościowe, zsynchronizuj dane w chmurze i korzystaj na wszystkich swoich urządzeniach."
+    "freeTrialNotice": "Zacznij za darmo z jednym pupilem, a potem odblokuj Pro, gdy chcesz zarządzać całą swoją rodziną zwierzaków bez limitów."
   },
   "navigation": {
     "home": "Główna",
@@ -174,7 +174,7 @@
   "limits": {
     "pets": {
       "title": "Dodaj nieograniczoną liczbę zwierząt",
-      "subtitle": "Zarządzaj całą swoją rodziną w jednym miejscu dzięki Pro.",
+      "subtitle": "Trzymaj historię zdrowia, przypomnienia i zapisy każdego pupila w jednym, zaufanym miejscu.",
       "cta": "Przejdź na Pro"
     },
     "care": {
@@ -182,7 +182,7 @@
     },
     "budgets": {
       "title": "Inteligentne śledzenie budżetu",
-      "subtitle": "Zarządzaj miesięcznymi budżetami i alertami w jednym miejscu dzięki Pro.",
+      "subtitle": "Wykrywaj nadmierne wydatki wcześniej i unikaj niespodziewanych rachunków u weterynarza dzięki proaktywnym alertom.",
       "cta": "Przejdź na Pro"
     }
   },
@@ -494,6 +494,8 @@
     "appSettings": "Ustawienia aplikacji",
     "notifications": "Powiadomienia",
     "reminderNotifications": "Włącz powiadomienia przypomnień",
+    "feedingReminders": "Przypomnienia karmienia",
+    "feedingRemindersDescription": "Powiadomienia o przypomnieniach posiłków dla aktywnych harmonogramów karmienia",
     "budgetNotifications": "Powiadomienia o budżecie",
     "budgetNotificationsDescription": "Alerty o zbliżaniu się do limitu budżetu",
     "quietHours": "Ciche godziny",
@@ -610,7 +612,9 @@
       "ukrainian": "Ukraiński",
       "indonesian": "Bahasa Indonesia"
     },
-    "selectCurrency": "Wybierz walutę"
+    "selectCurrency": "Wybierz walutę",
+    "timezone": "Strefa czasowa",
+    "selectTimezone": "Wybierz strefę czasową"
   },
   "common": {
     "loading": "Ładowanie...",
@@ -669,7 +673,9 @@
     "noNotes": "Brak notatek",
     "hoursMinutes": "{{hours}}h {{minutes}}m",
     "minutesOnly": "{{minutes}}m",
-    "timeLeft": "pozostało {{time}}"
+    "timeLeft": "pozostało {{time}}",
+    "search": "Szukaj",
+    "info": "Informacja"
   },
   "errors": {
     "loadingFailed": "Ładowanie nie powiodło się",
@@ -872,6 +878,7 @@
       "steps": {
         "basicInfo": "Podstawowe informacje",
         "physicalDetails": "Szczegóły fizyczne",
+        "breedWeight": "Rasa i Waga",
         "photo": "Zdjęcie"
       },
       "sections": {
@@ -1310,10 +1317,15 @@
     "screen3": {
       "title": "Jesteś gotowy!",
       "description": "Wszystko jest gotowe do zarządzania opieką i danymi zdrowotnymi pupila.",
-      "trialNotice": "Dodaj swojego zwierzaka teraz, aby zacząć!",
+      "trialNotice": "Dodaj teraz pierwszego pupila, a Pro odblokuj, gdy będziesz potrzebować więcej.",
       "addPet": "Dodaj zwierzaka",
       "skipPet": "Zrobię to później",
       "addYourFirstPet": "Dodaj swoje pierwsze zwierzę"
+    },
+    "language": {
+      "title": "Wybierz język, walutę i strefę czasową",
+      "description": "Użyjemy Twoich wyborów na kolejnych ekranach i zsynchronizujemy je po zalogowaniu. Wszystko możesz zmienić w dowolnym momencie w Ustawieniach.",
+      "continue": "Dalej"
     }
   },
   "serviceResponse": {
@@ -1479,7 +1491,7 @@
     "confirmStartTrialMessage": "14 dni darmowych funkcji Pro. Karta kredytowa nie jest wymagana.",
     "confirmStartTrialAction": "Zacznij okres próbny",
     "upgrade": "Przejdź na Pro",
-    "upgradePrompt": "Odblokuj wszystkie funkcje z Pro",
+    "upgradePrompt": "Nie przegap zadań opieki i utrzymuj wszystkie zwierzaki w porządku dzięki Pro",
     "upgradeBeforeTrialEnds": "Przejdź na Pro przed końcem okresu próbnego",
     "manageSubscription": "Zarządzaj subskrypcją",
     "cancelSubscription": "Anuluj subskrypcję",
@@ -1507,24 +1519,24 @@
     "unlockFeature": "Odblokuj {{feature}}",
     "modal": {
       "title": "Funkcja Premium",
-      "description": "Ta funkcja jest dostępna tylko dla członków Pro",
-      "featureDescription": "{{feature}} jest dostępna tylko dla członków Pro",
-      "upgradeNow": "Przejdź na Pro teraz",
+      "description": "Przejdź na Pro, aby mieć wszystkie zwierzaki, przypomnienia i dane zdrowotne w jednym przepływie.",
+      "featureDescription": "Przejdź na Pro, aby odblokować {{feature}} i utrzymać stałą rutynę.",
+      "upgradeNow": "Zobacz plany",
       "maybeLater": "Może później",
-      "includes": "Członkostwo Pro obejmuje:"
+      "includes": "Pro pomaga w:"
     },
     "features": {
       "title": "Funkcje Pro",
       "unlimited": "Nieograniczona liczba zwierząt",
-      "unlimitedDesc": "Dodawaj i zarządzaj wszystkimi swoimi zwierzętami w jednym miejscu",
+      "unlimitedDesc": "Trzymaj wszystkie profile, zapisy i notatki o pupilach w jednym miejscu",
       "feedingSchedules": "Nieograniczone harmonogramy karmienia",
-      "feedingSchedulesDesc": "Twórz nieograniczone harmonogramy karmienia dla wszystkich swoich zwierząt",
+      "feedingSchedulesDesc": "Buduj niezawodne rutyny dla każdego pupila bez ograniczeń harmonogramu",
       "budgetTracking": "Śledzenie budżetu i alerty",
-      "budgetTrackingDesc": "Ustawiaj miesięczne budżety, śledź wydatki i otrzymuj alerty",
+      "budgetTrackingDesc": "Szybciej wykrywaj rosnące koszty dzięki miesięcznym alertom budżetowym",
       "export": "Eksport danych",
-      "exportDesc": "Eksportuj wydatki do CSV lub PDF, generuj podsumowania weterynaryjne",
+      "exportDesc": "Udostępniaj przejrzyste raporty rodzinie lub weterynarzowi",
       "priority": "Wsparcie priorytetowe",
-      "priorityDesc": "Uzyskaj pomoc, gdy jej potrzebujesz",
+      "priorityDesc": "Uzyskaj szybszą pomoc, gdy sprawa jest pilna",
       "petManagement": "Zarządzanie zwierzętami",
       "healthRecords": "Rekordy zdrowia",
       "calendar": "Kalendarz i Wydarzenia",
@@ -1534,7 +1546,7 @@
     },
     "paywall": {
       "title": "Odblokuj Petopia Petcare Pro",
-      "subtitle": "Wykorzystaj w pełni Petopia Petcare"
+      "subtitle": "Bądź na bieżąco z opieką, przypomnieniami i wydatkami dla każdego pupila"
     },
     "success": {
       "title": "Subskrypcja udana!",
@@ -1546,7 +1558,14 @@
       "message": "Twój 14-dniowy darmowy okres próbny się rozpoczął. Korzystaj z funkcji Pro!",
       "button": "Wróć do strony głównej"
     },
-    "note": "Płatność zostanie pobrana z Twojego konta App Store / Google Play. Subskrypcje odnawiają się automatycznie, chyba że zostaną anulowane co najmniej 24 godziny przed końcem bieżącego okresu. Możesz zarządzać subskrypcją lub ją anulować w ustawieniach konta App Store / Google Play."
+    "note": "Płatność jest pobierana przez konto App Store / Google Play. Subskrypcje odnawiają się automatycznie, chyba że zostaną anulowane co najmniej 24 godziny przed końcem bieżącego okresu. Możesz nimi zarządzać lub anulować je w dowolnym momencie w ustawieniach konta sklepu.",
+    "trust": {
+      "cancelAnytime": "Możesz anulować w dowolnym momencie w ustawieniach App Store / Google Play",
+      "billedByStore": "Płatność jest bezpiecznie obsługiwana przez konto sklepu z aplikacjami",
+      "secureCheckout": "W aplikacji nie trzeba ręcznie wpisywać danych karty"
+    },
+    "verifyingPurchase": "Zakup otrzymany. Weryfikujemy twoja subskrypcje...",
+    "verificationTakingLong": "Twoj zakup jest weryfikowany. Dostep zostanie automatycznie odblokowany za kilka sekund."
   },
   "downgrade": {
     "title": "Wybierz swojego zwierzaka",

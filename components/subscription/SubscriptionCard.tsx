@@ -7,6 +7,8 @@ import { useTheme } from '@/lib/theme';
 import { useSubscription } from '@/lib/hooks/useSubscription';
 import { REVENUECAT_CONFIG } from '@/lib/revenuecat/config';
 import { SUBSCRIPTION_ROUTES } from '@/constants/routes';
+import { useUserTimezone } from '@/lib/hooks/useUserTimezone';
+import { formatInTimeZone } from '@/lib/utils/date';
 
 interface SubscriptionCardProps {
   showManageButton?: boolean;
@@ -20,8 +22,9 @@ interface SubscriptionCardProps {
  * Used in Settings screen and other places where subscription info is needed
  */
 export function SubscriptionCard({ showManageButton = true, compact = false, onUpgrade, onTrialStartSuccess }: SubscriptionCardProps) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { theme } = useTheme();
+  const timezone = useUserTimezone();
   const router = useRouter();
   const {
     subscriptionStatus,
@@ -43,12 +46,11 @@ export function SubscriptionCard({ showManageButton = true, compact = false, onU
   const formatDate = (dateString: string | null): string => {
     if (!dateString) return '';
     try {
-      const date = new Date(dateString);
-      return date.toLocaleDateString(undefined, {
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric',
-      });
+      return formatInTimeZone(
+        dateString,
+        timezone,
+        i18n.language === 'tr' ? 'd MMMM yyyy' : 'MMMM d, yyyy'
+      );
     } catch {
       return dateString;
     }
@@ -93,7 +95,7 @@ export function SubscriptionCard({ showManageButton = true, compact = false, onU
       if (onUpgrade) {
         await onUpgrade();
       } else {
-        router.push(SUBSCRIPTION_ROUTES.main);
+        router.push(`${SUBSCRIPTION_ROUTES.main}?source=subscription_card_upgrade`);
       }
     } catch (error) {
       console.error('Upgrade error:', error);
@@ -124,7 +126,7 @@ export function SubscriptionCard({ showManageButton = true, compact = false, onU
       if (onUpgrade) {
         await onUpgrade();
       } else {
-        router.push(SUBSCRIPTION_ROUTES.main);
+        router.push(`${SUBSCRIPTION_ROUTES.main}?source=subscription_card`);
       }
     } catch (error) {
       console.error('Navigation error:', error);
@@ -279,7 +281,10 @@ export function SubscriptionCard({ showManageButton = true, compact = false, onU
                       {
                         text: t('subscription.confirmStartTrialAction'),
                         onPress: async () => {
-                          await startTrial();
+                          await startTrial({
+                            screen: 'subscription_card',
+                            source: 'subscription_card',
+                          });
                           onTrialStartSuccess?.();
                         },
                       },

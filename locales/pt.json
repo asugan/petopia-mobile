@@ -35,7 +35,7 @@
     "linkOpenError": "Não foi possível abrir o link. Tente novamente.",
     "logoutConfirm": "Tem certeza que deseja sair?",
     "logoutSuccess": "Desconectado com sucesso",
-    "freeTrialNotice": "Entre com as redes sociais, sincronize seus dados na nuvem e use-os em todos os seus dispositivos."
+    "freeTrialNotice": "Comece grátis com um pet e desbloqueie o Pro quando quiser gerenciar toda a sua família de pets sem limites."
   },
   "navigation": {
     "home": "Início",
@@ -174,7 +174,7 @@
   "limits": {
     "pets": {
       "title": "Adicionar Pets Ilimitados",
-      "subtitle": "Gerencie toda sua família em um só lugar com o Pro.",
+      "subtitle": "Mantenha a linha do tempo de saúde, lembretes e registros de cada pet em um único lugar confiável.",
       "cta": "Mudar para Pro"
     },
     "care": {
@@ -182,7 +182,7 @@
     },
     "budgets": {
       "title": "Controle de Gastos Smart",
-      "subtitle": "Gerencie orçamentos e alertas em um só lugar com o Pro.",
+      "subtitle": "Detecte gastos excessivos cedo e evite contas veterinárias inesperadas com alertas proativos.",
       "cta": "Mudar para Pro"
     }
   },
@@ -494,6 +494,8 @@
     "appSettings": "Configurações do App",
     "notifications": "Notificações",
     "reminderNotifications": "Ativar lembretes",
+    "feedingReminders": "Lembretes de alimentação",
+    "feedingRemindersDescription": "Notificações de lembrete de refeição para cronogramas de alimentação ativos",
     "budgetNotifications": "Alertas de orçamento",
     "budgetNotificationsDescription": "Avisar quando o gasto estiver alto",
     "quietHours": "Horas de Silêncio",
@@ -610,7 +612,9 @@
       "ukrainian": "Ucraniano",
       "indonesian": "Bahasa Indonesia"
     },
-    "selectCurrency": "Selecionar moeda"
+    "selectCurrency": "Selecionar moeda",
+    "timezone": "Fuso horário",
+    "selectTimezone": "Selecionar fuso horário"
   },
   "common": {
     "loading": "Carregando...",
@@ -669,7 +673,9 @@
     "noNotes": "Sem notas",
     "hoursMinutes": "{{hours}}h {{minutes}}m",
     "minutesOnly": "{{minutes}}m",
-    "timeLeft": "restam {{time}}"
+    "timeLeft": "restam {{time}}",
+    "search": "Buscar",
+    "info": "Informacao"
   },
   "errors": {
     "loadingFailed": "Falha no Carregamento",
@@ -872,6 +878,7 @@
       "steps": {
         "basicInfo": "Básico",
         "physicalDetails": "Físico",
+        "breedWeight": "Raça e Peso",
         "photo": "Foto"
       },
       "sections": {
@@ -1310,10 +1317,15 @@
     "screen3": {
       "title": "Pronto!",
       "description": "Tudo certo para começar.",
-      "trialNotice": "Add seu pet agora!",
+      "trialNotice": "Adicione seu primeiro pet agora e desbloqueie o Pro quando precisar de mais.",
       "addPet": "Add Pet",
       "skipPet": "Depois",
       "addYourFirstPet": "Primeiro Pet"
+    },
+    "language": {
+      "title": "Escolha seu idioma, moeda e fuso horário",
+      "description": "Usaremos suas seleções nas próximas telas e as sincronizaremos após o login. Você pode alterar tudo a qualquer momento em Configurações.",
+      "continue": "Continuar"
     }
   },
   "serviceResponse": {
@@ -1479,7 +1491,7 @@
     "confirmStartTrialMessage": "14 dias Pro grátis. Sem cartão.",
     "confirmStartTrialAction": "Começar",
     "upgrade": "Assinar Pro",
-    "upgradePrompt": "Todas as funções com o Pro",
+    "upgradePrompt": "Não perca tarefas de cuidado e mantenha todos os pets organizados com o Pro",
     "upgradeBeforeTrialEnds": "Assine antes de acabar",
     "manageSubscription": "Gerenciar",
     "cancelSubscription": "Cancelar",
@@ -1507,24 +1519,24 @@
     "unlockFeature": "Desbloquear {{feature}}",
     "modal": {
       "title": "Função Pro",
-      "description": "Apenas para Pro",
-      "featureDescription": "{{feature}} é só para Pro",
-      "upgradeNow": "Assinar Já",
+      "description": "Faça upgrade para o Pro para manter todos os pets, lembretes e registros de saúde em um único fluxo.",
+      "featureDescription": "Faça upgrade para o Pro para desbloquear {{feature}} e manter sua rotina consistente.",
+      "upgradeNow": "Ver planos",
       "maybeLater": "Depois",
-      "includes": "Pro inclui:"
+      "includes": "O Pro ajuda você com:"
     },
     "features": {
       "title": "Funções Pro",
       "unlimited": "Pets Ilimitados",
-      "unlimitedDesc": "Todos os seus pets em um lugar",
+      "unlimitedDesc": "Mantenha todos os perfis, registros e notas dos seus pets no mesmo lugar",
       "feedingSchedules": "Planos Ilimitados",
-      "feedingSchedulesDesc": "Sem limites de horários",
+      "feedingSchedulesDesc": "Crie rotinas confiáveis para cada pet sem limites de agenda",
       "budgetTracking": "Orçamentos e Alertas",
-      "budgetTrackingDesc": "Tracking e avisos",
+      "budgetTrackingDesc": "Perceba o aumento de custos cedo com alertas mensais de orçamento",
       "export": "Exportar Dados",
-      "exportDesc": "CSV, PDF e relatórios",
+      "exportDesc": "Compartilhe relatórios claros com a família ou com o veterinário",
       "priority": "Suporte Prioritário",
-      "priorityDesc": "Ajuda rápida",
+      "priorityDesc": "Receba ajuda mais rápida quando for urgente",
       "petManagement": "Gestão",
       "healthRecords": "Saúde",
       "calendar": "Agenda",
@@ -1534,7 +1546,7 @@
     },
     "paywall": {
       "title": "Petopia Pro",
-      "subtitle": "O melhor para seu pet"
+      "subtitle": "Fique por dentro dos cuidados, lembretes e gastos de cada pet"
     },
     "success": {
       "title": "Sucesso!",
@@ -1546,7 +1558,14 @@
       "message": "Seu teste de 14 dias começou.",
       "button": "Ir ao Início"
     },
-    "note": "Cobrança via App Store / Google Play. Renova sozinho salvo cancelamento 24h antes."
+    "note": "O pagamento é cobrado pela sua conta App Store / Google Play. As assinaturas renovam automaticamente, a menos que sejam canceladas pelo menos 24 horas antes do fim do período atual. Você pode gerenciar ou cancelar a qualquer momento nas configurações da conta da loja.",
+    "trust": {
+      "cancelAnytime": "Pode cancelar a qualquer momento nas definições da App Store / Google Play",
+      "billedByStore": "A faturação é processada com segurança através da sua conta da loja de apps",
+      "secureCheckout": "Não é necessário inserir manualmente os dados do cartão na aplicação"
+    },
+    "verifyingPurchase": "Compra recebida. Verificando a sua subscricao...",
+    "verificationTakingLong": "A sua compra esta a ser verificada. O acesso sera desbloqueado automaticamente em alguns segundos."
   },
   "downgrade": {
     "title": "Escolha seu Pet",

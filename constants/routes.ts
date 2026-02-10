@@ -4,6 +4,7 @@ import type { Href } from 'expo-router';
 export const ONBOARDING_ROUTES = {
   index: '/(onboarding)' as const,
   step1: '/(onboarding)' as const,
+  welcome: '/(onboarding)/welcome' as const,
   step2: '/(onboarding)/step2' as const,
   completed: '/(onboarding)/completed' as const,
 };

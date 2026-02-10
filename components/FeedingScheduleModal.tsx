@@ -58,13 +58,13 @@ export function FeedingScheduleModal({
       if (schedule) {
         // Update existing schedule
         if (willBeActive && !schedule.isActive && !isProUser && activeFeedingSchedules.length >= 1) {
-          router.push(SUBSCRIPTION_ROUTES.main);
+          router.push(`${SUBSCRIPTION_ROUTES.main}?source=feeding_modal_activate_limit`);
           return;
         }
       } else {
         // Create new schedule
         if (willBeActive && !isProUser && activeFeedingSchedules.length >= 1) {
-          router.push(SUBSCRIPTION_ROUTES.main);
+          router.push(`${SUBSCRIPTION_ROUTES.main}?source=feeding_modal_create_limit`);
           return;
         }
       }

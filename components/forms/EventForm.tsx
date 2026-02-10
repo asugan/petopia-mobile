@@ -114,7 +114,7 @@ export function EventForm({
   // Form actions
   const handleCancel = React.useCallback(() => {
     if (isDirty) {
-      Alert.alert(t('common.unsavedChanges'), t('common.unsavedChangesMessageShort'), [
+      Alert.alert(t('common.unsavedChanges'), t('events.unsavedChangesMessageShort'), [
         {
           text: t('common.cancel'),
           style: 'cancel',
@@ -133,7 +133,7 @@ export function EventForm({
   const isEditMode = !!event;
 
   const steps = React.useMemo(() => {
-    const detailFields: (keyof EventFormData)[] = ['title', 'type', 'description'];
+    const detailFields: (keyof EventFormData)[] = ['type', 'title'];
 
     if (eventType === 'vaccination') {
       detailFields.push('vaccineName');
@@ -143,9 +143,9 @@ export function EventForm({
       detailFields.push('medicationName', 'dosage', 'frequency');
     }
 
-    const optionFields: (keyof EventFormData)[] = ['reminder', 'notes'];
+    const scheduleFields: (keyof EventFormData)[] = ['startDate', 'startTime', 'isRecurring', 'reminder'];
     if (reminderEnabled) {
-      optionFields.push('reminderPreset');
+      scheduleFields.push('reminderPreset');
     }
 
     return [
@@ -162,12 +162,7 @@ export function EventForm({
       {
         key: 'schedule',
         title: t('events.steps.schedule'),
-        fields: ['startDate', 'startTime', 'endDate', 'endTime', 'location', 'isRecurring'] as (keyof EventFormData)[],
-      },
-      {
-        key: 'options',
-        title: t('events.steps.options'),
-        fields: optionFields,
+        fields: scheduleFields,
       },
     ];
   }, [t, eventType, reminderEnabled]);
@@ -237,6 +232,13 @@ export function EventForm({
 
         {currentStep === 1 && (
           <FormSection title={t('events.eventDetails')}>
+            {/* Event Type */}
+            <SmartEventTypePicker
+              name="type"
+              label={t('events.type')}
+              testID={testID ? `${testID}-type` : 'event-form-type'}
+            />
+
             {/* Title */}
             <SmartInput
               name="title"
@@ -244,13 +246,6 @@ export function EventForm({
               placeholder={t('events.titlePlaceholder')}
               label={t('events.title')}
               testID={`${testID}-title`}
-            />
-
-            {/* Event Type */}
-            <SmartEventTypePicker
-              name="type"
-              label={t('events.type')}
-              testID={testID ? `${testID}-type` : 'event-form-type'}
             />
 
             {/* Event type suggestions */}
@@ -263,15 +258,6 @@ export function EventForm({
               </Text>
             </View>
 
-            {/* Description */}
-            <SmartInput
-              name="description"
-              placeholder={t('events.descriptionPlaceholder')}
-              label={t('events.description')}
-              multiline
-              numberOfLines={3}
-              testID={`${testID}-description`}
-            />
           </FormSection>
         )}
 
@@ -327,56 +313,6 @@ export function EventForm({
 
         {currentStep === 2 && (
           <FormSection title={t('common.dateTime')}>
-            {/* Start DateTime */}
-            <SmartDateTimePicker
-              dateName="startDate"
-              timeName="startTime"
-              required
-              label={t('events.startTime')}
-              testID={`${testID}-start`}
-            />
-
-            {/* End DateTime */}
-            <SmartDateTimePicker
-              dateName="endDate"
-              timeName="endTime"
-              label={t('events.endTime')}
-              testID={`${testID}-end`}
-            />
-
-            {/* Location */}
-            <SmartInput
-              name="location"
-              placeholder={t('events.locationPlaceholder')}
-              label={t('events.locationField')}
-              testID={`${testID}-location`}
-            />
-          </FormSection>
-        )}
-
-        {/* Recurrence Settings - Step 2 */}
-        {currentStep === 2 && (
-          <>
-            {isEditMode && editType === 'single' && (
-              <View style={[styles.recurrenceWarningBox, { backgroundColor: theme.colors.tertiaryContainer }]}>
-                <Text
-                  variant="bodySmall"
-                  style={[styles.recurrenceWarningText, { color: theme.colors.onTertiaryContainer }]}
-                >
-                  {t('events.singleEditWarning', 'This change will only affect this occurrence. Recurrence settings are disabled.')}
-                </Text>
-              </View>
-            )}
-            <RecurrenceSettings
-              disabled={loading || isSubmitting || (isEditMode && editType === 'single')}
-              testID={`${testID}-recurrence`}
-            />
-          </>
-        )}
-
-        {currentStep === 3 && (
-          <FormSection title={t('common.additionalOptions')}>
-            {/* Reminder Switch */}
             <SmartSwitch
               name="reminder"
               label={t('events.enableReminder')}
@@ -406,14 +342,28 @@ export function EventForm({
               </View>
             )}
 
-            {/* Notes */}
-            <SmartInput
-              name="notes"
-              placeholder={t('events.notesPlaceholder')}
-              multiline
-              numberOfLines={3}
-              maxLength={1000}
-              testID={`${testID}-notes`}
+            {/* Recurrence Settings */}
+            {isEditMode && editType === 'single' && (
+              <View style={[styles.recurrenceWarningBox, { backgroundColor: theme.colors.tertiaryContainer }]}> 
+                <Text
+                  variant="bodySmall"
+                  style={[styles.recurrenceWarningText, { color: theme.colors.onTertiaryContainer }]}
+                >
+                  {t('events.singleEditWarning', 'This change will only affect this occurrence. Recurrence settings are disabled.')}
+                </Text>
+              </View>
+            )}
+            <RecurrenceSettings
+              disabled={loading || isSubmitting || (isEditMode && editType === 'single')}
+              testID={`${testID}-recurrence`}
+            />
+
+            <SmartDateTimePicker
+              dateName="startDate"
+              timeName="startTime"
+              required
+              label={t('common.dateTime')}
+              testID={`${testID}-start`}
             />
           </FormSection>
         )}

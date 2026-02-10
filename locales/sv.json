@@ -35,7 +35,7 @@
     "linkOpenError": "Kunde inte öppna länken. Försök igen.",
     "logoutConfirm": "Är du säker på att du vill logga ut?",
     "logoutSuccess": "Utloggad",
-    "freeTrialNotice": "Logga in med sociala medier, synkronisera din data till molnet och använd den på alla dina enheter."
+    "freeTrialNotice": "Börja gratis med ett husdjur och lås upp Pro när du vill hantera hela din husdjursfamilj utan begränsningar."
   },
   "navigation": {
     "home": "Hem",
@@ -174,7 +174,7 @@
   "limits": {
     "pets": {
       "title": "Lägg till obegränsat antal husdjur",
-      "subtitle": "Hantera hela din familj på ett ställe med Pro.",
+      "subtitle": "Samla varje husdjurs hälsohistorik, påminnelser och journaler på ett och samma pålitliga ställe.",
       "cta": "Uppgradera till Pro"
     },
     "care": {
@@ -182,7 +182,7 @@
     },
     "budgets": {
       "title": "Smart budgetuppföljning",
-      "subtitle": "Hantera månadsbudgetar och varningar på ett ställe med Pro.",
+      "subtitle": "Upptäck överutgifter tidigt och undvik oväntade veterinärkostnader med proaktiva varningar.",
       "cta": "Uppgradera till Pro"
     }
   },
@@ -494,6 +494,8 @@
     "appSettings": "Appinställningar",
     "notifications": "Aviseringar",
     "reminderNotifications": "Aktivera påminnelseaviseringar",
+    "feedingReminders": "Matningspåminnelser",
+    "feedingRemindersDescription": "Aviseringar om måltidspåminnelser för aktiva matningsscheman",
     "budgetNotifications": "Budgetaviseringar",
     "budgetNotificationsDescription": "Varningar när du närmar dig din budgetgräns",
     "quietHours": "Tysta timmar",
@@ -610,7 +612,9 @@
       "croatian": "Croatian",
       "ukrainian": "Ukrainska",
       "indonesian": "Bahasa Indonesia"
-    }
+    },
+    "timezone": "Tidszon",
+    "selectTimezone": "Välj tidszon"
   },
   "common": {
     "loading": "Laddar...",
@@ -669,7 +673,9 @@
     "noNotes": "Inga anteckningar",
     "hoursMinutes": "{{hours}}h {{minutes}}m",
     "minutesOnly": "{{minutes}}m",
-    "timeLeft": "{{time}} kvar"
+    "timeLeft": "{{time}} kvar",
+    "search": "Sök",
+    "info": "Info"
   },
   "errors": {
     "loadingFailed": "Laddning misslyckades",
@@ -872,6 +878,7 @@
       "steps": {
         "basicInfo": "Grundläggande information",
         "physicalDetails": "Fysiska detaljer",
+        "breedWeight": "Ras och Vikt",
         "photo": "Foto"
       },
       "sections": {
@@ -1310,10 +1317,15 @@
     "screen3": {
       "title": "Du är redo!",
       "description": "Allt är redo för att hantera ditt husdjurs vård- och hälsodata.",
-      "trialNotice": "Lägg till ditt husdjur nu för att komma igång!",
+      "trialNotice": "Lägg till ditt första husdjur nu och lås upp Pro när du behöver mer.",
       "addPet": "Lägg till ditt husdjur",
       "skipPet": "Gör det senare",
       "addYourFirstPet": "Lägg till ditt första husdjur"
+    },
+    "language": {
+      "title": "Välj språk, valuta och tidszon",
+      "description": "Vi använder dina val på nästa skärmar och synkroniserar dem efter inloggning. Du kan ändra allt när som helst i Inställningar.",
+      "continue": "Fortsätt"
     }
   },
   "serviceResponse": {
@@ -1479,7 +1491,7 @@
     "confirmStartTrialMessage": "14 dagar med Pro-funktioner gratis. Inget kreditkort krävs.",
     "confirmStartTrialAction": "Starta testperiod",
     "upgrade": "Uppgradera till Pro",
-    "upgradePrompt": "Lås upp alla funktioner med Pro",
+    "upgradePrompt": "Missa inga vårduppgifter och håll alla husdjur organiserade med Pro",
     "upgradeBeforeTrialEnds": "Uppgradera innan testperioden går ut",
     "manageSubscription": "Hantera prenumeration",
     "cancelSubscription": "Avbryt prenumeration",
@@ -1507,24 +1519,24 @@
     "unlockFeature": "Lås upp {{feature}}",
     "modal": {
       "title": "Premiumfunktion",
-      "description": "Denna funktion är endast tillgänglig för Pro-medlemmar",
-      "featureDescription": "{{feature}} är endast tillgänglig för Pro-medlemmar",
-      "upgradeNow": "Uppgradera nu",
+      "description": "Uppgradera till Pro för att samla alla husdjur, påminnelser och hälsodata i ett enda flöde.",
+      "featureDescription": "Uppgradera till Pro för att låsa upp {{feature}} och hålla din rutin konsekvent.",
+      "upgradeNow": "Se planer",
       "maybeLater": "Kanske senare",
-      "includes": "Pro-medlemskap inkluderar:"
+      "includes": "Pro hjälper dig med:"
     },
     "features": {
       "title": "Pro-funktioner",
       "unlimited": "Obegränsat antal husdjur",
-      "unlimitedDesc": "Lägg till och hantera alla dina husdjur på ett ställe",
+      "unlimitedDesc": "Samla alla husdjursprofiler, journaler och anteckningar på ett ställe",
       "feedingSchedules": "Obegränsat antal matningsscheman",
-      "feedingSchedulesDesc": "Skapa obegränsat antal matningsscheman för alla dina husdjur",
+      "feedingSchedulesDesc": "Bygg pålitliga rutiner för varje husdjur utan schemabegränsningar",
       "budgetTracking": "Budgetuppföljning & varningar",
-      "budgetTrackingDesc": "Ställ in månadsbudgetar, spåra utgifter och få varningar",
+      "budgetTrackingDesc": "Upptäck ökande kostnader tidigt med månatliga budgetvarningar",
       "export": "Dataexport",
-      "exportDesc": "Exportera utgifter till CSV eller PDF, skapa veterinärsammanfattningar",
+      "exportDesc": "Dela tydliga rapporter med familjen eller veterinären",
       "priority": "Prioriterad support",
-      "priorityDesc": "Få hjälp när du behöver det",
+      "priorityDesc": "Få snabbare hjälp när det är bråttom",
       "petManagement": "Husdjurshantering",
       "healthRecords": "Hälsojournaler",
       "calendar": "Kalender & Händelser",
@@ -1534,7 +1546,7 @@
     },
     "paywall": {
       "title": "Lås upp Petopia Petcare Pro",
-      "subtitle": "Få ut det mesta av Petopia Petcare"
+      "subtitle": "Håll koll på vård, påminnelser och utgifter för varje husdjur"
     },
     "success": {
       "title": "Prenumerationen lyckades!",
@@ -1546,7 +1558,14 @@
       "message": "Din 14-dagars gratis testperiod har startat. Njut av alla Pro-funktioner!",
       "button": "Gå till startsidan"
     },
-    "note": "Betalningen debiteras ditt App Store / Google Play-konto. Prenumerationer förnyas automatiskt om de inte avbryts minst 24 timmar före slutet av den aktuella perioden. Du kan hantera eller avbryta din prenumeration i dina kontoinställningar i App Store / Google Play."
+    "note": "Betalning debiteras via ditt App Store / Google Play-konto. Prenumerationer förnyas automatiskt om de inte avslutas minst 24 timmar före slutet av den aktuella perioden. Du kan hantera eller avsluta när som helst i butikskontots inställningar.",
+    "trust": {
+      "cancelAnytime": "Du kan avsluta när som helst i inställningarna för App Store / Google Play",
+      "billedByStore": "Debiteringen hanteras säkert via ditt appbutikskonto",
+      "secureCheckout": "Du behöver inte ange kortuppgifter manuellt i appen"
+    },
+    "verifyingPurchase": "Kop mottaget. Verifierar din prenumeration...",
+    "verificationTakingLong": "Ditt kop verifieras. Atkomst lasses upp automatiskt om nagra sekunder."
   },
   "downgrade": {
     "title": "Välj ditt husdjur",

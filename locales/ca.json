@@ -35,7 +35,7 @@
     "linkOpenError": "No s'ha pogut obrir l'enllaç. Torna-ho a provar.",
     "logoutConfirm": "Estàs segur que vols tancar la sessió?",
     "logoutSuccess": "Sessió tancada correctament",
-    "freeTrialNotice": "Inicia sessió amb xarxes socials, sincronitza les teves dades al núvol i utilitza-les en tots els teus dispositius."
+    "freeTrialNotice": "Comença gratis amb una mascota i desbloqueja Pro quan vulguis gestionar tota la teva família de mascotes sense límits."
   },
   "navigation": {
     "home": "Inici",
@@ -174,7 +174,7 @@
   "limits": {
     "pets": {
       "title": "Afegeix mascotes il·limitades",
-      "subtitle": "Gestiona tota la teva família en un sol lloc amb Pro.",
+      "subtitle": "Mantén la cronologia de salut, els recordatoris i els registres de cada mascota en un únic lloc fiable.",
       "cta": "Millora a Pro"
     },
     "care": {
@@ -182,7 +182,7 @@
     },
     "budgets": {
       "title": "Seguiment intel·ligent del pressupost",
-      "subtitle": "Gestiona els pressupostos mensuals i les alertes en un sol lloc amb Pro.",
+      "subtitle": "Detecta la despesa excessiva aviat i evita factures veterinàries inesperades amb alertes proactives.",
       "cta": "Millora a Pro"
     }
   },
@@ -494,6 +494,8 @@
     "appSettings": "Configuració de l'aplicació",
     "notifications": "Notificacions",
     "reminderNotifications": "Activa recordatoris",
+    "feedingReminders": "Recordatoris d'alimentació",
+    "feedingRemindersDescription": "Notificacions de recordatori d'àpats per als plans d'alimentació actius",
     "budgetNotifications": "Notificacions de pressupost",
     "budgetNotificationsDescription": "Alertes quan t'acostis al teu límit de pressupost",
     "quietHours": "Hores de silenci",
@@ -610,7 +612,9 @@
       "croatian": "Croatian",
       "ukrainian": "Ucraïnès",
       "indonesian": "Bahasa Indonesia"
-    }
+    },
+    "timezone": "Zona horària",
+    "selectTimezone": "Selecciona la zona horària"
   },
   "common": {
     "loading": "Carregant...",
@@ -669,7 +673,9 @@
     "noNotes": "Sense notes",
     "hoursMinutes": "{{hours}}h {{minutes}}m",
     "minutesOnly": "{{minutes}}m",
-    "timeLeft": "queden {{time}}"
+    "timeLeft": "queden {{time}}",
+    "search": "Cerca",
+    "info": "Informacio"
   },
   "errors": {
     "loadingFailed": "Error en la càrrega",
@@ -872,6 +878,7 @@
       "steps": {
         "basicInfo": "Informació bàsica",
         "physicalDetails": "Detalls físics",
+        "breedWeight": "Raça i Pes",
         "photo": "Foto"
       },
       "sections": {
@@ -1310,10 +1317,15 @@
     "screen3": {
       "title": "Ja estàs a punt!",
       "description": "Tot està a punt per gestionar les dades de cura i salut de la teva mascota.",
-      "trialNotice": "Afegeix la teva mascota ara per començar!",
+      "trialNotice": "Afegeix ara la teva primera mascota i desbloqueja Pro quan en necessitis més.",
       "addPet": "Afegeix la teva mascota",
       "skipPet": "Fes-ho més tard",
       "addYourFirstPet": "Afegeix la teva primera mascota"
+    },
+    "language": {
+      "title": "Tria idioma, moneda i zona horària",
+      "description": "Farem servir les teves seleccions a les pantalles següents i les sincronitzarem després d’iniciar sessió. Ho pots canviar tot en qualsevol moment a Configuració.",
+      "continue": "Continua"
     }
   },
   "serviceResponse": {
@@ -1479,7 +1491,7 @@
     "confirmStartTrialMessage": "14 dies de funcions Pro gratuïtes. No cal targeta de crèdit.",
     "confirmStartTrialAction": "Comença la prova",
     "upgrade": "Millora a Pro",
-    "upgradePrompt": "Desbloqueja totes les funcions amb Pro",
+    "upgradePrompt": "No et perdis tasques de cura i mantén totes les teves mascotes organitzades amb Pro",
     "upgradeBeforeTrialEnds": "Millora abans que s'acabi la prova",
     "manageSubscription": "Gestiona la subscripció",
     "cancelSubscription": "Cancel·la la subscripció",
@@ -1507,24 +1519,24 @@
     "unlockFeature": "Desbloqueja {{feature}}",
     "modal": {
       "title": "Funció prèmium",
-      "description": "Aquesta funció només està disponible per als membres Pro",
-      "featureDescription": "{{feature}} només està disponible per als membres Pro",
-      "upgradeNow": "Millora ara",
+      "description": "Passa a Pro per tenir totes les mascotes, recordatoris i registres de salut en un sol flux de treball.",
+      "featureDescription": "Passa a Pro per desbloquejar {{feature}} i mantenir la rutina constant.",
+      "upgradeNow": "Veure plans",
       "maybeLater": "Potser més tard",
-      "includes": "La subscripció Pro inclou:"
+      "includes": "Pro t'ajuda amb:"
     },
     "features": {
       "title": "Funcions Pro",
       "unlimited": "Mascotes il·limitades",
-      "unlimitedDesc": "Afegeix i gestiona totes les teves mascotes en un sol lloc",
+      "unlimitedDesc": "Guarda tots els perfils, registres i notes de les teves mascotes en un sol lloc",
       "feedingSchedules": "Horaris d'alimentació il·limitats",
-      "feedingSchedulesDesc": "Crea horaris d'alimentació il·limitats per a totes les teves mascotes",
+      "feedingSchedulesDesc": "Crea rutines fiables per a cada mascota sense límits d'horaris",
       "budgetTracking": "Seguiment del pressupost i alertes",
-      "budgetTrackingDesc": "Estableix pressupostos mensuals, fes el seguiment de les despeses i rep alertes de despesa",
+      "budgetTrackingDesc": "Detecta l'augment de costos aviat amb alertes mensuals de pressupost",
       "export": "Exportació de dades",
-      "exportDesc": "Exporta despeses a CSV o PDF, genera resums per al veterinari",
+      "exportDesc": "Comparteix informes clars amb la família o el veterinari",
       "priority": "Suport prioritari",
-      "priorityDesc": "Rep ajuda quan la necessitis",
+      "priorityDesc": "Obtén ajuda més ràpida quan sigui urgent",
       "petManagement": "Gestió de mascotes",
       "healthRecords": "Registres de salut",
       "calendar": "Calendari i esdeveniments",
@@ -1534,7 +1546,7 @@
     },
     "paywall": {
       "title": "Desbloqueja Petopia Petcare Pro",
-      "subtitle": "Treu el màxim profit de Petopia Petcare"
+      "subtitle": "Controla la cura, els recordatoris i les despeses de cada mascota"
     },
     "success": {
       "title": "Subscripció realitzada correctament!",
@@ -1546,7 +1558,14 @@
       "message": "La teva prova gratuïta de 14 dies ha començat. Gaudeix de totes les funcions Pro!",
       "button": "Ves a la pàgina d'inici"
     },
-    "note": "El pagament es carregarà al teu compte d'App Store / Google Play. Les subscripcions es renoven automàticament tret que es cancel·lin almenys 24 hores abans del final del període actual. Pots gestionar o cancel·lar la teva subscripció a la configuració del teu compte d'App Store / Google Play."
+    "note": "El pagament es carrega al teu compte d'App Store / Google Play. Les subscripcions es renoven automàticament tret que es cancel·lin almenys 24 hores abans del final del període actual. Pots gestionar-les o cancel·lar-les en qualsevol moment des de la configuració del compte de la botiga.",
+    "trust": {
+      "cancelAnytime": "Pots cancel·lar en qualsevol moment des de la configuració de l'App Store / Google Play",
+      "billedByStore": "La facturació es gestiona de manera segura a través del teu compte de la botiga",
+      "secureCheckout": "No cal introduir manualment la targeta dins de l'aplicació"
+    },
+    "verifyingPurchase": "S'ha rebut la compra. S'esta verificant la teva subscripcio...",
+    "verificationTakingLong": "S'esta verificant la teva compra. L'acces s'activara automaticament en uns segons."
   },
   "downgrade": {
     "title": "Tria la teva mascota",

@@ -9,7 +9,8 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { useTranslation } from "react-i18next";
 import { addMonths, subMonths, addWeeks, subWeeks } from "date-fns";
 import { MonthView } from "@/components/calendar/MonthView";
-import { toISODateString } from "@/lib/utils/dateConversion";
+import { formatInTimeZone } from "@/lib/utils/date";
+import { toLocalDateKey } from "@/lib/utils/timezoneDate";
 import { WeekView } from "@/components/calendar/WeekView";
 import {
   EventsBottomSheet,
@@ -70,7 +71,7 @@ export default function CalendarScreen() {
 
   const { data: upcomingEvents = [] } = useUpcomingEvents();
   const userTimezone = useUserTimezone();
-  const formattedDate = toISODateString(currentDate) ?? "";
+  const formattedDate = toLocalDateKey(currentDate, userTimezone);
   const {
     data: selectedDateEvents = [],
     isLoading: isLoadingSelected,
@@ -133,11 +134,11 @@ export default function CalendarScreen() {
 
   const handleToggleReminder = useCallback(
     async (event: Event, nextValue: boolean) => {
-      const eventDate =
-        toISODateString(new Date(event.startTime)) ??
-        event.startTime.split("T")[0];
+      const eventDate = formatInTimeZone(event.startTime, userTimezone, "yyyy-MM-dd");
 
-      queryClient.setQueryData<Event[]>(eventKeys.calendar(eventDate), (old) =>
+      const calendarQueryKey = eventKeys.calendarScoped(eventDate, userTimezone);
+
+      queryClient.setQueryData<Event[]>(calendarQueryKey, (old) =>
         old?.map((item) =>
           item._id === event._id ? { ...item, reminder: nextValue } : item,
         ),
@@ -161,21 +162,21 @@ export default function CalendarScreen() {
           },
         });
         queryClient.invalidateQueries({
-          queryKey: eventKeys.calendar(eventDate),
+          queryKey: calendarQueryKey,
         });
         queryClient.invalidateQueries({
           queryKey: eventKeys.list({ petId: "all" }),
         });
       } catch {
         queryClient.invalidateQueries({
-          queryKey: eventKeys.calendar(eventDate),
+          queryKey: calendarQueryKey,
         });
         queryClient.invalidateQueries({
           queryKey: eventKeys.list({ petId: "all" }),
         });
       }
     },
-    [queryClient, updateEventMutation],
+    [queryClient, updateEventMutation, userTimezone],
   );
 
   const handleAddEvent = async () => {

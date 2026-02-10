@@ -39,7 +39,6 @@ import {
   useUserBudgetStatus,
   useSetUserBudget,
   useDeleteUserBudget,
-  useBudgetAlertNotifications,
 } from "@/lib/hooks/useUserBudget";
 import ExpenseCard from "@/components/ExpenseCard";
 import ExpenseFormModal from "@/components/ExpenseFormModal";
@@ -153,7 +152,6 @@ export default function FinanceScreen() {
   // Fetch user budget (new simplified system)
   const { data: budget, isLoading: budgetLoading } = useUserBudget();
   const { data: budgetStatus } = useUserBudgetStatus();
-  useBudgetAlertNotifications();
 
   // Mutations
   const createExpenseMutation = useCreateExpense();
@@ -234,7 +232,7 @@ export default function FinanceScreen() {
   // Budget handlers (new simplified system)
   const handleCreateBudget = async () => {
     if (!isProUser) {
-      router.push(SUBSCRIPTION_ROUTES.main);
+      router.push(`${SUBSCRIPTION_ROUTES.main}?source=finance_create_budget`);
       return;
     }
     setEditingBudget(undefined);
@@ -247,7 +245,7 @@ export default function FinanceScreen() {
     }
 
     if (!isProUser) {
-      router.push(SUBSCRIPTION_ROUTES.main);
+      router.push(`${SUBSCRIPTION_ROUTES.main}?source=finance_edit_budget`);
       return;
     }
 
@@ -277,7 +275,7 @@ export default function FinanceScreen() {
 
   const handleBudgetFormSubmit = async (data: SetUserBudgetInput) => {
     if (!isProUser) {
-      router.push(SUBSCRIPTION_ROUTES.main);
+      router.push(`${SUBSCRIPTION_ROUTES.main}?source=finance_budget_submit`);
       return;
     }
 
@@ -313,7 +311,7 @@ export default function FinanceScreen() {
 
   const handleExportCsv = async () => {
     if (!isProUser) {
-      router.push(SUBSCRIPTION_ROUTES.main);
+      router.push(`${SUBSCRIPTION_ROUTES.main}?source=finance_export_csv`);
       return;
     }
 
@@ -333,7 +331,7 @@ export default function FinanceScreen() {
 
   const handleExportPdf = async () => {
     if (!isProUser) {
-      router.push(SUBSCRIPTION_ROUTES.main);
+      router.push(`${SUBSCRIPTION_ROUTES.main}?source=finance_export_pdf`);
       return;
     }
 
@@ -370,7 +368,7 @@ export default function FinanceScreen() {
     }
 
     if (!isProUser) {
-      router.push(SUBSCRIPTION_ROUTES.main);
+      router.push(`${SUBSCRIPTION_ROUTES.main}?source=finance_vet_summary`);
       return;
     }
 
@@ -505,7 +503,7 @@ export default function FinanceScreen() {
                 },
                 pressed && styles.chipPressed,
               ]}
-              onPress={() => router.push(SUBSCRIPTION_ROUTES.main)}
+              onPress={() => router.push(`${SUBSCRIPTION_ROUTES.main}?source=finance_budget_upgrade_card`)}
             >
               <View style={[styles.upgradeIconWrap, { backgroundColor: theme.colors.primaryContainer }]}
               >

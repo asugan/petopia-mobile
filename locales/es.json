@@ -35,7 +35,7 @@
     "linkOpenError": "No se pudo abrir el enlace. Inténtalo de nuevo.",
     "logoutConfirm": "¿Estás seguro de que quieres cerrar sesión?",
     "logoutSuccess": "Sesión cerrada con éxito",
-    "freeTrialNotice": "Inicia sesión con redes sociales, sincroniza tus datos en la nube y úsalos en todos tus dispositivos."
+    "freeTrialNotice": "Empieza gratis con una mascota y desbloquea Pro cuando quieras gestionar toda tu familia de mascotas sin límites."
   },
   "navigation": {
     "home": "Inicio",
@@ -174,7 +174,7 @@
   "limits": {
     "pets": {
       "title": "Añadir mascotas ilimitadas",
-      "subtitle": "Gestiona a toda tu familia en un solo lugar con Pro.",
+      "subtitle": "Mantén el historial de salud, recordatorios y registros de cada mascota en un solo lugar confiable.",
       "cta": "Mejorar a Pro"
     },
     "care": {
@@ -182,7 +182,7 @@
     },
     "budgets": {
       "title": "Seguimiento inteligente",
-      "subtitle": "Gestiona presupuestos mensuales y alertas en un solo lugar con Pro.",
+      "subtitle": "Detecta el exceso de gasto a tiempo y evita facturas veterinarias inesperadas con alertas proactivas.",
       "cta": "Mejorar a Pro"
     }
   },
@@ -494,6 +494,8 @@
     "appSettings": "Ajustes de la App",
     "notifications": "Notificaciones",
     "reminderNotifications": "Activar recordatorios",
+    "feedingReminders": "Recordatorios de alimentación",
+    "feedingRemindersDescription": "Notificaciones de recordatorio de comidas para horarios de alimentación activos",
     "budgetNotifications": "Notificaciones de presupuesto",
     "budgetNotificationsDescription": "Alertas cuando te acercas al límite",
     "quietHours": "Horas de silencio",
@@ -610,7 +612,9 @@
       "ukrainian": "Ucraniano",
       "indonesian": "Bahasa Indonesia"
     },
-    "selectCurrency": "Seleccionar moneda"
+    "selectCurrency": "Seleccionar moneda",
+    "timezone": "Zona horaria",
+    "selectTimezone": "Seleccionar zona horaria"
   },
   "common": {
     "loading": "Cargando...",
@@ -669,7 +673,9 @@
     "noNotes": "Sin notas",
     "hoursMinutes": "{{hours}}h {{minutes}}m",
     "minutesOnly": "{{minutes}}m",
-    "timeLeft": "faltan {{time}}"
+    "timeLeft": "faltan {{time}}",
+    "search": "Buscar",
+    "info": "Informacion"
   },
   "errors": {
     "loadingFailed": "Carga fallida",
@@ -867,6 +873,7 @@
       "steps": {
         "basicInfo": "Básico",
         "physicalDetails": "Físico",
+        "breedWeight": "Raza y Peso",
         "photo": "Foto"
       },
       "sections": {
@@ -1305,10 +1312,15 @@
     "screen3": {
       "title": "¡Listo!",
       "description": "Todo preparado para cuidar de tu mascota.",
-      "trialNotice": "¡Añade a tu mascota para empezar!",
+      "trialNotice": "Añade ahora tu primera mascota y desbloquea Pro cuando necesites más.",
       "addPet": "Añadir mascota",
       "skipPet": "Luego",
       "addYourFirstPet": "Primera mascota"
+    },
+    "language": {
+      "title": "Elige tu idioma, moneda y zona horaria",
+      "description": "Usaremos tus selecciones en las siguientes pantallas y las sincronizaremos después de iniciar sesión. Puedes cambiar todo en cualquier momento en Ajustes.",
+      "continue": "Continuar"
     }
   },
   "serviceResponse": {
@@ -1474,7 +1486,7 @@
     "confirmStartTrialMessage": "14 días Pro gratis. Sin tarjeta.",
     "confirmStartTrialAction": "Empezar",
     "upgrade": "Mejorar a Pro",
-    "upgradePrompt": "Todas las funciones con Pro",
+    "upgradePrompt": "No te pierdas tareas de cuidado y mantén todas tus mascotas organizadas con Pro",
     "upgradeBeforeTrialEnds": "Mejora antes de que acabe",
     "manageSubscription": "Gestionar",
     "cancelSubscription": "Cancelar",
@@ -1502,24 +1514,24 @@
     "unlockFeature": "Desbloquear {{feature}}",
     "modal": {
       "title": "Función Pro",
-      "description": "Solo para miembros Pro",
-      "featureDescription": "{{feature}} es solo para miembros Pro",
-      "upgradeNow": "Mejorar ya",
+      "description": "Actualiza a Pro para mantener todas las mascotas, recordatorios y registros de salud en un solo flujo de trabajo.",
+      "featureDescription": "Actualiza a Pro para desbloquear {{feature}} y mantener tu rutina constante.",
+      "upgradeNow": "Ver planes",
       "maybeLater": "Luego",
-      "includes": "Pro incluye:"
+      "includes": "Pro te ayuda con:"
     },
     "features": {
       "title": "Funciones Pro",
       "unlimited": "Mascotas ilimitadas",
-      "unlimitedDesc": "Gestiona a todos en un lugar",
+      "unlimitedDesc": "Mantén juntos todos los perfiles, registros y notas de tus mascotas",
       "feedingSchedules": "Horarios ilimitados",
-      "feedingSchedulesDesc": "Sin límites para tus mascotas",
+      "feedingSchedulesDesc": "Crea rutinas fiables para cada mascota sin límites de horarios",
       "budgetTracking": "Presupuestos y alertas",
-      "budgetTrackingDesc": "Límites, tracking y avisos",
+      "budgetTrackingDesc": "Detecta subidas de costes a tiempo con alertas mensuales de presupuesto",
       "export": "Exportar datos",
-      "exportDesc": "CSV, PDF y resúmenes vet",
+      "exportDesc": "Comparte informes claros con la familia o con tu veterinario",
       "priority": "Soporte prioritario",
-      "priorityDesc": "Ayuda cuando la necesites",
+      "priorityDesc": "Obtén ayuda más rápida cuando sea urgente",
       "petManagement": "Mascotas",
       "healthRecords": "Salud",
       "calendar": "Calendario",
@@ -1529,7 +1541,7 @@
     },
     "paywall": {
       "title": "Petopia Petcare Pro",
-      "subtitle": "Lo mejor de Petopia Petcare"
+      "subtitle": "Mantente al día con el cuidado, los recordatorios y los gastos de cada mascota"
     },
     "success": {
       "title": "¡Éxito!",
@@ -1541,7 +1553,14 @@
       "message": "Tu prueba de 14 días ha empezado. ¡Disfruta!",
       "button": "Ir al inicio"
     },
-    "note": "El pago se cargará en tu cuenta de App Store / Google Play. Se renueva solo salvo cancelación 24h antes. Gestiona en tus ajustes."
+    "note": "El pago se carga a tu cuenta de App Store / Google Play. Las suscripciones se renuevan automáticamente, a menos que se cancelen al menos 24 horas antes de que termine el periodo actual. Puedes gestionarlas o cancelarlas en cualquier momento desde los ajustes de tu cuenta de la tienda.",
+    "trust": {
+      "cancelAnytime": "Puedes cancelar en cualquier momento desde los ajustes de App Store / Google Play",
+      "billedByStore": "La facturación se gestiona de forma segura a través de tu cuenta de la tienda",
+      "secureCheckout": "No necesitas introducir la tarjeta manualmente dentro de la app"
+    },
+    "verifyingPurchase": "Compra recibida. Verificando tu suscripcion...",
+    "verificationTakingLong": "Tu compra se esta verificando. El acceso se desbloqueara automaticamente en unos segundos."
   },
   "downgrade": {
     "title": "Elige tu mascota",

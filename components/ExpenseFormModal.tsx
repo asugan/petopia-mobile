@@ -3,6 +3,7 @@ import { Modal as RNModal, View, StyleSheet, Platform } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Text, Button } from '@/components/ui';
 import { useTheme } from '@/lib/theme';
+import { useTranslation } from 'react-i18next';
 import ExpenseForm from './ExpenseForm';
 import { CreateExpenseInput, Expense } from '../lib/types';
 
@@ -24,6 +25,7 @@ const ExpenseFormModal: React.FC<ExpenseFormModalProps> = ({
   isSubmitting,
 }) => {
   const { theme } = useTheme();
+  const { t } = useTranslation();
 
   const animationType = Platform.select({
     ios: 'slide' as const,
@@ -44,8 +46,8 @@ const ExpenseFormModal: React.FC<ExpenseFormModalProps> = ({
     >
       <SafeAreaView style={[styles.container, { backgroundColor: theme.colors.surface }]}>
         <View style={styles.header}>
-          <Text style={[styles.title, { color: theme.colors.onSurface }]}>
-            {expense ? 'Edit Expense' : 'Add Expense'}
+          <Text style={[styles.title, { color: theme.colors.onSurface }]}> 
+            {expense ? t('common.edit', 'Edit') : t('expenses.addExpense', 'Add Expense')}
           </Text>
           <Button
             mode="text"
@@ -53,7 +55,7 @@ const ExpenseFormModal: React.FC<ExpenseFormModalProps> = ({
             disabled={isSubmitting}
             compact
           >
-            Close
+            {t('common.close', 'Close')}
           </Button>
         </View>
 

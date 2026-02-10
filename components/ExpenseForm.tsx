@@ -10,7 +10,6 @@ import { CreateExpenseInput as CreateExpenseInputType, Expense, ExpenseCategory 
 import { toISODateString } from '../lib/utils/dateConversion';
 import { SmartCategoryPicker } from './forms/SmartCategoryPicker';
 import { SmartDatePicker } from './forms/SmartDatePicker';
-import { SmartInput } from './forms/SmartInput';
 import { SmartNumberInput } from './forms/SmartNumberInput';
 import { SmartPaymentMethodPicker } from './forms/SmartPaymentMethodPicker';
 import { SmartPetPicker } from './forms/SmartPetPicker';
@@ -42,10 +41,7 @@ const ExpenseForm: React.FC<ExpenseFormProps> = ({
     category: initialData?.category || ('food' as ExpenseCategory),
     amount: initialData?.amount || 0,
     paymentMethod: initialData?.paymentMethod || undefined,
-    description: initialData?.description || '',
     date: initialData?.date || toISODateString(new Date()) || '',
-    vendor: initialData?.vendor || '',
-    notes: initialData?.notes || '',
   };
 
   const methods = useForm<ExpenseCreateFormInput>({
@@ -62,25 +58,35 @@ const ExpenseForm: React.FC<ExpenseFormProps> = ({
     [onSubmit]
   );
 
+  const isEditMode = Boolean(initialData);
+
   const steps = React.useMemo(
-    () => [
-      {
-        key: 'petCategory',
-        title: t('expenses.steps.petCategory'),
-        fields: ['petId', 'category'] as (keyof ExpenseCreateFormInput)[],
-      },
-      {
-        key: 'amount',
-        title: t('expenses.steps.amount'),
-        fields: ['amount', 'paymentMethod'] as (keyof ExpenseCreateFormInput)[],
-      },
-      {
-        key: 'details',
-        title: t('expenses.steps.details'),
-        fields: ['date', 'description', 'vendor', 'notes'] as (keyof ExpenseCreateFormInput)[],
-      },
-    ],
-    [t]
+    () => {
+      const createSteps = [
+        {
+          key: 'pet',
+          title: t('expenses.steps.petCategory'),
+          fields: ['petId'] as (keyof ExpenseCreateFormInput)[],
+        },
+        {
+          key: 'amount',
+          title: t('expenses.steps.amount'),
+          fields: ['category', 'amount'] as (keyof ExpenseCreateFormInput)[],
+        },
+        {
+          key: 'details',
+          title: t('expenses.steps.details'),
+          fields: ['date', 'paymentMethod'] as (keyof ExpenseCreateFormInput)[],
+        },
+      ];
+
+      if (isEditMode) {
+        return createSteps.slice(1);
+      }
+
+      return createSteps;
+    },
+    [t, isEditMode]
   );
 
   const totalSteps = steps.length;
@@ -111,6 +117,9 @@ const ExpenseForm: React.FC<ExpenseFormProps> = ({
     handleSubmit(handleFormSubmit)();
   }, [trigger, handleSubmit, handleFormSubmit]);
 
+  const categoryAndAmountStep = isEditMode ? 0 : 1;
+  const dateAndPaymentStep = isEditMode ? 1 : 2;
+
   return (
     <FormProvider {...methods}>
       <KeyboardAwareView style={[styles.container, { backgroundColor: theme.colors.background }]} contentContainerStyle={styles.form}>
@@ -121,26 +130,26 @@ const ExpenseForm: React.FC<ExpenseFormProps> = ({
           totalSteps={totalSteps}
         />
 
-        {currentStep === 0 && (
+        {!isEditMode && currentStep === 0 && (
           <>
             {/* Pet Selection */}
-            {!initialData && (
-              <FormSection title={t('forms.petSelection', 'Pet Selection')}>
-                <SmartPetPicker
-                  name="petId"
-                  label={t('common.selectPet')}
-                  required
-                />
-              </FormSection>
-            )}
-
-            {/* Category Picker */}
-            <SmartCategoryPicker name="category" />
+            <FormSection title={t('forms.petSelection', 'Pet Selection')}>
+              <SmartPetPicker
+                name="petId"
+                label={t('common.selectPet')}
+                required
+              />
+            </FormSection>
           </>
         )}
 
-        {currentStep === 1 && (
+        {currentStep === categoryAndAmountStep && (
           <>
+            <SmartCategoryPicker
+              name="category"
+              label={t('expenses.category', 'Category')}
+            />
+
             {/* Amount */}
             <SmartNumberInput
               name="amount"
@@ -152,16 +161,10 @@ const ExpenseForm: React.FC<ExpenseFormProps> = ({
               left={<TextInput.Icon icon="cash-outline" />}
             />
 
-            {/* Payment Method Picker */}
-            <SmartPaymentMethodPicker
-              name="paymentMethod"
-              label={t('expenses.paymentMethod', 'Payment Method')}
-              optional
-            />
           </>
         )}
 
-        {currentStep === 2 && (
+        {currentStep === dateAndPaymentStep && (
           <>
             {/* Date Picker */}
             <SmartDatePicker
@@ -172,29 +175,10 @@ const ExpenseForm: React.FC<ExpenseFormProps> = ({
               maximumDate={new Date()}
             />
 
-            {/* Description */}
-            <SmartInput
-              name="description"
-              label={t('expenses.description', 'Description')}
-              multiline
-              numberOfLines={3}
-              left={<TextInput.Icon icon="text" />}
-            />
-
-            {/* Vendor */}
-            <SmartInput
-              name="vendor"
-              label={t('expenses.vendor', 'Vendor')}
-              left={<TextInput.Icon icon="storefront-outline" />}
-            />
-
-            {/* Notes */}
-            <SmartInput
-              name="notes"
-              label={t('expenses.notes', 'Notes')}
-              multiline
-              numberOfLines={3}
-              left={<TextInput.Icon icon="document-text-outline" />}
+            <SmartPaymentMethodPicker
+              name="paymentMethod"
+              label={t('expenses.paymentMethod', 'Payment Method')}
+              optional
             />
           </>
         )}

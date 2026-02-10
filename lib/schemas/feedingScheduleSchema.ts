@@ -1,7 +1,11 @@
 import { z } from 'zod';
+import { addDays, subDays } from 'date-fns';
+import { formatInTimeZone, fromZonedTime } from 'date-fns-tz';
 import { DAYS_OF_WEEK, FOOD_TYPES } from '../../constants';
 import { objectIdSchema, timeFormatValidator } from './core/validators';
 import { t } from './core/i18n';
+import { resolveEffectiveTimezone } from '@/lib/utils/timezone';
+import { toLocalDateKey } from '@/lib/utils/timezoneDate';
 
 // Re-export constants for convenience
 export { DAYS_OF_WEEK, FOOD_TYPES };
@@ -12,16 +16,13 @@ export type FoodType = (typeof FOOD_TYPES)[keyof typeof FOOD_TYPES];
 // Valid day names for validation
 const VALID_DAYS = Object.values(DAYS_OF_WEEK);
 
-// Helper function to validate days string (comma-separated day names)
-const isValidDaysString = (days: string): boolean => {
-  if (!days || days.trim() === '') return false;
+export const normalizeFeedingDays = (days: string | string[] | undefined | null): DayOfWeek[] => {
+  const rawDays = Array.isArray(days) ? days : typeof days === 'string' ? days.split(',') : [];
+  const normalized = rawDays
+    .map((day) => day.trim().toLowerCase())
+    .filter((day): day is DayOfWeek => VALID_DAYS.includes(day as DayOfWeek));
 
-  const dayArray = days.split(',').map((d) => d.trim().toLowerCase());
-
-  // Check if all days are valid
-  return (
-    dayArray.every((day) => VALID_DAYS.includes(day as DayOfWeek)) && dayArray.length > 0
-  );
+  return Array.from(new Set(normalized));
 };
 
 // Form input schema (for create/edit forms with multi-select days)
@@ -62,7 +63,7 @@ export const feedingScheduleFormSchema = () =>
 // Type inference from the form schema
 export type FeedingScheduleFormData = z.infer<ReturnType<typeof feedingScheduleFormSchema>>;
 
-// API schema (matches backend expectations with comma-separated days string)
+// API schema (array-first; still accepts legacy comma-separated string)
 export const feedingScheduleSchema = () =>
   z.object({
     petId: z
@@ -84,12 +85,12 @@ export const feedingScheduleSchema = () =>
       .min(1, { message: t('forms.validation.feedingSchedule.amountRequired') })
       .max(50, { message: t('forms.validation.feedingSchedule.amountMax') }),
 
-    days: z
-      .string()
-      .min(1, { message: t('forms.validation.feedingSchedule.daysRequired') })
-      .refine(isValidDaysString, {
-        error: () => t('forms.validation.feedingSchedule.daysInvalidFormat'),
-      }),
+    days: z.preprocess(
+      (value) => normalizeFeedingDays(value as string | string[] | undefined),
+      z
+        .array(z.enum(Object.values(DAYS_OF_WEEK) as [string, ...string[]]))
+        .min(1, { message: t('forms.validation.feedingSchedule.daysRequired') })
+    ),
 
     isActive: z.boolean().optional().default(true),
   });
@@ -129,10 +130,10 @@ export const updateFeedingScheduleSchema = () =>
       .optional(),
 
     days: z
-      .string()
-      .refine(isValidDaysString, {
-        error: () => t('forms.validation.feedingSchedule.daysInvalid'),
-      })
+      .preprocess(
+        (value) => normalizeFeedingDays(value as string | string[] | undefined),
+        z.array(z.enum(Object.values(DAYS_OF_WEEK) as [string, ...string[]]))
+      )
       .optional(),
 
     isActive: z.boolean().optional(),
@@ -144,15 +145,12 @@ export type UpdateFeedingScheduleInput = z.infer<ReturnType<typeof updateFeeding
 
 // Helper function to transform form data to API format
 export const transformFormDataToAPI = (formData: FeedingScheduleFormData): FeedingScheduleData => {
-  // Convert days array to comma-separated string
-  const daysString = formData.daysArray.join(',');
-
   return {
     petId: formData.petId,
     time: formData.time,
     foodType: formData.foodType,
     amount: formData.amount,
-    days: daysString,
+    days: formData.daysArray,
     isActive: formData.isActive ?? true,
   };
 };
@@ -161,10 +159,7 @@ export const transformFormDataToAPI = (formData: FeedingScheduleFormData): Feedi
 export const transformAPIDataToForm = (
   apiData: FeedingScheduleData
 ): FeedingScheduleFormData => {
-  // Convert comma-separated days string to array
-  const daysArray = apiData.days.split(',').map((d) => d.trim()) as (
-    (typeof DAYS_OF_WEEK)[keyof typeof DAYS_OF_WEEK]
-  )[];
+  const daysArray = normalizeFeedingDays(apiData.days);
 
   return {
     petId: apiData.petId,
@@ -206,49 +201,42 @@ export const formatTimeForDisplay = (time: string): string => {
 
 // Helper function to get next feeding time
 export const getNextFeedingTime = (
-  schedules: { time: string; days: string; isActive: boolean }[]
+  schedules: { time: string; days: string | string[]; isActive: boolean }[],
+  timezone?: string
 ): Date | null => {
   const now = new Date();
-  const currentDay = now.getDay(); // 0 = Sunday, 1 = Monday, etc.
-  const currentTime = `${now.getHours().toString().padStart(2, '0')}:${now
-    .getMinutes()
-    .toString()
-    .padStart(2, '0')}`;
+  const tz = resolveEffectiveTimezone(timezone);
+  const currentTime = formatInTimeZone(now, tz, 'HH:mm');
 
-  // Map JS day index to day name
-  const dayNames = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
-  const todayName = dayNames[currentDay];
+  const isoDayToName: Record<number, string> = {
+    1: 'monday',
+    2: 'tuesday',
+    3: 'wednesday',
+    4: 'thursday',
+    5: 'friday',
+    6: 'saturday',
+    7: 'sunday',
+  };
 
-  // Filter active schedules for today that haven't passed yet
-  const upcomingToday = schedules
-    .filter((s) => s.isActive && s.days.toLowerCase().includes(todayName) && s.time > currentTime)
-    .sort((a, b) => a.time.localeCompare(b.time));
+  const includesDay = (days: string | string[], dayName: string) =>
+    normalizeFeedingDays(days).includes(dayName as DayOfWeek);
 
-  if (upcomingToday.length > 0) {
-    // Return the earliest upcoming feeding today
-    const nextSchedule = upcomingToday[0];
-    const [hours, minutes] = nextSchedule.time.split(':').map(Number);
-    const nextTime = new Date(now);
-    nextTime.setHours(hours, minutes, 0, 0);
-    return nextTime;
-  }
+  const buildDateTime = (dayDate: Date, time: string) => {
+    const dayKey = toLocalDateKey(dayDate, tz);
+    return fromZonedTime(`${dayKey}T${time}:00`, tz);
+  };
 
-  // If no more feedings today, find the next feeding on a future day
-  for (let i = 1; i <= 7; i++) {
-    const futureDay = (currentDay + i) % 7;
-    const futureDayName = dayNames[futureDay];
+  for (let i = 0; i <= 7; i++) {
+    const targetDate = addDays(now, i);
+    const isoDay = Number(formatInTimeZone(targetDate, tz, 'i'));
+    const dayName = isoDayToName[isoDay] ?? 'monday';
 
-    const futureDaySchedules = schedules
-      .filter((s) => s.isActive && s.days.toLowerCase().includes(futureDayName))
+    const daySchedules = schedules
+      .filter((s) => s.isActive && includesDay(s.days, dayName) && (i > 0 || s.time > currentTime))
       .sort((a, b) => a.time.localeCompare(b.time));
 
-    if (futureDaySchedules.length > 0) {
-      const nextSchedule = futureDaySchedules[0];
-      const [hours, minutes] = nextSchedule.time.split(':').map(Number);
-      const nextTime = new Date(now);
-      nextTime.setDate(now.getDate() + i);
-      nextTime.setHours(hours, minutes, 0, 0);
-      return nextTime;
+    if (daySchedules.length > 0) {
+      return buildDateTime(targetDate, daySchedules[0].time);
     }
   }
 
@@ -256,45 +244,42 @@ export const getNextFeedingTime = (
 };
 
 export const getPreviousFeedingTime = (
-  schedules: { time: string; days: string; isActive: boolean }[]
+  schedules: { time: string; days: string | string[]; isActive: boolean }[],
+  timezone?: string
 ): Date | null => {
   const now = new Date();
-  const currentDay = now.getDay();
-  const currentTime = `${now.getHours().toString().padStart(2, '0')}:${now
-    .getMinutes()
-    .toString()
-    .padStart(2, '0')}`;
+  const tz = resolveEffectiveTimezone(timezone);
+  const currentTime = formatInTimeZone(now, tz, 'HH:mm');
 
-  const dayNames = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
-  const todayName = dayNames[currentDay];
+  const isoDayToName: Record<number, string> = {
+    1: 'monday',
+    2: 'tuesday',
+    3: 'wednesday',
+    4: 'thursday',
+    5: 'friday',
+    6: 'saturday',
+    7: 'sunday',
+  };
 
-  const pastToday = schedules
-    .filter((s) => s.isActive && s.days.toLowerCase().includes(todayName) && s.time <= currentTime)
-    .sort((a, b) => b.time.localeCompare(a.time));
+  const includesDay = (days: string | string[], dayName: string) =>
+    normalizeFeedingDays(days).includes(dayName as DayOfWeek);
 
-  if (pastToday.length > 0) {
-    const prevSchedule = pastToday[0];
-    const [hours, minutes] = prevSchedule.time.split(':').map(Number);
-    const prevTime = new Date(now);
-    prevTime.setHours(hours, minutes, 0, 0);
-    return prevTime;
-  }
+  const buildDateTime = (dayDate: Date, time: string) => {
+    const dayKey = toLocalDateKey(dayDate, tz);
+    return fromZonedTime(`${dayKey}T${time}:00`, tz);
+  };
 
-  for (let i = 1; i <= 7; i++) {
-    const pastDay = (currentDay - i + 7) % 7;
-    const pastDayName = dayNames[pastDay];
+  for (let i = 0; i <= 7; i++) {
+    const targetDate = subDays(now, i);
+    const isoDay = Number(formatInTimeZone(targetDate, tz, 'i'));
+    const dayName = isoDayToName[isoDay] ?? 'monday';
 
-    const pastDaySchedules = schedules
-      .filter((s) => s.isActive && s.days.toLowerCase().includes(pastDayName))
+    const daySchedules = schedules
+      .filter((s) => s.isActive && includesDay(s.days, dayName) && (i > 0 || s.time <= currentTime))
       .sort((a, b) => b.time.localeCompare(a.time));
 
-    if (pastDaySchedules.length > 0) {
-      const prevSchedule = pastDaySchedules[0];
-      const [hours, minutes] = prevSchedule.time.split(':').map(Number);
-      const prevTime = new Date(now);
-      prevTime.setDate(now.getDate() - i);
-      prevTime.setHours(hours, minutes, 0, 0);
-      return prevTime;
+    if (daySchedules.length > 0) {
+      return buildDateTime(targetDate, daySchedules[0].time);
     }
   }
 

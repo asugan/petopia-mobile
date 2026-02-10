@@ -1,12 +1,14 @@
 import { useQueryClient } from '@tanstack/react-query';
 import { eventKeys, feedingScheduleKeys, healthRecordKeys, petKeys } from './queryKeys';
 import { unwrapApiResponse } from './core/unwrapApiResponse';
-import { toISODateStringWithFallback } from '@/lib/utils/dateConversion';
+import { toLocalDateKey } from '@/lib/utils/timezoneDate';
 import { useAuthQueryEnabled } from './useAuthQueryEnabled';
+import { useUserTimezone } from './useUserTimezone';
 
 export function usePrefetchData() {
   const queryClient = useQueryClient();
   const { enabled } = useAuthQueryEnabled();
+  const timezone = useUserTimezone();
 
   const prefetchPetDetails = (petId: string) => {
     if (!enabled) return;
@@ -80,11 +82,11 @@ export function usePrefetchData() {
     if (!enabled) return;
 
     queryClient.prefetchQuery({
-      queryKey: eventKeys.upcoming(),
+      queryKey: eventKeys.upcomingScoped(timezone),
       queryFn: () =>
         unwrapApiResponse(
           import('@/lib/services/eventService').then(m =>
-            m.eventService.getUpcomingEvents()
+            m.eventService.getUpcomingEvents(timezone)
           ),
           { defaultValue: [] }
         ),
@@ -96,10 +98,10 @@ export function usePrefetchData() {
     if (!enabled) return;
 
     queryClient.prefetchQuery({
-      queryKey: eventKeys.today(),
+      queryKey: eventKeys.todayScoped(timezone),
       queryFn: () =>
         unwrapApiResponse(
-          import('@/lib/services/eventService').then(m => m.eventService.getTodayEvents()),
+          import('@/lib/services/eventService').then(m => m.eventService.getTodayEvents(timezone)),
           { defaultValue: [] }
         ),
       staleTime: 30 * 1000, // 30 seconds
@@ -138,14 +140,14 @@ export function usePrefetchData() {
 
     prefetchTodayEvents();
 
-    const todayKey = toISODateStringWithFallback(new Date());
+    const todayKey = toLocalDateKey(new Date(), timezone);
     if (date && date !== todayKey) {
       queryClient.prefetchQuery({
-        queryKey: eventKeys.calendar(date),
+        queryKey: eventKeys.calendarScoped(date, timezone),
         queryFn: () =>
           unwrapApiResponse(
             import('@/lib/services/eventService').then(m =>
-              m.eventService.getEventsByDate(date)
+              m.eventService.getEventsByDate(date, timezone)
             ),
             { defaultValue: [] }
           ),

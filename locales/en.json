@@ -35,7 +35,7 @@
     "linkOpenError": "Could not open the link. Please try again.",
     "logoutConfirm": "Are you sure you want to log out?",
     "logoutSuccess": "Successfully logged out",
-    "freeTrialNotice": "Sign in with social media, sync your data to the cloud, and use it across all your devices."
+    "freeTrialNotice": "Start with one pet for free, then unlock Pro to manage your whole pet family without limits."
   },
   "navigation": {
     "home": "Home",
@@ -174,7 +174,7 @@
   "limits": {
     "pets": {
       "title": "Add Unlimited Pets",
-      "subtitle": "Manage your whole family in one place with Pro.",
+      "subtitle": "Keep every pet's health timeline, reminders, and records in one reliable place.",
       "cta": "Upgrade to Pro"
     },
     "care": {
@@ -182,7 +182,7 @@
     },
     "budgets": {
       "title": "Smart Budget Tracking",
-      "subtitle": "Manage monthly budgets and alerts in one place with Pro.",
+      "subtitle": "Spot overspending early and avoid surprise vet bills with proactive alerts.",
       "cta": "Upgrade to Pro"
     }
   },
@@ -217,7 +217,7 @@
     "petSelection": "Pet Selection",
     "deleteRecord": "Delete Health Record",
     "deleteConfirmation": "Are you sure you want to delete this health record? This operation cannot be undone.",
-    "deleteError": "An error occurred while deleting the health record",
+    "deleteError": "Failed to delete health record. Please try again.",
     "notFoundDescription": "Health record not found or deleted",
     "veterinarianInfo": "Veterinarian Information",
     "veterinarian": "Veterinarian",
@@ -241,7 +241,6 @@
     "notFoundUpdate": "Health record not found for update",
     "notFoundDelete": "Health record not found for deletion",
     "updateError": "Failed to update health record. Please check the information and try again.",
-    "deleteError": "Failed to delete health record. Please try again.",
     "fetchByTypeError": "Failed to fetch health records by type. Please try again.",
     "titleField": "Title",
     "titlePlaceholder": "Record title",
@@ -291,19 +290,18 @@
       "day": "Day"
     }
   },
-    "events": {
-      "recurrence": {
-        "editTitle": "Recurring Event",
-        "editDescription": "How would you like to edit this event?",
-        "editSingle": "Only this event",
-        "editSeries": "All events in series",
-        "deleteTitle": "Delete Event",
-        "deleteDescription": "How would you like to delete this recurring event?",
-        "deleteSingle": "Only this event",
-        "deleteSeries": "All events in series"
-      },
-      "status": "Status",
-
+  "events": {
+    "recurrence": {
+      "editTitle": "Recurring Event",
+      "editDescription": "How would you like to edit this event?",
+      "editSingle": "Only this event",
+      "editSeries": "All events in series",
+      "deleteTitle": "Delete Event",
+      "deleteDescription": "How would you like to delete this recurring event?",
+      "deleteSingle": "Only this event",
+      "deleteSeries": "All events in series"
+    },
+    "status": "Status",
     "upcoming": "Upcoming Events",
     "past": "Past",
     "today": "Today",
@@ -496,6 +494,8 @@
     "appSettings": "App Settings",
     "notifications": "Notifications",
     "reminderNotifications": "Enable reminder notifications",
+    "feedingReminders": "Feeding reminders",
+    "feedingRemindersDescription": "Meal reminder notifications for active feeding schedules",
     "budgetNotifications": "Budget notifications",
     "budgetNotificationsDescription": "Alerts when you approach your budget limit",
     "quietHours": "Quiet Hours",
@@ -511,6 +511,7 @@
     "deviceLanguage": "Device Language",
     "selectLanguage": "Select Language",
     "selectCurrency": "Select Currency",
+    "selectTimezone": "Select Timezone",
     "languageExplicitlySet": "Language explicitly set by user",
     "notSupported": "Not supported",
     "willAutoDetect": "Will auto-detect on app start",
@@ -518,6 +519,7 @@
     "resetToDeviceLanguage": "Reset to Device Language",
     "toggleLanguage": "Toggle Language",
     "currency": "Currency",
+    "timezone": "Timezone",
     "defaultCurrency": "Default Currency",
     "changeCurrency": "Change default currency",
     "currencyWarning": "Changing the default currency will recalculate all expenses to the new base currency.",
@@ -617,12 +619,14 @@
   "common": {
     "loading": "Loading...",
     "error": "Error",
+    "info": "Info",
     "today": "Today",
     "yesterday": "Yesterday",
     "tomorrow": "Tomorrow",
     "retry": "Retry",
     "save": "Save",
     "add": "Add",
+    "search": "Search",
     "loadingError": "Failed to load data",
     "viewAll": "View All",
     "delete": "Delete",
@@ -874,6 +878,7 @@
       "steps": {
         "basicInfo": "Basic Information",
         "physicalDetails": "Physical Details",
+        "breedWeight": "Breed and Weight",
         "photo": "Photo"
       },
       "sections": {
@@ -1138,7 +1143,6 @@
       "cancel": "Cancel"
     }
   },
-
   "expenses": {
     "title": "Expenses",
     "selectPetFirst": "Please select a pet first",
@@ -1281,6 +1285,11 @@
     }
   },
   "onboarding": {
+    "language": {
+      "title": "Choose your language, currency and timezone",
+      "description": "We'll use your selections on the next screens and sync them after sign in. You can change all anytime in Settings.",
+      "continue": "Continue"
+    },
     "screen1": {
       "title": "Welcome to Petopia Petcare",
       "description": "Easily track your pet's health and happiness.",
@@ -1313,7 +1322,7 @@
     "screen3": {
       "title": "You Are Ready!",
       "description": "Everything is ready to manage your pet's care and health data.",
-      "trialNotice": "Add your pet now to get started!",
+      "trialNotice": "Add your first pet now, then unlock Pro when you need more.",
       "addPet": "Add Your Pet",
       "skipPet": "Do it later",
       "addYourFirstPet": "Add Your First Pet"
@@ -1482,7 +1491,7 @@
     "confirmStartTrialMessage": "14 days of free Pro features. No credit card required.",
     "confirmStartTrialAction": "Start Trial",
     "upgrade": "Upgrade to Pro",
-    "upgradePrompt": "Unlock all features with Pro",
+    "upgradePrompt": "Never miss care tasks and keep every pet organized with Pro",
     "upgradeBeforeTrialEnds": "Upgrade Before Trial Ends",
     "manageSubscription": "Manage Subscription",
     "cancelSubscription": "Cancel Subscription",
@@ -1499,6 +1508,8 @@
     "autoRenews": "Auto-renews on {{date}}",
     "cancelled": "Cancelled - expires {{date}}",
     "paywallError": "Unable to load subscription options",
+    "verifyingPurchase": "Purchase received. Verifying your subscription...",
+    "verificationTakingLong": "Your purchase is being verified. Access will unlock automatically in a few seconds.",
     "trialAlreadySubscribed": "You already have an active subscription",
     "trialAlreadyUsed": "This device has already used a free trial",
     "trialStartFailed": "Unable to start the free trial. Please try again.",
@@ -1510,24 +1521,24 @@
     "unlockFeature": "Unlock {{feature}}",
     "modal": {
       "title": "Premium Feature",
-      "description": "This feature is only available for Pro members",
-      "featureDescription": "{{feature}} is only available for Pro members",
-      "upgradeNow": "Upgrade Now",
+      "description": "Upgrade to Pro to keep all pets, reminders, and health records in one workflow.",
+      "featureDescription": "Upgrade to Pro to unlock {{feature}} and keep your routine consistent.",
+      "upgradeNow": "See Plans",
       "maybeLater": "Maybe Later",
-      "includes": "Pro membership includes:"
+      "includes": "Pro helps you with:"
     },
     "features": {
       "title": "Pro Features",
       "unlimited": "Unlimited Pets",
-      "unlimitedDesc": "Add and manage all your pets in one place",
+      "unlimitedDesc": "Keep every pet profile, records, and notes together",
       "feedingSchedules": "Unlimited Feeding Schedules",
-      "feedingSchedulesDesc": "Create unlimited feeding schedules for all your pets",
+      "feedingSchedulesDesc": "Build reliable routines for each pet without schedule limits",
       "budgetTracking": "Budget Tracking & Alerts",
-      "budgetTrackingDesc": "Set monthly budgets, track expenses, and get spending alerts",
+      "budgetTrackingDesc": "Catch rising costs early with monthly budget alerts",
       "export": "Data Export",
-      "exportDesc": "Export expenses to CSV or PDF, generate vet summaries",
+      "exportDesc": "Share clear reports with family members or your vet",
       "priority": "Priority Support",
-      "priorityDesc": "Get help when you need it",
+      "priorityDesc": "Get faster help when something is urgent",
       "petManagement": "Pet Management",
       "healthRecords": "Health Records",
       "calendar": "Calendar & Events",
@@ -1537,7 +1548,7 @@
     },
     "paywall": {
       "title": "Unlock Petopia Petcare Pro",
-      "subtitle": "Get the most out of Petopia Petcare"
+      "subtitle": "Stay on top of care, reminders, and spending for every pet"
     },
     "success": {
       "title": "Subscription Successful!",
@@ -1549,7 +1560,12 @@
       "message": "Your 14-day free trial has started. Enjoy all Pro features!",
       "button": "Go to Homepage"
     },
-    "note": "Payment will be charged to your App Store / Google Play account. Subscriptions automatically renew unless cancelled at least 24 hours before the end of the current period. You can manage or cancel your subscription in your App Store / Google Play account settings."
+    "note": "Payment is billed via your App Store / Google Play account. Subscriptions renew automatically unless cancelled at least 24 hours before the end of the current period. Manage or cancel anytime from your store account settings.",
+    "trust": {
+      "cancelAnytime": "Cancel anytime from App Store / Google Play settings",
+      "billedByStore": "Billing is handled securely through your app store account",
+      "secureCheckout": "No manual credit card entry required in the app"
+    }
   },
   "downgrade": {
     "title": "Choose Your Pet",

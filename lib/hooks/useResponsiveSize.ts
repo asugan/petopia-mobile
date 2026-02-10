@@ -46,6 +46,6 @@ export const useResponsiveSize = (): ResponsiveSize => {
     avatarSize: isMobile ? 60 : 85,
     iconSize: isMobile ? 40 : 56,
     gap: isMobile ? 8 : 12,
-    scrollPadding: isMobile ? 12 : 16,
+    scrollPadding: 16,
   };
 };

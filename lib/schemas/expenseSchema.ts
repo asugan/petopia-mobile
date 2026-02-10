@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { objectIdSchema, amountValidator, currencyValidator, optionalUrlValidator } from './core/validators';
+import { objectIdSchema, amountValidator, currencyValidator } from './core/validators';
 import { dateRangeSchema } from './core/dateSchemas';
 import { EXPENSE_CATEGORIES, PAYMENT_METHODS, CURRENCIES } from './core/constants';
 import { t } from './core/i18n';
@@ -30,27 +30,7 @@ const BaseExpenseSchema = () =>
       })
       .optional(),
 
-    description: z
-      .string()
-      .max(500, { message: t('forms.validation.expense.descriptionMax') })
-      .optional()
-      .transform((val) => val?.trim() || undefined),
-
     date: dateRangeSchema({ maxYearsAgo: 10 }),
-
-    receiptPhoto: optionalUrlValidator(),
-
-    vendor: z
-      .string()
-      .max(200, { message: t('forms.validation.expense.vendorMax') })
-      .optional()
-      .transform((val) => val?.trim() || undefined),
-
-    notes: z
-      .string()
-      .max(1000, { message: t('forms.validation.expense.notesMax') })
-      .optional()
-      .transform((val) => val?.trim() || undefined),
   });
 
 // Full Expense schema including server-side fields

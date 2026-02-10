@@ -35,7 +35,7 @@
     "linkOpenError": "링크를 열 수 없습니다. 다시 시도하세요.",
     "logoutConfirm": "로그아웃하시겠습니까?",
     "logoutSuccess": "로그아웃 성공",
-    "freeTrialNotice": "소셜 미디어로 로그인하여 데이터를 클라우드에 동기화하고 모든 기기에서 사용하세요."
+    "freeTrialNotice": "반려동물 1마리로 무료 시작하고, 필요할 때 Pro를 열어 모든 반려동물을 제한 없이 관리하세요."
   },
   "navigation": {
     "home": "홈",
@@ -174,7 +174,7 @@
   "limits": {
     "pets": {
       "title": "무제한 반려동물 추가",
-      "subtitle": "Pro로 온 가족을 한곳에서 관리하세요.",
+      "subtitle": "각 반려동물의 건강 기록, 알림, 데이터를 신뢰할 수 있는 한 곳에서 관리하세요.",
       "cta": "Pro로 업그레이드"
     },
     "care": {
@@ -182,7 +182,7 @@
     },
     "budgets": {
       "title": "스마트 예산 추적",
-      "subtitle": "Pro로 월간 예산과 알림을 한곳에서 관리하세요.",
+      "subtitle": "선제 알림으로 지출 증가를 일찍 파악하고 예상치 못한 병원비를 줄이세요.",
       "cta": "Pro로 업그레이드"
     }
   },
@@ -494,6 +494,8 @@
     "appSettings": "앱 설정",
     "notifications": "알림",
     "reminderNotifications": "리마인더 알림 활성화",
+    "feedingReminders": "급식 알림",
+    "feedingRemindersDescription": "활성 급식 일정에 대한 식사 리마인더 알림",
     "budgetNotifications": "예산 알림",
     "budgetNotificationsDescription": "예산 한도에 도달하면 알림 받기",
     "quietHours": "방해 금지 시간",
@@ -610,7 +612,9 @@
       "ukrainian": "우크라이나어",
       "indonesian": "Bahasa Indonesia"
     },
-    "selectCurrency": "통화 선택"
+    "selectCurrency": "통화 선택",
+    "timezone": "시간대",
+    "selectTimezone": "시간대 선택"
   },
   "common": {
     "loading": "불러오는 중...",
@@ -669,7 +673,9 @@
     "noNotes": "메모 없음",
     "hoursMinutes": "{{hours}}시간 {{minutes}}분",
     "minutesOnly": "{{minutes}}분",
-    "timeLeft": "{{time}} 남음"
+    "timeLeft": "{{time}} 남음",
+    "search": "검색",
+    "info": "정보"
   },
   "errors": {
     "loadingFailed": "불러오기 실패",
@@ -872,6 +878,7 @@
       "steps": {
         "basicInfo": "기본 정보",
         "physicalDetails": "신체 정보",
+        "breedWeight": "품종 및 몸무게",
         "photo": "사진"
       },
       "sections": {
@@ -1310,10 +1317,15 @@
     "screen3": {
       "title": "준비가 되었습니다!",
       "description": "반려동물의 케어 및 건강 데이터를 관리할 모든 준비가 끝났습니다.",
-      "trialNotice": "지금 반려동물을 추가하여 시작하세요!",
+      "trialNotice": "지금 첫 반려동물을 추가하고, 더 필요해질 때 Pro를 열어보세요.",
       "addPet": "반려동물 추가",
       "skipPet": "나중에 하기",
       "addYourFirstPet": "첫 반려동물 추가"
+    },
+    "language": {
+      "title": "언어, 통화, 시간대를 선택하세요",
+      "description": "선택한 항목은 다음 화면에서 사용되며 로그인 후 동기화됩니다. 모든 항목은 언제든지 설정에서 변경할 수 있습니다.",
+      "continue": "계속"
     }
   },
   "serviceResponse": {
@@ -1479,7 +1491,7 @@
     "confirmStartTrialMessage": "14일 동안 Pro 기능을 무료로 사용하세요. 신용카드는 필요하지 않습니다.",
     "confirmStartTrialAction": "체험 시작",
     "upgrade": "Pro로 업그레이드",
-    "upgradePrompt": "Pro로 모든 기능을 잠금 해제하세요",
+    "upgradePrompt": "돌봄 할 일을 놓치지 말고 Pro로 모든 반려동물을 체계적으로 관리하세요",
     "upgradeBeforeTrialEnds": "체험 기간 종료 전 업그레이드",
     "manageSubscription": "구독 관리",
     "cancelSubscription": "구독 취소",
@@ -1507,24 +1519,24 @@
     "unlockFeature": "{{feature}} 잠금 해제",
     "modal": {
       "title": "프리미엄 기능",
-      "description": "이 기능은 Pro 회원 전용입니다",
-      "featureDescription": "{{feature}} 기능은 Pro 회원만 사용할 수 있습니다",
-      "upgradeNow": "지금 업그레이드",
+      "description": "Pro로 업그레이드하면 모든 반려동물, 알림, 건강 기록을 하나의 흐름으로 관리할 수 있습니다.",
+      "featureDescription": "Pro로 업그레이드하여 {{feature}}를 열고 루틴을 꾸준히 유지하세요.",
+      "upgradeNow": "요금제 보기",
       "maybeLater": "나중에 하기",
-      "includes": "Pro 멤버십 혜택:"
+      "includes": "Pro로 가능한 것:"
     },
     "features": {
       "title": "Pro 기능",
       "unlimited": "무제한 반려동물",
-      "unlimitedDesc": "모든 반려동물을 한곳에서 추가하고 관리하세요",
+      "unlimitedDesc": "모든 반려동물 프로필, 기록, 메모를 한곳에 보관",
       "feedingSchedules": "무제한 급여 일정",
-      "feedingSchedulesDesc": "모든 반려동물을 위한 무제한 급여 일정 생성",
+      "feedingSchedulesDesc": "일정 제한 없이 각 반려동물에 맞는 안정적인 루틴 구성",
       "budgetTracking": "예산 추적 및 알림",
-      "budgetTrackingDesc": "월간 예산 설정, 지출 추적 및 한도 알림",
+      "budgetTrackingDesc": "월간 예산 알림으로 비용 증가를 조기에 확인",
       "export": "데이터 내보내기",
-      "exportDesc": "지출 내역 CSV/PDF 내보내기, 수의사 요약 생성",
+      "exportDesc": "가족이나 수의사와 명확한 리포트를 공유",
       "priority": "우선 지원",
-      "priorityDesc": "필요할 때 우선적으로 도움을 받으세요",
+      "priorityDesc": "긴급할 때 더 빠른 도움 받기",
       "petManagement": "반려동물 관리",
       "healthRecords": "건강 기록",
       "calendar": "캘린더 및 이벤트",
@@ -1534,7 +1546,7 @@
     },
     "paywall": {
       "title": "Petopia Petcare Pro 잠금 해제",
-      "subtitle": "Petopia Petcare의 모든 기능을 활용하세요"
+      "subtitle": "모든 반려동물의 돌봄, 알림, 지출을 놓치지 않고 관리"
     },
     "success": {
       "title": "구독 성공!",
@@ -1546,7 +1558,14 @@
       "message": "14일 무료 체험이 시작되었습니다. 모든 Pro 기능을 즐겨보세요!",
       "button": "홈으로 가기"
     },
-    "note": "결제는 App Store / Google Play 계정으로 청구됩니다. 현재 기간이 종료되기 최소 24시간 전에 취소하지 않으면 구독이 자동으로 갱신됩니다. App Store / Google Play 계정 설정에서 구독을 관리하거나 취소할 수 있습니다."
+    "note": "결제는 App Store / Google Play 계정으로 청구됩니다. 구독은 현재 기간 종료 최소 24시간 전에 취소하지 않으면 자동 갱신됩니다. 스토어 계정 설정에서 언제든지 관리 또는 취소할 수 있습니다.",
+    "trust": {
+      "cancelAnytime": "App Store / Google Play 설정에서 언제든지 취소할 수 있습니다",
+      "billedByStore": "결제는 앱 스토어 계정을 통해 안전하게 처리됩니다",
+      "secureCheckout": "앱 안에서 신용카드 정보를 수동으로 입력할 필요가 없습니다"
+    },
+    "verifyingPurchase": "구매가 접수되었습니다. 구독을 확인하는 중입니다...",
+    "verificationTakingLong": "구매 내역을 확인하는 중입니다. 몇 초 후 자동으로 이용이 활성화됩니다."
   },
   "downgrade": {
     "title": "반려동물 선택",

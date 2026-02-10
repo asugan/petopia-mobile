@@ -3,8 +3,9 @@ import { useQueryClient } from '@tanstack/react-query';
 import { usePrefetchData } from './usePrefetchData';
 import { eventKeys, feedingScheduleKeys } from './queryKeys';
 import { unwrapApiResponse } from './core/unwrapApiResponse';
-import { toISODateStringWithFallback } from '@/lib/utils/dateConversion';
+import { toLocalDateKey } from '@/lib/utils/timezoneDate';
 import { useAuthQueryEnabled } from './useAuthQueryEnabled';
+import { useUserTimezone } from './useUserTimezone';
 
 interface PrefetchStrategy {
   priority: 'high' | 'medium' | 'low';
@@ -14,8 +15,13 @@ interface PrefetchStrategy {
 
 export function useSmartPrefetching() {
   const queryClient = useQueryClient();
-  const { prefetchRelatedData } = usePrefetchData();
+  const {
+    prefetchRelatedData,
+    prefetchUpcomingEvents = () => {},
+    prefetchTodayEvents = () => {},
+  } = usePrefetchData();
   const { enabled } = useAuthQueryEnabled();
+  const timezone = useUserTimezone();
 
   const prefetchStrategies = useMemo<Record<string, PrefetchStrategy>>(() => ({
     // When user spends time on pet list, prefetch details
@@ -85,40 +91,18 @@ export function useSmartPrefetching() {
           break;
 
         case 'healthTabFocus':
-          // Prefetch upcoming events and today's events
-          queryClient.prefetchQuery({
-            queryKey: eventKeys.upcoming(),
-            queryFn: () =>
-              unwrapApiResponse(
-                import('@/lib/services/eventService').then(m =>
-                  m.eventService.getUpcomingEvents()
-                ),
-                { defaultValue: [] }
-              ),
-            staleTime: 2 * 60 * 1000,
-          });
-
-          queryClient.prefetchQuery({
-            queryKey: eventKeys.today(),
-            queryFn: () =>
-              unwrapApiResponse(
-                import('@/lib/services/eventService').then(m =>
-                  m.eventService.getTodayEvents()
-                ),
-                { defaultValue: [] }
-              ),
-            staleTime: 1 * 60 * 1000,
-          });
+          prefetchUpcomingEvents();
+          prefetchTodayEvents();
           break;
 
         case 'backgroundRefresh':
           // Refresh critical data in background
           queryClient.prefetchQuery({
-            queryKey: eventKeys.upcoming(),
+            queryKey: eventKeys.upcomingScoped(timezone),
             queryFn: () =>
               unwrapApiResponse(
                 import('@/lib/services/eventService').then(m =>
-                  m.eventService.getUpcomingEvents()
+                  m.eventService.getUpcomingEvents(timezone)
                 ),
                 { defaultValue: [] }
               ),
@@ -146,7 +130,15 @@ export function useSmartPrefetching() {
     } else {
       setTimeout(executePrefetch, config.timeout);
     }
-  }, [enabled, queryClient, prefetchRelatedData, prefetchStrategies]);
+  }, [
+    enabled,
+    queryClient,
+    prefetchRelatedData,
+    prefetchStrategies,
+    prefetchTodayEvents,
+    prefetchUpcomingEvents,
+    timezone,
+  ]);
 
   // Prefetch based on user navigation patterns
   const prefetchOnNavigation = useCallback((
@@ -188,17 +180,7 @@ export function useSmartPrefetching() {
 
     // Morning: prefetch today's events and feeding schedules
     if (hour >= 6 && hour < 12) {
-      queryClient.prefetchQuery({
-        queryKey: eventKeys.today(),
-        queryFn: () =>
-          unwrapApiResponse(
-            import('@/lib/services/eventService').then(m =>
-              m.eventService.getTodayEvents()
-            ),
-            { defaultValue: [] }
-          ),
-        staleTime: 1 * 60 * 1000,
-      });
+      prefetchTodayEvents();
 
       queryClient.prefetchQuery({
         queryKey: feedingScheduleKeys.today(),
@@ -218,21 +200,21 @@ export function useSmartPrefetching() {
       const tomorrow = new Date();
       tomorrow.setDate(tomorrow.getDate() + 1);
 
-      const tomorrowKey = toISODateStringWithFallback(tomorrow);
+      const tomorrowKey = toLocalDateKey(tomorrow, timezone);
 
       queryClient.prefetchQuery({
-        queryKey: eventKeys.calendar(tomorrowKey),
+        queryKey: eventKeys.calendarScoped(tomorrowKey, timezone),
         queryFn: () =>
           unwrapApiResponse(
             import('@/lib/services/eventService').then(m =>
-              m.eventService.getEventsByDate(tomorrowKey)
+              m.eventService.getEventsByDate(tomorrowKey, timezone)
             ),
             { defaultValue: [] }
           ),
         staleTime: 2 * 60 * 1000,
       });
     }
-  }, [enabled, queryClient]);
+  }, [enabled, prefetchTodayEvents, queryClient, timezone]);
 
   return {
     prefetchOnInteraction,

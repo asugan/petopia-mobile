@@ -41,14 +41,7 @@ export function EventCard({
   };
 
   const getFormattedEventTime = () => {
-    const startTime = formatTime(event.startTime);
-
-    if (event.endTime) {
-      const endTime = formatTime(event.endTime);
-      return `${startTime} - ${endTime}`;
-    }
-
-    return startTime;
+    return formatTime(event.startTime);
   };
 
   const getEventRelativeTime = () => {
@@ -148,33 +141,6 @@ export function EventCard({
         >
           {event.title}
         </Text>
-
-        {/* Description (if not compact) */}
-        {!compact && event.description && (
-          <Text
-            variant="bodyMedium"
-            style={[styles.description, { color: theme.colors.onSurfaceVariant }]}
-            numberOfLines={2}
-          >
-            {event.description}
-          </Text>
-        )}
-
-        {/* Location (if provided) */}
-        {event.location && !compact && (
-          <View style={styles.locationContainer}>
-            <Text style={[styles.locationIcon, { color: theme.colors.onSurfaceVariant }]}>
-              📍
-            </Text>
-            <Text
-              variant="bodySmall"
-              style={[styles.location, { color: theme.colors.onSurfaceVariant }]}
-              numberOfLines={1}
-            >
-              {event.location}
-            </Text>
-          </View>
-        )}
 
         {/* Pet Information */}
         {showPetInfo && (
@@ -336,19 +302,6 @@ const styles = StyleSheet.create({
   description: {
     lineHeight: 20,
     marginBottom: 8,
-  },
-  locationContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 8,
-  },
-  locationIcon: {
-    fontSize: 14,
-    marginRight: 4,
-  },
-  location: {
-    fontSize: 13,
-    flex: 1,
   },
   petInfo: {
     marginBottom: 8,

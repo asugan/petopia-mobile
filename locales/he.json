@@ -35,7 +35,7 @@
     "linkOpenError": "לא ניתן לפתוח את הקישור. אנא נסה שוב.",
     "logoutConfirm": "האם אתה בטוח שברצונך להתנתק?",
     "logoutSuccess": "התנתקת בהצלחה",
-    "freeTrialNotice": "התחבר באמצעות הרשתות החברתיות, סנכרן את הנתונים שלך לענן, והשתמש בהם בכל המכשירים שלך."
+    "freeTrialNotice": "התחילו בחינם עם חיית מחמד אחת, ולאחר מכן שדרגו ל‑Pro כדי לנהל את כל חיות המחמד שלכם ללא הגבלה."
   },
   "navigation": {
     "home": "בית",
@@ -174,7 +174,7 @@
   "limits": {
     "pets": {
       "title": "הוסף חיות מחמד ללא הגבלה",
-      "subtitle": "נהל את כל המשפחה שלך במקום אחד עם Pro.",
+      "subtitle": "שמרו את ציר הבריאות, התזכורות והרשומות של כל חיית מחמד במקום אמין אחד.",
       "cta": "שדרג ל-Pro"
     },
     "care": {
@@ -182,7 +182,7 @@
     },
     "budgets": {
       "title": "מעקב תקציב חכם",
-      "subtitle": "נהל תקציבים חודשיים והתראות במקום אחד עם Pro.",
+      "subtitle": "זהו חריגות בהוצאות מוקדם והימנעו מחשבונות וטרינר מפתיעים בעזרת התראות פרואקטיביות.",
       "cta": "שדרג ל-Pro"
     }
   },
@@ -494,6 +494,8 @@
     "appSettings": "הגדרות אפליקציה",
     "notifications": "התראות",
     "reminderNotifications": "אפשר תזכורות",
+    "feedingReminders": "תזכורות האכלה",
+    "feedingRemindersDescription": "התראות תזכורת לארוחות עבור לוחות האכלה פעילים",
     "budgetNotifications": "התראות תקציב",
     "budgetNotificationsDescription": "התראות כשמתקרבים למגבלת התקציב",
     "quietHours": "שעות שקט",
@@ -610,7 +612,9 @@
       "ukrainian": "אוקראינית",
       "indonesian": "Bahasa Indonesia"
     },
-    "selectCurrency": "בחירת מטבע"
+    "selectCurrency": "בחירת מטבע",
+    "timezone": "אזור זמן",
+    "selectTimezone": "בחר אזור זמן"
   },
   "common": {
     "loading": "טוען...",
@@ -669,7 +673,9 @@
     "noNotes": "אין הערות",
     "hoursMinutes": "{{hours}}ש {{minutes}}ד",
     "minutesOnly": "{{minutes}}ד",
-    "timeLeft": "נותרו {{time}}"
+    "timeLeft": "נותרו {{time}}",
+    "search": "חפש",
+    "info": "מידע"
   },
   "errors": {
     "loadingFailed": "הטעינה נכשלה",
@@ -872,6 +878,7 @@
       "steps": {
         "basicInfo": "מידע בסיסי",
         "physicalDetails": "פרטים פיזיים",
+        "breedWeight": "גזע ו משקל",
         "photo": "תמונה"
       },
       "sections": {
@@ -1310,10 +1317,15 @@
     "screen3": {
       "title": "אתה מוכן!",
       "description": "הכל מוכן לניהול נתוני הטיפול והבריאות של חיית המחמד שלך.",
-      "trialNotice": "הוסף את חיית המחמד שלך עכשיו כדי להתחיל!",
+      "trialNotice": "הוסיפו עכשיו את חיית המחמד הראשונה שלכם, ושדרגו ל‑Pro כשתצטרכו יותר.",
       "addPet": "הוסף את חיית המחמד שלך",
       "skipPet": "עשה זאת מאוחר יותר",
       "addYourFirstPet": "הוסף את חיית המחמד הראשונה שלך"
+    },
+    "language": {
+      "title": "בחר את השפה, המטבע ואזור הזמן שלך",
+      "description": "נשתמש בבחירות שלך במסכים הבאים ונסנכרן אותן לאחר ההתחברות. אפשר לשנות הכול בכל זמן בהגדרות.",
+      "continue": "המשך"
     }
   },
   "serviceResponse": {
@@ -1479,7 +1491,7 @@
     "confirmStartTrialMessage": "14 ימים של תכונות Pro בחינם. אין צורך בכרטיס אשראי.",
     "confirmStartTrialAction": "התחל ניסיון",
     "upgrade": "שדרג ל-Pro",
-    "upgradePrompt": "פתח את כל התכונות עם Pro",
+    "upgradePrompt": "אל תפספסו משימות טיפול ושמרו על כל חיות המחמד מסודרות עם Pro",
     "upgradeBeforeTrialEnds": "שדרג לפני סיום תקופת הניסיון",
     "manageSubscription": "נהל מנוי",
     "cancelSubscription": "בטל מנוי",
@@ -1507,24 +1519,24 @@
     "unlockFeature": "פתח את {{feature}}",
     "modal": {
       "title": "תכונת פרימיום",
-      "description": "תכונה זו זמינה רק לחברי Pro",
-      "featureDescription": "{{feature}} זמינה רק לחברי Pro",
-      "upgradeNow": "שדרג עכשיו",
+      "description": "שדרגו ל‑Pro כדי לנהל את כל חיות המחמד, התזכורות והרשומות הבריאותיות בזרימת עבודה אחת.",
+      "featureDescription": "שדרגו ל‑Pro כדי לפתוח את {{feature}} ולשמור על שגרה עקבית.",
+      "upgradeNow": "צפו בתוכניות",
       "maybeLater": "אולי מאוחר יותר",
-      "includes": "מנוי Pro כולל:"
+      "includes": "Pro עוזר לכם ב:"
     },
     "features": {
       "title": "תכונות Pro",
       "unlimited": "חיות מחמד ללא הגבלה",
-      "unlimitedDesc": "הוסף ונהל את כל חיות המחמד שלך במקום אחד",
+      "unlimitedDesc": "שמרו את כל הפרופילים, הרשומות וההערות של חיות המחמד במקום אחד",
       "feedingSchedules": "לוחות זמנים להאכלה ללא הגבלה",
-      "feedingSchedulesDesc": "צור לוחות זמנים להאכלה ללא הגבלה לכל חיות המחמד שלך",
+      "feedingSchedulesDesc": "בנו שגרות אמינות לכל חיית מחמד ללא מגבלת לוחות זמנים",
       "budgetTracking": "מעקב תקציב והתראות",
-      "budgetTrackingDesc": "הגדר תקציבים חודשיים, עקוב אחר הוצאות וקבל התראות",
+      "budgetTrackingDesc": "זהו עלייה בעלויות מוקדם עם התראות תקציב חודשיות",
       "export": "ייצוא נתונים",
-      "exportDesc": "ייצא הוצאות ל-CSV או PDF, הפק סיכומי וטרינר",
+      "exportDesc": "שתפו דוחות ברורים עם המשפחה או הווטרינר",
       "priority": "תמיכה מועדפת",
-      "priorityDesc": "קבל עזרה כשאתה צריך אותה",
+      "priorityDesc": "קבלו תמיכה מהירה יותר כשזה דחוף",
       "petManagement": "ניהול חיות מחמד",
       "healthRecords": "רישומים רפואיים",
       "calendar": "יומן ואירועים",
@@ -1534,7 +1546,7 @@
     },
     "paywall": {
       "title": "פתח את Petopia Petcare Pro",
-      "subtitle": "הפק את המרב מ-Petopia Petcare"
+      "subtitle": "הישארו בשליטה על טיפול, תזכורות והוצאות עבור כל חיית מחמד"
     },
     "success": {
       "title": "המנוי הצליח!",
@@ -1546,7 +1558,14 @@
       "message": "תקופת הניסיון שלך ל-14 יום בחינם החלה. תהנה מכל תכונות ה-Pro!",
       "button": "עבור לדף הבית"
     },
-    "note": "התשלום יחויב בחשבון App Store / Google Play שלך. המנויים מתחדשים אוטומטית אלא אם כן בוטלו לפחות 24 שעות לפני תום התקופה הנוכחית. תוכל לנהל או לבטל את המנוי שלך בהגדרות חשבון App Store / Google Play שלך."
+    "note": "התשלום מחויב דרך חשבון App Store / Google Play שלכם. המנויים מתחדשים אוטומטית אלא אם מבטלים לפחות 24 שעות לפני סוף התקופה הנוכחית. ניתן לנהל או לבטל בכל עת מהגדרות חשבון החנות.",
+    "trust": {
+      "cancelAnytime": "ניתן לבטל בכל עת מההגדרות של App Store / Google Play",
+      "billedByStore": "החיוב מתבצע בצורה מאובטחת דרך חשבון חנות האפליקציות שלך",
+      "secureCheckout": "אין צורך להזין פרטי כרטיס אשראי ידנית בתוך האפליקציה"
+    },
+    "verifyingPurchase": "הרכישה התקבלה. מאמתים את המנוי שלך...",
+    "verificationTakingLong": "הרכישה שלך נמצאת באימות. הגישה תיפתח אוטומטית בעוד כמה שניות."
   },
   "downgrade": {
     "title": "בחר את חיית המחמד שלך",

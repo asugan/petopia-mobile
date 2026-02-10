@@ -35,7 +35,7 @@
     "linkOpenError": "A linket nem sikerült megnyitni. Kérjük, próbálja újra.",
     "logoutConfirm": "Biztosan ki szeretne jelentkezni?",
     "logoutSuccess": "Sikeres kijelentkezés",
-    "freeTrialNotice": "Jelentkezzen be közösségi médiával, szinkronizálja adatait a felhőbe, és használja minden eszközén."
+    "freeTrialNotice": "Kezdj ingyen egy háziállattal, majd oldd fel a Pro-t, ha korlátok nélkül szeretnéd kezelni az összes kedvencedet."
   },
   "navigation": {
     "home": "Kezdőlap",
@@ -174,7 +174,7 @@
   "limits": {
     "pets": {
       "title": "Adjon hozzá korlátlan számú kedvencet",
-      "subtitle": "Kezelje az egész családot egy helyen a Pro verzióval.",
+      "subtitle": "Tartsd minden kedvenc egészségügyi idővonalát, emlékeztetőit és nyilvántartásait egy megbízható helyen.",
       "cta": "Váltás Próra"
     },
     "care": {
@@ -182,7 +182,7 @@
     },
     "budgets": {
       "title": "Okos költségvetés-követés",
-      "subtitle": "Kezelje a havi költségvetéseket és riasztásokat egy helyen a Pro verzióval.",
+      "subtitle": "Ismerd fel időben a túlköltést, és kerüld el a váratlan állatorvosi számlákat proaktív riasztásokkal.",
       "cta": "Váltás Próra"
     }
   },
@@ -494,6 +494,8 @@
     "appSettings": "Alkalmazás beállításai",
     "notifications": "Értesítések",
     "reminderNotifications": "Emlékeztetők engedélyezése",
+    "feedingReminders": "Etetési emlékeztetők",
+    "feedingRemindersDescription": "Étkezési emlékeztető értesítések az aktív etetési ütemtervekhez",
     "budgetNotifications": "Költségvetési értesítések",
     "budgetNotificationsDescription": "Riasztás, ha megközelíti a keretet",
     "quietHours": "Csendes órák",
@@ -610,7 +612,9 @@
       "croatian": "Croatian",
       "ukrainian": "Ukrán",
       "indonesian": "Bahasa Indonesia"
-    }
+    },
+    "timezone": "Időzóna",
+    "selectTimezone": "Időzóna kiválasztása"
   },
   "common": {
     "loading": "Betöltés...",
@@ -669,7 +673,9 @@
     "noNotes": "Nincs megjegyzés",
     "hoursMinutes": "{{hours}}ó {{minutes}}p",
     "minutesOnly": "{{minutes}}p",
-    "timeLeft": "{{time}} van hátra"
+    "timeLeft": "{{time}} van hátra",
+    "search": "Keresés",
+    "info": "Informacio"
   },
   "errors": {
     "loadingFailed": "Sikertelen betöltés",
@@ -872,6 +878,7 @@
       "steps": {
         "basicInfo": "Alapadatok",
         "physicalDetails": "Fizikai adatok",
+        "breedWeight": "Fajta és Súly",
         "photo": "Fotó"
       },
       "sections": {
@@ -1310,10 +1317,15 @@
     "screen3": {
       "title": "Készen áll!",
       "description": "Minden kész kedvence gondozásának és adatainak kezeléséhez.",
-      "trialNotice": "Adja hozzá kedvencét a kezdéshez!",
+      "trialNotice": "Add hozzá az első kedvenced most, és oldd fel a Pro-t, amikor többre lesz szükséged.",
       "addPet": "Kedvenc hozzáadása",
       "skipPet": "Majd később",
       "addYourFirstPet": "Első kedvenc hozzáadása"
+    },
+    "language": {
+      "title": "Válaszd ki a nyelvet, pénznemet és időzónát",
+      "description": "A választásaidat a következő képernyőkön használjuk, és bejelentkezés után szinkronizáljuk. Mindent bármikor módosíthatsz a Beállításokban.",
+      "continue": "Folytatás"
     }
   },
   "serviceResponse": {
@@ -1479,7 +1491,7 @@
     "confirmStartTrialMessage": "14 napig ingyen használhatja a Pro funkciókat.",
     "confirmStartTrialAction": "Próba indítása",
     "upgrade": "Váltás Próra",
-    "upgradePrompt": "Oldjon fel minden funkciót a Próval",
+    "upgradePrompt": "Ne maradj le a gondozási feladatokról, és tartsd rendszerezve az összes kedvencedet a Pro-val",
     "upgradeBeforeTrialEnds": "Váltson a próba lejárta előtt",
     "manageSubscription": "Előfizetés kezelése",
     "cancelSubscription": "Előfizetés lemondása",
@@ -1507,24 +1519,24 @@
     "unlockFeature": "{{feature}} feloldása",
     "modal": {
       "title": "Prémium funkció",
-      "description": "Ez a funkció csak Pro tagoknak érhető el",
-      "featureDescription": "A(z) {{feature}} csak Pro tagoknak érhető el",
-      "upgradeNow": "Váltás most",
+      "description": "Válts Pro-ra, hogy minden kedvenced, emlékeztetőd és egészségügyi adatod egy munkafolyamatban legyen.",
+      "featureDescription": "Válts Pro-ra a(z) {{feature}} feloldásához és a rutinod következetes fenntartásához.",
+      "upgradeNow": "Csomagok megtekintése",
       "maybeLater": "Talán később",
-      "includes": "A Pro tagság tartalma:"
+      "includes": "A Pro ebben segít:"
     },
     "features": {
       "title": "Pro funkciók",
       "unlimited": "Korlátlan kedvenc",
-      "unlimitedDesc": "Minden kedvencét egy helyen kezelheti",
+      "unlimitedDesc": "Tartsd egy helyen az összes kedvencprofilt, nyilvántartást és jegyzetet",
       "feedingSchedules": "Korlátlan etetési ütemterv",
-      "feedingSchedulesDesc": "Hozzon létre korlátlan ütemtervet minden kedvencének",
+      "feedingSchedulesDesc": "Építs megbízható rutint minden kedvencnek időbeosztási korlátok nélkül",
       "budgetTracking": "Költségvetés-követés és riasztások",
-      "budgetTrackingDesc": "Állítson be havi keretet és kapjon riasztásokat",
+      "budgetTrackingDesc": "Havonkénti költségkeret-riasztásokkal időben észreveheted a növekvő költségeket",
       "export": "Adatexportálása",
-      "exportDesc": "Exportálja a kiadásokat CSV vagy PDF formátumba",
+      "exportDesc": "Ossz meg átlátható jelentéseket a családdal vagy az állatorvossal",
       "priority": "Elsőbbségi támogatás",
-      "priorityDesc": "Kérjen segítséget, amikor szüksége van rá",
+      "priorityDesc": "Sürgős helyzetben gyorsabb segítséget kapsz",
       "petManagement": "Kedvencek kezelése",
       "healthRecords": "Egészségügyi napló",
       "calendar": "Naptár és Események",
@@ -1534,7 +1546,7 @@
     },
     "paywall": {
       "title": "Oldja fel a Petopia Petcare Prót",
-      "subtitle": "Hozza ki a legtöbbet a Petopia Petcare-ből"
+      "subtitle": "Maradj képben minden kedvenc gondozásával, emlékeztetőivel és költségeivel"
     },
     "success": {
       "title": "Sikeres előfizetés!",
@@ -1546,7 +1558,14 @@
       "message": "A 14 napos ingyenes próba elindult. Élvezd a Pro funkciókat!",
       "button": "Vissza a kezdőlapra"
     },
-    "note": "A fizetés az App Store / Google Play fiókodon keresztül történik. Az előfizetések automatikusan megújulnak, kivéve ha lemondod legalább 24 órával az aktuális időszak vége előtt. Az előfizetést az App Store / Google Play fiókod beállításaiban kezelheted vagy mondhatod le."
+    "note": "A fizetés az App Store / Google Play fiókodból történik. Az előfizetések automatikusan megújulnak, hacsak legalább 24 órával az aktuális időszak vége előtt nem mondod le. A kezelést vagy lemondást bármikor elvégezheted az áruházfiók beállításaiban.",
+    "trust": {
+      "cancelAnytime": "Az App Store / Google Play beállításaiban bármikor lemondhatod",
+      "billedByStore": "A számlázás biztonságosan az alkalmazásbolt-fiókodon keresztül történik",
+      "secureCheckout": "Az alkalmazásban nem szükséges kézzel megadni a bankkártyaadatokat"
+    },
+    "verifyingPurchase": "Vasarlas fogadva. Elfizetesed ellenorzese folyamatban...",
+    "verificationTakingLong": "A vasarlas ellenorzese folyamatban van. A hozzaferes nehany masodpercen belul automatikusan feloldodik."
   },
   "downgrade": {
     "title": "Válassza ki kedvencét",

@@ -1,4 +1,5 @@
 import { authClient } from './client';
+import { notificationService, unregisterPushTokenFromBackend } from '@/lib/services/notificationService';
 
 /**
  * Re-export useSession from authClient for direct access
@@ -66,6 +67,8 @@ export function useAuth() {
    * Sign out the current user
    */
   const signOut = async () => {
+    await unregisterPushTokenFromBackend();
+    await notificationService.cancelEventAndFeedingNotifications();
     return authClient.signOut();
   };
 

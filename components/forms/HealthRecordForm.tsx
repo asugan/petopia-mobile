@@ -1,27 +1,23 @@
 import React, { useState } from 'react';
-import { Modal as RNModal, StyleSheet, View, TouchableOpacity } from 'react-native';
+import { Modal as RNModal, StyleSheet, TouchableOpacity, View } from 'react-native';
 import { FormProvider, useFieldArray } from 'react-hook-form';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useTranslation } from 'react-i18next';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { Button, Text, KeyboardAwareView } from '@/components/ui';
+import { Button, KeyboardAwareView, Text } from '@/components/ui';
 import { useHealthRecordForm } from '@/hooks/useHealthRecordForm';
-import { useEvent } from '@/lib/hooks/useEvents';
 import { useTheme } from '@/lib/theme';
-import { useCreateHealthRecord, useUpdateHealthRecord } from '../../lib/hooks/useHealthRecords';
-import { useUserSettingsStore } from '@/stores/userSettingsStore';
 import { showToast } from '@/lib/toast/showToast';
+import { useCreateHealthRecord, useUpdateHealthRecord } from '../../lib/hooks/useHealthRecords';
 import {
   formatValidationErrors,
   HealthRecordCreateSchema,
   HealthRecordUpdateSchema,
   type HealthRecordCreateFormInput,
 } from '../../lib/schemas/healthRecordSchema';
-import type { Currency } from '../../lib/schemas/expenseSchema';
 import type { HealthRecord } from '../../lib/types';
 import { FormRow } from './FormRow';
 import { FormSection } from './FormSection';
-import { SmartCurrencyInput } from './SmartCurrencyInput';
 import { SmartDatePicker } from './SmartDatePicker';
 import { SmartHealthRecordTypePicker } from './SmartHealthRecordTypePicker';
 import { SmartInput } from './SmartInput';
@@ -51,86 +47,52 @@ export function HealthRecordForm({
   const createMutation = useCreateHealthRecord();
   const updateMutation = useUpdateHealthRecord();
   const isEditing = !!initialData;
-  const { data: nextVisitEvent } = useEvent(initialData?.nextVisitEventId, {
-    enabled: !!initialData?.nextVisitEventId,
-  });
-  const { settings } = useUserSettingsStore();
-  const baseCurrency = settings?.baseCurrency || 'TRY';
 
-  // Use the custom hook for form management
   const { form, handleSubmit, reset } = useHealthRecordForm(petId || '', initialData);
-  const { setValue, getValues } = form;
 
   const { fields: treatmentFields, append: appendTreatment, remove: removeTreatment } = useFieldArray({
     control: form.control,
-    name: "treatmentPlan"
+    name: 'treatmentPlan',
   });
 
-  const getEmptyFormValues = React.useCallback((): HealthRecordCreateFormInput => ({
-    petId: petId || '',
-    type: 'checkup',
-    title: '',
-    description: '',
-    date: new Date(),
-    veterinarian: '',
-    clinic: '',
-    cost: undefined,
-    notes: '',
-    treatmentPlan: [],
-    nextVisitDate: undefined,
-  }), [petId]);
+  const getEmptyFormValues = React.useCallback(
+    (): HealthRecordCreateFormInput => ({
+      petId: petId || '',
+      type: 'checkup',
+      title: '',
+      date: new Date(),
+      treatmentPlan: [],
+    }),
+    [petId]
+  );
 
-  // Reset form when modal visibility changes
   React.useEffect(() => {
-    if (visible) {
-      setCurrentStep(0);
-      setShowStepError(false);
-      if (initialData) {
-        reset({
-          petId: initialData.petId,
-          type: initialData.type,
-          title: initialData.title || '',
-          description: initialData.description || '',
-          date: initialData.date,
-          veterinarian: initialData.veterinarian || '',
-          clinic: initialData.clinic || '',
-          cost: initialData.cost || undefined,
-          notes: initialData.notes || '',
-          treatmentPlan: initialData.treatmentPlan || [],
-          nextVisitDate: initialData.nextVisitDate || undefined,
-        } as HealthRecordCreateFormInput);
-      } else {
-        reset(getEmptyFormValues());
-      }
+    if (!visible) return;
+
+    setCurrentStep(0);
+    setShowStepError(false);
+
+    if (initialData) {
+      reset({
+        petId: initialData.petId,
+        type: initialData.type,
+        title: initialData.title || '',
+        date: initialData.date,
+        treatmentPlan: initialData.treatmentPlan || [],
+      } as HealthRecordCreateFormInput);
+      return;
     }
+
+    reset(getEmptyFormValues());
   }, [visible, initialData, reset, getEmptyFormValues]);
-
-  React.useEffect(() => {
-    if (!visible || !isEditing) return;
-    const startTime = nextVisitEvent?.startTime;
-    if (!startTime) return;
-
-    const currentValue = getValues('nextVisitDate');
-    if (currentValue) return;
-
-    setValue('nextVisitDate', startTime, {
-      shouldDirty: false,
-      shouldTouch: false,
-    });
-  }, [visible, isEditing, nextVisitEvent?.startTime, setValue, getValues]);
 
   const onSubmit = React.useCallback(
     async (data: HealthRecordCreateFormInput) => {
       try {
         setIsLoading(true);
 
-        const normalizedData: HealthRecordCreateFormInput = {
-          ...data,
-          cost: data.cost ?? undefined,
-        };
-
         if (isEditing && initialData?._id) {
-          const validationResult = HealthRecordUpdateSchema().safeParse(normalizedData);
+          const validationResult = HealthRecordUpdateSchema().safeParse(data);
 
           if (!validationResult.success) {
             const formattedErrors = formatValidationErrors(validationResult.error);
@@ -148,7 +110,7 @@ export function HealthRecordForm({
             data: validationResult.data,
           });
         } else {
-          const validationResult = HealthRecordCreateSchema().safeParse(normalizedData);
+          const validationResult = HealthRecordCreateSchema().safeParse(data);
 
           if (!validationResult.success) {
             const formattedErrors = formatValidationErrors(validationResult.error);
@@ -176,28 +138,15 @@ export function HealthRecordForm({
         setIsLoading(false);
       }
     },
-    [
-      createMutation,
-      getEmptyFormValues,
-      initialData,
-      isEditing,
-      onSuccess,
-      reset,
-      t,
-      updateMutation,
-    ]
+    [createMutation, getEmptyFormValues, initialData, isEditing, onSuccess, reset, t, updateMutation]
   );
-
-  const handleCancel = () => {
-    onCancel?.();
-  };
 
   const steps = React.useMemo(() => {
     const stepList = [
       {
         key: 'details',
         title: t('healthRecords.steps.details'),
-        fields: ['type', 'title', 'description'] as (keyof HealthRecordCreateFormInput)[],
+        fields: ['type', 'title'] as (keyof HealthRecordCreateFormInput)[],
       },
       {
         key: 'date',
@@ -205,19 +154,9 @@ export function HealthRecordForm({
         fields: ['date'] as (keyof HealthRecordCreateFormInput)[],
       },
       {
-        key: 'provider',
-        title: t('healthRecords.steps.provider'),
-        fields: ['veterinarian', 'clinic'] as (keyof HealthRecordCreateFormInput)[],
-      },
-      {
         key: 'treatment',
         title: t('healthRecords.treatmentPlan'),
-        fields: ['treatmentPlan', 'nextVisitDate'] as (keyof HealthRecordCreateFormInput)[],
-      },
-      {
-        key: 'costNotes',
-        title: t('healthRecords.steps.costNotes'),
-        fields: ['cost', 'notes'] as (keyof HealthRecordCreateFormInput)[],
+        fields: ['treatmentPlan'] as (keyof HealthRecordCreateFormInput)[],
       },
     ];
 
@@ -260,27 +199,22 @@ export function HealthRecordForm({
     handleSubmit(onSubmit)();
   }, [form, handleSubmit, onSubmit]);
 
+  const handleCancel = () => onCancel?.();
+
   return (
-    <RNModal
-      visible={visible}
-      animationType="slide"
-      presentationStyle="pageSheet"
-      onRequestClose={handleCancel}
-    >
-      <SafeAreaView style={[styles.modalContainer, { backgroundColor: theme.colors.surface }]}>
+    <RNModal visible={visible} animationType="slide" presentationStyle="pageSheet" onRequestClose={handleCancel}>
+      <SafeAreaView style={[styles.modalContainer, { backgroundColor: theme.colors.surface }]}> 
         <View style={styles.header}>
-          <Text style={[styles.title, { color: theme.colors.onSurface }]}>
+          <Text style={[styles.title, { color: theme.colors.onSurface }]}> 
             {isEditing ? t('healthRecords.editTitle') : t('healthRecords.createTitle')}
           </Text>
           <Button mode="text" onPress={handleCancel} disabled={isLoading} compact>
             {t('common.close')}
           </Button>
         </View>
+
         <FormProvider {...form}>
-          <KeyboardAwareView
-            style={styles.content}
-            contentContainerStyle={styles.contentContainer}
-          >
+          <KeyboardAwareView style={styles.content} contentContainerStyle={styles.contentContainer}>
             <StepHeader
               title={steps[currentStep].title}
               counterLabel={t('healthRecords.stepIndicator', { current: currentStep + 1, total: totalSteps })}
@@ -290,12 +224,7 @@ export function HealthRecordForm({
 
             {steps[currentStep].key === 'pet' && (
               <FormSection title={t('healthRecords.petSelection')}>
-                <SmartPetPicker
-                  name="petId"
-                  label={t('common.selectPet')}
-                  required
-                  testID="health-record-pet"
-                />
+                <SmartPetPicker name="petId" label={t('common.selectPet')} required testID="health-record-pet" />
               </FormSection>
             )}
 
@@ -304,28 +233,12 @@ export function HealthRecordForm({
                 title={isEditing ? t('healthRecords.editTitle') : t('healthRecords.createTitle')}
                 subtitle={t('healthRecords.createSubtitle')}
               >
-                {/* Record Type */}
-                <SmartHealthRecordTypePicker
-                  name="type"
-                  label={t('health.recordType')}
-                  testID="health-record-type"
-                />
-
-                {/* Title */}
+                <SmartHealthRecordTypePicker name="type" label={t('health.recordType')} testID="health-record-type" />
                 <SmartInput
                   name="title"
                   required
                   placeholder={t('healthRecords.titlePlaceholder')}
                   label={t('healthRecords.titleField')}
-                />
-
-                {/* Description */}
-                <SmartInput
-                  name="description"
-                  placeholder={t('healthRecords.descriptionPlaceholder')}
-                  label={t('healthRecords.descriptionField')}
-                  multiline
-                  numberOfLines={3}
                 />
               </FormSection>
             )}
@@ -336,125 +249,73 @@ export function HealthRecordForm({
               </FormSection>
             )}
 
-            {steps[currentStep].key === 'provider' && (
-              <FormSection title={t('healthRecords.veterinarianInfo')}>
-                <FormRow>
-                  <SmartInput name="veterinarian" label={t('healthRecords.veterinarianLabel')} placeholder={t('healthRecords.veterinarianPlaceholder')} />
-                  <SmartInput name="clinic" label={t('healthRecords.clinicLabel')} placeholder={t('healthRecords.clinicPlaceholder')} />
-                </FormRow>
-              </FormSection>
-            )}
-
             {steps[currentStep].key === 'treatment' && (
-              <>
-                 <FormSection title={t('healthRecords.treatmentPlan')}>
-                  {treatmentFields.map((field, index) => (
-                    <View key={field.id} style={[styles.treatmentItem, { backgroundColor: theme.colors.surfaceVariant }]}>
-                      <View style={styles.treatmentHeader}>
-                        <Text style={[styles.treatmentTitle, { color: theme.colors.onSurfaceVariant }]}>
-                          #{index + 1}
-                        </Text>
-                        <TouchableOpacity onPress={() => removeTreatment(index)} hitSlop={8}>
-                          <MaterialCommunityIcons name="close-circle-outline" size={24} color={theme.colors.error} />
-                        </TouchableOpacity>
-                      </View>
-                      
-                      <SmartInput 
-                        name={`treatmentPlan.${index}.name` as const} 
-                        label={t('healthRecords.treatmentName')}
-                        placeholder={t('healthRecords.treatmentNamePlaceholder')}
-                        required 
-                      />
-                      
-                      <FormRow>
-                        <SmartInput 
-                          name={`treatmentPlan.${index}.dosage` as const} 
-                          label={t('healthRecords.treatmentDosage')}
-                          placeholder={t('healthRecords.treatmentDosagePlaceholder')}
-                          required 
+              <FormSection title={t('healthRecords.treatmentPlan')}>
+                {treatmentFields.map((field, index) => (
+                  <View key={field.id} style={[styles.treatmentItem, { backgroundColor: theme.colors.surfaceVariant }]}> 
+                    <View style={styles.treatmentHeader}>
+                      <Text style={[styles.treatmentTitle, { color: theme.colors.onSurfaceVariant }]}>#{index + 1}</Text>
+                      <TouchableOpacity onPress={() => removeTreatment(index)} hitSlop={8}>
+                        <MaterialCommunityIcons
+                          name="close-circle-outline"
+                          size={24}
+                          color={theme.colors.error}
                         />
-                        <SmartInput 
-                          name={`treatmentPlan.${index}.frequency` as const} 
-                          label={t('healthRecords.treatmentFrequency')}
-                          placeholder={t('healthRecords.treatmentFrequencyPlaceholder')}
-                          required 
-                        />
-                      </FormRow>
-                      
-                      <SmartInput 
-                        name={`treatmentPlan.${index}.notes` as const} 
-                        label={t('healthRecords.treatmentInstructions')}
-                        placeholder={t('healthRecords.treatmentInstructionsPlaceholder')} 
-                      />
+                      </TouchableOpacity>
                     </View>
-                  ))}
-                  
-                  <Button 
-                    mode="outlined" 
-                    onPress={() => appendTreatment({ name: '', dosage: '', frequency: '', notes: '' })} 
-                    icon="plus"
-                    style={{ marginTop: 8 }}
-                  >
-                    {t('healthRecords.addTreatment')}
-                  </Button>
-                </FormSection>
 
-                <FormSection title={t('healthRecords.nextVisit')}>
-                  <Text style={[styles.nextVisitDescription, { color: theme.colors.onSurfaceVariant }]}>
-                    {t('healthRecords.nextVisitDescription')}
-                  </Text>
-                  <SmartDatePicker
-                    name="nextVisitDate"
-                    label={t('healthRecords.nextVisitDate')}
-                    mode="datetime"
-                    minimumDate={new Date()}
-                  />
-                </FormSection>
-              </>
-            )}
+                    <SmartInput
+                      name={`treatmentPlan.${index}.name` as const}
+                      label={t('healthRecords.treatmentName')}
+                      placeholder={t('healthRecords.treatmentNamePlaceholder')}
+                      required
+                    />
 
-            {steps[currentStep].key === 'costNotes' && (
-              <>
-                <FormSection title={t('healthRecords.cost')}>
-                  <SmartCurrencyInput
-                    name="cost"
-                    label={t('healthRecords.cost')}
-                    placeholder={t('healthRecords.costPlaceholder')}
-                    currency={(getValues('currency') as Currency | undefined) || baseCurrency}
-                  />
-                </FormSection>
+                    <FormRow>
+                      <SmartInput
+                        name={`treatmentPlan.${index}.dosage` as const}
+                        label={t('healthRecords.treatmentDosage')}
+                        placeholder={t('healthRecords.treatmentDosagePlaceholder')}
+                        required
+                      />
+                      <SmartInput
+                        name={`treatmentPlan.${index}.frequency` as const}
+                        label={t('healthRecords.treatmentFrequency')}
+                        placeholder={t('healthRecords.treatmentFrequencyPlaceholder')}
+                        required
+                      />
+                    </FormRow>
 
-                <FormSection title={t('common.notes')}>
-                  <SmartInput
-                    name="notes"
-                    placeholder={t('healthRecords.notesPlaceholder')}
-                    multiline
-                    numberOfLines={4}
-                  />
-                </FormSection>
-              </>
+                    <SmartInput
+                      name={`treatmentPlan.${index}.notes` as const}
+                      label={t('healthRecords.treatmentInstructions')}
+                      placeholder={t('healthRecords.treatmentInstructionsPlaceholder')}
+                    />
+                  </View>
+                ))}
+
+                <Button
+                  mode="outlined"
+                  onPress={() => appendTreatment({ name: '', dosage: '', frequency: '', notes: '' })}
+                  icon="plus"
+                  style={{ marginTop: 8 }}
+                >
+                  {t('healthRecords.addTreatment')}
+                </Button>
+              </FormSection>
             )}
 
             <View style={styles.actions}>
               {currentStep === 0 ? (
-                <Button
-                  mode="outlined"
-                  onPress={handleCancel}
-                  disabled={isLoading}
-                  style={styles.actionButton}
-                >
+                <Button mode="outlined" onPress={handleCancel} disabled={isLoading} style={styles.actionButton}>
                   {t('common.cancel')}
                 </Button>
               ) : (
-                <Button
-                  mode="outlined"
-                  onPress={handleBackStep}
-                  disabled={isLoading}
-                  style={styles.actionButton}
-                >
+                <Button mode="outlined" onPress={handleBackStep} disabled={isLoading} style={styles.actionButton}>
                   {t('common.back')}
                 </Button>
               )}
+
               {isFinalStep ? (
                 <Button
                   mode="contained"
@@ -466,20 +327,15 @@ export function HealthRecordForm({
                   {isEditing ? t('common.update') : t('common.save')}
                 </Button>
               ) : (
-                <Button
-                  mode="contained"
-                  onPress={handleNextStep}
-                  disabled={isLoading}
-                  style={styles.actionButton}
-                >
+                <Button mode="contained" onPress={handleNextStep} disabled={isLoading} style={styles.actionButton}>
                   {t('common.next')}
                 </Button>
               )}
             </View>
 
-            {!showStepError ? null : (
-              <View style={[styles.statusContainer, { backgroundColor: theme.colors.errorContainer }]}>
-                <Text style={[styles.statusText, { color: theme.colors.onErrorContainer }]}>
+            {showStepError && (
+              <View style={[styles.statusContainer, { backgroundColor: theme.colors.errorContainer }]}> 
+                <Text style={[styles.statusText, { color: theme.colors.onErrorContainer }]}> 
                   {t('pets.pleaseFillRequiredFields')}
                 </Text>
               </View>
@@ -550,9 +406,5 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: 'bold',
     opacity: 0.7,
-  },
-  nextVisitDescription: {
-    marginBottom: 12,
-    fontSize: 14,
   },
 });

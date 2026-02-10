@@ -14,9 +14,9 @@ import {
   RECURRENCE_FREQUENCIES,
   createFrequencyOptions,
   generateDailyTimes,
-  getUserTimezone,
 } from '@/constants/recurrence';
 import type { RecurrenceFrequency } from '@/constants/recurrence';
+import { useUserTimezone } from '@/lib/hooks/useUserTimezone';
 
 interface RecurrenceSettingsProps {
   disabled?: boolean;
@@ -30,6 +30,7 @@ export function RecurrenceSettings({
   const { t } = useTranslation();
   const { theme } = useTheme();
   const { control, setValue, getValues } = useFormContext();
+  const userTimezone = useUserTimezone();
 
   // Watch recurrence-related fields
   const isRecurring = useWatch({ control, name: 'isRecurring' });
@@ -42,9 +43,9 @@ export function RecurrenceSettings({
   React.useEffect(() => {
     const currentTimezone = getValues('recurrence.timezone');
     if (!currentTimezone) {
-      setValue('recurrence.timezone', getUserTimezone());
+      setValue('recurrence.timezone', userTimezone);
     }
-  }, [getValues, setValue]);
+  }, [getValues, setValue, userTimezone]);
 
   // Frequency options
   const frequencyOptions = React.useMemo(
@@ -215,11 +216,11 @@ export function RecurrenceSettings({
 
       {/* Timezone Info */}
       <View style={[styles.infoBox, { backgroundColor: theme.colors.secondaryContainer }]}>
-        <Text variant="bodySmall" style={{ color: theme.colors.onSecondaryContainer }}>
-          🌍 {t('recurrence.timezoneInfo', 'Events will be created in your timezone')}: {getUserTimezone()}
-        </Text>
-      </View>
-    </FormSection>
+          <Text variant="bodySmall" style={{ color: theme.colors.onSecondaryContainer }}>
+          🌍 {t('recurrence.timezoneInfo', 'Events will be created in your timezone')}: {userTimezone}
+          </Text>
+        </View>
+      </FormSection>
   );
 }
 

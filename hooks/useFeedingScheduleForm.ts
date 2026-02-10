@@ -4,6 +4,7 @@ import { Control, FieldErrors, Path, PathValue, useForm, UseFormReturn } from 'r
 import { DAYS_OF_WEEK } from '../constants';
 import {
   feedingScheduleFormSchema,
+  normalizeFeedingDays,
   type FeedingScheduleFormData,
 } from '../lib/schemas/feedingScheduleSchema';
 import { FeedingSchedule, FoodType } from '../lib/types';
@@ -43,9 +44,9 @@ export const useFeedingScheduleForm = (
   const defaultValues: FeedingScheduleFormData = React.useMemo(() => {
     if (schedule) {
       // Edit mode: parse existing schedule
-      const daysArray = schedule.days
-        .split(',')
-        .map((d) => d.trim()) as Array<(typeof DAYS_OF_WEEK)[keyof typeof DAYS_OF_WEEK]>;
+      const daysArray = normalizeFeedingDays(schedule.days) as Array<
+        (typeof DAYS_OF_WEEK)[keyof typeof DAYS_OF_WEEK]
+      >;
 
       return {
         petId: schedule.petId,

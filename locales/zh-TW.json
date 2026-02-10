@@ -35,7 +35,7 @@
     "linkOpenError": "無法打開鏈接。請重試。",
     "logoutConfirm": "您確定要登出嗎？",
     "logoutSuccess": "成功登出",
-    "freeTrialNotice": "使用社交媒體登錄，將您的數據同步到雲端，並在您的所有設備上使用。"
+    "freeTrialNotice": "先用 1 隻寵物免費開始，當你需要時再解鎖 Pro，無限制管理整個寵物家庭。"
   },
   "navigation": {
     "home": "首頁",
@@ -174,7 +174,7 @@
   "limits": {
     "pets": {
       "title": "添加無限數量的寵物",
-      "subtitle": "使用 Pro 版在一個地方管理您的整個家庭。",
+      "subtitle": "把每隻寵物的健康時間軸、提醒與紀錄集中在同一個可靠位置。",
       "cta": "升級到 Pro"
     },
     "care": {
@@ -182,7 +182,7 @@
     },
     "budgets": {
       "title": "智能預算跟踪",
-      "subtitle": "使用 Pro 版在一個地方管理每月預算和警報。",
+      "subtitle": "透過主動提醒及早發現超支，避免突如其來的獸醫費用。",
       "cta": "升級到 Pro"
     }
   },
@@ -494,6 +494,8 @@
     "appSettings": "應用設置",
     "notifications": "通知",
     "reminderNotifications": "啟用提醒通知",
+    "feedingReminders": "餵食提醒",
+    "feedingRemindersDescription": "針對啟用中餵食排程的餐點提醒通知",
     "budgetNotifications": "預算通知",
     "budgetNotificationsDescription": "接近預算限額時發出警報",
     "quietHours": "靜音時間",
@@ -610,7 +612,9 @@
       "ukrainian": "烏克蘭語",
       "indonesian": "Bahasa Indonesia"
     },
-    "selectCurrency": "選擇貨幣"
+    "selectCurrency": "選擇貨幣",
+    "timezone": "時區",
+    "selectTimezone": "選擇時區"
   },
   "common": {
     "loading": "加載中...",
@@ -669,7 +673,9 @@
     "noNotes": "無備註",
     "hoursMinutes": "{{hours}}小時 {{minutes}}分鐘",
     "minutesOnly": "{{minutes}}分鐘",
-    "timeLeft": "剩餘 {{time}}"
+    "timeLeft": "剩餘 {{time}}",
+    "search": "搜索",
+    "info": "資訊"
   },
   "errors": {
     "loadingFailed": "加載失敗",
@@ -872,6 +878,7 @@
       "steps": {
         "basicInfo": "基本信息",
         "physicalDetails": "體格詳情",
+        "breedWeight": "品種和體重",
         "photo": "照片"
       },
       "sections": {
@@ -1310,10 +1317,15 @@
     "screen3": {
       "title": "您準備好了！",
       "description": "一切準備就緒，可以管理您寵物的護理和健康數據。",
-      "trialNotice": "立即添加您的寵物以開始使用！",
+      "trialNotice": "現在先加入你的第一隻寵物，之後需要更多時再解鎖 Pro。",
       "addPet": "添加您的寵物",
       "skipPet": "以後再說",
       "addYourFirstPet": "添加您的第一隻寵物"
+    },
+    "language": {
+      "title": "選擇您的語言、貨幣與時區",
+      "description": "我們會在接下來的畫面使用您的選擇，並在登入後進行同步。您可隨時在設定中修改全部內容。",
+      "continue": "繼續"
     }
   },
   "serviceResponse": {
@@ -1479,7 +1491,7 @@
     "confirmStartTrialMessage": "14 天免費 Pro 功能體驗。無需信用卡。",
     "confirmStartTrialAction": "開始試用",
     "upgrade": "升級到 Pro",
-    "upgradePrompt": "使用 Pro 解鎖所有功能",
+    "upgradePrompt": "不漏掉照護任務，透過 Pro 有系統地管理所有寵物",
     "upgradeBeforeTrialEnds": "試用結束前升級",
     "manageSubscription": "管理訂閱",
     "cancelSubscription": "取消訂閱",
@@ -1507,24 +1519,24 @@
     "unlockFeature": "解鎖 {{feature}}",
     "modal": {
       "title": "高級功能",
-      "description": "此功能僅對 Pro 會員開放",
-      "featureDescription": "{{feature}} 僅對 Pro 會員開放",
-      "upgradeNow": "立即升級",
+      "description": "升級到 Pro，將所有寵物、提醒與健康紀錄整合到同一個流程中。",
+      "featureDescription": "升級到 Pro 以解鎖 {{feature}}，並維持穩定的日常照護節奏。",
+      "upgradeNow": "查看方案",
       "maybeLater": "以後再說",
-      "includes": "Pro 會員包含："
+      "includes": "Pro 可協助你："
     },
     "features": {
       "title": "Pro 功能",
       "unlimited": "無限寵物數量",
-      "unlimitedDesc": "在一個地方添加和管理您的所有寵物",
+      "unlimitedDesc": "把所有寵物檔案、紀錄與筆記集中管理",
       "feedingSchedules": "無限餵養時間表",
-      "feedingSchedulesDesc": "為您所有的寵物創建無限的餵養時間表",
+      "feedingSchedulesDesc": "為每隻寵物建立可靠的日常節奏，不受排程數量限制",
       "budgetTracking": "預算跟踪和警報",
-      "budgetTrackingDesc": "設置每月預算、跟踪支出並獲取消費警報",
+      "budgetTrackingDesc": "透過每月預算提醒及早發現成本上升",
       "export": "數據導出",
-      "exportDesc": "將支出導出為 CSV 或 PDF，生成獸醫摘要",
+      "exportDesc": "與家人或獸醫分享清楚報表",
       "priority": "優先支持",
-      "priorityDesc": "在需要時獲得幫助",
+      "priorityDesc": "在緊急時更快獲得協助",
       "petManagement": "寵物管理",
       "healthRecords": "健康記錄",
       "calendar": "日曆和活動",
@@ -1534,7 +1546,7 @@
     },
     "paywall": {
       "title": "解鎖 Petopia Petcare Pro",
-      "subtitle": "充分利用 Petopia Petcare"
+      "subtitle": "完整掌握每隻寵物的照護、提醒與支出"
     },
     "success": {
       "title": "訂閱成功！",
@@ -1546,7 +1558,14 @@
       "message": "您的 14 天免費試用已開始。享受所有 Pro 功能！",
       "button": "轉到首頁"
     },
-    "note": "款項將從您的 App Store / Google Play 帳戶中扣除。除非在當前週期結束前至少 24 小時取消，否則訂閱將自動續訂。您可以在 App Store / Google Play 帳戶設置中管理或取消訂閱。"
+    "note": "費用將透過你的 App Store / Google Play 帳號扣款。除非於目前週期結束前至少 24 小時取消，否則訂閱會自動續訂。你可以隨時在商店帳號設定中管理或取消訂閱。",
+    "trust": {
+      "cancelAnytime": "可隨時在 App Store / Google Play 設定中取消",
+      "billedByStore": "帳務會透過您的應用商店帳號安全處理",
+      "secureCheckout": "不需要在 App 內手動輸入信用卡資訊"
+    },
+    "verifyingPurchase": "已收到購買，正在驗證您的訂閱...",
+    "verificationTakingLong": "正在驗證您的購買，存取權限將在幾秒內自動開通。"
   },
   "downgrade": {
     "title": "選擇您的寵物",
