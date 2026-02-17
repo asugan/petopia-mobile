@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { AppState } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
@@ -8,7 +8,11 @@ import * as SplashScreen from 'expo-splash-screen';
 import { Stack, useRouter, useSegments } from "expo-router";
 import Toast from 'react-native-toast-message';
 import { ApiErrorBoundary } from "@/lib/components/ApiErrorBoundary";
-import { notificationService } from '@/lib/services/notificationService';
+import {
+  disableLocalNotifications,
+  enableLocalNotifications,
+  notificationService,
+} from '@/lib/services/notificationService';
 import { useSubscription } from '@/lib/hooks/useSubscription';
 import { useDowngradeStatus } from '@/lib/hooks/useDowngrade';
 import { NetworkStatus } from "@/lib/components/NetworkStatus";
@@ -24,6 +28,7 @@ import { useActiveFeedingSchedules } from '@/lib/hooks/useFeedingSchedules';
 import { useReminderScheduler } from '@/hooks/useReminderScheduler';
 import { useBudgetAlertNotifications } from '@/lib/hooks/useUserBudget';
 import { createToastConfig } from '@/lib/toast/toastConfig';
+import NotificationPermissionPrompt from '@/components/NotificationPermissionPrompt';
 import { SUBSCRIPTION_ROUTES, TAB_ROUTES } from '@/constants/routes';
 import { LAYOUT } from '@/constants';
 import { initDatabase } from '@/lib/db/init';
@@ -122,10 +127,37 @@ function RootLayoutContent() {
   useBudgetAlertNotifications();
   const rescheduleSignatureRef = useRef<string | null>(null);
   const preferenceSyncInFlightRef = useRef(false);
+  const hasCheckedLaunchNotificationPromptRef = useRef(false);
+  const [showNotificationPrompt, setShowNotificationPrompt] = useState(false);
 
   useEffect(() => {
     initialize();
   }, [initialize]);
+
+  useEffect(() => {
+    if (hasCheckedLaunchNotificationPromptRef.current || !hasSeenOnboarding || !settings) {
+      return;
+    }
+
+    hasCheckedLaunchNotificationPromptRef.current = true;
+
+    const syncAndMaybePrompt = async () => {
+      const permissionEnabled = await notificationService.areNotificationsEnabled();
+      const notificationsEnabled = settings.notificationsEnabled === true;
+      const notificationsActive = notificationsEnabled && permissionEnabled;
+
+      if (!permissionEnabled && notificationsEnabled) {
+        void disableLocalNotifications();
+        await updateSettings({ notificationsEnabled: false });
+      }
+
+      if (!notificationsActive) {
+        setShowNotificationPrompt(true);
+      }
+    };
+
+    void syncAndMaybePrompt();
+  }, [hasSeenOnboarding, settings, updateSettings]);
 
   useEffect(() => {
     const subscription = AppState.addEventListener('change', (nextState) => {
@@ -313,6 +345,19 @@ function RootLayoutContent() {
         position="bottom"
         bottomOffset={LAYOUT.TAB_BAR_HEIGHT + 12}
         config={createToastConfig(theme)}
+      />
+      <NotificationPermissionPrompt
+        visible={showNotificationPrompt}
+        onDismiss={() => setShowNotificationPrompt(false)}
+        onPermissionGranted={async () => {
+          void enableLocalNotifications();
+          await updateSettings({ notificationsEnabled: true });
+          setShowNotificationPrompt(false);
+        }}
+        onPermissionDenied={async () => {
+          void disableLocalNotifications();
+          await updateSettings({ notificationsEnabled: false });
+        }}
       />
     </>
   );
