@@ -301,7 +301,7 @@ export default function SettingsScreen() {
         )}
 
         {/* Subscription Status */}
-        <SubscriptionCard />
+        <SubscriptionCard title={t('events.status')} />
         
         {/* Subscription Note */}
         <Text

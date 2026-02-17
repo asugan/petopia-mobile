@@ -1557,10 +1557,18 @@
     "trust": {
       "cancelAnytime": "Puedes cancelar en cualquier momento desde los ajustes de App Store / Google Play",
       "billedByStore": "La facturación se gestiona de forma segura a través de tu cuenta de la tienda",
-      "secureCheckout": "No necesitas introducir la tarjeta manualmente dentro de la app"
+      "secureCheckout": "No necesitas introducir la tarjeta manualmente dentro de la app",
+      "cancelAnytimeIos": "Puedes cancelar en cualquier momento desde los ajustes de App Store",
+      "cancelAnytimeAndroid": "Puedes cancelar en cualquier momento desde los ajustes de Google Play",
+      "billedByStoreIos": "La facturación se gestiona de forma segura a través de tu cuenta de la tienda",
+      "billedByStoreAndroid": "La facturación se gestiona de forma segura a través de tu cuenta de la tienda",
+      "secureCheckoutIos": "No necesitas introducir la tarjeta manualmente dentro de la app",
+      "secureCheckoutAndroid": "No necesitas introducir la tarjeta manualmente dentro de la app"
     },
     "verifyingPurchase": "Compra recibida. Verificando tu suscripcion...",
-    "verificationTakingLong": "Tu compra se esta verificando. El acceso se desbloqueara automaticamente en unos segundos."
+    "verificationTakingLong": "Tu compra se esta verificando. El acceso se desbloqueara automaticamente en unos segundos.",
+    "noteIos": "El pago se carga a tu cuenta de App Store. Las suscripciones se renuevan automáticamente, a menos que se cancelen al menos 24 horas antes de que termine el periodo actual. Puedes gestionarlas o cancelarlas en cualquier momento desde los ajustes de tu cuenta de la tienda.",
+    "noteAndroid": "El pago se carga a tu cuenta de Google Play. Las suscripciones se renuevan automáticamente, a menos que se cancelen al menos 24 horas antes de que termine el periodo actual. Puedes gestionarlas o cancelarlas en cualquier momento desde los ajustes de tu cuenta de la tienda."
   },
   "downgrade": {
     "title": "Elige tu mascota",

@@ -36,17 +36,6 @@ const requireRevenueCatConfig = () => {
   return runtimeConfig;
 };
 
-/**
- * RevenueCat configuration constants
- */
-export const REVENUECAT_CONFIG = {
-  /**
-   * Free trial duration in days (custom trial without credit card)
-   * Local-first trial policy duration
-   */
-  TRIAL_DURATION_DAYS: 14,
-} as const;
-
 export type RevenueCatPlatform = 'ios' | 'android';
 
 export function getRevenueCatApiKey(platform: RevenueCatPlatform): string {

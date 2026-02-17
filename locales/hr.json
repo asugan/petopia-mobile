@@ -1562,10 +1562,18 @@
     "trust": {
       "cancelAnytime": "Pretplatu možete otkazati u bilo kojem trenutku u postavkama App Store / Google Play",
       "billedByStore": "Naplata se sigurno obrađuje putem vašeg računa trgovine aplikacija",
-      "secureCheckout": "U aplikaciji nije potrebno ručno unositi podatke kartice"
+      "secureCheckout": "U aplikaciji nije potrebno ručno unositi podatke kartice",
+      "cancelAnytimeIos": "Pretplatu možete otkazati u bilo kojem trenutku u postavkama App Store",
+      "cancelAnytimeAndroid": "Pretplatu možete otkazati u bilo kojem trenutku u postavkama Google Play",
+      "billedByStoreIos": "Naplata se sigurno obrađuje putem vašeg računa trgovine aplikacija",
+      "billedByStoreAndroid": "Naplata se sigurno obrađuje putem vašeg računa trgovine aplikacija",
+      "secureCheckoutIos": "U aplikaciji nije potrebno ručno unositi podatke kartice",
+      "secureCheckoutAndroid": "U aplikaciji nije potrebno ručno unositi podatke kartice"
     },
     "verifyingPurchase": "Kupnja je zaprimljena. Provjeravamo vasu pretplatu...",
-    "verificationTakingLong": "Vasa kupnja se provjerava. Pristup ce se automatski otkljucati za nekoliko sekundi."
+    "verificationTakingLong": "Vasa kupnja se provjerava. Pristup ce se automatski otkljucati za nekoliko sekundi.",
+    "noteIos": "Plaćanje se naplaćuje putem vašeg App Store računa. Pretplate se automatski obnavljaju osim ako ih ne otkažete najmanje 24 sata prije kraja trenutnog razdoblja. Možete ih upravljati ili otkazati u bilo kojem trenutku u postavkama računa trgovine.",
+    "noteAndroid": "Plaćanje se naplaćuje putem vašeg Google Play računa. Pretplate se automatski obnavljaju osim ako ih ne otkažete najmanje 24 sata prije kraja trenutnog razdoblja. Možete ih upravljati ili otkazati u bilo kojem trenutku u postavkama računa trgovine."
   },
   "downgrade": {
     "title": "Odaberite svog ljubimca",

@@ -1575,9 +1575,17 @@
     "trust": {
       "cancelAnytime": "Batalkan kapan saja dari pengaturan App Store / Google Play",
       "billedByStore": "Penagihan diproses dengan aman melalui akun toko aplikasi Anda",
-      "secureCheckout": "Tidak perlu memasukkan detail kartu kredit secara manual di dalam aplikasi"
+      "secureCheckout": "Tidak perlu memasukkan detail kartu kredit secara manual di dalam aplikasi",
+      "cancelAnytimeIos": "Batalkan kapan saja dari pengaturan App Store",
+      "cancelAnytimeAndroid": "Batalkan kapan saja dari pengaturan Google Play",
+      "billedByStoreIos": "Penagihan diproses dengan aman melalui akun toko aplikasi Anda",
+      "billedByStoreAndroid": "Penagihan diproses dengan aman melalui akun toko aplikasi Anda",
+      "secureCheckoutIos": "Tidak perlu memasukkan detail kartu kredit secara manual di dalam aplikasi",
+      "secureCheckoutAndroid": "Tidak perlu memasukkan detail kartu kredit secara manual di dalam aplikasi"
     },
     "verifyingPurchase": "Pembelian diterima. Sedang memverifikasi langganan Anda...",
-    "verificationTakingLong": "Pembelian Anda sedang diverifikasi. Akses akan terbuka otomatis dalam beberapa detik."
+    "verificationTakingLong": "Pembelian Anda sedang diverifikasi. Akses akan terbuka otomatis dalam beberapa detik.",
+    "noteIos": "Pembayaran ditagihkan melalui akun App Store Anda. Langganan diperpanjang otomatis kecuali dibatalkan setidaknya 24 jam sebelum akhir periode berjalan. Anda dapat mengelola atau membatalkan kapan saja dari pengaturan akun toko Anda.",
+    "noteAndroid": "Pembayaran ditagihkan melalui akun Google Play Anda. Langganan diperpanjang otomatis kecuali dibatalkan setidaknya 24 jam sebelum akhir periode berjalan. Anda dapat mengelola atau membatalkan kapan saja dari pengaturan akun toko Anda."
   }
 }

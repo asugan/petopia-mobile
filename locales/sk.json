@@ -1562,10 +1562,18 @@
     "trust": {
       "cancelAnytime": "Predplatné môžete kedykoľvek zrušiť v nastaveniach App Store / Google Play",
       "billedByStore": "Platba sa bezpečne spracúva cez váš účet v obchode s aplikáciami",
-      "secureCheckout": "V aplikácii nie je potrebné ručne zadávať údaje karty"
+      "secureCheckout": "V aplikácii nie je potrebné ručne zadávať údaje karty",
+      "cancelAnytimeIos": "Predplatné môžete kedykoľvek zrušiť v nastaveniach App Store",
+      "cancelAnytimeAndroid": "Predplatné môžete kedykoľvek zrušiť v nastaveniach Google Play",
+      "billedByStoreIos": "Platba sa bezpečne spracúva cez váš účet v obchode s aplikáciami",
+      "billedByStoreAndroid": "Platba sa bezpečne spracúva cez váš účet v obchode s aplikáciami",
+      "secureCheckoutIos": "V aplikácii nie je potrebné ručne zadávať údaje karty",
+      "secureCheckoutAndroid": "V aplikácii nie je potrebné ručne zadávať údaje karty"
     },
     "verifyingPurchase": "Nakup prijaty. Overujeme vase predplatne...",
-    "verificationTakingLong": "Vas nakup sa overuje. Pristup sa automaticky odomkne o niekolko sekund."
+    "verificationTakingLong": "Vas nakup sa overuje. Pristup sa automaticky odomkne o niekolko sekund.",
+    "noteIos": "Platba sa účtuje cez váš účet App Store. Predplatné sa automaticky obnovuje, ak ho nezrušíte aspoň 24 hodín pred koncom aktuálneho obdobia. Spravovať alebo zrušiť ho môžete kedykoľvek v nastaveniach účtu obchodu.",
+    "noteAndroid": "Platba sa účtuje cez váš účet Google Play. Predplatné sa automaticky obnovuje, ak ho nezrušíte aspoň 24 hodín pred koncom aktuálneho obdobia. Spravovať alebo zrušiť ho môžete kedykoľvek v nastaveniach účtu obchodu."
   },
   "downgrade": {
     "title": "Vyberte si svoje zvieratko",

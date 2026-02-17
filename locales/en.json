@@ -1561,10 +1561,18 @@
       "button": "Go to Homepage"
     },
     "note": "Payment is billed via your App Store / Google Play account. Subscriptions renew automatically unless cancelled at least 24 hours before the end of the current period. Manage or cancel anytime from your store account settings.",
+    "noteIos": "Payment will be charged to your Apple ID account at confirmation of purchase. Subscription automatically renews unless cancelled at least 24 hours before the end of the current period. You can manage and cancel your subscription in your App Store account settings.",
+    "noteAndroid": "Payment will be charged to your Google Play account at confirmation of purchase. Subscription automatically renews unless cancelled at least 24 hours before the end of the current period. You can manage and cancel your subscription in your Google Play account settings.",
     "trust": {
       "cancelAnytime": "Cancel anytime from App Store / Google Play settings",
       "billedByStore": "Billing is handled securely through your app store account",
-      "secureCheckout": "No manual credit card entry required in the app"
+      "secureCheckout": "No manual credit card entry required in the app",
+      "cancelAnytimeIos": "Cancel anytime from App Store account settings",
+      "billedByStoreIos": "Billing is handled securely through your Apple ID account",
+      "secureCheckoutIos": "No manual credit card entry required in the app",
+      "cancelAnytimeAndroid": "Cancel anytime from Google Play account settings",
+      "billedByStoreAndroid": "Billing is handled securely through your Google Play account",
+      "secureCheckoutAndroid": "No manual credit card entry required in the app"
     }
   },
   "downgrade": {

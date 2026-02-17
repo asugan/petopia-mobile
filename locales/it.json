@@ -1562,10 +1562,18 @@
     "trust": {
       "cancelAnytime": "Puoi annullare in qualsiasi momento dalle impostazioni di App Store / Google Play",
       "billedByStore": "La fatturazione è gestita in modo sicuro tramite il tuo account dello store",
-      "secureCheckout": "Nessun inserimento manuale della carta di credito all'interno dell'app"
+      "secureCheckout": "Nessun inserimento manuale della carta di credito all'interno dell'app",
+      "cancelAnytimeIos": "Puoi annullare in qualsiasi momento dalle impostazioni di App Store",
+      "cancelAnytimeAndroid": "Puoi annullare in qualsiasi momento dalle impostazioni di Google Play",
+      "billedByStoreIos": "La fatturazione è gestita in modo sicuro tramite il tuo account dello store",
+      "billedByStoreAndroid": "La fatturazione è gestita in modo sicuro tramite il tuo account dello store",
+      "secureCheckoutIos": "Nessun inserimento manuale della carta di credito all'interno dell'app",
+      "secureCheckoutAndroid": "Nessun inserimento manuale della carta di credito all'interno dell'app"
     },
     "verifyingPurchase": "Acquisto ricevuto. Verifica del tuo abbonamento in corso...",
-    "verificationTakingLong": "Il tuo acquisto e in verifica. L'accesso verra sbloccato automaticamente tra pochi secondi."
+    "verificationTakingLong": "Il tuo acquisto e in verifica. L'accesso verra sbloccato automaticamente tra pochi secondi.",
+    "noteIos": "Il pagamento viene addebitato sul tuo account App Store. Gli abbonamenti si rinnovano automaticamente, salvo cancellazione almeno 24 ore prima della fine del periodo corrente. Puoi gestire o annullare in qualsiasi momento dalle impostazioni dell'account dello store.",
+    "noteAndroid": "Il pagamento viene addebitato sul tuo account Google Play. Gli abbonamenti si rinnovano automaticamente, salvo cancellazione almeno 24 ore prima della fine del periodo corrente. Puoi gestire o annullare in qualsiasi momento dalle impostazioni dell'account dello store."
   },
   "downgrade": {
     "title": "Scegli il tuo Animale",

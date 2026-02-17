@@ -31,7 +31,7 @@ interface ProtectedRouteProps {
  * Behavior:
  * - Shows loading spinner while subscription status is being fetched
  * - Shows subscription modal if user doesn't have active subscription
- * - Renders children if user has active subscription (trial or paid)
+ * - Renders children if user has an active paid subscription
  * - Automatically checks subscription status on every tab focus
  */
 export function ProtectedRoute({ children, featureName, requirePro = true }: ProtectedRouteProps) {

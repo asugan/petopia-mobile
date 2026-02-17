@@ -184,24 +184,18 @@ export const HeaderActions = () => {
     }
   };
 
-  const statusLabel = subscriptionStatus === "pro" ? "Pro" : subscriptionStatus === "trial" ? "Trial" : "Free";
+  const statusLabel = subscriptionStatus === "pro" ? "Pro" : "Free";
   const statusTheme = subscriptionStatus === "pro"
     ? {
       color: theme.colors.primary,
       backgroundColor: theme.colors.primaryContainer,
       icon: "crown" as const,
     }
-    : subscriptionStatus === "trial"
-      ? {
-        color: theme.colors.tertiary,
-        backgroundColor: theme.colors.tertiaryContainer,
-        icon: "clock-outline" as const,
-      }
-      : {
-        color: theme.colors.onSurfaceVariant,
-        backgroundColor: theme.colors.surfaceVariant,
-        icon: "account-outline" as const,
-      };
+    : {
+      color: theme.colors.onSurfaceVariant,
+      backgroundColor: theme.colors.surfaceVariant,
+      icon: "account-outline" as const,
+    };
 
   return (
     <View style={styles.headerActions}>

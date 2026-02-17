@@ -1562,10 +1562,18 @@
     "trust": {
       "cancelAnytime": "App Store / Google Play の設定からいつでも解約できます",
       "billedByStore": "請求はアプリストアのアカウントを通じて安全に処理されます",
-      "secureCheckout": "アプリ内でクレジットカード情報を手入力する必要はありません"
+      "secureCheckout": "アプリ内でクレジットカード情報を手入力する必要はありません",
+      "cancelAnytimeIos": "App Store の設定からいつでも解約できます",
+      "cancelAnytimeAndroid": "Google Play の設定からいつでも解約できます",
+      "billedByStoreIos": "請求はアプリストアのアカウントを通じて安全に処理されます",
+      "billedByStoreAndroid": "請求はアプリストアのアカウントを通じて安全に処理されます",
+      "secureCheckoutIos": "アプリ内でクレジットカード情報を手入力する必要はありません",
+      "secureCheckoutAndroid": "アプリ内でクレジットカード情報を手入力する必要はありません"
     },
     "verifyingPurchase": "購入を受け付けました。サブスクリプションを確認しています...",
-    "verificationTakingLong": "購入を確認しています。数秒後にアクセスが自動的に有効になります。"
+    "verificationTakingLong": "購入を確認しています。数秒後にアクセスが自動的に有効になります。",
+    "noteIos": "お支払いはApp Storeアカウントに請求されます。サブスクリプションは、現在の期間終了の24時間前までに解約しない限り自動更新されます。ストアのアカウント設定からいつでも管理・解約できます。",
+    "noteAndroid": "お支払いはGoogle Playアカウントに請求されます。サブスクリプションは、現在の期間終了の24時間前までに解約しない限り自動更新されます。ストアのアカウント設定からいつでも管理・解約できます。"
   },
   "downgrade": {
     "title": "ペットを選択",

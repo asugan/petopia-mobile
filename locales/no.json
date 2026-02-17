@@ -1562,10 +1562,18 @@
     "trust": {
       "cancelAnytime": "Du kan når som helst avslutte i innstillingene for App Store / Google Play",
       "billedByStore": "Fakturering håndteres trygt via appbutikk-kontoen din",
-      "secureCheckout": "Du trenger ikke å skrive inn kortinformasjon manuelt i appen"
+      "secureCheckout": "Du trenger ikke å skrive inn kortinformasjon manuelt i appen",
+      "cancelAnytimeIos": "Du kan når som helst avslutte i innstillingene for App Store",
+      "cancelAnytimeAndroid": "Du kan når som helst avslutte i innstillingene for Google Play",
+      "billedByStoreIos": "Fakturering håndteres trygt via appbutikk-kontoen din",
+      "billedByStoreAndroid": "Fakturering håndteres trygt via appbutikk-kontoen din",
+      "secureCheckoutIos": "Du trenger ikke å skrive inn kortinformasjon manuelt i appen",
+      "secureCheckoutAndroid": "Du trenger ikke å skrive inn kortinformasjon manuelt i appen"
     },
     "verifyingPurchase": "Kjop mottatt. Verifiserer abonnementet ditt...",
-    "verificationTakingLong": "Kjopet ditt verifiseres. Tilgang blir automatisk last opp om noen sekunder."
+    "verificationTakingLong": "Kjopet ditt verifiseres. Tilgang blir automatisk last opp om noen sekunder.",
+    "noteIos": "Betaling belastes via App Store-kontoen din. Abonnementer fornyes automatisk med mindre de kanselleres minst 24 timer før slutten av gjeldende periode. Du kan administrere eller kansellere når som helst i butikkonto-innstillingene dine.",
+    "noteAndroid": "Betaling belastes via Google Play-kontoen din. Abonnementer fornyes automatisk med mindre de kanselleres minst 24 timer før slutten av gjeldende periode. Du kan administrere eller kansellere når som helst i butikkonto-innstillingene dine."
   },
   "downgrade": {
     "title": "Velg ditt kjæledyr",

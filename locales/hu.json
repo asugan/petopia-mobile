@@ -1562,10 +1562,18 @@
     "trust": {
       "cancelAnytime": "Az App Store / Google Play beállításaiban bármikor lemondhatod",
       "billedByStore": "A számlázás biztonságosan az alkalmazásbolt-fiókodon keresztül történik",
-      "secureCheckout": "Az alkalmazásban nem szükséges kézzel megadni a bankkártyaadatokat"
+      "secureCheckout": "Az alkalmazásban nem szükséges kézzel megadni a bankkártyaadatokat",
+      "cancelAnytimeIos": "Az App Store beállításaiban bármikor lemondhatod",
+      "cancelAnytimeAndroid": "Az Google Play beállításaiban bármikor lemondhatod",
+      "billedByStoreIos": "A számlázás biztonságosan az alkalmazásbolt-fiókodon keresztül történik",
+      "billedByStoreAndroid": "A számlázás biztonságosan az alkalmazásbolt-fiókodon keresztül történik",
+      "secureCheckoutIos": "Az alkalmazásban nem szükséges kézzel megadni a bankkártyaadatokat",
+      "secureCheckoutAndroid": "Az alkalmazásban nem szükséges kézzel megadni a bankkártyaadatokat"
     },
     "verifyingPurchase": "Vasarlas fogadva. Elfizetesed ellenorzese folyamatban...",
-    "verificationTakingLong": "A vasarlas ellenorzese folyamatban van. A hozzaferes nehany masodpercen belul automatikusan feloldodik."
+    "verificationTakingLong": "A vasarlas ellenorzese folyamatban van. A hozzaferes nehany masodpercen belul automatikusan feloldodik.",
+    "noteIos": "A fizetés az App Store fiókodból történik. Az előfizetések automatikusan megújulnak, hacsak legalább 24 órával az aktuális időszak vége előtt nem mondod le. A kezelést vagy lemondást bármikor elvégezheted az áruházfiók beállításaiban.",
+    "noteAndroid": "A fizetés az Google Play fiókodból történik. Az előfizetések automatikusan megújulnak, hacsak legalább 24 órával az aktuális időszak vége előtt nem mondod le. A kezelést vagy lemondást bármikor elvégezheted az áruházfiók beállításaiban."
   },
   "downgrade": {
     "title": "Válassza ki kedvencét",

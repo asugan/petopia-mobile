@@ -1562,10 +1562,18 @@
     "trust": {
       "cancelAnytime": "Możesz anulować w dowolnym momencie w ustawieniach App Store / Google Play",
       "billedByStore": "Płatność jest bezpiecznie obsługiwana przez konto sklepu z aplikacjami",
-      "secureCheckout": "W aplikacji nie trzeba ręcznie wpisywać danych karty"
+      "secureCheckout": "W aplikacji nie trzeba ręcznie wpisywać danych karty",
+      "cancelAnytimeIos": "Możesz anulować w dowolnym momencie w ustawieniach App Store",
+      "cancelAnytimeAndroid": "Możesz anulować w dowolnym momencie w ustawieniach Google Play",
+      "billedByStoreIos": "Płatność jest bezpiecznie obsługiwana przez konto sklepu z aplikacjami",
+      "billedByStoreAndroid": "Płatność jest bezpiecznie obsługiwana przez konto sklepu z aplikacjami",
+      "secureCheckoutIos": "W aplikacji nie trzeba ręcznie wpisywać danych karty",
+      "secureCheckoutAndroid": "W aplikacji nie trzeba ręcznie wpisywać danych karty"
     },
     "verifyingPurchase": "Zakup otrzymany. Weryfikujemy twoja subskrypcje...",
-    "verificationTakingLong": "Twoj zakup jest weryfikowany. Dostep zostanie automatycznie odblokowany za kilka sekund."
+    "verificationTakingLong": "Twoj zakup jest weryfikowany. Dostep zostanie automatycznie odblokowany za kilka sekund.",
+    "noteIos": "Płatność jest pobierana przez konto App Store. Subskrypcje odnawiają się automatycznie, chyba że zostaną anulowane co najmniej 24 godziny przed końcem bieżącego okresu. Możesz nimi zarządzać lub anulować je w dowolnym momencie w ustawieniach konta sklepu.",
+    "noteAndroid": "Płatność jest pobierana przez konto Google Play. Subskrypcje odnawiają się automatycznie, chyba że zostaną anulowane co najmniej 24 godziny przed końcem bieżącego okresu. Możesz nimi zarządzać lub anulować je w dowolnym momencie w ustawieniach konta sklepu."
   },
   "downgrade": {
     "title": "Wybierz swojego zwierzaka",

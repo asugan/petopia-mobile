@@ -28,7 +28,6 @@ export class AccountService {
       resetDatabase();
 
       await AsyncStorage.multiRemove([
-        "subscription.local.trial.v1",
         "subscription-storage",
       ]);
 

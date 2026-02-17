@@ -1562,10 +1562,18 @@
     "trust": {
       "cancelAnytime": "Du kan avsluta när som helst i inställningarna för App Store / Google Play",
       "billedByStore": "Debiteringen hanteras säkert via ditt appbutikskonto",
-      "secureCheckout": "Du behöver inte ange kortuppgifter manuellt i appen"
+      "secureCheckout": "Du behöver inte ange kortuppgifter manuellt i appen",
+      "cancelAnytimeIos": "Du kan avsluta när som helst i inställningarna för App Store",
+      "cancelAnytimeAndroid": "Du kan avsluta när som helst i inställningarna för Google Play",
+      "billedByStoreIos": "Debiteringen hanteras säkert via ditt appbutikskonto",
+      "billedByStoreAndroid": "Debiteringen hanteras säkert via ditt appbutikskonto",
+      "secureCheckoutIos": "Du behöver inte ange kortuppgifter manuellt i appen",
+      "secureCheckoutAndroid": "Du behöver inte ange kortuppgifter manuellt i appen"
     },
     "verifyingPurchase": "Kop mottaget. Verifierar din prenumeration...",
-    "verificationTakingLong": "Ditt kop verifieras. Atkomst lasses upp automatiskt om nagra sekunder."
+    "verificationTakingLong": "Ditt kop verifieras. Atkomst lasses upp automatiskt om nagra sekunder.",
+    "noteIos": "Betalning debiteras via ditt App Store-konto. Prenumerationer förnyas automatiskt om de inte avslutas minst 24 timmar före slutet av den aktuella perioden. Du kan hantera eller avsluta när som helst i butikskontots inställningar.",
+    "noteAndroid": "Betalning debiteras via ditt Google Play-konto. Prenumerationer förnyas automatiskt om de inte avslutas minst 24 timmar före slutet av den aktuella perioden. Du kan hantera eller avsluta när som helst i butikskontots inställningar."
   },
   "downgrade": {
     "title": "Välj ditt husdjur",

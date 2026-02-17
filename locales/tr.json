@@ -1561,10 +1561,18 @@
       "button": "Anasayfaya Dön"
     },
     "note": "Ödeme App Store / Google Play hesabınızdan tahsil edilir. Abonelikler, mevcut dönemin bitiminden en az 24 saat önce iptal edilmediği sürece otomatik yenilenir. Aboneliğinizi mağaza hesap ayarlarından istediğiniz zaman yönetebilir veya iptal edebilirsiniz.",
+    "noteIos": "Satın alma onaylandığında ödeme Apple Kimliği hesabınızdan tahsil edilir. Abonelik, mevcut dönemin bitiminden en az 24 saat önce iptal edilmediği sürece otomatik olarak yenilenir. Aboneliğinizi App Store hesap ayarlarından yönetebilir ve iptal edebilirsiniz.",
+    "noteAndroid": "Satın alma onaylandığında ödeme Google Play hesabınızdan tahsil edilir. Abonelik, mevcut dönemin bitiminden en az 24 saat önce iptal edilmediği sürece otomatik olarak yenilenir. Aboneliğinizi Google Play hesap ayarlarından yönetebilir ve iptal edebilirsiniz.",
     "trust": {
       "cancelAnytime": "App Store / Google Play ayarlarından istediğiniz zaman iptal edin",
       "billedByStore": "Ödeme altyapısı güvenli şekilde mağaza hesabınız üzerinden çalışır",
-      "secureCheckout": "Uygulama içinde manuel kart bilgisi girmeniz gerekmez"
+      "secureCheckout": "Uygulama içinde manuel kart bilgisi girmeniz gerekmez",
+      "cancelAnytimeIos": "App Store hesap ayarlarından istediğiniz zaman iptal edin",
+      "billedByStoreIos": "Ödeme altyapısı Apple Kimliği hesabınız üzerinden güvenli şekilde çalışır",
+      "secureCheckoutIos": "Uygulama içinde manuel kart bilgisi girmeniz gerekmez",
+      "cancelAnytimeAndroid": "Google Play hesap ayarlarından istediğiniz zaman iptal edin",
+      "billedByStoreAndroid": "Ödeme altyapısı Google Play hesabınız üzerinden güvenli şekilde çalışır",
+      "secureCheckoutAndroid": "Uygulama içinde manuel kart bilgisi girmeniz gerekmez"
     }
   },
   "downgrade": {

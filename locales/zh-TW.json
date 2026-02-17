@@ -1562,10 +1562,18 @@
     "trust": {
       "cancelAnytime": "可隨時在 App Store / Google Play 設定中取消",
       "billedByStore": "帳務會透過您的應用商店帳號安全處理",
-      "secureCheckout": "不需要在 App 內手動輸入信用卡資訊"
+      "secureCheckout": "不需要在 App 內手動輸入信用卡資訊",
+      "cancelAnytimeIos": "可隨時在 App Store 設定中取消",
+      "cancelAnytimeAndroid": "可隨時在 Google Play 設定中取消",
+      "billedByStoreIos": "帳務會透過您的應用商店帳號安全處理",
+      "billedByStoreAndroid": "帳務會透過您的應用商店帳號安全處理",
+      "secureCheckoutIos": "不需要在 App 內手動輸入信用卡資訊",
+      "secureCheckoutAndroid": "不需要在 App 內手動輸入信用卡資訊"
     },
     "verifyingPurchase": "已收到購買，正在驗證您的訂閱...",
-    "verificationTakingLong": "正在驗證您的購買，存取權限將在幾秒內自動開通。"
+    "verificationTakingLong": "正在驗證您的購買，存取權限將在幾秒內自動開通。",
+    "noteIos": "費用將透過你的 App Store 帳號扣款。除非於目前週期結束前至少 24 小時取消，否則訂閱會自動續訂。你可以隨時在商店帳號設定中管理或取消訂閱。",
+    "noteAndroid": "費用將透過你的 Google Play 帳號扣款。除非於目前週期結束前至少 24 小時取消，否則訂閱會自動續訂。你可以隨時在商店帳號設定中管理或取消訂閱。"
   },
   "downgrade": {
     "title": "選擇您的寵物",

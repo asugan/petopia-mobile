@@ -1562,10 +1562,18 @@
     "trust": {
       "cancelAnytime": "Jederzeit in den Einstellungen von App Store / Google Play kündbar",
       "billedByStore": "Die Abrechnung wird sicher über dein App-Store-Konto abgewickelt",
-      "secureCheckout": "Keine manuelle Kreditkarteneingabe in der App erforderlich"
+      "secureCheckout": "Keine manuelle Kreditkarteneingabe in der App erforderlich",
+      "cancelAnytimeIos": "Jederzeit in den Einstellungen von App Store kündbar",
+      "cancelAnytimeAndroid": "Jederzeit in den Einstellungen von Google Play kündbar",
+      "billedByStoreIos": "Die Abrechnung wird sicher über dein App-Store-Konto abgewickelt",
+      "billedByStoreAndroid": "Die Abrechnung wird sicher über dein App-Store-Konto abgewickelt",
+      "secureCheckoutIos": "Keine manuelle Kreditkarteneingabe in der App erforderlich",
+      "secureCheckoutAndroid": "Keine manuelle Kreditkarteneingabe in der App erforderlich"
     },
     "verifyingPurchase": "Kauf erhalten. Dein Abonnement wird uberpruft...",
-    "verificationTakingLong": "Dein Kauf wird uberpruft. Der Zugriff wird in wenigen Sekunden automatisch freigeschaltet."
+    "verificationTakingLong": "Dein Kauf wird uberpruft. Der Zugriff wird in wenigen Sekunden automatisch freigeschaltet.",
+    "noteIos": "Die Zahlung wird über dein App Store-Konto abgerechnet. Abonnements verlängern sich automatisch, sofern sie nicht mindestens 24 Stunden vor Ende des aktuellen Zeitraums gekündigt werden. Du kannst sie jederzeit in den Kontoeinstellungen des Stores verwalten oder kündigen.",
+    "noteAndroid": "Die Zahlung wird über dein Google Play-Konto abgerechnet. Abonnements verlängern sich automatisch, sofern sie nicht mindestens 24 Stunden vor Ende des aktuellen Zeitraums gekündigt werden. Du kannst sie jederzeit in den Kontoeinstellungen des Stores verwalten oder kündigen."
   },
   "downgrade": {
     "title": "Wählen Sie Ihr Tier",

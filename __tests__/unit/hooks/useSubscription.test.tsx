@@ -69,11 +69,9 @@ vi.mock(
           daysRemaining: 0,
           isExpired: false,
           isCancelled: false,
-          canStartTrial: true,
           provider: null,
         },
       })),
-      startTrial: vi.fn(async () => ({ success: true, data: { success: true, subscription: null } })),
     },
   })
 );

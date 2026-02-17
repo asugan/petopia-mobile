@@ -80,12 +80,12 @@ export const useSubscriptionStore = create<SubscriptionState & SubscriptionActio
         return true;
       } catch (error: unknown) {
         let errorMessage = 'Purchase failed';
-        let shouldReturnTrue = false;
 
         if (error && typeof error === 'object' && 'code' in error) {
           const errorCode = (error as { code: string }).code;
           if (errorCode === Purchases.PURCHASES_ERROR_CODE.PURCHASE_CANCELLED_ERROR) {
-            shouldReturnTrue = true;
+            set({ isPurchasing: false });
+            return false;
           } else if (errorCode === Purchases.PURCHASES_ERROR_CODE.PRODUCT_ALREADY_PURCHASED_ERROR) {
             const result = await get().restorePurchases();
             set({ isPurchasing: false });
@@ -96,7 +96,7 @@ export const useSubscriptionStore = create<SubscriptionState & SubscriptionActio
         }
 
         set({ purchaseError: errorMessage, isPurchasing: false });
-        return shouldReturnTrue;
+        return false;
       }
     },
 

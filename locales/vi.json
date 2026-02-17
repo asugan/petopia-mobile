@@ -1562,10 +1562,18 @@
     "trust": {
       "cancelAnytime": "Bạn có thể hủy bất cứ lúc nào trong phần cài đặt App Store / Google Play",
       "billedByStore": "Thanh toán được xử lý an toàn thông qua tài khoản cửa hàng ứng dụng của bạn",
-      "secureCheckout": "Không cần nhập thủ công thông tin thẻ tín dụng trong ứng dụng"
+      "secureCheckout": "Không cần nhập thủ công thông tin thẻ tín dụng trong ứng dụng",
+      "cancelAnytimeIos": "Bạn có thể hủy bất cứ lúc nào trong phần cài đặt App Store",
+      "cancelAnytimeAndroid": "Bạn có thể hủy bất cứ lúc nào trong phần cài đặt Google Play",
+      "billedByStoreIos": "Thanh toán được xử lý an toàn thông qua tài khoản cửa hàng ứng dụng của bạn",
+      "billedByStoreAndroid": "Thanh toán được xử lý an toàn thông qua tài khoản cửa hàng ứng dụng của bạn",
+      "secureCheckoutIos": "Không cần nhập thủ công thông tin thẻ tín dụng trong ứng dụng",
+      "secureCheckoutAndroid": "Không cần nhập thủ công thông tin thẻ tín dụng trong ứng dụng"
     },
     "verifyingPurchase": "Da nhan mua hang. Dang xac minh goi dang ky cua ban...",
-    "verificationTakingLong": "Giao dich mua cua ban dang duoc xac minh. Quyen truy cap se tu dong mo trong vai giay."
+    "verificationTakingLong": "Giao dich mua cua ban dang duoc xac minh. Quyen truy cap se tu dong mo trong vai giay.",
+    "noteIos": "Thanh toán được tính qua tài khoản App Store của bạn. Gói đăng ký sẽ tự động gia hạn trừ khi được hủy ít nhất 24 giờ trước khi kỳ hiện tại kết thúc. Bạn có thể quản lý hoặc hủy bất cứ lúc nào trong phần cài đặt tài khoản cửa hàng.",
+    "noteAndroid": "Thanh toán được tính qua tài khoản Google Play của bạn. Gói đăng ký sẽ tự động gia hạn trừ khi được hủy ít nhất 24 giờ trước khi kỳ hiện tại kết thúc. Bạn có thể quản lý hoặc hủy bất cứ lúc nào trong phần cài đặt tài khoản cửa hàng."
   },
   "downgrade": {
     "title": "Chọn thú cưng của bạn",

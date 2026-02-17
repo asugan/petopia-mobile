@@ -1,7 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import {
   subscriptionService,
-  type StartTrialResponse,
   type SubscriptionStatus,
 } from '../services/subscriptionService';
 
@@ -18,7 +17,6 @@ const DEFAULT_STATUS: SubscriptionStatus = {
   daysRemaining: 0,
   isExpired: false,
   isCancelled: false,
-  canStartTrial: true,
   provider: null,
 };
 
@@ -174,25 +172,6 @@ export function useSubscriptionStatus() {
   };
 }
 
-export function useStartTrial() {
-  return useAsyncMutation<void, StartTrialResponse>(async () => {
-    const result = await subscriptionService.startTrial();
-
-    if (!result?.success || !result.data) {
-      const message =
-        result
-          ? typeof result.error === 'string'
-            ? result.error
-            : result.error?.message ?? 'Trial baslatilamadi'
-          : 'Trial baslatilamadi';
-      throw new Error(message);
-    }
-
-    await loadSubscriptionStatus(true);
-    return result.data;
-  });
-}
-
 export function useRefetchSubscriptionStatus() {
   return useAsyncMutation<void, Awaited<ReturnType<typeof loadSubscriptionStatus>>>(
     async () => {
@@ -222,24 +201,18 @@ export function useVerifySubscriptionStatus() {
   );
 }
 
-export type SubscriptionStatusType = 'pro' | 'trial' | 'free';
+export type SubscriptionStatusType = 'pro' | 'free';
 
 export function useComputedSubscriptionStatus() {
   const { data, ...rest } = useSubscriptionStatus();
 
   const derived = useMemo(() => {
     const isProUser = data?.hasActiveSubscription ?? false;
-    const isTrialActive = data?.subscriptionType === 'trial';
     const isPaidSubscription = data?.subscriptionType === 'paid';
-    const subscriptionStatus: SubscriptionStatusType = isPaidSubscription
-      ? 'pro'
-      : isTrialActive
-      ? 'trial'
-      : 'free';
+    const subscriptionStatus: SubscriptionStatusType = isPaidSubscription ? 'pro' : 'free';
 
     return {
       isProUser,
-      isTrialActive,
       isPaidSubscription,
       subscriptionStatus,
     };
@@ -251,7 +224,6 @@ export function useComputedSubscriptionStatus() {
     ...derived,
     isExpired: data?.isExpired ?? false,
     isCancelled: data?.isCancelled ?? false,
-    canStartTrial: data?.canStartTrial ?? true,
     daysRemaining: data?.daysRemaining ?? 0,
     expirationDate: data?.expiresAt ?? null,
     provider: data?.provider ?? null,

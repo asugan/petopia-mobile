@@ -1562,10 +1562,18 @@
     "trust": {
       "cancelAnytime": "Poți anula oricând din setările App Store / Google Play",
       "billedByStore": "Facturarea este procesată în siguranță prin contul tău din magazinul de aplicații",
-      "secureCheckout": "Nu este necesară introducerea manuală a cardului în aplicație"
+      "secureCheckout": "Nu este necesară introducerea manuală a cardului în aplicație",
+      "cancelAnytimeIos": "Poți anula oricând din setările App Store",
+      "cancelAnytimeAndroid": "Poți anula oricând din setările Google Play",
+      "billedByStoreIos": "Facturarea este procesată în siguranță prin contul tău din magazinul de aplicații",
+      "billedByStoreAndroid": "Facturarea este procesată în siguranță prin contul tău din magazinul de aplicații",
+      "secureCheckoutIos": "Nu este necesară introducerea manuală a cardului în aplicație",
+      "secureCheckoutAndroid": "Nu este necesară introducerea manuală a cardului în aplicație"
     },
     "verifyingPurchase": "Achizitie primita. Se verifica abonamentul tau...",
-    "verificationTakingLong": "Achizitia ta este verificata. Accesul va fi deblocat automat in cateva secunde."
+    "verificationTakingLong": "Achizitia ta este verificata. Accesul va fi deblocat automat in cateva secunde.",
+    "noteIos": "Plata este facturată prin contul tău App Store. Abonamentele se reînnoiesc automat dacă nu sunt anulate cu cel puțin 24 de ore înainte de finalul perioadei curente. Le poți gestiona sau anula oricând din setările contului din store.",
+    "noteAndroid": "Plata este facturată prin contul tău Google Play. Abonamentele se reînnoiesc automat dacă nu sunt anulate cu cel puțin 24 de ore înainte de finalul perioadei curente. Le poți gestiona sau anula oricând din setările contului din store."
   },
   "downgrade": {
     "title": "Alege-ți animalul",

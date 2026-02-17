@@ -1,32 +1,16 @@
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import Purchases from 'react-native-purchases';
 import type { ApiResponse } from '@/lib/contracts/api';
-import { REVENUECAT_CONFIG, getRevenueCatEntitlementIdOptional } from '@/lib/revenuecat/config';
+import { getRevenueCatEntitlementIdOptional } from '@/lib/revenuecat/config';
 
 export interface SubscriptionStatus {
   hasActiveSubscription: boolean;
-  subscriptionType: 'trial' | 'paid' | null;
+  subscriptionType: 'paid' | null;
   tier: string | null;
   expiresAt: string | null;
   daysRemaining: number;
   isExpired: boolean;
   isCancelled: boolean;
-  canStartTrial: boolean;
-  provider: 'internal' | 'revenuecat' | null;
-}
-
-/**
- * Start trial response
- */
-export interface StartTrialResponse {
-  success: boolean;
-  subscription: {
-    id: string;
-    provider: string;
-    tier: string;
-    status: string;
-    expiresAt: string;
-  };
+  provider: 'revenuecat' | null;
 }
 
 /**
@@ -53,13 +37,8 @@ export interface DowngradeResponse {
   deletedCount: number;
 }
 
-type TrialRecord = {
-  startedAt: string;
-};
-
 const MS_PER_DAY = 24 * 60 * 60 * 1000;
 const FREE_PET_LIMIT = 1;
-const TRIAL_STORAGE_KEY = 'subscription.local.trial.v1';
 
 const normalizeDaysRemaining = (expiresAt: string | null): number => {
   if (!expiresAt) {
@@ -74,11 +53,6 @@ const normalizeDaysRemaining = (expiresAt: string | null): number => {
   return Math.max(Math.ceil((expiresMs - Date.now()) / MS_PER_DAY), 0);
 };
 
-const getTrialExpiry = (startedAt: string): string => {
-  const startedMs = new Date(startedAt).getTime();
-  return new Date(startedMs + REVENUECAT_CONFIG.TRIAL_DURATION_DAYS * MS_PER_DAY).toISOString();
-};
-
 const mapFreeStatus = (overrides?: Partial<SubscriptionStatus>): SubscriptionStatus => ({
   hasActiveSubscription: false,
   subscriptionType: null,
@@ -87,43 +61,15 @@ const mapFreeStatus = (overrides?: Partial<SubscriptionStatus>): SubscriptionSta
   daysRemaining: 0,
   isExpired: false,
   isCancelled: false,
-  canStartTrial: true,
   provider: null,
   ...overrides,
 });
 
 /**
  * Local-first subscription service.
- * RevenueCat is used directly on device and trial state is persisted locally.
+ * RevenueCat is used directly on device.
  */
 export class SubscriptionService {
-  private async readTrialRecord(): Promise<TrialRecord | null> {
-    try {
-      const raw = await AsyncStorage.getItem(TRIAL_STORAGE_KEY);
-      if (!raw) {
-        return null;
-      }
-
-      const parsed = JSON.parse(raw) as TrialRecord;
-      if (!parsed?.startedAt) {
-        return null;
-      }
-
-      const startedMs = new Date(parsed.startedAt).getTime();
-      if (!Number.isFinite(startedMs)) {
-        return null;
-      }
-
-      return parsed;
-    } catch {
-      return null;
-    }
-  }
-
-  private async writeTrialRecord(record: TrialRecord): Promise<void> {
-    await AsyncStorage.setItem(TRIAL_STORAGE_KEY, JSON.stringify(record));
-  }
-
   private async getCustomerInfoSafe() {
     try {
       const configured = await Purchases.isConfigured();
@@ -166,103 +112,19 @@ export class SubscriptionService {
             daysRemaining,
             isExpired: false,
             isCancelled: !activeEntitlement.willRenew,
-            canStartTrial: false,
             provider: 'revenuecat',
           },
         };
       }
 
-      const trialRecord = await this.readTrialRecord();
-      if (!trialRecord) {
-        return {
-          success: true,
-          data: mapFreeStatus(),
-        };
-      }
-
-      const expiresAt = getTrialExpiry(trialRecord.startedAt);
-      const daysRemaining = normalizeDaysRemaining(expiresAt);
-
-      if (daysRemaining > 0) {
-        return {
-          success: true,
-          data: {
-            hasActiveSubscription: true,
-            subscriptionType: 'trial',
-            tier: 'trial',
-            expiresAt,
-            daysRemaining,
-            isExpired: false,
-            isCancelled: false,
-            canStartTrial: false,
-            provider: 'internal',
-          },
-        };
-      }
-
       return {
         success: true,
-        data: mapFreeStatus({
-          isExpired: true,
-          canStartTrial: false,
-        }),
+        data: mapFreeStatus(),
       };
     } catch {
       return {
         success: true,
         data: mapFreeStatus(),
-      };
-    }
-  }
-
-  async startTrial(): Promise<ApiResponse<StartTrialResponse>> {
-    try {
-      const current = await this.getSubscriptionStatus();
-      if (!current.success || !current.data) {
-        return {
-          success: false,
-          error: {
-            code: 'START_TRIAL_ERROR',
-            message: 'subscription.startTrialError',
-          },
-        };
-      }
-
-      if (current.data.hasActiveSubscription || !current.data.canStartTrial) {
-        return {
-          success: false,
-          error: {
-            code: 'TRIAL_NOT_AVAILABLE',
-            message: 'subscription.startTrialError',
-          },
-        };
-      }
-
-      const startedAt = new Date().toISOString();
-      const expiresAt = getTrialExpiry(startedAt);
-      await this.writeTrialRecord({ startedAt });
-
-      return {
-        success: true,
-        data: {
-          success: true,
-          subscription: {
-            id: 'local-trial',
-            provider: 'internal',
-            tier: 'trial',
-            status: 'active',
-            expiresAt,
-          },
-        },
-        message: 'subscription.trialStarted',
-      };
-    } catch {
-      return {
-        success: false,
-        error: {
-          code: 'START_TRIAL_ERROR',
-          message: 'subscription.startTrialError',
-        },
       };
     }
   }

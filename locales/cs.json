@@ -1562,10 +1562,18 @@
     "trust": {
       "cancelAnytime": "Předplatné můžete kdykoli zrušit v nastavení App Store / Google Play",
       "billedByStore": "Platba je bezpečně zpracována přes váš účet v obchodě s aplikacemi",
-      "secureCheckout": "V aplikaci není potřeba ručně zadávat údaje platební karty"
+      "secureCheckout": "V aplikaci není potřeba ručně zadávat údaje platební karty",
+      "cancelAnytimeIos": "Předplatné můžete kdykoli zrušit v nastavení App Store",
+      "cancelAnytimeAndroid": "Předplatné můžete kdykoli zrušit v nastavení Google Play",
+      "billedByStoreIos": "Platba je bezpečně zpracována přes váš účet v obchodě s aplikacemi",
+      "billedByStoreAndroid": "Platba je bezpečně zpracována přes váš účet v obchodě s aplikacemi",
+      "secureCheckoutIos": "V aplikaci není potřeba ručně zadávat údaje platební karty",
+      "secureCheckoutAndroid": "V aplikaci není potřeba ručně zadávat údaje platební karty"
     },
     "verifyingPurchase": "Nakup prijat. Overujeme vase predplatne...",
-    "verificationTakingLong": "Vas nakup se overuje. Pristup se automaticky odemkne za par sekund."
+    "verificationTakingLong": "Vas nakup se overuje. Pristup se automaticky odemkne za par sekund.",
+    "noteIos": "Platba bude účtována přes váš účet App Store. Předplatné se automaticky obnovuje, pokud není zrušeno alespoň 24 hodin před koncem aktuálního období. Spravovat nebo zrušit jej můžete kdykoli v nastavení účtu obchodu.",
+    "noteAndroid": "Platba bude účtována přes váš účet Google Play. Předplatné se automaticky obnovuje, pokud není zrušeno alespoň 24 hodin před koncem aktuálního období. Spravovat nebo zrušit jej můžete kdykoli v nastavení účtu obchodu."
   },
   "downgrade": {
     "title": "Vyberte svého mazlíčka",

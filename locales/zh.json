@@ -1562,10 +1562,18 @@
     "trust": {
       "cancelAnytime": "可随时在 App Store / Google Play 设置中取消",
       "billedByStore": "账单将通过您的应用商店账户安全处理",
-      "secureCheckout": "无需在应用内手动输入信用卡信息"
+      "secureCheckout": "无需在应用内手动输入信用卡信息",
+      "cancelAnytimeIos": "可随时在 App Store 设置中取消",
+      "cancelAnytimeAndroid": "可随时在 Google Play 设置中取消",
+      "billedByStoreIos": "账单将通过您的应用商店账户安全处理",
+      "billedByStoreAndroid": "账单将通过您的应用商店账户安全处理",
+      "secureCheckoutIos": "无需在应用内手动输入信用卡信息",
+      "secureCheckoutAndroid": "无需在应用内手动输入信用卡信息"
     },
     "verifyingPurchase": "已收到购买请求，正在验证您的订阅...",
-    "verificationTakingLong": "正在验证您的购买，访问权限将在几秒内自动开通。"
+    "verificationTakingLong": "正在验证您的购买，访问权限将在几秒内自动开通。",
+    "noteIos": "费用将通过你的 App Store 账户扣款。除非在当前周期结束前至少 24 小时取消，否则订阅会自动续订。你可随时在商店账户设置中管理或取消订阅。",
+    "noteAndroid": "费用将通过你的 Google Play 账户扣款。除非在当前周期结束前至少 24 小时取消，否则订阅会自动续订。你可随时在商店账户设置中管理或取消订阅。"
   },
   "downgrade": {
     "title": "选择您的宠物",

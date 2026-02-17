@@ -1,6 +1,5 @@
 import { useCallback, useEffect } from 'react';
 import Purchases, { CustomerInfo } from 'react-native-purchases';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useSubscriptionStore } from '@/stores/subscriptionStore';
 import {
   initializeRevenueCat,
@@ -10,8 +9,6 @@ import {
 interface SubscriptionProviderProps {
   children: React.ReactNode;
 }
-
-const TRIAL_MIGRATION_KEY = 'trial_migration_v2_done';
 
 export function SubscriptionProvider({ children }: SubscriptionProviderProps) {
   const {
@@ -30,12 +27,6 @@ export function SubscriptionProvider({ children }: SubscriptionProviderProps) {
     try {
       setLoading(true);
       setError(null);
-
-      const migrated = await AsyncStorage.getItem(TRIAL_MIGRATION_KEY);
-      if (!migrated) {
-        await AsyncStorage.removeItem('subscription-storage');
-        await AsyncStorage.setItem(TRIAL_MIGRATION_KEY, 'true');
-      }
 
       await initializeRevenueCat(null);
 

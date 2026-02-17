@@ -1562,10 +1562,18 @@
     "trust": {
       "cancelAnytime": "Voit peruuttaa milloin tahansa App Storen / Google Playn asetuksista",
       "billedByStore": "Laskutus hoidetaan turvallisesti sovelluskauppatilisi kautta",
-      "secureCheckout": "Sovelluksessa ei tarvitse syöttää korttitietoja manuaalisesti"
+      "secureCheckout": "Sovelluksessa ei tarvitse syöttää korttitietoja manuaalisesti",
+      "cancelAnytimeIos": "Voit peruuttaa milloin tahansa App Storen / Google Playn asetuksista",
+      "cancelAnytimeAndroid": "Voit peruuttaa milloin tahansa App Storen / Google Playn asetuksista",
+      "billedByStoreIos": "Laskutus hoidetaan turvallisesti sovelluskauppatilisi kautta",
+      "billedByStoreAndroid": "Laskutus hoidetaan turvallisesti sovelluskauppatilisi kautta",
+      "secureCheckoutIos": "Sovelluksessa ei tarvitse syöttää korttitietoja manuaalisesti",
+      "secureCheckoutAndroid": "Sovelluksessa ei tarvitse syöttää korttitietoja manuaalisesti"
     },
     "verifyingPurchase": "Osto vastaanotettu. Vahvistetaan tilaustasi...",
-    "verificationTakingLong": "Ostoasi vahvistetaan. Kaytto avautuu automaattisesti muutaman sekunnin kuluttua."
+    "verificationTakingLong": "Ostoasi vahvistetaan. Kaytto avautuu automaattisesti muutaman sekunnin kuluttua.",
+    "noteIos": "Maksu veloitetaan App Store -tililtäsi. Tilaukset uusiutuvat automaattisesti, ellei niitä peruuteta vähintään 24 tuntia ennen nykyisen jakson päättymistä. Voit hallita tai peruuttaa tilauksen milloin tahansa kauppatilin asetuksista.",
+    "noteAndroid": "Maksu veloitetaan Google Play -tililtäsi. Tilaukset uusiutuvat automaattisesti, ellei niitä peruuteta vähintään 24 tuntia ennen nykyisen jakson päättymistä. Voit hallita tai peruuttaa tilauksen milloin tahansa kauppatilin asetuksista."
   },
   "downgrade": {
     "title": "Valitse lemmikkisi",

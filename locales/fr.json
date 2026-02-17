@@ -1562,10 +1562,18 @@
     "trust": {
       "cancelAnytime": "Vous pouvez annuler à tout moment depuis les réglages App Store / Google Play",
       "billedByStore": "La facturation est gérée de manière sécurisée via votre compte de boutique d'apps",
-      "secureCheckout": "Aucune saisie manuelle de carte bancaire n'est nécessaire dans l'application"
+      "secureCheckout": "Aucune saisie manuelle de carte bancaire n'est nécessaire dans l'application",
+      "cancelAnytimeIos": "Vous pouvez annuler à tout moment depuis les réglages App Store",
+      "cancelAnytimeAndroid": "Vous pouvez annuler à tout moment depuis les réglages Google Play",
+      "billedByStoreIos": "La facturation est gérée de manière sécurisée via votre compte de boutique d'apps",
+      "billedByStoreAndroid": "La facturation est gérée de manière sécurisée via votre compte de boutique d'apps",
+      "secureCheckoutIos": "Aucune saisie manuelle de carte bancaire n'est nécessaire dans l'application",
+      "secureCheckoutAndroid": "Aucune saisie manuelle de carte bancaire n'est nécessaire dans l'application"
     },
     "verifyingPurchase": "Achat recu. Verification de votre abonnement...",
-    "verificationTakingLong": "Votre achat est en cours de verification. L'acces sera debloque automatiquement dans quelques secondes."
+    "verificationTakingLong": "Votre achat est en cours de verification. L'acces sera debloque automatiquement dans quelques secondes.",
+    "noteIos": "Le paiement est facturé via votre compte App Store. Les abonnements se renouvellent automatiquement, sauf annulation au moins 24 heures avant la fin de la période en cours. Vous pouvez les gérer ou les annuler à tout moment dans les réglages de votre compte store.",
+    "noteAndroid": "Le paiement est facturé via votre compte Google Play. Les abonnements se renouvellent automatiquement, sauf annulation au moins 24 heures avant la fin de la période en cours. Vous pouvez les gérer ou les annuler à tout moment dans les réglages de votre compte store."
   },
   "downgrade": {
     "title": "Choisissez votre animal",
