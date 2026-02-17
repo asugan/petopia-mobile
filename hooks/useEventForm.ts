@@ -10,6 +10,7 @@ import type { RecurrenceRule } from '@/lib/schemas/recurrenceSchema';
 import { useEventReminderStore } from '@/stores/eventReminderStore';
 import { useUserTimezone } from '@/lib/hooks/useUserTimezone';
 import { formatInTimeZone } from '@/lib/utils/date';
+import { resolveEffectiveTimezone } from '@/lib/utils/timezone';
 
 export type UseEventFormReturn = UseFormReturn<EventFormData> & {
   form: UseFormReturn<EventFormData>;
@@ -75,7 +76,7 @@ export const useEventForm = (
             dayOfMonth: recurrenceRule.dayOfMonth,
             timesPerDay: recurrenceRule.timesPerDay,
             dailyTimes: recurrenceRule.dailyTimes,
-            timezone: recurrenceRule.timezone,
+            timezone: resolveEffectiveTimezone(recurrenceRule.timezone),
             endDate: recurrenceEndDate,
           }
         : undefined,

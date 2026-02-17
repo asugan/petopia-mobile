@@ -436,7 +436,7 @@ export class RecurrenceRepository {
             : current.dailyTimes
               ? JSON.stringify(current.dailyTimes)
               : null,
-        timezone: data.timezone ?? current.timezone,
+        timezone: resolveEffectiveTimezone(data.timezone ?? current.timezone),
         startDate: data.startDate ?? current.startDate,
         endDate:
           typeof data.endDate !== 'undefined'

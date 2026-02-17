@@ -25,7 +25,6 @@ import { useOnboardingStore } from "@/stores/onboardingStore";
 import LoadingSpinner from "@/components/LoadingSpinner";
 import { LanguageSettings } from "@/components/LanguageSettings";
 import { CurrencySettings } from "@/components/CurrencySettings";
-import { TimezoneSettings } from "@/components/TimezoneSettings";
 import NotificationPermissionPrompt, { NotificationPermissionCard } from "@/components/NotificationPermissionPrompt";
 import { subscriptionStyles } from "@/lib/styles/subscription";
 import { useNotifications } from "@/lib/hooks/useNotifications";
@@ -378,10 +377,6 @@ export default function SettingsScreen() {
               >
                 {t("settings.currencyWarning")}
               </Text>
-            </View>
-
-            <View style={styles.timezonePickerContainer}>
-              <TimezoneSettings variant="embedded" />
             </View>
           </View>
         </Card>
@@ -967,9 +962,6 @@ const styles = StyleSheet.create({
   currencyWarning: {
     marginTop: 8,
     lineHeight: 18,
-  },
-  timezonePickerContainer: {
-    marginTop: 16,
   },
   loadingContainer: {
     padding: 20,

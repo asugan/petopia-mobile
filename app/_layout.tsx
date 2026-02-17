@@ -1,4 +1,5 @@
 import { useEffect, useRef } from 'react';
+import { AppState } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { StatusBar } from 'expo-status-bar';
@@ -104,12 +105,12 @@ function RootLayoutContent() {
     settings,
     updateSettings,
     updateBaseCurrency,
+    syncDeviceTimezone,
   } = useUserSettingsStore();
   const {
     hasSeenOnboarding,
     preferredLanguage,
     preferredCurrency,
-    preferredTimezone,
     preferencesSynced,
     markPreferencesSynced,
   } = useOnboardingStore();
@@ -127,6 +128,18 @@ function RootLayoutContent() {
   }, [initialize]);
 
   useEffect(() => {
+    const subscription = AppState.addEventListener('change', (nextState) => {
+      if (nextState === 'active') {
+        void syncDeviceTimezone();
+      }
+    });
+
+    return () => {
+      subscription.remove();
+    };
+  }, [syncDeviceTimezone]);
+
+  useEffect(() => {
     if (!hasSeenOnboarding || !settings) {
       return;
     }
@@ -139,10 +152,8 @@ function RootLayoutContent() {
       !!preferredLanguage && preferredLanguage !== settings.language;
     const shouldUpdateCurrency =
       !!preferredCurrency && preferredCurrency !== settings.baseCurrency;
-    const shouldUpdateTimezone =
-      !!preferredTimezone && preferredTimezone !== settings.timezone;
 
-    if (!shouldUpdateLanguage && !shouldUpdateCurrency && !shouldUpdateTimezone) {
+    if (!shouldUpdateLanguage && !shouldUpdateCurrency) {
       markPreferencesSynced(true);
       return;
     }
@@ -151,13 +162,10 @@ function RootLayoutContent() {
 
     const syncPreferences = async () => {
       try {
-        if ((shouldUpdateLanguage && preferredLanguage) || (shouldUpdateTimezone && preferredTimezone)) {
+        if (shouldUpdateLanguage && preferredLanguage) {
           await updateSettings({
             ...(shouldUpdateLanguage && preferredLanguage
               ? { language: preferredLanguage }
-              : {}),
-            ...(shouldUpdateTimezone && preferredTimezone
-              ? { timezone: preferredTimezone }
               : {}),
           });
         }
@@ -179,7 +187,6 @@ function RootLayoutContent() {
     settings,
     preferredLanguage,
     preferredCurrency,
-    preferredTimezone,
     preferencesSynced,
     markPreferencesSynced,
     updateSettings,

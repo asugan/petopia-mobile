@@ -36,11 +36,13 @@ interface UserSettingsActions {
   fetchSettings: () => Promise<void>;
   updateSettings: (updates: UserSettingsUpdate) => Promise<void>;
   updateBaseCurrency: (currency: SupportedCurrency) => Promise<void>;
+  syncDeviceTimezone: () => Promise<void>;
   initialize: () => Promise<void>;
   clear: () => void;
 }
 
 const USER_SETTINGS_STORAGE_KEY = "user-settings-storage";
+let timezoneSyncInFlight: Promise<void> | null = null;
 
 const defaultSettings: UserSettings = {
   id: "",
@@ -103,7 +105,7 @@ export const useUserSettingsStore = create<
 
             const deviceTimezone = detectDeviceTimezone();
 
-            if (!settings.timezone || !isValidTimezone(settings.timezone)) {
+            if (!settings.timezone || !isValidTimezone(settings.timezone) || settings.timezone !== deviceTimezone) {
               const updateResponse = await userSettingsService.updateSettings({
                 timezone: deviceTimezone,
               });
@@ -227,6 +229,42 @@ export const useUserSettingsStore = create<
 
           throw error;
         }
+      },
+
+      syncDeviceTimezone: async () => {
+        const { settings } = get();
+        if (!settings) {
+          return;
+        }
+
+        const deviceTimezone = detectDeviceTimezone();
+        if (!isValidTimezone(deviceTimezone) || settings.timezone === deviceTimezone) {
+          return;
+        }
+
+        if (timezoneSyncInFlight) {
+          await timezoneSyncInFlight;
+          return;
+        }
+
+        timezoneSyncInFlight = (async () => {
+          try {
+            const response = await userSettingsService.updateSettings({
+              timezone: deviceTimezone,
+            });
+
+            if (response.success && response.data) {
+              set({
+                settings: response.data,
+                error: null,
+              });
+            }
+          } finally {
+            timezoneSyncInFlight = null;
+          }
+        })();
+
+        await timezoneSyncInFlight;
       },
 
       initialize: async () => {
