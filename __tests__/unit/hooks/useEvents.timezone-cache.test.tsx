@@ -6,10 +6,6 @@ import { eventService } from '@/lib/services/eventService';
 
 let mockTimezone = 'Europe/Istanbul';
 
-vi.mock('@/lib/hooks/useAuthQueryEnabled', () => ({
-  useAuthQueryEnabled: () => ({ enabled: true }),
-}));
-
 vi.mock('@/lib/hooks/useUserTimezone', () => ({
   useUserTimezone: () => mockTimezone,
 }));

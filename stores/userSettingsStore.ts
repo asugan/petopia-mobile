@@ -27,7 +27,6 @@ interface UserSettingsState {
   settings: UserSettings | null;
   isLoading: boolean;
   error: string | null;
-  isAuthenticated: boolean;
   isRTL: boolean;
   theme: Theme;
   isDark: boolean;
@@ -39,7 +38,6 @@ interface UserSettingsActions {
   updateBaseCurrency: (currency: SupportedCurrency) => Promise<void>;
   initialize: () => Promise<void>;
   clear: () => void;
-  setAuthenticated: (isAuthenticated: boolean) => void;
 }
 
 const USER_SETTINGS_STORAGE_KEY = "user-settings-storage";
@@ -81,18 +79,11 @@ export const useUserSettingsStore = create<
       settings: null,
       isLoading: false,
       error: null,
-      isAuthenticated: false,
       isRTL: false,
       theme: darkTheme,
       isDark: true,
 
       fetchSettings: async () => {
-        const { isAuthenticated } = get();
-
-        if (!isAuthenticated) {
-          return;
-        }
-
         set({ isLoading: true, error: null });
 
         try {
@@ -148,11 +139,7 @@ export const useUserSettingsStore = create<
       },
 
       updateSettings: async (updates) => {
-        const { isAuthenticated, settings } = get();
-
-        if (!isAuthenticated) {
-          return;
-        }
+        const { settings } = get();
 
         set({ isLoading: true, error: null });
 
@@ -208,12 +195,6 @@ export const useUserSettingsStore = create<
       },
 
       updateBaseCurrency: async (currency) => {
-        const { isAuthenticated, settings } = get();
-
-        if (!isAuthenticated) {
-          return;
-        }
-
         set({ isLoading: true, error: null });
 
         try {
@@ -249,11 +230,7 @@ export const useUserSettingsStore = create<
       },
 
       initialize: async () => {
-        const { isAuthenticated, settings } = get();
-
-        if (!isAuthenticated) {
-          return;
-        }
+        const { settings } = get();
 
         if (settings && i18n.language !== settings.language) {
           i18n.changeLanguage(settings.language);
@@ -267,15 +244,10 @@ export const useUserSettingsStore = create<
           settings: null,
           isLoading: false,
           error: null,
-          isAuthenticated: false,
           isRTL: false,
           theme: darkTheme,
           isDark: true,
         });
-      },
-
-      setAuthenticated: (isAuthenticated: boolean) => {
-        set({ isAuthenticated });
       },
     }),
     {
@@ -283,7 +255,6 @@ export const useUserSettingsStore = create<
       storage: createJSONStorage(() => AsyncStorage),
       partialize: (state) => ({
         settings: state.settings,
-        isAuthenticated: state.isAuthenticated,
       }),
       onRehydrateStorage: () => (state) => {
         if (state && state.settings) {

@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react';
 import { recurrenceService } from '@/lib/services/recurrenceService';
-import { useAuthQueryEnabled } from './useAuthQueryEnabled';
 import {
   useLocalMutation,
   useLocalQuery,
@@ -73,11 +72,9 @@ export const useRecurrenceRules = (options?: {
   petId?: string;
   isActive?: boolean;
 }) => {
-  const { enabled } = useAuthQueryEnabled();
   const recurrenceStateVersion = useRecurrenceVersion();
 
   return useLocalQuery<RecurrenceRule[]>({
-    enabled,
     defaultValue: [],
     deps: [options?.petId, options?.isActive, recurrenceStateVersion],
     queryFn: async () => {
@@ -88,11 +85,10 @@ export const useRecurrenceRules = (options?: {
 };
 
 export const useRecurrenceRule = (id?: string) => {
-  const { enabled } = useAuthQueryEnabled();
   const recurrenceStateVersion = useRecurrenceVersion();
 
   return useLocalQuery<RecurrenceRule | null>({
-    enabled: enabled && !!id,
+    enabled: !!id,
     defaultValue: null,
     deps: [id, recurrenceStateVersion],
     queryFn: async () => {
@@ -109,11 +105,10 @@ export const useRecurrenceRuleEvents = (
   id?: string,
   options?: { includePast?: boolean; limit?: number }
 ) => {
-  const { enabled } = useAuthQueryEnabled();
   const recurrenceStateVersion = useRecurrenceVersion();
 
   return useLocalQuery<Event[]>({
-    enabled: enabled && !!id,
+    enabled: !!id,
     defaultValue: [],
     deps: [id, options?.includePast, options?.limit, recurrenceStateVersion],
     queryFn: async () => {

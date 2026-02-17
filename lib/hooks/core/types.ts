@@ -1,28 +1,10 @@
 import type { ApiResponse } from '@/lib/contracts/api';
 import { ApiServiceFn as BaseApiServiceFn } from '@/lib/types';
 
-export type QueryKey = readonly unknown[];
+export type LocalDeps = readonly unknown[];
 
-/**
- * Base options for resource queries
- */
-export interface BaseResourceOptions<TData, TError = Error> {
-  /**
-   * The query key for React Query
-   */
-  queryKey: QueryKey;
-
-  /**
-   * How long the data is considered fresh (in milliseconds)
-   * Must be explicitly provided - use CACHE_TIMES constants from config/cacheTimes
-   */
-  staleTime: number;
-
-  /**
-   * Optional garbage collection time (in milliseconds)
-   * Defaults to React Query's default if not provided
-   */
-  gcTime?: number;
+export interface BaseResourceOptions {
+  deps?: LocalDeps;
 
   /**
    * Optional refetch interval (in milliseconds)
@@ -41,17 +23,12 @@ export interface BaseResourceOptions<TData, TError = Error> {
    * If not provided, uses the error from ApiResponse
    */
   errorMessage?: string;
-
-  /**
-   * Reserved for future query extensions
-   */
-  queryOptions?: Record<string, unknown>;
 }
 
 /**
  * Options for single resource detail queries (useResource)
  */
-export interface ResourceOptions<TData, TError = Error> extends BaseResourceOptions<TData, TError> {
+export interface ResourceOptions<TData> extends BaseResourceOptions {
   /**
    * The service function that fetches the resource
    * Should return a Promise with ApiResponse<TData>
@@ -68,7 +45,7 @@ export interface ResourceOptions<TData, TError = Error> extends BaseResourceOpti
 /**
  * Options for list/collection resource queries (useResources)
  */
-export interface ResourcesOptions<TData, TError = Error> extends BaseResourceOptions<TData[], TError> {
+export interface ResourcesOptions<TData> extends BaseResourceOptions {
   /**
    * The service function that fetches the resources
    * Should return a Promise with ApiResponse<TData[]>
@@ -92,7 +69,7 @@ export interface ResourcesOptions<TData, TError = Error> extends BaseResourceOpt
  * Options for conditional queries (useConditionalQuery)
  * Used for search, filtered queries, or queries with complex conditions
  */
-export interface ConditionalQueryOptions<TData, TError = Error> extends BaseResourceOptions<TData, TError> {
+export interface ConditionalQueryOptions<TData> extends BaseResourceOptions {
   /**
    * The service function that fetches the data
    * Should return a Promise with ApiResponse<TData>

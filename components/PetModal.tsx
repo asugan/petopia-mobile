@@ -34,7 +34,7 @@ export function PetModal({
   // Store for pending pet during onboarding
   const { setPendingPet } = usePendingPetStore();
 
-  // ✅ React Query hooks for server state
+  // Local-first domain hooks
   const createPetMutation = useCreatePet();
   const updatePetMutation = useUpdatePet();
 

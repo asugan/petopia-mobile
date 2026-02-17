@@ -45,7 +45,7 @@ export function FeedingScheduleModal({
   const { data: feedingSchedulesAll = [] } = useAllFeedingSchedules();
   const activeFeedingSchedules = feedingSchedulesAll.filter((schedule) => schedule.isActive);
 
-  // React Query hooks for server state
+  // Local-first domain hooks
   const createMutation = useCreateFeedingSchedule();
   const updateMutation = useUpdateFeedingSchedule();
 

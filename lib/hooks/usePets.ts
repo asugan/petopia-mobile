@@ -1,12 +1,10 @@
 import { petService } from '../services/petService';
 import type { CreatePetInput, Pet, QueryFilters, UpdatePetInput } from '../types';
-import { CACHE_TIMES } from '../config/cacheTimes';
 import { ENV } from '../config/env';
 import { useCreateResource, useDeleteResource, useUpdateResource } from './useCrud';
 import { useResource } from './core/useResource';
 import { useConditionalQuery } from './core/useConditionalQuery';
 import { useLocalInfiniteQuery } from './core/useLocalAsync';
-import { useAuthQueryEnabled } from './useAuthQueryEnabled';
 import { petKeys } from './queryKeys';
 
 export { petKeys } from './queryKeys';
@@ -21,13 +19,9 @@ interface PetFilters extends QueryFilters {
 }
 
 export function usePets(filters: PetFilters = {}) {
-  const { enabled } = useAuthQueryEnabled();
-
   return useConditionalQuery<Pet[]>({
-    queryKey: petKeys.list(filters),
+    deps: [JSON.stringify(petKeys.list(filters))],
     queryFn: () => petService.getPets(filters),
-    enabled,
-    staleTime: CACHE_TIMES.MEDIUM,
     defaultValue: [],
     errorMessage: 'Evcil hayvanlar yüklenemedi',
     select: filters.sortBy ? (data) => {
@@ -45,57 +39,44 @@ export function usePets(filters: PetFilters = {}) {
 }
 
 export function useSearchPets(query: string) {
-  const { enabled } = useAuthQueryEnabled();
-
   return useConditionalQuery<Pet[]>({
-    queryKey: petKeys.search(query),
+    deps: [JSON.stringify(petKeys.search(query))],
     queryFn: () => petService.searchPets(query),
-    staleTime: CACHE_TIMES.SHORT,
-    enabled: enabled && !!query && query.trim().length > 0,
+    enabled: !!query && query.trim().length > 0,
     defaultValue: [],
     errorMessage: 'Arama yapılamadı',
   });
 }
 
 export function usePetsByType(type: string) {
-  const { enabled } = useAuthQueryEnabled();
-
   return useConditionalQuery<Pet[]>({
-    queryKey: petKeys.byType(type),
+    deps: [JSON.stringify(petKeys.byType(type))],
     queryFn: () => petService.getPetsByType(type),
-    staleTime: CACHE_TIMES.MEDIUM,
-    enabled: enabled && !!type,
+    enabled: !!type,
     defaultValue: [],
     errorMessage: 'Evcil hayvanlar yüklenemedi',
   });
 }
 
 export function usePet(id: string) {
-  const { enabled } = useAuthQueryEnabled();
-
   return useResource<Pet>({
-    queryKey: petKeys.detail(id),
+    deps: [JSON.stringify(petKeys.detail(id))],
     queryFn: () => petService.getPetById(id),
-    staleTime: CACHE_TIMES.LONG,
-    enabled: enabled && !!id,
+    enabled: !!id,
     errorMessage: 'Pet yüklenemedi',
   });
 }
 
 export function usePetStats() {
-  const { enabled } = useAuthQueryEnabled();
-
   return useConditionalQuery<{
     total: number;
     byType: Record<string, number>;
     byGender: Record<string, number>;
     averageAge: number;
   }>({
-    queryKey: petKeys.stats(),
+    deps: [JSON.stringify(petKeys.stats())],
     queryFn: () => petService.getPetStats(),
-    staleTime: CACHE_TIMES.MEDIUM,
-    refetchInterval: CACHE_TIMES.MEDIUM,
-    enabled,
+    refetchInterval: 5 * 60 * 1000,
     defaultValue: {
       total: 0,
       byType: {},
@@ -106,47 +87,31 @@ export function usePetStats() {
 }
 
 export function useCreatePet() {
-  return useCreateResource<Pet, CreatePetInput>(
-    (data) => petService.createPet(data).then(res => res.data!),
-    {
-      listQueryKey: petKeys.lists(),
-    }
+  return useCreateResource<Pet, CreatePetInput>((data) =>
+    petService.createPet(data).then((res) => res.data!)
   );
 }
 
 export function useUpdatePet() {
-  return useUpdateResource<Pet, UpdatePetInput>(
-    ({ _id, data }) => petService.updatePet(_id, data).then(res => res.data!),
-    {
-      listQueryKey: petKeys.lists(),
-      detailQueryKey: petKeys.detail,
-    }
+  return useUpdateResource<Pet, UpdatePetInput>(({ _id, data }) =>
+    petService.updatePet(_id, data).then((res) => res.data!)
   );
 }
 
 export function useDeletePet() {
-  return useDeleteResource<Pet>(
-    (_id) => petService.deletePet(_id).then(res => res.data),
-    {
-      listQueryKey: petKeys.lists(),
-      detailQueryKey: petKeys.detail,
-    }
+  return useDeleteResource<Pet>((_id) =>
+    petService.deletePet(_id).then((res) => res.data)
   );
 }
 
 export function useUploadPetPhoto() {
-  return useUpdateResource<Pet, { profilePhoto: string }>(
-    ({ _id, data }) => petService.uploadPetPhoto(_id, data.profilePhoto).then(res => res.data!),
-    {
-      listQueryKey: petKeys.lists(),
-      detailQueryKey: petKeys.detail,
-    }
+  return useUpdateResource<Pet, { profilePhoto: string }>(({ _id, data }) =>
+    petService.uploadPetPhoto(_id, data.profilePhoto).then((res) => res.data!)
   );
 }
 
 export function useInfinitePets(filters?: Omit<PetFilters, 'page'>) {
   const defaultLimit = ENV.DEFAULT_LIMIT || 20;
-  const { enabled } = useAuthQueryEnabled();
 
   return useLocalInfiniteQuery<Pet[], number>({
     queryFn: async ({ pageParam = 1 }) => {
@@ -183,7 +148,6 @@ export function useInfinitePets(filters?: Omit<PetFilters, 'page'>) {
       }
       return (lastPageParam as number) + 1;
     },
-    enabled,
     deps: [JSON.stringify(petKeys.infinite(filters))],
   });
 }

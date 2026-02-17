@@ -8,8 +8,8 @@ export function useRequestCancellation() {
   const activeRequests = useRef<Map<string, AbortController>>(new Map());
 
   // Cancel a specific request
-  const cancelRequest = (queryKey: string[]) => {
-    const key = JSON.stringify(queryKey);
+  const cancelRequest = (requestKey: string[]) => {
+    const key = JSON.stringify(requestKey);
     const controller = activeRequests.current.get(key);
 
     if (controller) {
@@ -27,11 +27,11 @@ export function useRequestCancellation() {
   };
 
   // Create a cancellable request
-  const createCancellableRequest = (queryKey: string[]): CancellableRequest => {
-    const key = JSON.stringify(queryKey);
+  const createCancellableRequest = (requestKey: string[]): CancellableRequest => {
+    const key = JSON.stringify(requestKey);
 
     // Cancel existing request for same query
-    cancelRequest(queryKey);
+    cancelRequest(requestKey);
 
     // Create new abort controller
     const controller = new AbortController();

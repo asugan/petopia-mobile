@@ -25,7 +25,7 @@ export default function PetsScreen() {
   const { isProUser, isInitialized } = useSubscription();
   const { processPendingPet } = usePendingPet();
 
-  // React Query infinite query for pets
+  // Local infinite hook for pets
   const {
     data,
     isLoading,
@@ -78,7 +78,7 @@ export default function PetsScreen() {
   };
 
   const handleModalSuccess = () => {
-    // React Query handles cache invalidation automatically
+    // Local mutation flow already triggers data refresh
     showToast({
       type: 'success',
       title: t('pets.saveSuccess'),

@@ -1,5 +1,4 @@
 import { useEffect, useRef } from 'react';
-import { AppState, AppStateStatus } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { StatusBar } from 'expo-status-bar';
@@ -9,13 +8,12 @@ import { Stack, useRouter, useSegments } from "expo-router";
 import Toast from 'react-native-toast-message';
 import { ApiErrorBoundary } from "@/lib/components/ApiErrorBoundary";
 import { notificationService } from '@/lib/services/notificationService';
-import { useOnlineManager } from "@/lib/hooks/useOnlineManager";
 import { useSubscription } from '@/lib/hooks/useSubscription';
 import { useDowngradeStatus } from '@/lib/hooks/useDowngrade';
 import { NetworkStatus } from "@/lib/components/NetworkStatus";
 import { LanguageProvider } from "@/providers/LanguageProvider";
 import { PostHogProviderWrapper } from "@/providers/PostHogProvider";
-import { AuthProvider } from "@/providers/AuthProvider";
+import { AnalyticsIdentityProvider } from "@/providers/AnalyticsIdentityProvider";
 import { SubscriptionProvider } from "@/providers/SubscriptionProvider";
 import { useUserSettingsStore } from '@/stores/userSettingsStore';
 import { useEventReminderStore } from '@/stores/eventReminderStore';
@@ -32,11 +30,6 @@ import "../lib/i18n";
 import { AnimatedSplashScreen } from '@/components/SplashScreen/AnimatedSplashScreen';
 
 initDatabase();
-
-// Custom hook for app state management
-function onAppStateChange(status: AppStateStatus) {
-  void status;
-}
 
 function DowngradeGate({ children }: { children: React.ReactNode }) {
   const router = useRouter();
@@ -87,35 +80,20 @@ function AppProviders({ children }: { children: React.ReactNode }) {
   }, []);
 
   return (
-    <OnlineManagerProvider>
-      <NetworkStatus>
-        <PostHogProviderWrapper>
-          <LanguageProvider>
-            <ApiErrorBoundary>
-              <AuthProvider>
-                <SubscriptionProvider>
-                  <DowngradeGate>{children}</DowngradeGate>
-                </SubscriptionProvider>
-              </AuthProvider>
-            </ApiErrorBoundary>
-          </LanguageProvider>
-        </PostHogProviderWrapper>
-      </NetworkStatus>
-    </OnlineManagerProvider>
+    <NetworkStatus>
+      <PostHogProviderWrapper>
+        <LanguageProvider>
+          <ApiErrorBoundary>
+            <AnalyticsIdentityProvider>
+              <SubscriptionProvider>
+                <DowngradeGate>{children}</DowngradeGate>
+              </SubscriptionProvider>
+            </AnalyticsIdentityProvider>
+          </ApiErrorBoundary>
+        </LanguageProvider>
+      </PostHogProviderWrapper>
+    </NetworkStatus>
   );
-}
-
-
-// Separate component for online state management
-function OnlineManagerProvider({ children }: { children: React.ReactNode }) {
-  useOnlineManager();
-
-  useEffect(() => {
-    const subscription = AppState.addEventListener('change', onAppStateChange);
-    return () => subscription.remove();
-  }, []);
-
-  return <>{children}</>;
 }
 
 function RootLayoutContent() {
@@ -123,7 +101,6 @@ function RootLayoutContent() {
   const {
     initialize,
     theme,
-    setAuthenticated,
     settings,
     updateSettings,
     updateBaseCurrency,
@@ -144,10 +121,6 @@ function RootLayoutContent() {
   useBudgetAlertNotifications();
   const rescheduleSignatureRef = useRef<string | null>(null);
   const preferenceSyncInFlightRef = useRef(false);
-
-  useEffect(() => {
-    setAuthenticated(true);
-  }, [setAuthenticated]);
 
   useEffect(() => {
     initialize();

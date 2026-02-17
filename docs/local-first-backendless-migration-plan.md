@@ -179,7 +179,7 @@ Deliverable:
 ## Faz 4 - Auth tamamen kaldirma
 
 - [x] `lib/auth/client.ts`, `lib/auth/useAuth.ts` kaldir
-- [x] `providers/AuthProvider.tsx` sadele / kaldir
+- [x] `providers/AnalyticsIdentityProvider.tsx` sadele / kaldir
 - [x] `(auth)` route grubunu kaldir veya lokal onboarding'e redirect et
 - [x] auth guard kodlarini temizle (`app/index.tsx`, `app/(tabs)/_layout.tsx`, `app/_layout.tsx`)
 
@@ -264,7 +264,7 @@ Deliverable:
 - `app/_layout.tsx`
 - `app/index.tsx`
 - `app/(tabs)/_layout.tsx`
-- `providers/AuthProvider.tsx`
+- `providers/AnalyticsIdentityProvider.tsx`
 - `providers/SubscriptionProvider.tsx`
 
 ## 6) Test plani

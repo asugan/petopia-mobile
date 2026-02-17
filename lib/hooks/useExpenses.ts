@@ -1,14 +1,12 @@
 import { expenseService } from '../services/expenseService';
 import { petService } from '../services/petService';
 import type { CreateExpenseInput, Expense, ExpenseStats, MonthlyExpense, Pet, YearlyExpense, UpdateExpenseInput } from '../types';
-import { CACHE_TIMES } from '../config/cacheTimes';
 import { ENV } from '../config/env';
 import { useCreateResource, useDeleteResource, useUpdateResource } from './useCrud';
 import { useResource } from './core/useResource';
 import { useResources } from './core/useResources';
 import { useConditionalQuery } from './core/useConditionalQuery';
 import { useLocalInfiniteQuery, useLocalMutation, useLocalQuery } from './core/useLocalAsync';
-import { useAuthQueryEnabled } from './useAuthQueryEnabled';
 import { expenseKeys } from './queryKeys';
 
 export { expenseKeys } from './queryKeys';
@@ -45,12 +43,9 @@ interface PeriodParams {
 
 // Hook for fetching expenses by pet ID with filters
 export function useExpenses(petId?: string, filters: Omit<ExpenseFilters, 'petId'> = {}) {
-  const { enabled } = useAuthQueryEnabled();
-
   return useLocalQuery<{ expenses: Expense[]; total: number }>({
     deps: [JSON.stringify(expenseKeys.list({ petId, ...filters }))],
     defaultValue: { expenses: [], total: 0 },
-    enabled,
     queryFn: async () => {
       if (!petId) {
         // If no petId, fetch all pets and combine their expenses
@@ -99,13 +94,10 @@ export function useExpenses(petId?: string, filters: Omit<ExpenseFilters, 'petId
 
 // Hook for fetching a single expense
 export function useExpense(id?: string) {
-  const { enabled } = useAuthQueryEnabled();
-
   return useResource<Expense>({
-    queryKey: expenseKeys.detail(id!),
+    deps: [JSON.stringify(expenseKeys.detail(id ?? 'missing'))],
     queryFn: () => expenseService.getExpenseById(id!),
-    staleTime: CACHE_TIMES.MEDIUM,
-    enabled: enabled && !!id,
+    enabled: !!id,
     errorMessage: 'Failed to load expense',
   });
 }
@@ -113,7 +105,6 @@ export function useExpense(id?: string) {
 // Hook for infinite scrolling expenses (single pet only - requires petId)
 export function useInfiniteExpenses(petId: string | undefined, filters?: Omit<ExpenseFilters, 'petId' | 'page'>) {
   const defaultLimit = ENV.DEFAULT_LIMIT || 20;
-  const { enabled } = useAuthQueryEnabled();
 
   return useLocalInfiniteQuery<Expense[], number>({
     queryFn: async ({ pageParam = 1 }) => {
@@ -145,20 +136,16 @@ export function useInfiniteExpenses(petId: string | undefined, filters?: Omit<Ex
       }
       return (lastPageParam as number) + 1;
     },
-    enabled: enabled && !!petId,
+    enabled: !!petId,
     deps: [JSON.stringify(expenseKeys.infinite(petId, filters))],
   });
 }
 
 // Hook for expense statistics
 export function useExpenseStats(params?: StatsParams) {
-  const { enabled } = useAuthQueryEnabled();
-
   return useConditionalQuery<ExpenseStats | null>({
-    queryKey: expenseKeys.stats(params),
+    deps: [JSON.stringify(expenseKeys.stats(params))],
     queryFn: () => expenseService.getExpenseStats(params),
-    staleTime: CACHE_TIMES.MEDIUM,
-    enabled,
     defaultValue: null,
     errorMessage: 'Failed to load expense statistics',
   });
@@ -166,37 +153,26 @@ export function useExpenseStats(params?: StatsParams) {
 
 // Hook for monthly expenses
 export function useMonthlyExpenses(params?: PeriodParams) {
-  const { enabled } = useAuthQueryEnabled();
-
   return useResources<MonthlyExpense>({
-    queryKey: expenseKeys.monthly(params),
+    deps: [JSON.stringify(expenseKeys.monthly(params))],
     queryFn: () => expenseService.getMonthlyExpenses(params),
-    staleTime: CACHE_TIMES.MEDIUM,
-    enabled,
   });
 }
 
 // Hook for yearly expenses
 export function useYearlyExpenses(params?: Omit<PeriodParams, 'month'>) {
-  const { enabled } = useAuthQueryEnabled();
-
   return useResources<YearlyExpense>({
-    queryKey: expenseKeys.yearly(params),
+    deps: [JSON.stringify(expenseKeys.yearly(params))],
     queryFn: () => expenseService.getYearlyExpenses(params),
-    staleTime: CACHE_TIMES.MEDIUM,
-    enabled,
   });
 }
 
 // Hook for expenses by category
 export function useExpensesByCategory(category: string, petId?: string) {
-  const { enabled } = useAuthQueryEnabled();
-
   return useConditionalQuery<Expense[]>({
-    queryKey: expenseKeys.byCategory(category, petId),
+    deps: [JSON.stringify(expenseKeys.byCategory(category, petId))],
     queryFn: () => expenseService.getExpensesByCategory(category, petId),
-    staleTime: CACHE_TIMES.MEDIUM,
-    enabled: enabled && !!category,
+    enabled: !!category,
     defaultValue: [],
     errorMessage: 'Failed to load expenses by category',
   });
@@ -208,13 +184,10 @@ export function useExpensesByDateRange(params: {
   startDate: string;
   endDate: string;
 }) {
-  const { enabled } = useAuthQueryEnabled();
-
   return useConditionalQuery<Expense[]>({
-    queryKey: expenseKeys.dateRange(params),
+    deps: [JSON.stringify(expenseKeys.dateRange(params))],
     queryFn: () => expenseService.getExpensesByDateRange(params),
-    staleTime: CACHE_TIMES.MEDIUM,
-    enabled: enabled && !!params.startDate && !!params.endDate,
+    enabled: !!params.startDate && !!params.endDate,
     defaultValue: [],
     errorMessage: 'Failed to load expenses by date range',
   });
@@ -222,33 +195,22 @@ export function useExpensesByDateRange(params: {
 
 // Mutation hook for creating an expense
 export function useCreateExpense() {
-  return useCreateResource<Expense, CreateExpenseInput>(
-    (data) => expenseService.createExpense(data).then(res => res.data!),
-    {
-      listQueryKey: expenseKeys.all, // Ideally should be more specific but existing code invalidated 'all'
-    }
+  return useCreateResource<Expense, CreateExpenseInput>((data) =>
+    expenseService.createExpense(data).then((res) => res.data!)
   );
 }
 
 // Mutation hook for updating an expense
 export function useUpdateExpense() {
-  return useUpdateResource<Expense, UpdateExpenseInput>(
-    ({ _id, data }) => expenseService.updateExpense(_id, data).then(res => res.data!),
-    {
-      listQueryKey: expenseKeys.all,
-      detailQueryKey: expenseKeys.detail,
-    }
+  return useUpdateResource<Expense, UpdateExpenseInput>(({ _id, data }) =>
+    expenseService.updateExpense(_id, data).then((res) => res.data!)
   );
 }
 
 // Mutation hook for deleting an expense
 export function useDeleteExpense() {
-  return useDeleteResource<Expense>(
-    (id) => expenseService.deleteExpense(id).then(res => res.data), // Assuming delete returns the ID or void
-    {
-      listQueryKey: expenseKeys.all,
-      detailQueryKey: expenseKeys.detail,
-    }
+  return useDeleteResource<Expense>((id) =>
+    expenseService.deleteExpense(id).then((res) => res.data)
   );
 }
 

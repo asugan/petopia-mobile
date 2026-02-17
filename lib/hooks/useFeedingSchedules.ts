@@ -9,8 +9,6 @@ import {
   FeedingSchedule,
   UpdateFeedingScheduleInput,
 } from '@/lib/types';
-import { useAuthQueryEnabled } from './useAuthQueryEnabled';
-import { feedingScheduleKeys } from './queryKeys';
 import { getNextFeedingTime } from '@/lib/schemas/feedingScheduleSchema';
 import { usePets } from './usePets';
 import { formatDistanceToNow } from 'date-fns';
@@ -59,11 +57,10 @@ const ensureSuccess = <TData,>(
 };
 
 export const useFeedingSchedules = (petId: string) => {
-  const { enabled } = useAuthQueryEnabled();
   const version = useFeedingScheduleVersion();
 
   return useLocalQuery<FeedingSchedule[]>({
-    enabled: enabled && !!petId,
+    enabled: !!petId,
     defaultValue: [],
     deps: [petId, version],
     queryFn: async () => {
@@ -74,11 +71,10 @@ export const useFeedingSchedules = (petId: string) => {
 };
 
 export const useFeedingSchedule = (id: string) => {
-  const { enabled } = useAuthQueryEnabled();
   const version = useFeedingScheduleVersion();
 
   return useLocalQuery<FeedingSchedule | null>({
-    enabled: enabled && !!id,
+    enabled: !!id,
     defaultValue: null,
     deps: [id, version],
     queryFn: async () => {
@@ -89,13 +85,12 @@ export const useFeedingSchedule = (id: string) => {
 };
 
 export const useActiveFeedingSchedules = () => {
-  const { enabled } = useAuthQueryEnabled();
   const version = useFeedingScheduleVersion();
 
   return useLocalQuery<FeedingSchedule[]>({
-    enabled,
+    enabled: true,
     defaultValue: [],
-    deps: [enabled, version],
+    deps: [version],
     refetchInterval: 60_000,
     queryFn: async () => {
       const response = await feedingScheduleService.getActiveFeedingSchedules();
@@ -105,13 +100,12 @@ export const useActiveFeedingSchedules = () => {
 };
 
 export const useTodayFeedingSchedules = () => {
-  const { enabled } = useAuthQueryEnabled();
   const version = useFeedingScheduleVersion();
 
   return useLocalQuery<FeedingSchedule[]>({
-    enabled,
+    enabled: true,
     defaultValue: [],
-    deps: [enabled, version],
+    deps: [version],
     refetchInterval: 30_000,
     queryFn: async () => {
       const response = await feedingScheduleService.getTodayFeedingSchedules();
@@ -121,13 +115,12 @@ export const useTodayFeedingSchedules = () => {
 };
 
 export const useAllFeedingSchedules = () => {
-  const { enabled } = useAuthQueryEnabled();
   const version = useFeedingScheduleVersion();
 
   return useLocalQuery<FeedingSchedule[]>({
-    enabled,
+    enabled: true,
     defaultValue: [],
-    deps: [enabled, version],
+    deps: [version],
     queryFn: async () => {
       const response = await feedingScheduleService.getFeedingSchedules();
       return ensureSuccess(response, 'Failed to load feeding schedules', []);
@@ -136,13 +129,12 @@ export const useAllFeedingSchedules = () => {
 };
 
 export const useNextFeeding = () => {
-  const { enabled } = useAuthQueryEnabled();
   const version = useFeedingScheduleVersion();
 
   return useLocalQuery<FeedingSchedule | null>({
-    enabled,
+    enabled: true,
     defaultValue: null,
-    deps: [enabled, version],
+    deps: [version],
     refetchInterval: 60_000,
     queryFn: async () => {
       const response = await feedingScheduleService.getNextFeeding();
@@ -152,11 +144,10 @@ export const useNextFeeding = () => {
 };
 
 export const useActiveFeedingSchedulesByPet = (petId: string) => {
-  const { enabled } = useAuthQueryEnabled();
   const version = useFeedingScheduleVersion();
 
   return useLocalQuery<FeedingSchedule[]>({
-    enabled: enabled && !!petId,
+    enabled: !!petId,
     defaultValue: [],
     deps: [petId, version],
     queryFn: async () => {

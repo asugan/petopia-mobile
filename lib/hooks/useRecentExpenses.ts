@@ -1,11 +1,9 @@
 import { usePets } from './usePets';
 import { expenseService } from '../services/expenseService';
 import { Expense } from '../types';
-import { useAuthQueryEnabled } from './useAuthQueryEnabled';
 import { useLocalQuery } from './core/useLocalAsync';
 
 export const useRecentExpenses = () => {
-  const { enabled } = useAuthQueryEnabled();
   const { data: pets } = usePets();
 
   // Fetch expenses for all pets at once
@@ -34,7 +32,7 @@ export const useRecentExpenses = () => {
         .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
         .slice(0, 3);
     },
-    enabled: enabled && !!pets && pets.length > 0,
+    enabled: !!pets && pets.length > 0,
   });
 
   return {

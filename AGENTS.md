@@ -2,11 +2,11 @@
 
 ## Project Structure & Module Organization
 
-- `app/`: Expo Router routes (e.g. `app/(tabs)/`, `app/(auth)/`).
+- `app/`: Expo Router routes (e.g. `app/(tabs)/`, `app/(onboarding)/`).
 - `components/`: reusable UI and feature components (e.g. `components/forms/`, `components/ui/`).
-- `lib/`: shared “platform” code (API client in `lib/api/`, services in `lib/services/`, schemas in `lib/schemas/`, theme in `lib/theme/`, query hooks in `lib/hooks/`).
+- `lib/`: shared “platform” code (local DB/repositories in `lib/db/` + `lib/repositories/`, services in `lib/services/`, schemas in `lib/schemas/`, theme in `lib/theme/`, feature hooks in `lib/hooks/`).
 - `hooks/`: feature-level hooks (form logic typically lives here).
-- `stores/`: client/UI state via Zustand (keep server state in TanStack Query hooks).
+- `stores/`: client/UI state via Zustand.
 - `assets/`, `locales/`: images and i18n resources.
 - `android/`: native Android project (generated/managed via Expo).
 - `__tests__/`: test helpers/fixtures (no runner wired by default).
@@ -31,7 +31,7 @@
 - Language: TypeScript + React Native (Expo). Prefer functional components and hooks.
 - Naming: `PetForm.tsx`/`PetFormProps` (PascalCase), `usePetForm` (hooks), `petService` (camelCase instances).
 - Imports: React → libraries → `@/` absolute imports → relative imports. Path alias: `@/*` (see `tsconfig.json`).
-- State: server data in TanStack Query hooks (`lib/hooks/`); UI state in Zustand stores (`stores/`).
+- State: local-first data access in `lib/hooks/` + repositories/services; UI state in Zustand stores (`stores/`).
 
 ## Testing Guidelines
 

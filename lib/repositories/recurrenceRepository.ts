@@ -1,6 +1,6 @@
 import { addDays } from 'date-fns';
 import { formatInTimeZone, fromZonedTime } from 'date-fns-tz';
-import { and, eq } from 'drizzle-orm';
+import { eq } from 'drizzle-orm';
 import { generateDailyTimes } from '@/constants/recurrence';
 import { db } from '@/lib/db/client';
 import { initDatabase } from '@/lib/db/init';

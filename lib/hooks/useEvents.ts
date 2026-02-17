@@ -1,6 +1,5 @@
 import { eventService } from "@/lib/services/eventService";
 import { CreateEventInput, Event, UpdateEventInput } from "@/lib/types";
-import { CACHE_TIMES } from "@/lib/config/cacheTimes";
 import {
   useCreateResource,
   useDeleteResource,
@@ -9,12 +8,9 @@ import {
 import { useResource } from "./core/useResource";
 import { useResources } from "./core/useResources";
 import { useConditionalQuery } from "./core/useConditionalQuery";
-import { useAuthQueryEnabled } from "./useAuthQueryEnabled";
 import { eventKeys } from "./queryKeys";
-import { useEffect, useMemo } from "react";
+import { useMemo } from "react";
 import { filterUpcomingEvents, groupEventsByTime } from "@/lib/utils/events";
-import { extractISODatePart, toISODateString } from "@/lib/utils/dateConversion";
-import { formatInTimeZone } from "@/lib/utils/date";
 import { useReminderScheduler } from "@/hooks/useReminderScheduler";
 import { ReminderPresetKey } from "@/constants/reminders";
 import { useUserTimezone } from "@/lib/hooks/useUserTimezone";
@@ -24,53 +20,28 @@ export { eventKeys } from "./queryKeys";
 
 // Hooks
 export const useEvents = (petId: string) => {
-  const { enabled } = useAuthQueryEnabled();
-
   return useResources<Event>({
-    queryKey: eventKeys.list({ petId }),
+    deps: [JSON.stringify(eventKeys.list({ petId }))],
     queryFn: () => eventService.getEventsByPetId(petId),
-    staleTime: CACHE_TIMES.MEDIUM,
-    enabled: enabled && !!petId,
+    enabled: !!petId,
   });
 };
 
 const MISSING_ID_PLACEHOLDER = "__missing__";
-
-const getEventDateForTimezone = (startTime: string, timezone?: string) => {
-  const safeTimezone = normalizeTimezone(timezone);
-
-  if (safeTimezone) {
-    try {
-      return formatInTimeZone(startTime, safeTimezone, "yyyy-MM-dd");
-    } catch {
-      // Fall through to local date fallback when timezone formatting fails
-    }
-  }
-
-  return toISODateString(new Date(startTime)) ?? extractISODatePart(startTime) ?? "";
-};
-
-const isCalendarQueryForDate = (queryKey: readonly unknown[], date: string) =>
-  Array.isArray(queryKey) &&
-  queryKey[0] === eventKeys.all[0] &&
-  queryKey[1] === "calendar" &&
-  queryKey[2] === date;
 
 const buildCalendarQueryKey = (date: string, timezone?: string) => {
   return eventKeys.calendarScoped(date, timezone);
 };
 
 export const useEvent = (id?: string, options?: { enabled?: boolean }) => {
-  const { enabled } = useAuthQueryEnabled();
   const safeId = id ?? MISSING_ID_PLACEHOLDER;
   const isEnabled =
     options?.enabled !== undefined ? options.enabled && !!id : !!id;
 
   return useResource<Event>({
-    queryKey: eventKeys.detail(safeId),
+    deps: [JSON.stringify(eventKeys.detail(safeId))],
     queryFn: () => eventService.getEventById(safeId),
-    staleTime: CACHE_TIMES.LONG,
-    enabled: enabled && isEnabled,
+    enabled: isEnabled,
   });
 };
 
@@ -78,43 +49,35 @@ export const useCalendarEvents = (
   date: string,
   options?: { enabled?: boolean; timezone?: string },
 ) => {
-  const { enabled } = useAuthQueryEnabled();
   const timezone = normalizeTimezone(options?.timezone);
   const isEnabled =
     options?.enabled !== undefined ? options.enabled && !!date : !!date;
 
   return useConditionalQuery<Event[]>({
-    queryKey: buildCalendarQueryKey(date, timezone),
+    deps: [JSON.stringify(buildCalendarQueryKey(date, timezone))],
     queryFn: () => eventService.getEventsByDate(date, timezone),
-    staleTime: CACHE_TIMES.MEDIUM,
-    enabled: enabled && isEnabled,
+    enabled: isEnabled,
     defaultValue: [],
   });
 };
 
 export const useUpcomingEvents = () => {
-  const { enabled } = useAuthQueryEnabled();
   const timezone = useUserTimezone();
 
   return useResources<Event>({
-    queryKey: eventKeys.upcomingScoped(timezone),
+    deps: [JSON.stringify(eventKeys.upcomingScoped(timezone))],
     queryFn: () => eventService.getUpcomingEvents(timezone),
-    enabled,
-    staleTime: CACHE_TIMES.SHORT,
-    refetchInterval: CACHE_TIMES.MEDIUM,
+    refetchInterval: 5 * 60 * 1000,
   });
 };
 
 export const useTodayEvents = () => {
-  const { enabled } = useAuthQueryEnabled();
   const timezone = useUserTimezone();
 
   return useResources<Event>({
-    queryKey: eventKeys.todayScoped(timezone),
+    deps: [JSON.stringify(eventKeys.todayScoped(timezone))],
     queryFn: () => eventService.getTodayEvents(timezone),
-    enabled,
-    staleTime: CACHE_TIMES.VERY_SHORT,
-    refetchInterval: CACHE_TIMES.VERY_SHORT,
+    refetchInterval: 30 * 1000,
   });
 };
 
@@ -154,25 +117,18 @@ export const useGroupedUpcomingEvents = (
 };
 
 export const useEventsByType = (petId: string, type: string) => {
-  const { enabled } = useAuthQueryEnabled();
-
   return useResources<Event>({
-    queryKey: eventKeys.type(petId, type),
+    deps: [JSON.stringify(eventKeys.type(petId, type))],
     queryFn: () => eventService.getEventsByPetId(petId),
-    staleTime: CACHE_TIMES.MEDIUM,
-    enabled: enabled && !!petId && !!type,
+    enabled: !!petId && !!type,
     select: (events) => events.filter((event: Event) => event.type === type),
   });
 };
 
 export const useAllEvents = () => {
-  const { enabled } = useAuthQueryEnabled();
-
   return useResources<Event>({
-    queryKey: eventKeys.list({ petId: "all" }),
+    deps: [JSON.stringify(eventKeys.list({ petId: "all" }))],
     queryFn: () => eventService.getEvents(),
-    staleTime: CACHE_TIMES.MEDIUM,
-    enabled,
   });
 };
 
@@ -202,7 +158,6 @@ export const useRecentPastEvents = () => {
 
 // Mutations
 export const useCreateEvent = () => {
-  const timezone = useUserTimezone();
   const { scheduleChainForEvent, cancelRemindersForEvent, clearReminderState } =
     useReminderScheduler();
 
@@ -214,7 +169,6 @@ export const useCreateEvent = () => {
     ({ reminderPresetKey, ...payload }) =>
       eventService.createEvent(payload).then((res) => res.data!),
     {
-      listQueryKey: eventKeys.lists(),
       onSuccess: async (newEvent, variables) => {
         if (newEvent.reminder) {
           void scheduleChainForEvent(newEvent, variables.reminderPresetKey);
@@ -240,8 +194,6 @@ export const useUpdateEvent = () => {
       return eventService.updateEvent(_id, payload).then((res) => res.data!);
     },
     {
-      listQueryKey: eventKeys.lists(),
-      detailQueryKey: eventKeys.detail,
       onSettled: (data, error, variables) => {
         if (data) {
           if (data.reminder) {
@@ -263,8 +215,6 @@ export const useDeleteEvent = () => {
   return useDeleteResource<Event>(
     (id) => eventService.deleteEvent(id).then((res) => res.data),
     {
-      listQueryKey: eventKeys.lists(),
-      detailQueryKey: eventKeys.detail,
       onSuccess: (_data, id) => {
         void cancelRemindersForEvent(id);
         clearReminderState(id);

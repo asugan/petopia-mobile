@@ -1,8 +1,8 @@
 import { normalizeTimezone } from '@/lib/utils/timezone';
-import { createQueryKeys } from './core/createQueryKeys';
+import { createLocalKeys } from './core/createLocalKeys';
 
 // Pets
-const basePetKeys = createQueryKeys('pets');
+const basePetKeys = createLocalKeys('pets');
 export const petKeys = {
   ...basePetKeys,
   stats: () => [...basePetKeys.all, 'stats'] as const,
@@ -12,7 +12,7 @@ export const petKeys = {
 };
 
 // Events
-const baseEventKeys = createQueryKeys('events');
+const baseEventKeys = createLocalKeys('events');
 export const eventKeys = {
   ...baseEventKeys,
   calendar: (date: string) => [...baseEventKeys.all, 'calendar', date] as const,
@@ -34,7 +34,7 @@ export const eventKeys = {
 };
 
 // Feeding schedules
-const baseFeedingScheduleKeys = createQueryKeys('feeding-schedules');
+const baseFeedingScheduleKeys = createLocalKeys('feeding-schedules');
 export const feedingScheduleKeys = {
   ...baseFeedingScheduleKeys,
   active: () => [...baseFeedingScheduleKeys.all, 'active'] as const,
@@ -44,7 +44,7 @@ export const feedingScheduleKeys = {
 };
 
 // Health records
-const baseHealthRecordKeys = createQueryKeys('health-records');
+const baseHealthRecordKeys = createLocalKeys('health-records');
 export const healthRecordKeys = {
   ...baseHealthRecordKeys,
   list: <T extends object | undefined>(petId: string, filters?: T) =>
@@ -55,7 +55,7 @@ export const healthRecordKeys = {
 };
 
 // Expenses
-const baseExpenseKeys = createQueryKeys('expenses');
+const baseExpenseKeys = createLocalKeys('expenses');
 export const expenseKeys = {
   ...baseExpenseKeys,
   list: <T extends object | undefined>(filters: T) => [...baseExpenseKeys.lists(), filters] as const,
@@ -70,7 +70,7 @@ export const expenseKeys = {
 };
 
 // Downgrade
-const baseDowngradeKeys = createQueryKeys('downgrade');
+const baseDowngradeKeys = createLocalKeys('downgrade');
 export const downgradeKeys = {
   ...baseDowngradeKeys,
   status: (userId?: string) => [...baseDowngradeKeys.all, 'status', userId] as const,

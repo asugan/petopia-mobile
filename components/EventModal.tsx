@@ -42,7 +42,7 @@ export function EventModal({
   const { theme } = useTheme();
   const [loading, setLoading] = React.useState(false);
 
-  // React Query hooks for server state
+  // Local-first domain hooks
   const createEventMutation = useCreateEvent();
   const updateEventMutation = useUpdateEvent();
   const createRecurrenceRuleMutation = useCreateRecurrenceRule();

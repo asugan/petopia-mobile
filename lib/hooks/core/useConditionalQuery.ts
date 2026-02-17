@@ -2,83 +2,18 @@ import { ConditionalQueryOptions } from './types';
 import { LocalQueryResult, useLocalQuery } from './useLocalAsync';
 
 /**
- * Generic hook for conditional/search queries
- *
- * This hook standardizes the pattern for queries that:
- * - Depend on multiple conditions
- * - Are search queries
- * - Have complex enabled logic
- * - Return mixed data types (not just arrays or single items)
- *
- * Features:
- * - Automatic ApiResponse unwrapping
- * - Flexible data types (arrays, objects, primitives)
- * - Standardized error handling
- * - Type-safe with generics
- * - Supports client-side transformation
- * - Required default value for type safety
- *
- * @example
- * ```typescript
- * // Search query
- * export function usePetSearch(query: string) {
- *   return useConditionalQuery<Pet[]>({
- *     queryKey: petKeys.search(query),
- *     queryFn: () => petService.searchPets(query),
- *     staleTime: CACHE_TIMES.SHORT,
- *     enabled: !!query && query.trim().length > 0,
- *     defaultValue: [],
- *   });
- * }
- *
- * // Stats/aggregation query
- * export function usePetStats(petId: string) {
- *   return useConditionalQuery<{ total: number; active: number }>({
- *     queryKey: ['pet-stats', petId],
- *     queryFn: () => petService.getPetStats(petId),
- *     staleTime: CACHE_TIMES.MEDIUM,
- *     enabled: !!petId,
- *     defaultValue: { total: 0, active: 0 },
- *   });
- * }
- *
- * // Multi-condition query
- * export function useFilteredEvents(petId: string, type: string) {
- *   return useConditionalQuery<Event[]>({
- *     queryKey: ['events', petId, type],
- *     queryFn: () => eventService.getEvents(petId, type),
- *     staleTime: CACHE_TIMES.SHORT,
- *     enabled: !!petId && !!type,
- *     defaultValue: [],
- *   });
- * }
- *
- * // With transformation
- * export function useExpenseSummary(petId: string) {
- *   return useConditionalQuery<ExpenseStats>({
- *     queryKey: ['expense-summary', petId],
- *     queryFn: () => expenseService.getExpenseStats(petId),
- *     staleTime: CACHE_TIMES.MEDIUM,
- *     enabled: !!petId,
- *     defaultValue: { total: 0, count: 0 },
- *     select: (data) => ({
- *       ...data,
- *       average: data.count > 0 ? data.total / data.count : 0,
- *     }),
- *   });
- * }
- * ```
+ * Generic hook for conditional/search queries.
+ * Accepts a dependency key list (`deps`) to control reloads.
  *
  * @template TData - The type of the query result data
- * @template TError - The type of error (defaults to Error)
- * @param options - Configuration options for the conditional query
- * @returns UseQueryResult from React Query
+ * @param options - Configuration options for the local query
+ * @returns LocalQueryResult
  */
-export function useConditionalQuery<TData, TError = Error>(
-  options: ConditionalQueryOptions<TData, TError>
+export function useConditionalQuery<TData>(
+  options: ConditionalQueryOptions<TData>
 ): LocalQueryResult<TData> {
   const {
-    queryKey,
+    deps,
     queryFn,
     refetchInterval,
     enabled = true,
@@ -88,7 +23,7 @@ export function useConditionalQuery<TData, TError = Error>(
   } = options;
 
   return useLocalQuery<TData>({
-    deps: [JSON.stringify(queryKey)],
+    deps,
     refetchInterval,
     enabled,
     defaultValue,
@@ -115,27 +50,12 @@ export function useConditionalQuery<TData, TError = Error>(
 /**
  * Variant of useConditionalQuery that returns default value on error instead of throwing
  * Useful when you want graceful degradation
- *
- * Note: This variant doesn't support custom queryOptions to avoid type conflicts
- *
- * @example
- * ```typescript
- * export function usePetStatsSafe(petId: string) {
- *   return useConditionalQuerySafe<PetStats>({
- *     queryKey: ['pet-stats', petId],
- *     queryFn: () => petService.getPetStats(petId),
- *     staleTime: CACHE_TIMES.MEDIUM,
- *     enabled: !!petId,
- *     defaultValue: { total: 0, active: 0 },
- *   });
- * }
- * ```
  */
-export function useConditionalQuerySafe<TData, TError = Error>(
-  options: Omit<ConditionalQueryOptions<TData, TError>, 'queryOptions'>
+export function useConditionalQuerySafe<TData>(
+  options: ConditionalQueryOptions<TData>
 ): LocalQueryResult<TData> {
   const {
-    queryKey,
+    deps,
     queryFn,
     refetchInterval,
     enabled = true,
@@ -144,7 +64,7 @@ export function useConditionalQuerySafe<TData, TError = Error>(
   } = options;
 
   return useLocalQuery<TData>({
-    deps: [JSON.stringify(queryKey)],
+    deps,
     refetchInterval,
     enabled,
     defaultValue,

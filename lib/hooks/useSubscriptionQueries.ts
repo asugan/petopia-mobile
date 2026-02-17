@@ -5,8 +5,6 @@ import {
   type SubscriptionStatus,
 } from '../services/subscriptionService';
 
-const LOCAL_USER_ID = 'local-user';
-
 export const subscriptionKeys = {
   all: ['subscription'] as const,
   status: (userId?: string) => ['subscription', 'status', userId] as const,
@@ -267,7 +265,6 @@ export function useSubscriptionQueryEnabled() {
 
   return {
     enabled: hasActiveSubscription,
-    userId: LOCAL_USER_ID,
     hasActiveSubscription,
     isLoading,
     isError,
@@ -280,7 +277,6 @@ export function useProQueryEnabled() {
 
   return {
     enabled: isPaidSubscription,
-    userId: LOCAL_USER_ID,
     isPaidSubscription,
     isLoading,
     isError,

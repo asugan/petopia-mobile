@@ -23,7 +23,7 @@ import type { SubscriptionEventProperties } from '@/lib/posthog/subscriptionEven
 export type SubscriptionStatusType = 'pro' | 'trial' | 'free';
 
 export interface UseSubscriptionReturn {
-  // Status (from backend via React Query)
+  // Status (computed from local + RevenueCat state)
   isProUser: boolean;
   isSubscribed: boolean;
   isTrialActive: boolean;
