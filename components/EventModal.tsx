@@ -8,7 +8,12 @@ import { Event } from '../lib/types';
 import { EventFormData, transformFormDataToAPI, transformFormDataToRecurrenceRule } from '../lib/schemas/eventSchema';
 import { EventForm } from './forms/EventForm';
 import { useCreateEvent, useUpdateEvent } from '../lib/hooks/useEvents';
-import { useCreateRecurrenceRule, useUpdateRecurrenceRule } from '../lib/hooks/useRecurrence';
+import {
+  useAddRecurrenceException,
+  useCreateRecurrenceRule,
+  useRecurrenceRule,
+  useUpdateRecurrenceRule,
+} from '../lib/hooks/useRecurrence';
 import { usePets } from '../lib/hooks/usePets';
 import { useUserTimezone } from '@/lib/hooks/useUserTimezone';
 import { ReminderPresetKey } from '@/constants/reminders';
@@ -42,6 +47,8 @@ export function EventModal({
   const updateEventMutation = useUpdateEvent();
   const createRecurrenceRuleMutation = useCreateRecurrenceRule();
   const updateRecurrenceRuleMutation = useUpdateRecurrenceRule();
+  const addRecurrenceExceptionMutation = useAddRecurrenceException();
+  const { data: recurrenceRule } = useRecurrenceRule(event?.recurrenceRuleId);
   const { data: pets = [] } = usePets();
   const userTimezone = useUserTimezone();
 
@@ -62,13 +69,57 @@ export function EventModal({
       } else if (event) {
         // Event güncelleme
         if (editType === 'series' && event.recurrenceRuleId) {
-          // Edit the whole recurrence rule
-          const ruleData = transformFormDataToRecurrenceRule(data, reminderEnabled, reminderPresetKey);
+          const effectiveRecurrence = data.recurrence ?? (recurrenceRule
+            ? {
+                frequency: recurrenceRule.frequency,
+                interval: recurrenceRule.interval,
+                daysOfWeek: recurrenceRule.daysOfWeek,
+                dayOfMonth: recurrenceRule.dayOfMonth,
+                timesPerDay: recurrenceRule.timesPerDay,
+                dailyTimes: recurrenceRule.dailyTimes,
+                timezone: recurrenceRule.timezone,
+                endDate: recurrenceRule.endDate,
+              }
+            : undefined);
+
+          if (!effectiveRecurrence) {
+            throw new Error('Recurrence settings are required for series update');
+          }
+
+          const ruleData = transformFormDataToRecurrenceRule(
+            {
+              ...data,
+              isRecurring: true,
+              recurrence: effectiveRecurrence,
+            },
+            reminderEnabled,
+            reminderPresetKey
+          );
+
           await updateRecurrenceRuleMutation.mutateAsync({
             id: event.recurrenceRuleId,
             data: ruleData
           });
           showToast({ type: 'success', title: t('serviceResponse.recurrence.updateSuccess') });
+        } else if (editType === 'single' && event.recurrenceRuleId) {
+          const parsedExceptionDate = new Date(event.startTime);
+          const exceptionDate = Number.isNaN(parsedExceptionDate.getTime())
+            ? String(event.startTime)
+            : parsedExceptionDate.toISOString();
+
+          await addRecurrenceExceptionMutation.mutateAsync({
+            id: event.recurrenceRuleId,
+            date: exceptionDate,
+          });
+
+          const apiData = transformFormDataToAPI(data, userTimezone);
+          await createEventMutation.mutateAsync({
+            ...apiData,
+            reminderPresetKey,
+            reminder: reminderEnabled,
+          });
+
+          showToast({ type: 'success', title: t('serviceResponse.event.updateSuccess') });
         } else {
           // Edit single event (normal behavior or editType === 'single')
           const apiData = transformFormDataToAPI(data, userTimezone);
@@ -102,7 +153,20 @@ export function EventModal({
     } finally {
       setLoading(false);
     }
-  }, [event, editType, createEventMutation, updateEventMutation, createRecurrenceRuleMutation, updateRecurrenceRuleMutation, onSuccess, onClose, t, userTimezone]);
+  }, [
+    addRecurrenceExceptionMutation,
+    createEventMutation,
+    createRecurrenceRuleMutation,
+    editType,
+    event,
+    onClose,
+    onSuccess,
+    t,
+    recurrenceRule,
+    updateEventMutation,
+    updateRecurrenceRuleMutation,
+    userTimezone,
+  ]);
 
   const handleClose = React.useCallback(() => {
     if (!loading) {
@@ -149,11 +213,12 @@ export function EventModal({
             event={event}
             editType={editType}
             onSubmit={handleSubmit}
-            onCancel={handleClose}
-            initialPetId={initialPetId}
-            pets={pets}
-            testID="event-form-in-modal"
-          />
+          onCancel={handleClose}
+          initialPetId={initialPetId}
+          pets={pets}
+          recurrenceRule={recurrenceRule}
+          testID="event-form-in-modal"
+        />
         </SafeAreaView>
       </RNModal>
 

@@ -9,7 +9,6 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { useTranslation } from "react-i18next";
 import { addMonths, subMonths, addWeeks, subWeeks } from "date-fns";
 import { MonthView } from "@/components/calendar/MonthView";
-import { formatInTimeZone } from "@/lib/utils/date";
 import { toLocalDateKey } from "@/lib/utils/timezoneDate";
 import { WeekView } from "@/components/calendar/WeekView";
 import {
@@ -24,9 +23,7 @@ import {
   useUpdateEvent,
 } from "@/lib/hooks/useEvents";
 import { useUserTimezone } from "@/lib/hooks/useUserTimezone";
-import { eventKeys } from "@/lib/hooks/queryKeys";
 import { Event } from "@/lib/types";
-import { useQueryClient } from "@tanstack/react-query";
 import { showToast } from "@/lib/toast/showToast";
 import { FEATURE_ROUTES } from "@/constants/routes";
 
@@ -36,7 +33,6 @@ export default function CalendarScreen() {
   const { theme } = useTheme();
   const { t } = useTranslation();
   const router = useRouter();
-  const queryClient = useQueryClient();
   const { petId, action, editEventId, editType } = useLocalSearchParams<{
     petId?: string;
     action?: string;
@@ -134,24 +130,6 @@ export default function CalendarScreen() {
 
   const handleToggleReminder = useCallback(
     async (event: Event, nextValue: boolean) => {
-      const eventDate = formatInTimeZone(event.startTime, userTimezone, "yyyy-MM-dd");
-
-      const calendarQueryKey = eventKeys.calendarScoped(eventDate, userTimezone);
-
-      queryClient.setQueryData<Event[]>(calendarQueryKey, (old) =>
-        old?.map((item) =>
-          item._id === event._id ? { ...item, reminder: nextValue } : item,
-        ),
-      );
-
-      queryClient.setQueryData<Event[]>(
-        eventKeys.list({ petId: "all" }),
-        (old) =>
-          old?.map((item) =>
-            item._id === event._id ? { ...item, reminder: nextValue } : item,
-          ),
-      );
-
       try {
         await updateEventMutation.mutateAsync({
           _id: event._id,
@@ -161,22 +139,14 @@ export default function CalendarScreen() {
             startTime: event.startTime,
           },
         });
-        queryClient.invalidateQueries({
-          queryKey: calendarQueryKey,
-        });
-        queryClient.invalidateQueries({
-          queryKey: eventKeys.list({ petId: "all" }),
-        });
       } catch {
-        queryClient.invalidateQueries({
-          queryKey: calendarQueryKey,
-        });
-        queryClient.invalidateQueries({
-          queryKey: eventKeys.list({ petId: "all" }),
+        showToast({
+          type: "error",
+          title: t("errors.operationFailed"),
         });
       }
     },
-    [queryClient, updateEventMutation, userTimezone],
+    [t, updateEventMutation],
   );
 
   const handleAddEvent = async () => {

@@ -1,74 +1,49 @@
-import { useQueryClient } from '@tanstack/react-query';
-import { eventKeys, feedingScheduleKeys, healthRecordKeys, petKeys } from './queryKeys';
 import { unwrapApiResponse } from './core/unwrapApiResponse';
 import { toLocalDateKey } from '@/lib/utils/timezoneDate';
 import { useAuthQueryEnabled } from './useAuthQueryEnabled';
 import { useUserTimezone } from './useUserTimezone';
+import { petService } from '@/lib/services/petService';
+import { healthRecordService } from '@/lib/services/healthRecordService';
+import { eventService } from '@/lib/services/eventService';
+import { feedingScheduleService } from '@/lib/services/feedingScheduleService';
 
 export function usePrefetchData() {
-  const queryClient = useQueryClient();
   const { enabled } = useAuthQueryEnabled();
   const timezone = useUserTimezone();
 
-  const prefetchPetDetails = (petId: string) => {
+  const runPrefetch = (callback: () => Promise<unknown>) => {
     if (!enabled) return;
+    void callback();
+  };
 
-    queryClient.prefetchQuery({
-      queryKey: petKeys.detail(petId),
-      queryFn: () =>
-        unwrapApiResponse(
-          import('@/lib/services/petService').then(m => m.petService.getPetById(petId))
-        ),
-      staleTime: 10 * 60 * 1000, // 10 minutes
-    });
+  const prefetchPetDetails = (petId: string) => {
+    runPrefetch(() =>
+      unwrapApiResponse(petService.getPetById(petId))
+    );
   };
 
   const prefetchPetHealthRecords = (petId: string) => {
-    if (!enabled) return;
-
-    queryClient.prefetchQuery({
-      queryKey: healthRecordKeys.list(petId),
-      queryFn: () =>
-        unwrapApiResponse(
-          import('@/lib/services/healthRecordService').then(m =>
-            m.healthRecordService.getHealthRecordsByPetId(petId)
-          ),
-          { defaultValue: [] }
-        ),
-      staleTime: 5 * 60 * 1000, // 5 minutes
-    });
+    runPrefetch(() =>
+      unwrapApiResponse(healthRecordService.getHealthRecordsByPetId(petId), {
+        defaultValue: [],
+      })
+    );
   };
 
   const prefetchPetEvents = (petId: string) => {
-    if (!enabled) return;
-
-    queryClient.prefetchQuery({
-      queryKey: eventKeys.list({ petId }),
-      queryFn: () =>
-        unwrapApiResponse(
-          import('@/lib/services/eventService').then(m =>
-            m.eventService.getEventsByPetId(petId)
-          ),
-          { defaultValue: [] }
-        ),
-      staleTime: 2 * 60 * 1000, // 2 minutes
-    });
+    runPrefetch(() =>
+      unwrapApiResponse(eventService.getEventsByPetId(petId), {
+        defaultValue: [],
+      })
+    );
   };
 
   const prefetchPetFeedingSchedules = (petId: string) => {
-    if (!enabled) return;
-
-    queryClient.prefetchQuery({
-      queryKey: feedingScheduleKeys.list({ petId }),
-      queryFn: () =>
-        unwrapApiResponse(
-          import('@/lib/services/feedingScheduleService').then(m =>
-            m.feedingScheduleService.getFeedingSchedulesByPetId(petId)
-          ),
-          { defaultValue: [] }
-        ),
-      staleTime: 1 * 60 * 1000, // 1 minute
-    });
+    runPrefetch(() =>
+      unwrapApiResponse(feedingScheduleService.getFeedingSchedulesByPetId(petId), {
+        defaultValue: [],
+      })
+    );
   };
 
   const prefetchRelatedData = (petId: string) => {
@@ -79,49 +54,27 @@ export function usePrefetchData() {
   };
 
   const prefetchUpcomingEvents = () => {
-    if (!enabled) return;
-
-    queryClient.prefetchQuery({
-      queryKey: eventKeys.upcomingScoped(timezone),
-      queryFn: () =>
-        unwrapApiResponse(
-          import('@/lib/services/eventService').then(m =>
-            m.eventService.getUpcomingEvents(timezone)
-          ),
-          { defaultValue: [] }
-        ),
-      staleTime: 1 * 60 * 1000, // 1 minute
-    });
+    runPrefetch(() =>
+      unwrapApiResponse(eventService.getUpcomingEvents(timezone), {
+        defaultValue: [],
+      })
+    );
   };
 
   const prefetchTodayEvents = () => {
-    if (!enabled) return;
-
-    queryClient.prefetchQuery({
-      queryKey: eventKeys.todayScoped(timezone),
-      queryFn: () =>
-        unwrapApiResponse(
-          import('@/lib/services/eventService').then(m => m.eventService.getTodayEvents(timezone)),
-          { defaultValue: [] }
-        ),
-      staleTime: 30 * 1000, // 30 seconds
-    });
+    runPrefetch(() =>
+      unwrapApiResponse(eventService.getTodayEvents(timezone), {
+        defaultValue: [],
+      })
+    );
   };
 
   const prefetchActiveFeedingSchedules = () => {
-    if (!enabled) return;
-
-    queryClient.prefetchQuery({
-      queryKey: feedingScheduleKeys.active(),
-      queryFn: () =>
-        unwrapApiResponse(
-          import('@/lib/services/feedingScheduleService').then(m =>
-            m.feedingScheduleService.getActiveFeedingSchedules()
-          ),
-          { defaultValue: [] }
-        ),
-      staleTime: 30 * 1000, // 30 seconds
-    });
+    runPrefetch(() =>
+      unwrapApiResponse(feedingScheduleService.getActiveFeedingSchedules(), {
+        defaultValue: [],
+      })
+    );
   };
 
   // Smart prefetching based on user context
@@ -142,17 +95,11 @@ export function usePrefetchData() {
 
     const todayKey = toLocalDateKey(new Date(), timezone);
     if (date && date !== todayKey) {
-      queryClient.prefetchQuery({
-        queryKey: eventKeys.calendarScoped(date, timezone),
-        queryFn: () =>
-          unwrapApiResponse(
-            import('@/lib/services/eventService').then(m =>
-              m.eventService.getEventsByDate(date, timezone)
-            ),
-            { defaultValue: [] }
-          ),
-        staleTime: 5 * 60 * 1000, // 5 minutes
-      });
+      runPrefetch(() =>
+        unwrapApiResponse(eventService.getEventsByDate(date, timezone), {
+          defaultValue: [],
+        })
+      );
     }
   };
 

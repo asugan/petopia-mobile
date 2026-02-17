@@ -1,11 +1,11 @@
 import { useCallback, useMemo } from 'react';
-import { useQueryClient } from '@tanstack/react-query';
 import { usePrefetchData } from './usePrefetchData';
-import { eventKeys, feedingScheduleKeys } from './queryKeys';
 import { unwrapApiResponse } from './core/unwrapApiResponse';
 import { toLocalDateKey } from '@/lib/utils/timezoneDate';
 import { useAuthQueryEnabled } from './useAuthQueryEnabled';
 import { useUserTimezone } from './useUserTimezone';
+import { feedingScheduleService } from '@/lib/services/feedingScheduleService';
+import { eventService } from '@/lib/services/eventService';
 
 interface PrefetchStrategy {
   priority: 'high' | 'medium' | 'low';
@@ -14,7 +14,6 @@ interface PrefetchStrategy {
 }
 
 export function useSmartPrefetching() {
-  const queryClient = useQueryClient();
   const {
     prefetchRelatedData,
     prefetchUpcomingEvents = () => {},
@@ -22,6 +21,11 @@ export function useSmartPrefetching() {
   } = usePrefetchData();
   const { enabled } = useAuthQueryEnabled();
   const timezone = useUserTimezone();
+
+  const runPrefetch = (callback: () => Promise<unknown>) => {
+    if (!enabled) return;
+    void callback();
+  };
 
   const prefetchStrategies = useMemo<Record<string, PrefetchStrategy>>(() => ({
     // When user spends time on pet list, prefetch details
@@ -76,17 +80,12 @@ export function useSmartPrefetching() {
           if (context.petId) {
             prefetchRelatedData(context.petId);
             // Prefetch additional data for pet details view
-            queryClient.prefetchQuery({
-              queryKey: feedingScheduleKeys.list({ petId: context.petId }),
-              queryFn: () =>
-                unwrapApiResponse(
-                  import('@/lib/services/feedingScheduleService').then(m =>
-                    m.feedingScheduleService.getFeedingSchedulesByPetId(context.petId!)
-                  ),
-                  { defaultValue: [] }
-                ),
-              staleTime: 5 * 60 * 1000,
-            });
+            runPrefetch(() =>
+              unwrapApiResponse(
+                feedingScheduleService.getFeedingSchedulesByPetId(context.petId!),
+                { defaultValue: [] }
+              )
+            );
           }
           break;
 
@@ -97,29 +96,17 @@ export function useSmartPrefetching() {
 
         case 'backgroundRefresh':
           // Refresh critical data in background
-          queryClient.prefetchQuery({
-            queryKey: eventKeys.upcomingScoped(timezone),
-            queryFn: () =>
-              unwrapApiResponse(
-                import('@/lib/services/eventService').then(m =>
-                  m.eventService.getUpcomingEvents(timezone)
-                ),
-                { defaultValue: [] }
-              ),
-            staleTime: 1 * 60 * 1000,
-          });
+          runPrefetch(() =>
+            unwrapApiResponse(eventService.getUpcomingEvents(timezone), {
+              defaultValue: [],
+            })
+          );
 
-          queryClient.prefetchQuery({
-            queryKey: feedingScheduleKeys.active(),
-            queryFn: () =>
-              unwrapApiResponse(
-                import('@/lib/services/feedingScheduleService').then(m =>
-                  m.feedingScheduleService.getActiveFeedingSchedules()
-                ),
-                { defaultValue: [] }
-              ),
-            staleTime: 1 * 60 * 1000,
-          });
+          runPrefetch(() =>
+            unwrapApiResponse(feedingScheduleService.getActiveFeedingSchedules(), {
+              defaultValue: [],
+            })
+          );
           break;
       }
     };
@@ -132,11 +119,11 @@ export function useSmartPrefetching() {
     }
   }, [
     enabled,
-    queryClient,
     prefetchRelatedData,
     prefetchStrategies,
     prefetchTodayEvents,
     prefetchUpcomingEvents,
+    runPrefetch,
     timezone,
   ]);
 
@@ -182,17 +169,11 @@ export function useSmartPrefetching() {
     if (hour >= 6 && hour < 12) {
       prefetchTodayEvents();
 
-      queryClient.prefetchQuery({
-        queryKey: feedingScheduleKeys.today(),
-        queryFn: () =>
-          unwrapApiResponse(
-            import('@/lib/services/feedingScheduleService').then(m =>
-              m.feedingScheduleService.getTodayFeedingSchedules()
-            ),
-            { defaultValue: [] }
-          ),
-        staleTime: 1 * 60 * 1000,
-      });
+      runPrefetch(() =>
+        unwrapApiResponse(feedingScheduleService.getTodayFeedingSchedules(), {
+          defaultValue: [],
+        })
+      );
     }
 
     // Evening: prefetch tomorrow's events
@@ -202,19 +183,13 @@ export function useSmartPrefetching() {
 
       const tomorrowKey = toLocalDateKey(tomorrow, timezone);
 
-      queryClient.prefetchQuery({
-        queryKey: eventKeys.calendarScoped(tomorrowKey, timezone),
-        queryFn: () =>
-          unwrapApiResponse(
-            import('@/lib/services/eventService').then(m =>
-              m.eventService.getEventsByDate(tomorrowKey, timezone)
-            ),
-            { defaultValue: [] }
-          ),
-        staleTime: 2 * 60 * 1000,
-      });
+      runPrefetch(() =>
+        unwrapApiResponse(eventService.getEventsByDate(tomorrowKey, timezone), {
+          defaultValue: [],
+        })
+      );
     }
-  }, [enabled, prefetchTodayEvents, queryClient, timezone]);
+  }, [enabled, prefetchTodayEvents, runPrefetch, timezone]);
 
   return {
     prefetchOnInteraction,

@@ -7,10 +7,11 @@ import { useEventForm } from '@/hooks/useEventForm';
 import { useRequestDeduplication } from '@/lib/hooks/useRequestCancellation';
 import { useTheme } from '@/lib/theme';
 import { REMINDER_PRESETS, ReminderPresetKey } from '@/constants/reminders';
-import { registerPushTokenWithBackend } from '@/lib/services/notificationService';
+import { enableLocalNotifications } from '@/lib/services/notificationService';
 import { useNotifications } from '@/lib/hooks/useNotifications';
 import NotificationPermissionPrompt from '@/components/NotificationPermissionPrompt';
 import { type EventFormData } from '../../lib/schemas/eventSchema';
+import { type RecurrenceRule } from '../../lib/schemas/recurrenceSchema';
 import { Event, Pet } from '../../lib/types';
 import { FormSection } from './FormSection';
 import { SmartDateTimePicker } from './SmartDateTimePicker';
@@ -31,6 +32,7 @@ interface EventFormProps {
   loading?: boolean;
   initialPetId?: string;
   pets?: Pet[];
+  recurrenceRule?: RecurrenceRule | null;
   testID?: string;
 }
 
@@ -42,6 +44,7 @@ export function EventForm({
   loading = false,
   initialPetId,
   pets = [],
+  recurrenceRule,
   testID,
 }: EventFormProps) {
   const { t } = useTranslation();
@@ -53,7 +56,10 @@ export function EventForm({
   const [showPermissionModal, setShowPermissionModal] = React.useState(false);
 
   // Use the custom hook for form management
-  const { form, control, handleSubmit, isDirty } = useEventForm(event, initialPetId);
+  const { form, control, handleSubmit, isDirty } = useEventForm(event, initialPetId, {
+    editType,
+    recurrenceRule,
+  });
 
   // Watch form values for dynamic behavior
   const eventType = useWatch({ control, name: 'type' });
@@ -81,7 +87,7 @@ export function EventForm({
       });
       if (granted) {
         form.setValue('reminder', true);
-        void registerPushTokenWithBackend();
+        void enableLocalNotifications();
       } else {
         form.setValue('reminder', false);
         setShowPermissionModal(true);
@@ -421,7 +427,7 @@ export function EventForm({
         onDismiss={() => setShowPermissionModal(false)}
         onPermissionGranted={() => {
           form.setValue('reminder', true);
-          void registerPushTokenWithBackend();
+          void enableLocalNotifications();
         }}
         onPermissionDenied={() => {
           form.setValue('reminder', false);

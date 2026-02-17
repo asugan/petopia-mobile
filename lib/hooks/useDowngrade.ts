@@ -1,51 +1,135 @@
-import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { subscriptionApiService, DowngradeStatus } from '../services/subscriptionApiService';
-import { CACHE_TIMES } from '../config/queryConfig';
-import { useConditionalQuery } from './core/useConditionalQuery';
-import { useAuthQueryEnabled } from './useAuthQueryEnabled';
+import { useCallback, useEffect, useState } from 'react';
+import {
+  subscriptionService,
+  type DowngradeResponse,
+  type DowngradeStatus,
+} from '../services/subscriptionService';
 import { useComputedSubscriptionStatus } from './useSubscriptionQueries';
-import { downgradeKeys, petKeys } from './queryKeys';
 
-export { downgradeKeys } from './queryKeys';
+const LOCAL_USER_ID = 'local-user';
+
+export const downgradeKeys = {
+  all: ['downgrade'] as const,
+  status: (userId?: string) => ['downgrade', 'status', userId] as const,
+};
+
+const DEFAULT_STATUS: DowngradeStatus = {
+  requiresDowngrade: false,
+  currentPetCount: 0,
+  freemiumLimit: 1,
+  pets: [],
+};
+
+function useAsyncMutation<TArgs, TResult>(
+  action: (args: TArgs) => Promise<TResult>
+) {
+  const [isPending, setIsPending] = useState(false);
+  const [error, setError] = useState<Error | null>(null);
+
+  const mutateAsync = useCallback(
+    async (args: TArgs) => {
+      setIsPending(true);
+      setError(null);
+      try {
+        return await action(args);
+      } catch (mutationError) {
+        const normalizedError =
+          mutationError instanceof Error
+            ? mutationError
+            : new Error('Downgrade failed');
+        setError(normalizedError);
+        throw normalizedError;
+      } finally {
+        setIsPending(false);
+      }
+    },
+    [action]
+  );
+
+  const mutate = useCallback(
+    (args: TArgs) => {
+      void mutateAsync(args);
+    },
+    [mutateAsync]
+  );
+
+  return {
+    mutate,
+    mutateAsync,
+    isPending,
+    error,
+  };
+}
 
 export function useDowngradeStatus() {
-  const { enabled: authEnabled, userId } = useAuthQueryEnabled();
-  const { isProUser, isLoading: isSubscriptionLoading } = useComputedSubscriptionStatus();
+  const { isProUser, isLoading: isSubscriptionLoading } =
+    useComputedSubscriptionStatus();
+  const [data, setData] = useState<DowngradeStatus>(DEFAULT_STATUS);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<Error | null>(null);
 
-  // Only check downgrade status when user is authenticated and NOT a pro user
-  const enabled = authEnabled && !isSubscriptionLoading && !isProUser;
+  const refresh = useCallback(async () => {
+    if (isProUser) {
+      setData(DEFAULT_STATUS);
+      setError(null);
+      return;
+    }
 
-  return useConditionalQuery<DowngradeStatus>({
-    queryKey: downgradeKeys.status(userId),
-    queryFn: () => subscriptionApiService.getDowngradeStatus(),
-    enabled,
-    staleTime: CACHE_TIMES.MEDIUM, // Less frequent checks
-    gcTime: CACHE_TIMES.LONG,
-    defaultValue: {
-      requiresDowngrade: false,
-      currentPetCount: 0,
-      freemiumLimit: 1,
-      pets: [],
-    },
-    errorMessage: 'Downgrade status could not be loaded',
-  });
+    setIsLoading(true);
+    setError(null);
+    try {
+      const response = await subscriptionService.getDowngradeStatus();
+      if (response.success && response.data) {
+        setData(response.data);
+      } else {
+        const message =
+          typeof response.error === 'string'
+            ? response.error
+            : response.error?.message ?? 'Downgrade status could not be loaded';
+        setError(new Error(message));
+      }
+    } catch (refreshError) {
+      setError(
+        refreshError instanceof Error
+          ? refreshError
+          : new Error('Downgrade status could not be loaded')
+      );
+    } finally {
+      setIsLoading(false);
+    }
+  }, [isProUser]);
+
+  useEffect(() => {
+    if (isSubscriptionLoading) {
+      return;
+    }
+
+    void refresh();
+  }, [isSubscriptionLoading, refresh]);
+
+  return {
+    data,
+    isLoading,
+    error,
+    isError: !!error,
+    refetch: refresh,
+  };
 }
 
 export function useExecuteDowngrade() {
-  const queryClient = useQueryClient();
+  return useAsyncMutation<string, DowngradeResponse>(async (keepPetId) => {
+    const result = await subscriptionService.executeDowngrade(keepPetId);
 
-  return useMutation({
-    mutationFn: async (keepPetId: string) => {
-      const result = await subscriptionApiService.executeDowngrade(keepPetId);
-      if (!result.success) {
-        throw new Error(typeof result.error === 'string' ? result.error : 'Downgrade failed');
-      }
-      return result.data;
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: petKeys.all });
-      queryClient.invalidateQueries({ predicate: (query) => query.queryKey[0] === 'downgrade' });
-      queryClient.invalidateQueries({ predicate: (query) => query.queryKey[0] === 'subscription' });
-    },
+    if (!result.success || !result.data) {
+      const message =
+        typeof result.error === 'string'
+          ? result.error
+          : result.error?.message ?? 'Downgrade failed';
+      throw new Error(message);
+    }
+
+    return result.data;
   });
 }
+
+export const localDowngradeUserId = LOCAL_USER_ID;

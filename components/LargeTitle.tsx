@@ -9,8 +9,8 @@ import { useTheme } from "@/lib/theme";
 import { useSubscription } from "@/lib/hooks/useSubscription";
 import {
   notificationService,
-  registerPushTokenWithBackend,
-  unregisterPushTokenFromBackend,
+  enableLocalNotifications,
+  disableLocalNotifications,
 } from "@/lib/services/notificationService";
 import { showToast } from "@/lib/toast/showToast";
 import { useEventReminderStore } from "@/stores/eventReminderStore";
@@ -109,13 +109,12 @@ export const HeaderActions = () => {
         });
         await notificationService.cancelAllNotifications();
         clearAllReminderState();
-        void unregisterPushTokenFromBackend();
+        void disableLocalNotifications();
         await updateSettings({ notificationsEnabled: false });
       } else {
         const granted = await requestPermission();
         if (granted) {
-          // Register push token after permission granted
-          void registerPushTokenWithBackend();
+          void enableLocalNotifications();
           await updateSettings({ notificationsEnabled: true });
         } else {
           setShowPermissionModal(true);
@@ -204,11 +203,11 @@ export const HeaderActions = () => {
         visible={showPermissionModal}
         onDismiss={() => setShowPermissionModal(false)}
         onPermissionGranted={async () => {
-          void registerPushTokenWithBackend();
+          void enableLocalNotifications();
           await updateSettings({ notificationsEnabled: true });
         }}
         onPermissionDenied={async () => {
-          void unregisterPushTokenFromBackend();
+          void disableLocalNotifications();
           await updateSettings({ notificationsEnabled: false });
         }}
       />

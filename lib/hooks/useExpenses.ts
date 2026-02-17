@@ -1,14 +1,13 @@
-import { useInfiniteQuery, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { expenseService } from '../services/expenseService';
 import { petService } from '../services/petService';
 import type { CreateExpenseInput, Expense, ExpenseStats, MonthlyExpense, Pet, YearlyExpense, UpdateExpenseInput } from '../types';
-import { CACHE_TIMES } from '../config/queryConfig';
+import { CACHE_TIMES } from '../config/cacheTimes';
 import { ENV } from '../config/env';
 import { useCreateResource, useDeleteResource, useUpdateResource } from './useCrud';
-import { userBudgetKeys } from './useUserBudget';
 import { useResource } from './core/useResource';
 import { useResources } from './core/useResources';
 import { useConditionalQuery } from './core/useConditionalQuery';
+import { useLocalInfiniteQuery, useLocalMutation, useLocalQuery } from './core/useLocalAsync';
 import { useAuthQueryEnabled } from './useAuthQueryEnabled';
 import { expenseKeys } from './queryKeys';
 
@@ -48,8 +47,10 @@ interface PeriodParams {
 export function useExpenses(petId?: string, filters: Omit<ExpenseFilters, 'petId'> = {}) {
   const { enabled } = useAuthQueryEnabled();
 
-  return useQuery({
-    queryKey: expenseKeys.list({ petId, ...filters }),
+  return useLocalQuery<{ expenses: Expense[]; total: number }>({
+    deps: [JSON.stringify(expenseKeys.list({ petId, ...filters }))],
+    defaultValue: { expenses: [], total: 0 },
+    enabled,
     queryFn: async () => {
       if (!petId) {
         // If no petId, fetch all pets and combine their expenses
@@ -93,9 +94,6 @@ export function useExpenses(petId?: string, filters: Omit<ExpenseFilters, 'petId
         return result.data || { expenses: [], total: 0 };
       }
     },
-    staleTime: CACHE_TIMES.SHORT,
-    placeholderData: (previousData) => previousData ?? { expenses: [], total: 0 }, // Keep previous page data for pagination
-    enabled,
   });
 }
 
@@ -117,8 +115,7 @@ export function useInfiniteExpenses(petId: string | undefined, filters?: Omit<Ex
   const defaultLimit = ENV.DEFAULT_LIMIT || 20;
   const { enabled } = useAuthQueryEnabled();
 
-  return useInfiniteQuery({
-    queryKey: expenseKeys.infinite(petId, filters),
+  return useLocalInfiniteQuery<Expense[], number>({
     queryFn: async ({ pageParam = 1 }) => {
       if (!petId) {
         return [];
@@ -148,9 +145,8 @@ export function useInfiniteExpenses(petId: string | undefined, filters?: Omit<Ex
       }
       return (lastPageParam as number) + 1;
     },
-    staleTime: CACHE_TIMES.MEDIUM,
-    gcTime: CACHE_TIMES.LONG,
     enabled: enabled && !!petId,
+    deps: [JSON.stringify(expenseKeys.infinite(petId, filters))],
   });
 }
 
@@ -226,82 +222,39 @@ export function useExpensesByDateRange(params: {
 
 // Mutation hook for creating an expense
 export function useCreateExpense() {
-  const queryClient = useQueryClient();
-
   return useCreateResource<Expense, CreateExpenseInput>(
     (data) => expenseService.createExpense(data).then(res => res.data!),
     {
       listQueryKey: expenseKeys.all, // Ideally should be more specific but existing code invalidated 'all'
-      onSuccess: (data) => {
-        queryClient.invalidateQueries({ queryKey: expenseKeys.byPet(data.petId) });
-        queryClient.invalidateQueries({ 
-          predicate: (query) => 
-            query.queryKey[0] === 'expenses' && 
-            query.queryKey[1] === 'infinite' &&
-            query.queryKey[2] === data.petId
-        });
-        queryClient.invalidateQueries({ queryKey: userBudgetKeys.status() });
-        queryClient.invalidateQueries({ queryKey: userBudgetKeys.summary() });
-      },
-      onSettled: () => {
-        queryClient.invalidateQueries({ queryKey: expenseKeys.all });
-      }
     }
   );
 }
 
 // Mutation hook for updating an expense
 export function useUpdateExpense() {
-  const queryClient = useQueryClient();
-
   return useUpdateResource<Expense, UpdateExpenseInput>(
     ({ _id, data }) => expenseService.updateExpense(_id, data).then(res => res.data!),
     {
       listQueryKey: expenseKeys.all,
       detailQueryKey: expenseKeys.detail,
-      onSuccess: (data) => {
-        queryClient.invalidateQueries({ queryKey: expenseKeys.byPet(data.petId) });
-        queryClient.invalidateQueries({ 
-          predicate: (query) => 
-            query.queryKey[0] === 'expenses' && 
-            query.queryKey[1] === 'infinite' &&
-            query.queryKey[2] === data.petId
-        });
-        queryClient.invalidateQueries({ queryKey: userBudgetKeys.status() });
-        queryClient.invalidateQueries({ queryKey: userBudgetKeys.summary() });
-      },
-      onSettled: (data) => {
-        queryClient.invalidateQueries({ queryKey: expenseKeys.all });
-        if (data) {
-             queryClient.invalidateQueries({ queryKey: expenseKeys.detail(data._id) });
-        }
-      }
     }
   );
 }
 
 // Mutation hook for deleting an expense
 export function useDeleteExpense() {
-  const queryClient = useQueryClient();
-
   return useDeleteResource<Expense>(
     (id) => expenseService.deleteExpense(id).then(res => res.data), // Assuming delete returns the ID or void
     {
       listQueryKey: expenseKeys.all,
       detailQueryKey: expenseKeys.detail,
-      onSettled: () => {
-        queryClient.invalidateQueries({ queryKey: expenseKeys.all });
-        queryClient.invalidateQueries({ predicate: (query) => query.queryKey[0] === 'expenses' && query.queryKey[1] === 'infinite' });
-        queryClient.invalidateQueries({ queryKey: userBudgetKeys.status() });
-        queryClient.invalidateQueries({ queryKey: userBudgetKeys.summary() });
-      }
     }
   );
 }
 
 // Mutation hook for exporting expenses as CSV
 export function useExportExpensesCSV() {
-  return useMutation({
+  return useLocalMutation({
     mutationFn: async (params?: {
       petId?: string;
       startDate?: string;
@@ -316,12 +269,13 @@ export function useExportExpensesCSV() {
       }
       return result.data!;
     },
+    notifyOnSuccess: false,
   });
 }
 
 // Mutation hook for exporting expenses as PDF
 export function useExportExpensesPDF() {
-  return useMutation({
+  return useLocalMutation({
     mutationFn: async (params?: {
       petId?: string;
       startDate?: string;
@@ -336,12 +290,13 @@ export function useExportExpensesPDF() {
       }
       return result.data.uri;
     },
+    notifyOnSuccess: false,
   });
 }
 
 // Mutation hook for exporting vet summary PDF for a pet
 export function useExportVetSummaryPDF() {
-  return useMutation({
+  return useLocalMutation({
     mutationFn: async (petId: string) => {
       const result = await expenseService.exportVetSummaryPDF(petId);
       if (!result.success || !result.data) {
@@ -352,5 +307,6 @@ export function useExportVetSummaryPDF() {
       }
       return result.data.uri;
     },
+    notifyOnSuccess: false,
   });
 }

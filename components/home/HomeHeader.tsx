@@ -7,11 +7,16 @@ import { Image } from "expo-image";
 
 import { TAB_ROUTES } from "@/constants/routes";
 import { Text } from "@/components/ui";
-import { User } from "@/lib/auth";
 import { useTheme } from "@/lib/theme";
 
+type HomeHeaderUser = {
+  name: string;
+  email: string;
+  image?: string | null;
+};
+
 interface HomeHeaderProps {
-  user: User | null;
+  user: HomeHeaderUser | null;
 }
 
 export const HomeHeader = ({

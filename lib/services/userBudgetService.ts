@@ -1,50 +1,34 @@
-import { api, ApiError, ApiResponse } from '@/lib/api/client';
-import { ENV } from '@/lib/config/env';
+import type { ApiResponse } from '@/lib/contracts/api';
+import { userBudgetRepository } from '@/lib/repositories/userBudgetRepository';
 import type {
+  BudgetAlert,
+  PetBreakdown,
+  SetUserBudgetInput,
   UserBudget,
   UserBudgetStatus,
-  SetUserBudgetInput,
-  PetBreakdown,
-  BudgetAlert,
 } from '@/lib/types';
 
-/**
- * User Budget Service - Manages simplified user budget API operations
- * Implements the new budget simplification roadmap with single budget per user
- */
 export class UserBudgetService {
-  /**
-   * Get current user's budget
-   */
   async getBudget(): Promise<ApiResponse<UserBudget>> {
     try {
-      const response = await api.get<UserBudget>(ENV.ENDPOINTS.BUDGET);
+      const budget = userBudgetRepository.getBudget();
 
-      return {
-        success: true,
-        data: response.data!,
-        message: "serviceResponse.budget.fetchSuccess",
-      };
-    } catch (error) {
-      if (error instanceof ApiError) {
-        if (error.status === 404) {
-          return {
-            success: false,
-            error: {
-              code: 'NOT_FOUND',
-              message: 'serviceResponse.budget.notFound',
-            },
-          };
-        }
+      if (!budget) {
         return {
           success: false,
           error: {
-            code: error.code || 'FETCH_ERROR',
-            message: 'serviceResponse.budget.fetchError',
-            details: { rawMessage: error.message },
+            code: 'NOT_FOUND',
+            message: 'serviceResponse.budget.notFound',
           },
         };
       }
+
+      return {
+        success: true,
+        data: budget,
+        message: 'serviceResponse.budget.fetchSuccess',
+      };
+    } catch {
       return {
         success: false,
         error: {
@@ -55,40 +39,16 @@ export class UserBudgetService {
     }
   }
 
-  /**
-   * Set or update user budget (UPSERT operation)
-   */
   async setBudget(data: SetUserBudgetInput): Promise<ApiResponse<UserBudget>> {
     try {
-      // Clean up the data before sending to API
-      const cleanedData = {
-        amount: Math.max(0, data.amount), // Ensure non-negative amount
-        currency: data.currency,
-        alertThreshold: data.alertThreshold ?? 0.8, // Default to 80%
-        isActive: data.isActive ?? true, // Default to active
-      };
-
-      const response = await api.put<UserBudget>(
-        ENV.ENDPOINTS.BUDGET,
-        cleanedData
-      );
+      const budget = userBudgetRepository.setBudget(data);
 
       return {
         success: true,
-        data: response.data!,
-        message: "serviceResponse.budget.updateSuccess",
+        data: budget,
+        message: 'serviceResponse.budget.updateSuccess',
       };
-    } catch (error) {
-      if (error instanceof ApiError) {
-        return {
-          success: false,
-          error: {
-            code: error.code || 'SET_ERROR',
-            message: 'serviceResponse.budget.setError',
-            details: { rawMessage: error.message },
-          },
-        };
-      }
+    } catch {
       return {
         success: false,
         error: {
@@ -99,37 +59,25 @@ export class UserBudgetService {
     }
   }
 
-  /**
-   * Remove user's budget
-   */
   async deleteBudget(): Promise<ApiResponse<void>> {
     try {
-      await api.delete(ENV.ENDPOINTS.BUDGET);
+      const deleted = userBudgetRepository.deleteBudget();
 
-      return {
-        success: true,
-        message: "serviceResponse.budget.deleteSuccess",
-      };
-    } catch (error) {
-      if (error instanceof ApiError) {
-        if (error.status === 404) {
-          return {
-            success: false,
-            error: {
-              code: 'NOT_FOUND',
-              message: 'serviceResponse.budget.notFoundDelete',
-            },
-          };
-        }
+      if (!deleted) {
         return {
           success: false,
           error: {
-            code: error.code || 'DELETE_ERROR',
-            message: 'serviceResponse.budget.deleteError',
-            details: { rawMessage: error.message },
+            code: 'NOT_FOUND',
+            message: 'serviceResponse.budget.notFoundDelete',
           },
         };
       }
+
+      return {
+        success: true,
+        message: 'serviceResponse.budget.deleteSuccess',
+      };
+    } catch {
       return {
         success: false,
         error: {
@@ -140,40 +88,26 @@ export class UserBudgetService {
     }
   }
 
-  /**
-   * Get budget status with current spending and pet breakdown
-   */
   async getBudgetStatus(): Promise<ApiResponse<UserBudgetStatus>> {
     try {
-      const response = await api.get<UserBudgetStatus>(
-        ENV.ENDPOINTS.BUDGET_STATUS
-      );
+      const status = userBudgetRepository.getBudgetStatus();
 
-      return {
-        success: true,
-        data: response.data!,
-        message: "serviceResponse.budget.fetchStatusSuccess",
-      };
-    } catch (error) {
-      if (error instanceof ApiError) {
-        if (error.status === 404) {
-          return {
-            success: false,
-            error: {
-              code: 'NOT_FOUND',
-              message: 'serviceResponse.budget.notFoundStatus',
-            },
-          };
-        }
+      if (!status) {
         return {
           success: false,
           error: {
-            code: error.code || 'FETCH_STATUS_ERROR',
-            message: 'serviceResponse.budget.fetchStatusError',
-            details: { rawMessage: error.message },
+            code: 'NOT_FOUND',
+            message: 'serviceResponse.budget.notFoundStatus',
           },
         };
       }
+
+      return {
+        success: true,
+        data: status,
+        message: 'serviceResponse.budget.fetchStatusSuccess',
+      };
+    } catch {
       return {
         success: false,
         error: {
@@ -184,40 +118,26 @@ export class UserBudgetService {
     }
   }
 
-  /**
-   * Check if budget alerts should be triggered
-   */
-  async checkBudgetAlerts(): Promise<
-    ApiResponse<BudgetAlert>
-  > {
+  async checkBudgetAlerts(): Promise<ApiResponse<BudgetAlert>> {
     try {
-      const response = await api.get<BudgetAlert>(ENV.ENDPOINTS.BUDGET_ALERTS);
+      const alert = userBudgetRepository.checkBudgetAlerts();
 
-      return {
-        success: true,
-        data: response.data!,
-        message: "serviceResponse.budget.checkAlertsSuccess",
-      };
-    } catch (error) {
-      if (error instanceof ApiError) {
-        if (error.status === 404) {
-          return {
-            success: false,
-            error: {
-              code: 'NOT_FOUND',
-              message: 'serviceResponse.budget.notFoundAlerts',
-            },
-          };
-        }
+      if (!alert) {
         return {
           success: false,
           error: {
-            code: error.code || 'CHECK_ALERTS_ERROR',
-            message: 'serviceResponse.budget.checkAlertsError',
-            details: { rawMessage: error.message },
+            code: 'NOT_FOUND',
+            message: 'serviceResponse.budget.notFoundAlerts',
           },
         };
       }
+
+      return {
+        success: true,
+        data: alert,
+        message: 'serviceResponse.budget.checkAlertsSuccess',
+      };
+    } catch {
       return {
         success: false,
         error: {
@@ -233,28 +153,14 @@ export class UserBudgetService {
     percentage: number;
   }): Promise<ApiResponse<{ acknowledged: boolean; periodKey?: string }>> {
     try {
-      const response = await api.post<{ acknowledged: boolean; periodKey?: string }>(
-        ENV.ENDPOINTS.BUDGET_ALERTS_ACK,
-        payload
-      );
+      const result = userBudgetRepository.acknowledgeBudgetAlert(payload);
 
       return {
         success: true,
-        data: response.data!,
+        data: result,
         message: 'serviceResponse.budget.ackAlertsSuccess',
       };
-    } catch (error) {
-      if (error instanceof ApiError) {
-        return {
-          success: false,
-          error: {
-            code: error.code || 'ACK_ALERTS_ERROR',
-            message: 'serviceResponse.budget.ackAlertsError',
-            details: { rawMessage: error.message },
-          },
-        };
-      }
-
+    } catch {
       return {
         success: false,
         error: {
@@ -265,18 +171,14 @@ export class UserBudgetService {
     }
   }
 
-  /**
-   * Get pet spending breakdown for the current budget period
-   * This is a helper method that extracts pet breakdown from budget status
-   */
   async getPetSpendingBreakdown(): Promise<ApiResponse<PetBreakdown[]>> {
     try {
-      const statusResponse = await this.getBudgetStatus();
+      const status = userBudgetRepository.getBudgetStatus();
 
-      if (!statusResponse.success || !statusResponse.data) {
+      if (!status) {
         return {
           success: false,
-          error: statusResponse.error || {
+          error: {
             code: 'FETCH_BREAKDOWN_ERROR',
             message: 'serviceResponse.budget.fetchBreakdownError',
           },
@@ -285,8 +187,8 @@ export class UserBudgetService {
 
       return {
         success: true,
-        data: statusResponse.data.petBreakdown,
-        message: "serviceResponse.budget.fetchBreakdownSuccess",
+        data: status.petBreakdown,
+        message: 'serviceResponse.budget.fetchBreakdownSuccess',
       };
     } catch {
       return {
@@ -299,30 +201,14 @@ export class UserBudgetService {
     }
   }
 
-  /**
-   * Check if user has an active budget
-   * Helper method to quickly check budget existence and active status
-   */
   async hasActiveBudget(): Promise<ApiResponse<boolean>> {
     try {
-      const budgetResponse = await this.getBudget();
-
-      if (!budgetResponse.success) {
-        return {
-          success: true,
-          data: false,
-          message: "serviceResponse.budget.hasActiveBudgetFalse",
-        };
-      }
-
-      const hasBudget = !!(budgetResponse.data && budgetResponse.data.isActive);
-
       return {
         success: true,
-        data: hasBudget,
-        message: hasBudget
-          ? "serviceResponse.budget.hasActiveBudgetTrue"
-          : "serviceResponse.budget.hasActiveBudgetFalse",
+        data: userBudgetRepository.hasActiveBudget(),
+        message: userBudgetRepository.hasActiveBudget()
+          ? 'serviceResponse.budget.hasActiveBudgetTrue'
+          : 'serviceResponse.budget.hasActiveBudgetFalse',
       };
     } catch {
       return {
@@ -335,10 +221,6 @@ export class UserBudgetService {
     }
   }
 
-  /**
-   * Get budget summary with key metrics
-   * Combines budget info and status for a comprehensive overview
-   */
   async getBudgetSummary(): Promise<
     ApiResponse<{
       budget: UserBudget | null;
@@ -348,27 +230,10 @@ export class UserBudgetService {
     }>
   > {
     try {
-      // Get budget info
-      const budgetResponse = await this.getBudget();
-      const budget = budgetResponse.success
-        ? budgetResponse.data || null
-        : null;
-
-      // Get status if budget exists
-      let status: UserBudgetStatus | null = null;
-      if (budget) {
-        const statusResponse = await this.getBudgetStatus();
-        status = statusResponse.success ? statusResponse.data || null : null;
-      }
-
-      // Get alerts if budget exists
-      let alerts: BudgetAlert | null = null;
-      if (budget) {
-        const alertsResponse = await this.checkBudgetAlerts();
-        alerts = alertsResponse.success ? alertsResponse.data || null : null;
-      }
-
-      const hasActiveBudget = !!(budget && budget.isActive);
+      const budget = userBudgetRepository.getBudget();
+      const status = userBudgetRepository.getBudgetStatus();
+      const alerts = userBudgetRepository.checkBudgetAlerts();
+      const hasActiveBudget = userBudgetRepository.hasActiveBudget();
 
       return {
         success: true,
@@ -378,7 +243,7 @@ export class UserBudgetService {
           hasActiveBudget,
           alerts,
         },
-        message: "serviceResponse.budget.fetchSummarySuccess",
+        message: 'serviceResponse.budget.fetchSummarySuccess',
       };
     } catch {
       return {
@@ -392,5 +257,4 @@ export class UserBudgetService {
   }
 }
 
-// Export a singleton instance
 export const userBudgetService = new UserBudgetService();

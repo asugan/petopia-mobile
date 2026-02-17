@@ -1,11 +1,10 @@
-import { authClient } from '@/lib/auth/client';
+const LOCAL_USER_ID = 'local-user';
 
 /**
- * Centralized hook for auth-aware query enabled state
+ * Centralized hook for query enabled state
  *
  * This hook provides a consistent pattern for enabling/disabling queries
- * based on authentication state. Use this in all server data hooks to prevent
- * unauthorized API requests when the user is not logged in.
+ * based on local session state.
  *
  * Usage:
  * ```typescript
@@ -21,14 +20,9 @@ import { authClient } from '@/lib/auth/client';
  * ```
  *
  * Returns:
- * - enabled: true only when user is authenticated and session is loaded
- * - userId: current user ID or undefined
+ * - enabled: always true for local-first mode
+ * - userId: fixed local user ID
  */
 export function useAuthQueryEnabled() {
-  const { data: session, isPending } = authClient.useSession();
-
-  const enabled = !isPending && !!session?.user?.id;
-  const userId = session?.user?.id;
-
-  return { enabled, userId };
+  return { enabled: true, userId: LOCAL_USER_ID };
 }

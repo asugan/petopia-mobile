@@ -9,12 +9,6 @@ export const ONBOARDING_ROUTES = {
   completed: '/(onboarding)/completed' as const,
 };
 
-// Auth routes
-export const AUTH_ROUTES = {
-  login: '/(auth)/login' as const,
-  register: '/(auth)/register' as const,
-};
-
 // Tab routes
 export const TAB_ROUTES = {
   home: '/(tabs)' as const,
@@ -52,7 +46,6 @@ export const ROOT_ROUTES = {
 // Helper: All routes export
 export const ROUTES = {
   onboarding: ONBOARDING_ROUTES,
-  auth: AUTH_ROUTES,
   tabs: TAB_ROUTES,
   feature: FEATURE_ROUTES,
   subscription: SUBSCRIPTION_ROUTES,

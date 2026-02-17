@@ -180,6 +180,7 @@ export default function EventDetailScreen() {
               id: event.recurrenceRuleId,
               date: exceptionDate,
             });
+            await cancelRemindersForEvent(event._id);
             showToast({ type: 'success', title: t('events.eventDeleted') });
             router.back();
           }

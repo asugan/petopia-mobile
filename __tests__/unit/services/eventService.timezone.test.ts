@@ -1,53 +1,43 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-const { mockGet } = vi.hoisted(() => ({
-  mockGet: vi.fn(),
+const { mockGetTodayEvents, mockGetUpcomingEvents } = vi.hoisted(() => ({
+  mockGetTodayEvents: vi.fn(),
+  mockGetUpcomingEvents: vi.fn(),
 }));
 
-vi.mock('@/lib/api/client', () => ({
-  api: {
-    get: mockGet,
-    post: vi.fn(),
-    put: vi.fn(),
-    delete: vi.fn(),
-  },
-  ApiError: class ApiError extends Error {
-    code?: string;
-    status?: number;
+vi.mock('@/lib/repositories/eventRepository', () => ({
+  eventRepository: {
+    getTodayEvents: mockGetTodayEvents,
+    getUpcomingEvents: mockGetUpcomingEvents,
   },
 }));
 
 import { eventService } from '@/lib/services/eventService';
 
-describe('eventService timezone query params', () => {
+describe('eventService timezone forwarding', () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    mockGet.mockResolvedValue({ data: [] });
+    mockGetTodayEvents.mockReturnValue([]);
+    mockGetUpcomingEvents.mockReturnValue([]);
   });
 
-  it('sends timezone query for today endpoint', async () => {
+  it('forwards timezone for today events', async () => {
     await eventService.getTodayEvents('Europe/Istanbul');
 
-    expect(mockGet).toHaveBeenCalledWith('/api/events/today?timezone=Europe%2FIstanbul');
+    expect(mockGetTodayEvents).toHaveBeenCalledWith('Europe/Istanbul');
   });
 
-  it('sends timezone query for upcoming endpoint', async () => {
+  it('forwards timezone for upcoming events', async () => {
     await eventService.getUpcomingEvents('America/New_York');
 
-    expect(mockGet).toHaveBeenCalledWith('/api/events/upcoming?timezone=America%2FNew_York');
+    expect(mockGetUpcomingEvents).toHaveBeenCalledWith('America/New_York');
   });
 
-  it('keeps old endpoint format when timezone is absent', async () => {
+  it('calls repositories even without timezone', async () => {
     await eventService.getTodayEvents();
     await eventService.getUpcomingEvents();
 
-    expect(mockGet).toHaveBeenNthCalledWith(1, '/api/events/today');
-    expect(mockGet).toHaveBeenNthCalledWith(2, '/api/events/upcoming');
-  });
-
-  it('keeps old endpoint format when timezone is invalid', async () => {
-    await eventService.getTodayEvents('Invalid/Timezone');
-
-    expect(mockGet).toHaveBeenCalledWith('/api/events/today');
+    expect(mockGetTodayEvents).toHaveBeenCalledWith(undefined);
+    expect(mockGetUpcomingEvents).toHaveBeenCalledWith(undefined);
   });
 });

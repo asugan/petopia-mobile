@@ -6,12 +6,8 @@ import { StatusBar } from 'expo-status-bar';
 import * as Notifications from 'expo-notifications';
 import * as SplashScreen from 'expo-splash-screen';
 import { Stack, useRouter, useSegments } from "expo-router";
-import { QueryClient, QueryClientProvider, focusManager } from '@tanstack/react-query';
 import Toast from 'react-native-toast-message';
 import { ApiErrorBoundary } from "@/lib/components/ApiErrorBoundary";
-import { MOBILE_QUERY_CONFIG } from "@/lib/config/queryConfig";
-import { useAuth } from '@/lib/auth';
-import { setOnUnauthorized, setOnProRequired } from '@/lib/api/client';
 import { notificationService } from '@/lib/services/notificationService';
 import { useOnlineManager } from "@/lib/hooks/useOnlineManager";
 import { useSubscription } from '@/lib/hooks/useSubscription';
@@ -31,46 +27,26 @@ import { useBudgetAlertNotifications } from '@/lib/hooks/useUserBudget';
 import { createToastConfig } from '@/lib/toast/toastConfig';
 import { SUBSCRIPTION_ROUTES, TAB_ROUTES } from '@/constants/routes';
 import { LAYOUT } from '@/constants';
+import { initDatabase } from '@/lib/db/init';
 import "../lib/i18n";
 import { AnimatedSplashScreen } from '@/components/SplashScreen/AnimatedSplashScreen';
 
-// Enhanced QueryClient with better configuration
-const queryClient = new QueryClient(MOBILE_QUERY_CONFIG);
+initDatabase();
 
 // Custom hook for app state management
 function onAppStateChange(status: AppStateStatus) {
-  if (status === 'active') {
-    focusManager.setFocused(true);
-  } else {
-    focusManager.setFocused(false);
-  }
-}
-
-// Enhanced App Providers with better state management
-function SubscriptionGate({ children }: { children: React.ReactNode }) {
-  const { presentPaywall } = useSubscription();
-
-  useEffect(() => {
-    setOnProRequired(() => {
-      queryClient.invalidateQueries({ predicate: (query) => query.queryKey[0] === 'subscription' });
-      void presentPaywall(undefined, { screen: 'system', source: 'api_pro_required' });
-    });
-  }, [presentPaywall]);
-
-  return <>{children}</>;
+  void status;
 }
 
 function DowngradeGate({ children }: { children: React.ReactNode }) {
   const router = useRouter();
   const segments = useSegments();
-  const { isAuthenticated } = useAuth();
   const { isProUser, isLoading: isSubscriptionLoading } = useSubscription();
   const { data: downgradeStatus, isLoading: isDowngradeLoading } = useDowngradeStatus();
   const hasRedirectedRef = useRef(false);
 
   useEffect(() => {
-    // Only check downgrade when user is authenticated, not pro, and data is loaded
-    if (!isAuthenticated || isSubscriptionLoading || isDowngradeLoading) {
+    if (isSubscriptionLoading || isDowngradeLoading) {
       return;
     }
 
@@ -90,20 +66,12 @@ function DowngradeGate({ children }: { children: React.ReactNode }) {
       hasRedirectedRef.current = false;
       router.replace(TAB_ROUTES.home);
     }
-  }, [isAuthenticated, isProUser, isSubscriptionLoading, isDowngradeLoading, downgradeStatus, segments, router]);
+  }, [isProUser, isSubscriptionLoading, isDowngradeLoading, downgradeStatus, segments, router]);
 
   return <>{children}</>;
 }
 
 function AppProviders({ children }: { children: React.ReactNode }) {
-  useEffect(() => {
-    setOnUnauthorized(() => {
-      queryClient.clear();
-    });
-  }, []);
-
-
-
   useEffect(() => {
     const receivedSubscription = Notifications.addNotificationReceivedListener(
       (notification) => notificationService.handleNotificationReceived(notification)
@@ -119,30 +87,26 @@ function AppProviders({ children }: { children: React.ReactNode }) {
   }, []);
 
   return (
-    <QueryClientProvider client={queryClient}>
-      <OnlineManagerProvider>
-        <NetworkStatus>
-          <PostHogProviderWrapper>
-            <LanguageProvider>
-              <ApiErrorBoundary>
-                <AuthProvider>
-                  <SubscriptionProvider>
-                    <SubscriptionGate>
-                      <DowngradeGate>{children}</DowngradeGate>
-                    </SubscriptionGate>
-                  </SubscriptionProvider>
-                </AuthProvider>
-              </ApiErrorBoundary>
-            </LanguageProvider>
-          </PostHogProviderWrapper>
-        </NetworkStatus>
-      </OnlineManagerProvider>
-    </QueryClientProvider>
+    <OnlineManagerProvider>
+      <NetworkStatus>
+        <PostHogProviderWrapper>
+          <LanguageProvider>
+            <ApiErrorBoundary>
+              <AuthProvider>
+                <SubscriptionProvider>
+                  <DowngradeGate>{children}</DowngradeGate>
+                </SubscriptionProvider>
+              </AuthProvider>
+            </ApiErrorBoundary>
+          </LanguageProvider>
+        </PostHogProviderWrapper>
+      </NetworkStatus>
+    </OnlineManagerProvider>
   );
 }
 
 
-// Separate component for online management to ensure QueryClient context is available
+// Separate component for online state management
 function OnlineManagerProvider({ children }: { children: React.ReactNode }) {
   useOnlineManager();
 
@@ -156,12 +120,10 @@ function OnlineManagerProvider({ children }: { children: React.ReactNode }) {
 
 function RootLayoutContent() {
   const router = useRouter();
-  const { isAuthenticated } = useAuth();
   const {
     initialize,
     theme,
     setAuthenticated,
-    clear,
     settings,
     updateSettings,
     updateBaseCurrency,
@@ -184,19 +146,15 @@ function RootLayoutContent() {
   const preferenceSyncInFlightRef = useRef(false);
 
   useEffect(() => {
-    setAuthenticated(isAuthenticated);
-  }, [isAuthenticated, setAuthenticated]);
+    setAuthenticated(true);
+  }, [setAuthenticated]);
 
   useEffect(() => {
-    if (isAuthenticated) {
-      initialize();
-    } else {
-      clear();
-    }
-  }, [isAuthenticated, initialize, clear]);
+    initialize();
+  }, [initialize]);
 
   useEffect(() => {
-    if (!isAuthenticated || !hasSeenOnboarding || !settings) {
+    if (!hasSeenOnboarding || !settings) {
       return;
     }
 
@@ -244,7 +202,6 @@ function RootLayoutContent() {
 
     void syncPreferences();
   }, [
-    isAuthenticated,
     hasSeenOnboarding,
     settings,
     preferredLanguage,
@@ -276,10 +233,6 @@ function RootLayoutContent() {
   }, [router]);
 
   useEffect(() => {
-    if (!isAuthenticated) {
-      return;
-    }
-
     const rescheduleUpcomingReminders = async () => {
       const timezoneForSignature = settings?.timezone ?? 'unknown';
 
@@ -324,12 +277,6 @@ function RootLayoutContent() {
       }
       rescheduleSignatureRef.current = nextSignature;
 
-      const deliveryChannel = await notificationService.getNotificationDeliveryChannel();
-      if (deliveryChannel === 'backend') {
-        await notificationService.cancelEventAndFeedingNotifications();
-        return;
-      }
-
       for (const event of upcomingEvents) {
         if (event.reminder) {
           await scheduleChainForEvent(event, event.reminderPreset);
@@ -345,7 +292,6 @@ function RootLayoutContent() {
 
     void rescheduleUpcomingReminders();
   }, [
-    isAuthenticated,
     upcomingEvents,
     activeFeedingSchedules,
     scheduleChainForEvent,
@@ -366,7 +312,6 @@ function RootLayoutContent() {
       >
         <Stack.Screen name="index" options={{ headerShown: false }} />
         <Stack.Screen name="(onboarding)" options={{ headerShown: false }} />
-        <Stack.Screen name="(auth)" options={{ headerShown: false }} />
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
         <Stack.Screen
           name="subscription"

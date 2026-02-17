@@ -1,16 +1,17 @@
-import { useQuery } from '@tanstack/react-query';
 import { usePets } from './usePets';
 import { expenseService } from '../services/expenseService';
 import { Expense } from '../types';
 import { useAuthQueryEnabled } from './useAuthQueryEnabled';
+import { useLocalQuery } from './core/useLocalAsync';
 
 export const useRecentExpenses = () => {
   const { enabled } = useAuthQueryEnabled();
   const { data: pets } = usePets();
 
   // Fetch expenses for all pets at once
-  const { data, isLoading, isError } = useQuery({
-    queryKey: ['expenses', 'all-pets', { limit: 3 }],
+  const { data, isLoading, isError, error } = useLocalQuery<Expense[]>({
+    defaultValue: [],
+    deps: [pets?.map((pet) => pet._id).join('|') ?? ''],
     queryFn: async () => {
       if (!pets || pets.length === 0) return [];
 
@@ -40,6 +41,6 @@ export const useRecentExpenses = () => {
     data: data || [],
     isLoading,
     isError,
-    error: null
+    error,
   };
 };

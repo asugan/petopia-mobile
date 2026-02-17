@@ -1,5 +1,5 @@
-import { useQuery, UseQueryResult } from '@tanstack/react-query';
 import { ResourcesOptions } from './types';
+import { LocalQueryResult, useLocalQuery } from './useLocalAsync';
 
 /**
  * Generic hook for fetching a list/collection of resources
@@ -58,22 +58,22 @@ import { ResourcesOptions } from './types';
  */
 export function useResources<TData, TError = Error>(
   options: ResourcesOptions<TData, TError>
-): UseQueryResult<TData[], TError> {
+): LocalQueryResult<TData[]> {
   const {
     queryKey,
     queryFn,
-    staleTime,
-    gcTime,
     refetchInterval,
     enabled = true,
     errorMessage,
     defaultValue = [],
     select,
-    queryOptions,
   } = options;
 
-  return useQuery<TData[], TError>({
-    queryKey,
+  return useLocalQuery<TData[]>({
+    deps: [JSON.stringify(queryKey)],
+    refetchInterval,
+    enabled,
+    defaultValue,
     queryFn: async () => {
       const result = await queryFn();
 
@@ -91,11 +91,6 @@ export function useResources<TData, TError = Error>(
       // Apply client-side transformation if provided
       return select ? select(data) : data;
     },
-    staleTime,
-    gcTime,
-    refetchInterval,
-    enabled,
-    ...queryOptions,
   });
 }
 
@@ -118,20 +113,21 @@ export function useResources<TData, TError = Error>(
  */
 export function useResourcesSafe<TData, TError = Error>(
   options: Omit<ResourcesOptions<TData, TError>, 'queryOptions'>
-): UseQueryResult<TData[], TError> {
+): LocalQueryResult<TData[]> {
   const {
     queryKey,
     queryFn,
-    staleTime,
-    gcTime,
     refetchInterval,
     enabled = true,
     defaultValue = [],
     select,
   } = options;
 
-  return useQuery<TData[], TError>({
-    queryKey,
+  return useLocalQuery<TData[]>({
+    deps: [JSON.stringify(queryKey)],
+    refetchInterval,
+    enabled,
+    defaultValue,
     queryFn: async () => {
       try {
         const result = await queryFn();
@@ -151,9 +147,5 @@ export function useResourcesSafe<TData, TError = Error>(
         return defaultValue;
       }
     },
-    staleTime,
-    gcTime,
-    refetchInterval,
-    enabled,
   });
 }

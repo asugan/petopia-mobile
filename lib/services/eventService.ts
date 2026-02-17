@@ -1,350 +1,219 @@
-import { api, ApiError, ApiResponse } from "../api/client";
-import { ENV } from "../config/env";
-import type { Event, CreateEventInput, UpdateEventInput } from "../types";
-import { normalizeTimezone } from "@/lib/utils/timezone";
+import type { ApiResponse } from '@/lib/contracts/api';
+import { eventRepository } from '@/lib/repositories/eventRepository';
+import type { CreateEventInput, Event, UpdateEventInput } from '@/lib/types';
 
-/**
- * Event Service - Tüm event API operasyonlarını yönetir
- */
 export class EventService {
-  private withTimezone(endpoint: string, timezone?: string): string {
-    const safeTimezone = normalizeTimezone(timezone);
-    if (!safeTimezone) {
-      return endpoint;
-    }
-
-    return `${endpoint}?timezone=${encodeURIComponent(safeTimezone)}`;
-  }
-
-  /**
-   * Yeni event oluşturur
-   */
   async createEvent(data: CreateEventInput): Promise<ApiResponse<Event>> {
     try {
-      const response = await api.post<Event>(ENV.ENDPOINTS.EVENTS, data);
+      const event = eventRepository.createEvent(data);
 
       return {
         success: true,
-        data: response.data!,
-        message: "serviceResponse.event.createSuccess",
+        data: event,
+        message: 'serviceResponse.event.createSuccess',
       };
-    } catch (error) {
-      if (error instanceof ApiError) {
-        return {
-          success: false,
-          error: {
-            code: "FETCH_ERROR",
-            message: "serviceResponse.event.fetchError",
-          },
-        };
-      }
+    } catch {
       return {
         success: false,
         error: {
-          code: "CREATE_ERROR",
-          message: "serviceResponse.event.createError",
+          code: 'CREATE_ERROR',
+          message: 'serviceResponse.event.createError',
         },
       };
     }
   }
 
-  /**
-   * Tüm eventleri listeler
-   */
   async getEvents(): Promise<ApiResponse<Event[]>> {
     try {
-      const response = await api.get<Event[]>(ENV.ENDPOINTS.EVENTS);
+      const events = eventRepository.getEvents();
 
       return {
         success: true,
-        data: response.data || [],
-        message: "event.fetchSuccess",
+        data: events,
+        message: 'event.fetchSuccess',
       };
-    } catch (error) {
-      if (error instanceof ApiError) {
-        return {
-          success: false,
-          error: {
-            code: error.code || "FETCH_ERROR",
-            message: error.message,
-          },
-        };
-      }
+    } catch {
       return {
         success: false,
         error: {
-          code: "FETCH_ERROR",
-          message: "event.fetchError",
+          code: 'FETCH_ERROR',
+          message: 'event.fetchError',
         },
       };
     }
   }
 
-  /**
-   * Pet ID'ye göre eventleri getirir
-   */
   async getEventsByPetId(petId: string): Promise<ApiResponse<Event[]>> {
     try {
-      const response = await api.get<Event[]>(
-        ENV.ENDPOINTS.EVENTS_BY_PET(petId),
-      );
+      const events = eventRepository.getEventsByPetId(petId);
 
       return {
         success: true,
-        data: response.data || [],
-        message: "event.fetchSuccess",
+        data: events,
+        message: 'event.fetchSuccess',
       };
-    } catch (error) {
-      if (error instanceof ApiError) {
-        return {
-          success: false,
-          error: {
-            code: error.code || "FETCH_ERROR",
-            message: error.message,
-          },
-        };
-      }
+    } catch {
       return {
         success: false,
         error: {
-          code: "FETCH_ERROR",
-          message: "event.fetchError",
+          code: 'FETCH_ERROR',
+          message: 'event.fetchError',
         },
       };
     }
   }
 
-  /**
-   * ID'ye göre tek bir event getirir
-   */
   async getEventById(id: string): Promise<ApiResponse<Event>> {
     try {
-      const response = await api.get<Event>(ENV.ENDPOINTS.EVENT_BY_ID(id));
+      const event = eventRepository.getEventById(id);
 
-      return {
-        success: true,
-        data: response.data!,
-        message: "serviceResponse.event.fetchOneSuccess",
-      };
-    } catch (error) {
-      if (error instanceof ApiError) {
-        if (error.status === 404) {
-          return {
-            success: false,
-            error: {
-              code: "NOT_FOUND",
-              message: "serviceResponse.event.notFound",
-            },
-          };
-        }
+      if (!event) {
         return {
           success: false,
           error: {
-            code: error.code || "FETCH_ERROR",
-            message: error.message,
+            code: 'NOT_FOUND',
+            message: 'serviceResponse.event.notFound',
           },
         };
       }
+
+      return {
+        success: true,
+        data: event,
+        message: 'serviceResponse.event.fetchOneSuccess',
+      };
+    } catch {
       return {
         success: false,
         error: {
-          code: "FETCH_ERROR",
-          message: "event.fetchError",
+          code: 'FETCH_ERROR',
+          message: 'event.fetchError',
         },
       };
     }
   }
 
-  /**
-   * Event bilgilerini günceller
-   */
   async updateEvent(
     id: string,
     data: UpdateEventInput,
   ): Promise<ApiResponse<Event>> {
     try {
-      const response = await api.put<Event>(
-        ENV.ENDPOINTS.EVENT_BY_ID(id),
-        data,
-      );
+      const updated = eventRepository.updateEvent(id, data);
 
-      return {
-        success: true,
-        data: response.data!,
-        message: "serviceResponse.event.updateSuccess",
-      };
-    } catch (error) {
-      if (error instanceof ApiError) {
-        if (error.status === 404) {
-          return {
-            success: false,
-            error: {
-              code: "NOT_FOUND",
-              message: "serviceResponse.event.notFoundUpdate",
-            },
-          };
-        }
+      if (!updated) {
         return {
           success: false,
           error: {
-            code: error.code || "UPDATE_ERROR",
-            message: error.message,
+            code: 'NOT_FOUND',
+            message: 'serviceResponse.event.notFoundUpdate',
           },
         };
       }
+
+      return {
+        success: true,
+        data: updated,
+        message: 'serviceResponse.event.updateSuccess',
+      };
+    } catch {
       return {
         success: false,
         error: {
-          code: "UPDATE_ERROR",
-          message: "serviceResponse.event.updateError",
+          code: 'UPDATE_ERROR',
+          message: 'serviceResponse.event.updateError',
         },
       };
     }
   }
 
-  /**
-   * Event siler
-   */
   async deleteEvent(id: string): Promise<ApiResponse<void>> {
     try {
-      await api.delete(ENV.ENDPOINTS.EVENT_BY_ID(id));
+      const deleted = eventRepository.deleteEvent(id);
 
-      return {
-        success: true,
-        message: "serviceResponse.event.deleteSuccess",
-      };
-    } catch (error) {
-      if (error instanceof ApiError) {
-        if (error.status === 404) {
-          return {
-            success: false,
-            error: {
-              code: "NOT_FOUND",
-              message: "serviceResponse.event.notFoundDelete",
-            },
-          };
-        }
+      if (!deleted) {
         return {
           success: false,
           error: {
-            code: error.code || "DELETE_ERROR",
-            message: error.message,
+            code: 'NOT_FOUND',
+            message: 'serviceResponse.event.notFoundDelete',
           },
         };
       }
+
+      return {
+        success: true,
+        message: 'serviceResponse.event.deleteSuccess',
+      };
+    } catch {
       return {
         success: false,
         error: {
-          code: "DELETE_ERROR",
-          message: "serviceResponse.event.deleteError",
+          code: 'DELETE_ERROR',
+          message: 'serviceResponse.event.deleteError',
         },
       };
     }
   }
 
-  /**
-   * Tarihe göre calendar eventlerini getirir
-   */
-  async getEventsByDate(
-    date: string,
-    timezone?: string,
-  ): Promise<ApiResponse<Event[]>> {
+  async getEventsByDate(date: string, timezone?: string): Promise<ApiResponse<Event[]>> {
     try {
-      const endpoint = this.withTimezone(ENV.ENDPOINTS.EVENTS_BY_DATE(date), timezone);
-
-      const response = await api.get<Event[]>(endpoint);
+      const events = eventRepository.getEventsByDate(date, timezone);
 
       return {
         success: true,
-        data: response.data || [],
-        message: "serviceResponse.event.fetchTodaySuccess",
+        data: events,
+        message: 'serviceResponse.event.fetchTodaySuccess',
       };
-    } catch (error) {
-      if (error instanceof ApiError) {
-        return {
-          success: false,
-          error: {
-            code: error.code || "FETCH_ERROR",
-            message: error.message,
-          },
-        };
-      }
+    } catch {
       return {
         success: false,
         error: {
-          code: "FETCH_ERROR",
-          message: "serviceResponse.event.fetchByDateError",
+          code: 'FETCH_ERROR',
+          message: 'serviceResponse.event.fetchByDateError',
         },
       };
     }
   }
 
-  /**
-   * Yaklaşan eventleri getirir
-   */
   async getUpcomingEvents(timezone?: string): Promise<ApiResponse<Event[]>> {
     try {
-      const endpoint = this.withTimezone(ENV.ENDPOINTS.UPCOMING_EVENTS, timezone);
-      const response = await api.get<Event[]>(endpoint);
+      const events = eventRepository.getUpcomingEvents(timezone);
 
       return {
         success: true,
-        data: response.data || [],
-        message: "serviceResponse.event.fetchUpcomingSuccess",
+        data: events,
+        message: 'serviceResponse.event.fetchUpcomingSuccess',
       };
-    } catch (error) {
-      if (error instanceof ApiError) {
-        return {
-          success: false,
-          error: {
-            code: error.code || "FETCH_ERROR",
-            message: error.message,
-          },
-        };
-      }
+    } catch {
       return {
         success: false,
         error: {
-          code: "FETCH_ERROR",
-          message: "serviceResponse.event.fetchUpcomingError",
+          code: 'FETCH_ERROR',
+          message: 'serviceResponse.event.fetchUpcomingError',
         },
       };
     }
   }
 
-  /**
-   * Bugünün eventlerini getirir
-   */
   async getTodayEvents(timezone?: string): Promise<ApiResponse<Event[]>> {
     try {
-      const endpoint = this.withTimezone(ENV.ENDPOINTS.TODAY_EVENTS, timezone);
-      const response = await api.get<Event[]>(endpoint);
+      const events = eventRepository.getTodayEvents(timezone);
 
       return {
         success: true,
-        data: response.data || [],
-        message: "serviceResponse.event.fetchByDateSuccess",
+        data: events,
+        message: 'serviceResponse.event.fetchByDateSuccess',
       };
-    } catch (error) {
-      if (error instanceof ApiError) {
-        return {
-          success: false,
-          error: {
-            code: error.code || "FETCH_ERROR",
-            message: error.message,
-          },
-        };
-      }
+    } catch {
       return {
         success: false,
         error: {
-          code: "FETCH_ERROR",
-          message: "serviceResponse.event.fetchTodayError",
+          code: 'FETCH_ERROR',
+          message: 'serviceResponse.event.fetchTodayError',
         },
       };
     }
   }
 }
 
-// Singleton instance
 export const eventService = new EventService();

@@ -11,7 +11,6 @@ import { Ionicons } from "@expo/vector-icons";
 import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
 import { useRouter } from "expo-router";
 import { useTranslation } from "react-i18next";
-import { useQueryClient } from "@tanstack/react-query";
 import { Button, Card, FAB, SegmentedButtons, Text } from "@/components/ui";
 import { HeaderActions, LargeTitle } from "@/components/LargeTitle";
 import { PetPickerBase } from "@/components/PetPicker";
@@ -33,7 +32,6 @@ import {
   useExportExpensesPDF,
   useExportVetSummaryPDF,
 } from "@/lib/hooks/useExpenses";
-import { expenseKeys } from "@/lib/hooks/queryKeys";
 import {
   useUserBudget,
   useUserBudgetStatus,
@@ -58,7 +56,7 @@ import { showToast } from "@/lib/toast/showToast";
 import { useNotifications } from "@/lib/hooks/useNotifications";
 import { useRequestDeduplication } from "@/lib/hooks/useRequestCancellation";
 import NotificationPermissionPrompt from "@/components/NotificationPermissionPrompt";
-import { registerPushTokenWithBackend } from "@/lib/services/notificationService";
+import { enableLocalNotifications } from "@/lib/services/notificationService";
 import { SUBSCRIPTION_ROUTES } from "@/constants/routes";
 
 type FinanceTabValue = 'budget' | 'expenses';
@@ -72,7 +70,6 @@ export default function FinanceScreen() {
   const TAB_BAR_HEIGHT = LAYOUT.TAB_BAR_HEIGHT + insets.bottom;
   const contentBottomPadding = TAB_BAR_HEIGHT + LAYOUT.FAB_OFFSET;
 
-  const queryClient = useQueryClient();
   const { settings } = useUserSettingsStore();
   const baseCurrency = settings?.baseCurrency || "TRY";
 
@@ -134,6 +131,7 @@ export default function FinanceScreen() {
     data: expensesData = { expenses: [], total: 0 },
     isLoading: regularLoading,
     isFetching: regularFetching,
+    refetch: refetchRegular,
   } = regularQuery;
 
   // Combine loading states
@@ -288,7 +286,7 @@ export default function FinanceScreen() {
       );
 
       if (granted) {
-        void registerPushTokenWithBackend();
+        void enableLocalNotifications();
         await setBudgetMutation.mutateAsync(data);
         setBudgetModalVisible(false);
         setEditingBudget(undefined);
@@ -589,13 +587,7 @@ export default function FinanceScreen() {
                 if (useInfinite) {
                   await refetchInfinite();
                 } else {
-                  const queryKey = expenseKeys.list({
-                    petId: selectedPetId,
-                    page: 1,
-                    limit: ENV.DEFAULT_LIMIT
-                  });
-                  await queryClient.invalidateQueries({ queryKey });
-                  await queryClient.refetchQueries({ queryKey });
+                  await refetchRegular();
                 }
                 setRefreshing(false);
               }}
@@ -776,7 +768,7 @@ export default function FinanceScreen() {
         }}
         onPermissionGranted={async () => {
           if (pendingBudgetData) {
-            void registerPushTokenWithBackend();
+            void enableLocalNotifications();
             await setBudgetMutation.mutateAsync(pendingBudgetData);
             setBudgetModalVisible(false);
             setEditingBudget(undefined);

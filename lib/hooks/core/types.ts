@@ -1,6 +1,7 @@
-import { QueryKey, UseQueryOptions } from '@tanstack/react-query';
-import { ApiResponse } from '@/lib/api/client';
+import type { ApiResponse } from '@/lib/contracts/api';
 import { ApiServiceFn as BaseApiServiceFn } from '@/lib/types';
+
+export type QueryKey = readonly unknown[];
 
 /**
  * Base options for resource queries
@@ -13,7 +14,7 @@ export interface BaseResourceOptions<TData, TError = Error> {
 
   /**
    * How long the data is considered fresh (in milliseconds)
-   * Must be explicitly provided - use CACHE_TIMES constants from queryConfig
+   * Must be explicitly provided - use CACHE_TIMES constants from config/cacheTimes
    */
   staleTime: number;
 
@@ -42,13 +43,9 @@ export interface BaseResourceOptions<TData, TError = Error> {
   errorMessage?: string;
 
   /**
-   * Additional React Query options
-   * Allows passing any other useQuery options
+   * Reserved for future query extensions
    */
-  queryOptions?: Omit<
-    UseQueryOptions<TData, TError>,
-    'queryKey' | 'queryFn' | 'staleTime' | 'gcTime' | 'refetchInterval' | 'enabled'
-  >;
+  queryOptions?: Record<string, unknown>;
 }
 
 /**

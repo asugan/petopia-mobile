@@ -1,111 +1,256 @@
-import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { subscriptionApiService, SubscriptionStatus } from '../services/subscriptionApiService';
-import { CACHE_TIMES } from '../config/queryConfig';
-import { createQueryKeys } from './core/createQueryKeys';
-import { useConditionalQuery } from './core/useConditionalQuery';
-import { useAuthQueryEnabled } from './useAuthQueryEnabled';
+import { useCallback, useEffect, useMemo, useState } from 'react';
+import {
+  subscriptionService,
+  type StartTrialResponse,
+  type SubscriptionStatus,
+} from '../services/subscriptionService';
 
-// Query keys factory
-const baseSubscriptionKeys = createQueryKeys('subscription');
+const LOCAL_USER_ID = 'local-user';
 
 export const subscriptionKeys = {
-  ...baseSubscriptionKeys,
-  status: (userId?: string) => [...baseSubscriptionKeys.all, 'status', userId] as const,
+  all: ['subscription'] as const,
+  status: (userId?: string) => ['subscription', 'status', userId] as const,
 };
 
-export function useSubscriptionStatus() {
-  const { enabled, userId } = useAuthQueryEnabled();
+const DEFAULT_STATUS: SubscriptionStatus = {
+  hasActiveSubscription: false,
+  subscriptionType: null,
+  tier: null,
+  expiresAt: null,
+  daysRemaining: 0,
+  isExpired: false,
+  isCancelled: false,
+  canStartTrial: true,
+  provider: null,
+};
 
-  return useConditionalQuery<SubscriptionStatus>({
-    queryKey: subscriptionKeys.status(userId),
-    queryFn: () => subscriptionApiService.getSubscriptionStatus(),
-    enabled,
-    staleTime: CACHE_TIMES.VERY_SHORT, // 30 seconds
-    gcTime: CACHE_TIMES.LONG,      // 15 minutes
-    defaultValue: {
-      hasActiveSubscription: false,
-      subscriptionType: null,
-      tier: null,
-      expiresAt: null,
-      daysRemaining: 0,
-      isExpired: false,
-      isCancelled: false,
-      canStartTrial: true,
-      provider: null,
-    },
-    errorMessage: 'Abonelik durumu yüklenemedi',
+type SubscriptionStatusStore = {
+  data: SubscriptionStatus;
+  isLoading: boolean;
+  error: Error | null;
+  lastFetchedAt: number;
+};
+
+const STATUS_STALE_MS = 30_000;
+
+let subscriptionStatusStore: SubscriptionStatusStore = {
+  data: DEFAULT_STATUS,
+  isLoading: false,
+  error: null,
+  lastFetchedAt: 0,
+};
+
+const subscriptionStatusListeners = new Set<() => void>();
+
+const emitSubscriptionStatus = () => {
+  subscriptionStatusListeners.forEach((listener) => listener());
+};
+
+const setSubscriptionStatusStore = (next: Partial<SubscriptionStatusStore>) => {
+  subscriptionStatusStore = {
+    ...subscriptionStatusStore,
+    ...next,
+  };
+  emitSubscriptionStatus();
+};
+
+const loadSubscriptionStatus = async (bypassCache = false) => {
+  const now = Date.now();
+  const isFresh = now - subscriptionStatusStore.lastFetchedAt < STATUS_STALE_MS;
+
+  if (!bypassCache && isFresh) {
+    return {
+      success: true as const,
+      data: subscriptionStatusStore.data,
+    };
+  }
+
+  setSubscriptionStatusStore({ isLoading: true, error: null });
+
+  const response = await subscriptionService.getSubscriptionStatus({
+    bypassCache,
   });
+
+  if (response?.success && response.data) {
+    setSubscriptionStatusStore({
+      data: response.data,
+      isLoading: false,
+      error: null,
+      lastFetchedAt: Date.now(),
+    });
+    return response;
+  }
+
+  const message = response
+    ? typeof response.error === 'string'
+      ? response.error
+      : response.error?.message ?? 'Abonelik durumu yüklenemedi'
+    : 'Abonelik durumu yüklenemedi';
+
+  setSubscriptionStatusStore({
+    isLoading: false,
+    error: new Error(message),
+  });
+
+  return response;
+};
+
+function useSubscriptionStatusStoreSnapshot() {
+  const [snapshot, setSnapshot] = useState(subscriptionStatusStore);
+
+  useEffect(() => {
+    const listener = () => setSnapshot(subscriptionStatusStore);
+    subscriptionStatusListeners.add(listener);
+    return () => {
+      subscriptionStatusListeners.delete(listener);
+    };
+  }, []);
+
+  return snapshot;
+}
+
+function useAsyncMutation<TArgs, TResult>(
+  action: (args: TArgs) => Promise<TResult>
+) {
+  const [isPending, setIsPending] = useState(false);
+  const [error, setError] = useState<Error | null>(null);
+
+  const mutateAsync = useCallback(
+    async (args: TArgs) => {
+      setIsPending(true);
+      setError(null);
+      try {
+        return await action(args);
+      } catch (mutationError) {
+        const normalizedError =
+          mutationError instanceof Error
+            ? mutationError
+            : new Error('Islem basarisiz oldu');
+        setError(normalizedError);
+        throw normalizedError;
+      } finally {
+        setIsPending(false);
+      }
+    },
+    [action]
+  );
+
+  const mutate = useCallback(
+    (args: TArgs) => {
+      void mutateAsync(args);
+    },
+    [mutateAsync]
+  );
+
+  const reset = useCallback(() => {
+    setError(null);
+    setIsPending(false);
+  }, []);
+
+  return {
+    mutate,
+    mutateAsync,
+    isPending,
+    error,
+    reset,
+  };
+}
+
+export function useSubscriptionStatus() {
+  const snapshot = useSubscriptionStatusStoreSnapshot();
+
+  useEffect(() => {
+    void loadSubscriptionStatus(false);
+  }, []);
+
+  const refetch = useCallback(() => {
+    return loadSubscriptionStatus(true);
+  }, []);
+
+  return {
+    data: snapshot.data,
+    isLoading: snapshot.isLoading,
+    error: snapshot.error,
+    isError: !!snapshot.error,
+    refetch,
+  };
 }
 
 export function useStartTrial() {
-  const queryClient = useQueryClient();
+  return useAsyncMutation<void, StartTrialResponse>(async () => {
+    const result = await subscriptionService.startTrial();
 
-  return useMutation({
-    mutationFn: async () => {
-      const result = await subscriptionApiService.startTrial();
-      if (!result.success) {
-        throw new Error(typeof result.error === 'string' ? result.error : 'Trial başlatılamadı');
-      }
-      return result.data;
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ predicate: (query) => query.queryKey[0] === 'subscription' && query.queryKey[1] === 'status' });
-    },
+    if (!result?.success || !result.data) {
+      const message =
+        result
+          ? typeof result.error === 'string'
+            ? result.error
+            : result.error?.message ?? 'Trial baslatilamadi'
+          : 'Trial baslatilamadi';
+      throw new Error(message);
+    }
+
+    await loadSubscriptionStatus(true);
+    return result.data;
   });
 }
 
 export function useRefetchSubscriptionStatus() {
-  const queryClient = useQueryClient();
-  const { userId } = useAuthQueryEnabled();
-
-  return useMutation({
-    mutationFn: () => subscriptionApiService.getSubscriptionStatus({ bypassCache: true }),
-    onSuccess: (response) => {
-      if (response.success && response.data) {
-        queryClient.setQueryData(subscriptionKeys.status(userId), response.data);
-      }
-      queryClient.invalidateQueries({ predicate: (query) => query.queryKey[0] === 'subscription' && query.queryKey[1] === 'status' });
-    },
-  });
+  return useAsyncMutation<void, Awaited<ReturnType<typeof loadSubscriptionStatus>>>(
+    async () => {
+      return loadSubscriptionStatus(true);
+    }
+  );
 }
 
 export function useVerifySubscriptionStatus() {
-  const queryClient = useQueryClient();
-  const { userId } = useAuthQueryEnabled();
+  return useAsyncMutation<void, Awaited<ReturnType<typeof subscriptionService.verifySubscription>>>(
+    async () => {
+      const result = await subscriptionService.verifySubscription();
 
-  return useMutation({
-    mutationFn: () => subscriptionApiService.verifySubscription(),
-    onSuccess: (response) => {
-      if (response.success && response.data) {
-        queryClient.setQueryData(subscriptionKeys.status(userId), response.data);
+      if (result?.success && result.data) {
+        setSubscriptionStatusStore({
+          data: result.data,
+          isLoading: false,
+          error: null,
+          lastFetchedAt: Date.now(),
+        });
+      } else {
+        await loadSubscriptionStatus(true);
       }
-      queryClient.invalidateQueries({ predicate: (query) => query.queryKey[0] === 'subscription' && query.queryKey[1] === 'status' });
-    },
-  });
+
+      return result;
+    }
+  );
 }
 
-/**
- * Helper type for subscription status
- */
 export type SubscriptionStatusType = 'pro' | 'trial' | 'free';
 
-/**
- * Hook to compute derived subscription status from raw data
- */
 export function useComputedSubscriptionStatus() {
   const { data, ...rest } = useSubscriptionStatus();
 
-  const isProUser = data?.hasActiveSubscription ?? false;
-  const isTrialActive = data?.subscriptionType === 'trial';
-  const isPaidSubscription = data?.subscriptionType === 'paid';
-  const subscriptionStatus: SubscriptionStatusType = isPaidSubscription ? 'pro' : isTrialActive ? 'trial' : 'free';
+  const derived = useMemo(() => {
+    const isProUser = data?.hasActiveSubscription ?? false;
+    const isTrialActive = data?.subscriptionType === 'trial';
+    const isPaidSubscription = data?.subscriptionType === 'paid';
+    const subscriptionStatus: SubscriptionStatusType = isPaidSubscription
+      ? 'pro'
+      : isTrialActive
+      ? 'trial'
+      : 'free';
+
+    return {
+      isProUser,
+      isTrialActive,
+      isPaidSubscription,
+      subscriptionStatus,
+    };
+  }, [data]);
 
   return {
     ...rest,
     data,
-    isProUser,
-    isTrialActive,
-    isPaidSubscription,
+    ...derived,
     isExpired: data?.isExpired ?? false,
     isCancelled: data?.isCancelled ?? false,
     canStartTrial: data?.canStartTrial ?? true,
@@ -113,25 +258,31 @@ export function useComputedSubscriptionStatus() {
     expirationDate: data?.expiresAt ?? null,
     provider: data?.provider ?? null,
     tier: data?.tier ?? null,
-    subscriptionStatus,
   };
 }
 
 export function useSubscriptionQueryEnabled() {
-  const { enabled: authEnabled, userId } = useAuthQueryEnabled();
   const { data, isLoading, isError } = useSubscriptionStatus();
-
   const hasActiveSubscription = data?.hasActiveSubscription ?? false;
-  const enabled = authEnabled && hasActiveSubscription;
 
-  return { enabled, userId, hasActiveSubscription, isLoading, isError };
+  return {
+    enabled: hasActiveSubscription,
+    userId: LOCAL_USER_ID,
+    hasActiveSubscription,
+    isLoading,
+    isError,
+  };
 }
 
 export function useProQueryEnabled() {
-  const { enabled: authEnabled, userId } = useAuthQueryEnabled();
-  const { isPaidSubscription, isLoading, isError } = useComputedSubscriptionStatus();
+  const { isPaidSubscription, isLoading, isError } =
+    useComputedSubscriptionStatus();
 
-  const enabled = authEnabled && isPaidSubscription;
-
-  return { enabled, userId, isPaidSubscription, isLoading, isError };
+  return {
+    enabled: isPaidSubscription,
+    userId: LOCAL_USER_ID,
+    isPaidSubscription,
+    isLoading,
+    isError,
+  };
 }

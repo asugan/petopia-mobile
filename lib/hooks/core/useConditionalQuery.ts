@@ -1,5 +1,5 @@
-import { useQuery, UseQueryResult } from '@tanstack/react-query';
 import { ConditionalQueryOptions } from './types';
+import { LocalQueryResult, useLocalQuery } from './useLocalAsync';
 
 /**
  * Generic hook for conditional/search queries
@@ -76,22 +76,22 @@ import { ConditionalQueryOptions } from './types';
  */
 export function useConditionalQuery<TData, TError = Error>(
   options: ConditionalQueryOptions<TData, TError>
-): UseQueryResult<TData, TError> {
+): LocalQueryResult<TData> {
   const {
     queryKey,
     queryFn,
-    staleTime,
-    gcTime,
     refetchInterval,
     enabled = true,
     errorMessage,
     defaultValue,
     select,
-    queryOptions,
   } = options;
 
-  return useQuery<TData, TError>({
-    queryKey,
+  return useLocalQuery<TData>({
+    deps: [JSON.stringify(queryKey)],
+    refetchInterval,
+    enabled,
+    defaultValue,
     queryFn: async () => {
       const result = await queryFn();
 
@@ -109,11 +109,6 @@ export function useConditionalQuery<TData, TError = Error>(
       // Apply client-side transformation if provided
       return select ? select(data) : data;
     },
-    staleTime,
-    gcTime,
-    refetchInterval,
-    enabled,
-    ...queryOptions,
   });
 }
 
@@ -138,20 +133,21 @@ export function useConditionalQuery<TData, TError = Error>(
  */
 export function useConditionalQuerySafe<TData, TError = Error>(
   options: Omit<ConditionalQueryOptions<TData, TError>, 'queryOptions'>
-): UseQueryResult<TData, TError> {
+): LocalQueryResult<TData> {
   const {
     queryKey,
     queryFn,
-    staleTime,
-    gcTime,
     refetchInterval,
     enabled = true,
     defaultValue,
     select,
   } = options;
 
-  return useQuery<TData, TError>({
-    queryKey,
+  return useLocalQuery<TData>({
+    deps: [JSON.stringify(queryKey)],
+    refetchInterval,
+    enabled,
+    defaultValue,
     queryFn: async () => {
       try {
         const result = await queryFn();
@@ -171,9 +167,5 @@ export function useConditionalQuerySafe<TData, TError = Error>(
         return defaultValue;
       }
     },
-    staleTime,
-    gcTime,
-    refetchInterval,
-    enabled,
   });
 }

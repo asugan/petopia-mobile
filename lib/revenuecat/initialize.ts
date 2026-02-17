@@ -4,9 +4,9 @@ import { getRevenueCatApiKey, getRevenueCatEntitlementId } from './config';
 
 /**
  * Initialize the RevenueCat SDK
- * Should be called once when the app starts, after authentication is determined
+ * Should be called once when the app starts
  *
- * @param userId - The authenticated user ID from better-auth, or null for anonymous
+ * @param userId - Optional app user ID, or null for anonymous
  */
 export async function initializeRevenueCat(userId: string | null): Promise<void> {
   // Set a default log handler to prevent "customLogHandler is not a function" error
@@ -24,7 +24,7 @@ export async function initializeRevenueCat(userId: string | null): Promise<void>
     // Configure the SDK
     const apiKey = getRevenueCatApiKey(Platform.OS === 'ios' ? 'ios' : 'android');
     if (!apiKey) {
-      throw new Error('[RevenueCat] Missing API key. Ensure public config is loaded.');
+      throw new Error('[RevenueCat] Missing API key. Ensure EXPO_PUBLIC_REVENUECAT_* is configured.');
     }
 
     await Purchases.configure({
@@ -56,9 +56,9 @@ export async function initializeRevenueCat(userId: string | null): Promise<void>
 
 /**
  * Sync user identity when user logs in
- * Links the RevenueCat customer to the authenticated user ID
+ * Links the RevenueCat customer to the provided user ID
  *
- * @param userId - The authenticated user ID from better-auth
+ * @param userId - The app user ID
  * @returns The updated CustomerInfo
  */
 export async function syncUserIdentity(userId: string): Promise<CustomerInfo> {

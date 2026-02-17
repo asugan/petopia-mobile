@@ -27,7 +27,7 @@ import { showToast } from '@/lib/toast/showToast';
 import { useNotifications } from '@/lib/hooks/useNotifications';
 import { useRequestDeduplication } from '@/lib/hooks/useRequestCancellation';
 import NotificationPermissionPrompt from '@/components/NotificationPermissionPrompt';
-import { registerPushTokenWithBackend } from '@/lib/services/notificationService';
+import { enableLocalNotifications } from '@/lib/services/notificationService';
 import { SUBSCRIPTION_ROUTES, FEATURE_ROUTES } from '@/constants/routes';
 import { useUserTimezone } from '@/lib/hooks/useUserTimezone';
 import { formatInTimeZone } from '@/lib/utils/date';
@@ -166,7 +166,7 @@ export default function CareScreen() {
         return;
       }
 
-      void registerPushTokenWithBackend();
+      void enableLocalNotifications();
     }
 
     try {
@@ -452,7 +452,7 @@ export default function CareScreen() {
         onPermissionGranted={async () => {
           if (activeSchedule) {
             try {
-              void registerPushTokenWithBackend();
+              void enableLocalNotifications();
               await toggleScheduleMutation.mutateAsync({ id: activeSchedule._id, isActive: true });
             } catch {
             }

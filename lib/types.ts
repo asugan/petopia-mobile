@@ -4,7 +4,7 @@
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { TFunction } from "i18next";
 import { NetInfoState } from "@react-native-community/netinfo";
-import { ApiResponse } from "./api/client";
+import type { ApiResponse } from "./contracts/api";
 import {
   Currency,
   Expense,

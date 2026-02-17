@@ -4,7 +4,12 @@ import { Stack } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import { Text, Card, IconButton, ActivityIndicator, Chip } from '@/components/ui';
 import { useTheme } from '@/lib/theme';
-import { useRecurrenceRules, useDeleteRecurrenceRule, useUpdateRecurrenceRule } from '@/lib/hooks/useRecurrence';
+import {
+  useRecurrenceRules,
+  useDeleteRecurrenceRule,
+  useUpdateRecurrenceRule,
+  useRegenerateRecurrenceEvents,
+} from '@/lib/hooks/useRecurrence';
 import { usePets } from '@/lib/hooks/usePets';
 import { getEventTypeLabel, getEventTypeIcon } from '@/constants/eventIcons';
 import { getEventColor } from '@/lib/utils/eventColors';
@@ -19,6 +24,7 @@ export default function RecurrenceManagementScreen() {
   const { data: pets = [] } = usePets();
   const deleteRuleMutation = useDeleteRecurrenceRule();
   const updateRuleMutation = useUpdateRecurrenceRule();
+  const regenerateRuleMutation = useRegenerateRecurrenceEvents();
 
   const rules = data || [];
 
@@ -32,6 +38,16 @@ export default function RecurrenceManagementScreen() {
     updateRuleMutation.mutate({
       id: rule._id,
       data: { isActive: !rule.isActive }
+    });
+  };
+
+  const handleRegenerate = (id: string) => {
+    regenerateRuleMutation.mutate(id, {
+      onSuccess: () =>
+        showToast({
+          type: 'success',
+          title: t('serviceResponse.recurrence.regenerateSuccess'),
+        }),
     });
   };
 
@@ -72,6 +88,11 @@ export default function RecurrenceManagementScreen() {
         </View>
 
         <View style={styles.ruleActions}>
+          <IconButton
+            icon="refresh"
+            onPress={() => handleRegenerate(item._id)}
+            disabled={regenerateRuleMutation.isPending}
+          />
           <IconButton 
             icon="delete-outline" 
             iconColor={theme.colors.error} 

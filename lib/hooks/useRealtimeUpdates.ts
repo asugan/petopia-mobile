@@ -1,7 +1,8 @@
 import { useEffect, useRef, useCallback, useState } from 'react';
-import { QueryKey, useQueryClient } from '@tanstack/react-query';
 import NetInfo from '@react-native-community/netinfo';
 import { NetworkState } from '@/lib/types';
+import { QueryKey } from './core/types';
+import { notifyLocalDataChanged } from './core/useLocalAsync';
 
 // Type for interval ref
 type IntervalRef = NodeJS.Timeout | null;
@@ -16,7 +17,6 @@ export function useRealtimeUpdates(
   queryKeys: QueryKey[],
   config: Partial<RealtimeConfig> = {}
 ) {
-  const queryClient = useQueryClient();
   const intervalRef = useRef<IntervalRef>(null);
   const configRef = useRef<RealtimeConfig>({
     enabled: true,
@@ -32,14 +32,13 @@ export function useRealtimeUpdates(
     if (!enabled || intervalRef.current) return;
 
     intervalRef.current = setInterval(() => {
-      // Refetch all specified queries
-      queryKeys.forEach(queryKey => {
-        queryClient.invalidateQueries({ queryKey });
-      });
+      if (queryKeys.length > 0) {
+        notifyLocalDataChanged();
+      }
     }, interval) as unknown as IntervalRef;
 
     setIsEnabled(true);
-  }, [queryKeys, queryClient]);
+  }, [queryKeys]);
 
   // Stop real-time updates
   const stopRealtimeUpdates = useCallback(() => {
@@ -53,12 +52,11 @@ export function useRealtimeUpdates(
   // Handle network state changes
   const handleNetworkChange = useCallback((state: NetworkState) => {
     if (state.isConnected && configRef.current.refetchOnReconnect) {
-      // Refetch all queries when coming back online
-      queryKeys.forEach(queryKey => {
-        queryClient.invalidateQueries({ queryKey });
-      });
+      if (queryKeys.length > 0) {
+        notifyLocalDataChanged();
+      }
     }
-  }, [queryKeys, queryClient]);
+  }, [queryKeys]);
 
   // Setup network listener
   useEffect(() => {
@@ -80,10 +78,10 @@ export function useRealtimeUpdates(
 
   // Manual refresh
   const refresh = useCallback(() => {
-    queryKeys.forEach(queryKey => {
-      queryClient.invalidateQueries({ queryKey });
-    });
-  }, [queryKeys, queryClient]);
+    if (queryKeys.length > 0) {
+      notifyLocalDataChanged();
+    }
+  }, [queryKeys]);
 
   // Update configuration
   const updateConfig = useCallback((newConfig: Partial<RealtimeConfig>) => {

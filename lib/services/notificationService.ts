@@ -1,17 +1,12 @@
 import * as Notifications from 'expo-notifications';
 import type { Href } from 'expo-router';
 import { Platform } from 'react-native';
-import * as Device from 'expo-device';
-import * as Application from 'expo-application';
-import Constants from 'expo-constants';
 import { Event, FeedingSchedule } from '../types';
 import { EVENT_TYPE_DEFAULT_REMINDERS } from '../../constants/eventIcons';
 import { QUIET_HOURS_WINDOW } from '@/constants/reminders';
 import { EVENT_REMINDER_PRESET_MINUTES, NOTIFICATION_CHANNELS, NOTIFICATION_SCREENS } from '@/constants/notificationContract';
 import i18n from '@/lib/i18n';
 import * as SecureStore from 'expo-secure-store';
-import { api } from '../api/client';
-import { ENV } from '@/lib/config/env';
 import { useUserSettingsStore } from '@/stores/userSettingsStore';
 import { toZonedTime, fromZonedTime, formatInTimeZone as formatInTimeZoneTz } from 'date-fns-tz';
 import { calculateNextFeedingTime } from '@/lib/utils/feedingReminderTime';
@@ -97,11 +92,10 @@ export class NotificationService {
   };
   private notificationChannelPromise: Promise<void> | null = null;
   private navigationHandler?: (target: Href) => void;
+  // Legacy keys kept only for one-way cleanup after backend removal.
   private readonly pushTokenStorageKey = 'expoPushToken';
   private readonly pushRegistrationStorageKey = 'pushTokenRegisteredWithBackend';
   private readonly pushRegistrationVerifiedAtStorageKey = 'pushTokenRegisteredVerifiedAt';
-  private readonly pushRegistrationCacheTtlMs = 5 * 60 * 1000;
-  private readonly maxApiRetryAttempts = 3;
 
   private constructor() {
     this.notificationChannelPromise = this.setupNotificationChannel();
@@ -170,44 +164,11 @@ export class NotificationService {
     return resolveEffectiveTimezone(settings?.timezone);
   }
 
-  private async setPushRegistrationCache(isRegistered: boolean): Promise<void> {
-    if (isRegistered) {
-      await SecureStore.setItemAsync(this.pushRegistrationStorageKey, 'true');
-      await SecureStore.setItemAsync(this.pushRegistrationVerifiedAtStorageKey, Date.now().toString());
-      return;
-    }
-
+  private async clearLegacyPushRegistrationData(): Promise<void> {
+    await SecureStore.deleteItemAsync(this.pushTokenStorageKey);
     await SecureStore.deleteItemAsync(this.pushRegistrationStorageKey);
     await SecureStore.deleteItemAsync(this.pushRegistrationVerifiedAtStorageKey);
-  }
-
-  private async getCachedPushRegistrationStatus(): Promise<{ isRegistered: boolean; isFresh: boolean }> {
-    const cachedStatus = await SecureStore.getItemAsync(this.pushRegistrationStorageKey);
-    const storedToken = await SecureStore.getItemAsync(this.pushTokenStorageKey);
-    const verifiedAtRaw = await SecureStore.getItemAsync(this.pushRegistrationVerifiedAtStorageKey);
-
-    const isRegistered = cachedStatus === 'true' && !!storedToken;
-    const verifiedAt = verifiedAtRaw ? Number(verifiedAtRaw) : NaN;
-    const isFresh = Number.isFinite(verifiedAt) && Date.now() - verifiedAt < this.pushRegistrationCacheTtlMs;
-
-    return { isRegistered, isFresh };
-  }
-
-  private async withRetry<T>(fn: () => Promise<T>): Promise<T> {
-    let lastError: unknown;
-
-    for (let attempt = 1; attempt <= this.maxApiRetryAttempts; attempt++) {
-      try {
-        return await fn();
-      } catch (error) {
-        lastError = error;
-        if (attempt < this.maxApiRetryAttempts) {
-          await new Promise((resolve) => setTimeout(resolve, attempt * 500));
-        }
-      }
-    }
-
-    throw lastError;
+    await SecureStore.deleteItemAsync('deviceId');
   }
 
   private logNotificationError(scope: string, error: unknown): void {
@@ -858,138 +819,22 @@ export class NotificationService {
     return fromZonedTime(adjustedZoned, timezone);
   }
 
-  /**
-   * Register push token with backend
-   * This enables backend-initiated push notifications
-   */
-  async registerPushTokenWithBackend(): Promise<boolean> {
+  async enableLocalNotifications(): Promise<boolean> {
+    return this.requestPermissions();
+  }
+
+  async disableLocalNotifications(): Promise<boolean> {
     try {
-      const hasPermission = await this.requestPermissions();
-      if (!hasPermission) {
-        return false;
-      }
-
-      const projectId = Constants.expoConfig?.extra?.eas?.projectId ?? Constants.easConfig?.projectId;
-      const tokenResult = await Notifications.getExpoPushTokenAsync(projectId ? { projectId } : undefined);
-      const expoPushToken = typeof tokenResult === 'string' ? tokenResult : tokenResult?.data || '';
-
-      if (!expoPushToken) {
-        return false;
-      }
-
-      // Get or generate device ID
-      let deviceId = await SecureStore.getItemAsync('deviceId');
-      if (!deviceId) {
-        deviceId = `${Platform.OS}-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`;
-        await SecureStore.setItemAsync('deviceId', deviceId);
-      }
-
-      // Get device info
-      const platform = Platform.OS;
-      const deviceName = Device.deviceName || undefined;
-      const appVersion = Application.nativeApplicationVersion || undefined;
-
-      // Register with backend
-      await this.withRetry(() =>
-        api.post(ENV.ENDPOINTS.PUSH_DEVICES, {
-          expoPushToken,
-          deviceId,
-          platform,
-          deviceName,
-          appVersion,
-        })
-      );
-
-      // Store the token locally
-      await SecureStore.setItemAsync(this.pushTokenStorageKey, expoPushToken);
-      await this.setPushRegistrationCache(true);
-      await SecureStore.setItemAsync('deviceId', deviceId);
-
+      await this.clearLegacyPushRegistrationData();
       return true;
     } catch (error) {
-      this.logNotificationError('registerPushTokenWithBackend', error);
+      this.logNotificationError('disableLocalNotifications', error);
       return false;
     }
   }
 
-  /**
-   * Unregister push token from backend
-   */
-  async unregisterPushTokenFromBackend(): Promise<boolean> {
-    try {
-      const deviceId = await SecureStore.getItemAsync('deviceId');
-      if (!deviceId) {
-        return true;
-      }
-
-      await this.withRetry(() => api.delete(ENV.ENDPOINTS.PUSH_DEVICES, { deviceId }));
-
-      await SecureStore.deleteItemAsync(this.pushTokenStorageKey);
-      await SecureStore.deleteItemAsync('deviceId');
-      await this.setPushRegistrationCache(false);
-
-      return true;
-    } catch (error) {
-      this.logNotificationError('unregisterPushTokenFromBackend', error);
-      return false;
-    }
-  }
-
-  /**
-   * Check if push token is registered with backend
-   * Uses local cache to avoid network calls on every reminder schedule
-   * Falls back to network check if cache is missing
-   */
-  async isPushTokenRegistered(): Promise<boolean> {
-    try {
-      const { isRegistered, isFresh } = await this.getCachedPushRegistrationStatus();
-      if (isRegistered && isFresh) {
-        return true;
-      }
-
-      return this.verifyPushTokenRegistration();
-    } catch (error) {
-      this.logNotificationError('isPushTokenRegistered', error);
-      return false;
-    }
-  }
-
-  /**
-   * Force re-verify push token registration with backend
-   * Use this sparingly as it makes a network call
-   */
-  async verifyPushTokenRegistration(): Promise<boolean> {
-    try {
-      const storedToken = await SecureStore.getItemAsync(this.pushTokenStorageKey);
-      const deviceId = await SecureStore.getItemAsync('deviceId');
-      if (!storedToken || !deviceId) {
-        await this.setPushRegistrationCache(false);
-        return false;
-      }
-
-      const response = await this.withRetry(() => api.get<{ deviceId: string }[]>(ENV.ENDPOINTS.PUSH_DEVICES));
-      const isRegistered =
-        Array.isArray(response.data) &&
-        response.data.some((device) => String(device.deviceId) === deviceId);
-      
-      await this.setPushRegistrationCache(isRegistered);
-      
-      return isRegistered;
-    } catch (error) {
-      this.logNotificationError('verifyPushTokenRegistration', error);
-      await this.setPushRegistrationCache(false);
-      return false;
-    }
-  }
-
-  async getNotificationDeliveryChannel(options?: { forceVerify?: boolean }): Promise<'backend' | 'local'> {
-    if (options?.forceVerify) {
-      const verified = await this.verifyPushTokenRegistration();
-      return verified ? 'backend' : 'local';
-    }
-
-    const registered = await this.isPushTokenRegistered();
-    return registered ? 'backend' : 'local';
+  async getNotificationDeliveryChannel(): Promise<'local'> {
+    return 'local';
   }
 
   async getFeedingNotifications(scheduleId?: string): Promise<Notifications.NotificationRequest[]> {
@@ -1043,16 +888,13 @@ export class NotificationService {
       Partial<Pick<FeedingSchedule, 'isActive' | 'reminderMinutesBefore'>>,
     options?: { deliveryChannel?: 'backend' | 'local'; forceVerify?: boolean }
   ): Promise<string | null> {
+    if (options?.forceVerify) {
+      // Local-first mode always uses local reminders.
+    }
+
     await this.cancelFeedingNotifications(schedule._id);
 
     if (schedule.isActive === false) {
-      return null;
-    }
-
-    const deliveryChannel =
-      options?.deliveryChannel ?? (await this.getNotificationDeliveryChannel({ forceVerify: options?.forceVerify }));
-
-    if (deliveryChannel === 'backend') {
       return null;
     }
 
@@ -1064,10 +906,14 @@ export class NotificationService {
    */
   async sendTestNotification(): Promise<boolean> {
     try {
-      await this.withRetry(() => api.post(ENV.ENDPOINTS.PUSH_TEST, {
-        title: 'Petopia Test',
-        body: 'Push notifications are configured successfully.',
-      }));
+      await Notifications.scheduleNotificationAsync({
+        content: {
+          title: 'Petopia Test',
+          body: 'Local notifications are configured successfully.',
+          data: { screen: NOTIFICATION_SCREENS.budget },
+        },
+        trigger: null,
+      });
       return true;
     } catch (error) {
       this.logNotificationError('sendTestNotification', error);
@@ -1095,21 +941,14 @@ export const scheduleReminderChain = (
   respectQuietHours?: boolean
 ) => notificationService.scheduleReminderChain(event, reminderTimes, respectQuietHours);
 
-// Backend push token registration
-export const registerPushTokenWithBackend = () =>
-  notificationService.registerPushTokenWithBackend();
+export const enableLocalNotifications = () =>
+  notificationService.enableLocalNotifications();
 
-export const unregisterPushTokenFromBackend = () =>
-  notificationService.unregisterPushTokenFromBackend();
+export const disableLocalNotifications = () =>
+  notificationService.disableLocalNotifications();
 
-export const isPushTokenRegistered = () =>
-  notificationService.isPushTokenRegistered();
-
-export const verifyPushTokenRegistration = () =>
-  notificationService.verifyPushTokenRegistration();
-
-export const getNotificationDeliveryChannel = (options?: { forceVerify?: boolean }) =>
-  notificationService.getNotificationDeliveryChannel(options);
+export const getNotificationDeliveryChannel = () =>
+  notificationService.getNotificationDeliveryChannel();
 
 export const sendTestNotification = () =>
   notificationService.sendTestNotification();

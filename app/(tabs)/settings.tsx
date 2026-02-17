@@ -1,17 +1,14 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
-import { useQueryClient } from "@tanstack/react-query";
 import { SubscriptionCard } from "@/components/subscription";
 import { Button, Card, ListItem, Switch, Text } from "@/components/ui";
 import { LargeTitle } from "@/components/LargeTitle";
 import { DateTimePicker } from "@/components/DateTimePicker";
-import { useAuth } from "@/lib/auth";
 import { accountService } from "@/lib/services/accountService";
 import {
   notificationService,
-  registerPushTokenWithBackend,
-  unregisterPushTokenFromBackend,
+  enableLocalNotifications,
+  disableLocalNotifications,
 } from "@/lib/services/notificationService";
-import { useAuthStore } from "@/stores/authStore";
 import { useEventReminderStore } from "@/stores/eventReminderStore";
 import { SupportedCurrency, useUserSettingsStore } from "@/stores/userSettingsStore";
 import Constants from 'expo-constants';
@@ -32,18 +29,21 @@ import { TimezoneSettings } from "@/components/TimezoneSettings";
 import NotificationPermissionPrompt, { NotificationPermissionCard } from "@/components/NotificationPermissionPrompt";
 import { subscriptionStyles } from "@/lib/styles/subscription";
 import { useNotifications } from "@/lib/hooks/useNotifications";
-import { AUTH_ROUTES, ONBOARDING_ROUTES, SETTINGS_ROUTES } from "@/constants/routes";
+import { ONBOARDING_ROUTES, SETTINGS_ROUTES } from "@/constants/routes";
 
 type ModalState = "none" | "contact" | "deleteWarning" | "deleteConfirm";
 
 export default function SettingsScreen() {
   const { t } = useTranslation();
   const router = useRouter();
-  const queryClient = useQueryClient();
-  const { theme, settings, updateSettings, updateBaseCurrency, isLoading: settingsLoading, error } = useUserSettingsStore();
-  const { user, signOut } = useAuth();
-  const { isLoading: authLoading, setLoading } = useAuthStore();
+  const { theme, settings, updateSettings, updateBaseCurrency, initialize, isLoading: settingsLoading, error } = useUserSettingsStore();
   const { resetOnboarding } = useOnboardingStore();
+  const [authLoading, setAuthLoading] = useState(false);
+  const user = {
+    name: "Petopia User",
+    email: "local@petopia.app",
+    image: null as string | null,
+  };
   const isDarkMode = settings?.theme === "dark";
   const [notificationPermissionEnabled, setNotificationPermissionEnabled] = useState(false);
   const quietHoursEnabled = settings?.quietHoursEnabled ?? true;
@@ -78,11 +78,10 @@ export default function SettingsScreen() {
         const enabled = await notificationService.areNotificationsEnabled();
         setNotificationPermissionEnabled(enabled);
 
-        // Sync backend with system permission if they differ
-        // Only auto-disable backend if system is disabled (one-time sync)
+        // Keep local setting aligned with system permission (one-time sync)
         if (!hasSyncedPermission.current && !enabled && settings?.notificationsEnabled === true) {
           hasSyncedPermission.current = true;
-          void unregisterPushTokenFromBackend();
+          void disableLocalNotifications();
           await updateSettings({ notificationsEnabled: false });
         }
       } catch (error) {
@@ -117,15 +116,14 @@ export default function SettingsScreen() {
         setPermissionRefreshKey((prev) => prev + 1);
 
         if (granted) {
-          // Permission granted, register push token and update backend
-          void registerPushTokenWithBackend();
+          void enableLocalNotifications();
           await updateSettings({ notificationsEnabled: true });
         } else {
           // Permission denied - show modal
           setShowPermissionModal(true);
         }
       } else {
-        // If user wants to disable, update backend and cancel existing
+        // If user wants to disable, cancel existing schedules and persist setting
         showToast({
           type: 'info',
           title: t("settings.notifications"),
@@ -133,7 +131,7 @@ export default function SettingsScreen() {
         });
         await notificationService.cancelAllNotifications();
         clearAllReminderState();
-        void unregisterPushTokenFromBackend();
+        void disableLocalNotifications();
         await updateSettings({ notificationsEnabled: false });
       }
     } catch (error) {
@@ -176,13 +174,13 @@ export default function SettingsScreen() {
         text: t("auth.logout"),
         style: "destructive",
         onPress: async () => {
-          setLoading(true);
+          setAuthLoading(true);
           try {
-            await signOut();
-            router.replace(AUTH_ROUTES.login);
+            resetOnboarding();
+            router.replace(ONBOARDING_ROUTES.step1);
           } catch {
           } finally {
-            setLoading(false);
+            setAuthLoading(false);
           }
         },
       },
@@ -205,9 +203,6 @@ export default function SettingsScreen() {
           text: t("common.confirm"),
           onPress: async () => {
             await updateBaseCurrency(currency);
-            await queryClient.invalidateQueries({ predicate: (query) => query.queryKey[0] === "expenses" });
-            await queryClient.invalidateQueries({ predicate: (query) => query.queryKey[0] === "budget" });
-            await queryClient.invalidateQueries({ predicate: (query) => query.queryKey[0] === "health-records" });
           },
         },
       ]
@@ -224,13 +219,14 @@ export default function SettingsScreen() {
           title: t("settings.accountDeletedTitle"),
           message: t("settings.accountDeletedMessage"),
         });
-        setLoading(true);
+        setAuthLoading(true);
         try {
-          await signOut();
-          router.replace(AUTH_ROUTES.login);
+          await initialize();
+          resetOnboarding();
+          router.replace(ONBOARDING_ROUTES.step1);
         } catch {
         } finally {
-          setLoading(false);
+          setAuthLoading(false);
         }
       } else {
         showToast({
@@ -899,13 +895,13 @@ export default function SettingsScreen() {
         onPermissionGranted={async () => {
           setNotificationPermissionEnabled(true);
           setPermissionRefreshKey((prev) => prev + 1);
-          void registerPushTokenWithBackend();
+          void enableLocalNotifications();
           await updateSettings({ notificationsEnabled: true });
         }}
         onPermissionDenied={async () => {
           setNotificationPermissionEnabled(false);
           setPermissionRefreshKey((prev) => prev + 1);
-          void unregisterPushTokenFromBackend();
+          void disableLocalNotifications();
           await updateSettings({ notificationsEnabled: false });
         }}
       />

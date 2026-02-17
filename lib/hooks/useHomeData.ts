@@ -1,4 +1,3 @@
-import { useAuth } from "@/lib/auth";
 import { useUserBudgetStatus } from "@/lib/hooks/useUserBudget";
 import { useTodayEvents, useUpcomingEvents } from "@/lib/hooks/useEvents";
 import { useExpenseStats } from "@/lib/hooks/useExpenses";
@@ -9,7 +8,6 @@ import { useResponsiveSize } from "@/lib/hooks/useResponsiveSize";
 import { Event } from "@/lib/types";
 
 export const useHomeData = () => {
-  const { user } = useAuth();
   const { isMobile, scrollPadding } = useResponsiveSize();
 
   // Data fetching
@@ -48,7 +46,6 @@ export const useHomeData = () => {
     recentExpensesLoading;
 
   return {
-    user,
     layout: { isMobile, scrollPadding },
     data: {
       pets,

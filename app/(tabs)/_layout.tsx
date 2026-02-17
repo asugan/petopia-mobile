@@ -1,40 +1,28 @@
-import { Tabs, useRouter, useSegments } from 'expo-router';
+import { Tabs, useRouter } from 'expo-router';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useTheme } from '@/lib/theme';
 import { useTranslation } from 'react-i18next';
 import { useEffect } from 'react';
-import { authClient } from '@/lib/auth/client';
 import { useOnboardingStore } from '@/stores/onboardingStore';
-import { ONBOARDING_ROUTES, AUTH_ROUTES } from '@/constants/routes';
+import { ONBOARDING_ROUTES } from '@/constants/routes';
 import { CustomTabBar } from '@/components/navigation/CustomTabBar';
 
 export default function TabLayout() {
   const { theme } = useTheme();
   const { t } = useTranslation();
   const router = useRouter();
-  const segments = useSegments();
 
   const { hasSeenOnboarding, hasHydrated } = useOnboardingStore();
 
-  const { data: session, isPending } = authClient.useSession();
-  const isAuthenticated = !!session?.user;
-
   useEffect(() => {
-    if (isPending || !hasHydrated) return;
+    if (!hasHydrated) return;
 
     if (!hasSeenOnboarding) {
       router.replace(ONBOARDING_ROUTES.step1);
-      return;
     }
+  }, [hasHydrated, hasSeenOnboarding, router]);
 
-    const inAuthGroup = segments[0] === '(auth)';
-
-    if (!isAuthenticated && !inAuthGroup) {
-      router.replace(AUTH_ROUTES.login);
-    }
-  }, [hasHydrated, hasSeenOnboarding, isAuthenticated, isPending, segments, router]);
-
-  if (isPending || !hasHydrated) {
+  if (!hasHydrated || !hasSeenOnboarding) {
     return null;
   }
 

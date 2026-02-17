@@ -1,14 +1,14 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { feedingScheduleService, type FeedingNotification } from '../services/feedingScheduleService';
-import { getNotificationDeliveryChannel, scheduleFeedingReminder, cancelFeedingReminder } from '../services/notificationService';
+import { scheduleFeedingReminder, cancelFeedingReminder } from '../services/notificationService';
 import { useUserSettingsStore } from '@/stores/userSettingsStore';
 import { createQueryKeys } from './core/createQueryKeys';
 import { useConditionalQuery } from './core/useConditionalQuery';
+import { useLocalMutation } from './core/useLocalAsync';
 import { useAuthQueryEnabled } from './useAuthQueryEnabled';
 import { FeedingSchedule } from '../types';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { CACHE_TIMES } from '../config/queryConfig';
+import { CACHE_TIMES } from '../config/cacheTimes';
 import { useUserTimezone } from './useUserTimezone';
 import { toLocalDateKey } from '@/lib/utils/timezoneDate';
 
@@ -86,30 +86,13 @@ export function useFeedingScheduleNotifications(scheduleId: string) {
 }
 
 /**
- * Hook for managing local feeding reminders
- * Uses local notifications as fallback when backend push is not available
+ * Hook for managing feeding reminders with local notifications.
  */
 export function useFeedingReminders() {
   const { enabled } = useFeedingReminderSettings();
   const userTimezone = useUserTimezone();
-  const [pushTokenRegistered, setPushTokenRegistered] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const queryClient = useQueryClient();
   const remindedSchedules = useRef<Record<string, boolean>>({});
-
-  // Check if push token is registered with backend
-  const checkPushTokenStatus = useCallback(async () => {
-    try {
-      const deliveryChannel = await getNotificationDeliveryChannel();
-      setPushTokenRegistered(deliveryChannel === 'backend');
-    } catch {
-      setPushTokenRegistered(false);
-    }
-  }, []);
-
-  useEffect(() => {
-    checkPushTokenStatus();
-  }, [checkPushTokenStatus]);
 
   // Clear reminded schedules cache on day change to prevent memory leak
   useEffect(() => {
@@ -142,7 +125,7 @@ export function useFeedingReminders() {
    */
   const scheduleLocalReminder = useCallback(
     async (schedule: FeedingSchedule, reminderMinutes: number = 15) => {
-      if (!enabled || pushTokenRegistered) {
+      if (!enabled) {
         return null;
       }
 
@@ -165,7 +148,7 @@ export function useFeedingReminders() {
 
       return notificationId;
     },
-    [enabled, pushTokenRegistered, userTimezone]
+    [enabled, userTimezone]
   );
 
   /**
@@ -184,62 +167,71 @@ export function useFeedingReminders() {
   }, []);
 
   /**
-   * Trigger a manual reminder via backend
+   * Trigger a manual reminder via local service.
    */
-  const triggerBackendReminder = useMutation({
-    mutationFn: ({ scheduleId, reminderMinutes }: { scheduleId: string; reminderMinutes: number }) =>
-      feedingScheduleService.triggerFeedingReminder(scheduleId, { reminderMinutes }),
-    onSuccess: (_, variables) => {
-      queryClient.invalidateQueries({
-        queryKey: feedingReminderKeys.notifications(variables.scheduleId),
+  const triggerReminder = useLocalMutation({
+    mutationFn: async ({ scheduleId, reminderMinutes }: { scheduleId: string; reminderMinutes: number }) => {
+      const response = await feedingScheduleService.triggerFeedingReminder(scheduleId, {
+        reminderMinutes,
       });
+
+      if (!response.success) {
+        throw new Error(
+          typeof response.error === 'string'
+            ? response.error
+            : response.error?.message ?? 'Failed to trigger feeding reminder'
+        );
+      }
+
+      return response.data;
     },
   });
 
   /**
-   * Mark feeding as completed via backend
+   * Mark feeding as completed.
    */
-  const completeFeeding = useMutation({
-    mutationFn: (scheduleId: string) => feedingScheduleService.completeFeeding(scheduleId),
-    onSuccess: (_, scheduleId) => {
-      queryClient.invalidateQueries({ queryKey: feedingReminderKeys.notifications(scheduleId) });
-      queryClient.invalidateQueries({ queryKey: ['feeding-schedules'] });
-      queryClient.invalidateQueries({ queryKey: feedingReminderKeys.pending() });
+  const completeFeeding = useLocalMutation({
+    mutationFn: async (scheduleId: string) => {
+      const response = await feedingScheduleService.completeFeeding(scheduleId);
+      if (!response.success) {
+        throw new Error(
+          typeof response.error === 'string'
+            ? response.error
+            : response.error?.message ?? 'Failed to complete feeding'
+        );
+      }
+      return response.data;
     },
   });
 
-  const cancelBackendReminder = useMutation({
-    mutationFn: (scheduleId: string) => feedingScheduleService.cancelFeedingReminder(scheduleId),
-    onSuccess: (_, scheduleId) => {
-      queryClient.invalidateQueries({ queryKey: feedingReminderKeys.notifications(scheduleId) });
-      queryClient.invalidateQueries({ queryKey: feedingReminderKeys.pending() });
+  const cancelReminderMutation = useLocalMutation({
+    mutationFn: async (scheduleId: string) => {
+      const response = await feedingScheduleService.cancelFeedingReminder(scheduleId);
+      if (!response.success) {
+        throw new Error(
+          typeof response.error === 'string'
+            ? response.error
+            : response.error?.message ?? 'Failed to cancel feeding reminder'
+        );
+      }
+      return response.data;
     },
   });
 
   /**
-   * Schedule reminder with automatic fallback
-   * Tries backend first, falls back to local if not registered
+   * Schedule reminder with local notifications.
    */
   const scheduleReminder = useCallback(
     async (schedule: FeedingSchedule, reminderMinutes: number = 15) => {
       setIsLoading(true);
       try {
-        const deliveryChannel = await getNotificationDeliveryChannel();
-        const useBackend = deliveryChannel === 'backend';
-        setPushTokenRegistered(useBackend);
-
-        if (useBackend) {
-          // Backend handles push notifications
-          return await triggerBackendReminder.mutateAsync({ scheduleId: schedule._id, reminderMinutes });
-        } else {
-          // Use local notifications as fallback
-          return await scheduleLocalReminder(schedule, reminderMinutes);
-        }
+        await triggerReminder.mutateAsync({ scheduleId: schedule._id, reminderMinutes });
+        return await scheduleLocalReminder(schedule, reminderMinutes);
       } finally {
         setIsLoading(false);
       }
     },
-    [scheduleLocalReminder, triggerBackendReminder]
+    [scheduleLocalReminder, triggerReminder]
   );
 
   /**
@@ -247,19 +239,15 @@ export function useFeedingReminders() {
    */
   const cancelReminder = useCallback(
     async (schedule: FeedingSchedule, reminderMinutes: number = 15) => {
-      if (pushTokenRegistered) {
-        return cancelBackendReminder.mutateAsync(schedule._id);
-      } else {
-        // Use local cancellation
-        return cancelLocalReminder(schedule, reminderMinutes);
-      }
+      await cancelReminderMutation.mutateAsync(schedule._id);
+      return cancelLocalReminder(schedule, reminderMinutes);
     },
-    [pushTokenRegistered, cancelLocalReminder, cancelBackendReminder]
+    [cancelLocalReminder, cancelReminderMutation]
   );
 
   return {
     // State
-    pushTokenRegistered,
+    pushTokenRegistered: false,
     isLoading,
     enabled,
 
@@ -267,16 +255,14 @@ export function useFeedingReminders() {
     scheduleLocalReminder,
     cancelLocalReminder,
 
-    // Backend functions
-    triggerBackendReminder,
+    // Reminder functions
+    triggerReminder,
     completeFeeding,
 
     // Unified functions with fallback
     scheduleReminder,
     cancelReminder,
 
-    // Helper
-    checkPushTokenStatus,
   };
 }
 
@@ -302,7 +288,7 @@ export function useFeedingScheduleWithReminders(scheduleId: string) {
 
   const { data: notifications = [] } = useFeedingScheduleNotifications(scheduleId);
   const feedingReminders = useFeedingReminders();
-  const { scheduleReminder, cancelReminder, completeFeeding, pushTokenRegistered, enabled, triggerBackendReminder } =
+  const { scheduleReminder, cancelReminder, completeFeeding, pushTokenRegistered, enabled, triggerReminder } =
     feedingReminders;
 
   const pendingNotification = notifications.find((n) => n.status === 'pending');
@@ -343,7 +329,7 @@ export function useFeedingScheduleWithReminders(scheduleId: string) {
 
     // Mutation states
     isCompleting: completeFeeding.isPending,
-    isScheduling: triggerBackendReminder.isPending,
+    isScheduling: triggerReminder.isPending,
   };
 }
 

@@ -4,7 +4,24 @@ export type RevenueCatConfig = {
   entitlementId: string;
 };
 
-let runtimeConfig: RevenueCatConfig | null = null;
+const buildEnvConfig = (): RevenueCatConfig | null => {
+  const sharedApiKey = process.env.EXPO_PUBLIC_REVENUECAT_API_KEY ?? '';
+  const iosApiKey = process.env.EXPO_PUBLIC_REVENUECAT_IOS_API_KEY ?? sharedApiKey;
+  const androidApiKey = process.env.EXPO_PUBLIC_REVENUECAT_ANDROID_API_KEY ?? sharedApiKey;
+  const entitlementId = process.env.EXPO_PUBLIC_REVENUECAT_ENTITLEMENT_ID ?? 'pro';
+
+  if (!iosApiKey && !androidApiKey) {
+    return null;
+  }
+
+  return {
+    iosApiKey,
+    androidApiKey,
+    entitlementId,
+  };
+};
+
+let runtimeConfig: RevenueCatConfig | null = buildEnvConfig();
 
 export const setRevenueCatConfig = (config: RevenueCatConfig) => {
   runtimeConfig = { ...config };
@@ -14,7 +31,7 @@ export const getRevenueCatConfig = () => runtimeConfig;
 
 const requireRevenueCatConfig = () => {
   if (!runtimeConfig) {
-    throw new Error('[RevenueCat] Public config not loaded.');
+    throw new Error('[RevenueCat] Missing config. Set EXPO_PUBLIC_REVENUECAT_* env vars.');
   }
   return runtimeConfig;
 };
@@ -25,7 +42,7 @@ const requireRevenueCatConfig = () => {
 export const REVENUECAT_CONFIG = {
   /**
    * Free trial duration in days (custom trial without credit card)
-   * Note: This is now managed by the backend, this value is kept for reference
+   * Local-first trial policy duration
    */
   TRIAL_DURATION_DAYS: 14,
 } as const;

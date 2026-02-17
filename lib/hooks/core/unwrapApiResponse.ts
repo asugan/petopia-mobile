@@ -1,4 +1,4 @@
-import type { ApiResponse } from '@/lib/api/client';
+import type { ApiResponse } from '@/lib/contracts/api';
 
 interface UnwrapOptions<TData> {
   defaultValue?: TData | null;
