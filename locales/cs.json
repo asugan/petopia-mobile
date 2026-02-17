@@ -614,7 +614,15 @@
       "indonesian": "Bahasa Indonesia"
     },
     "timezone": "Časové pásmo",
-    "selectTimezone": "Vyberte časové pásmo"
+    "selectTimezone": "Vyberte časové pásmo",
+    "clearLocalData": "Vymazat místní data",
+    "clearLocalDataDescription": "Trvale odstraňte všechna domácí zvířata a záznamy z tohoto zařízení",
+    "clearLocalDataConfirmTitle": "Vymazat všechna místní data?",
+    "clearLocalDataConfirmMessage": "Tím z tohoto zařízení trvale odstraníte domácí mazlíčky, události, plány krmení, zdravotní záznamy a výdaje. Tuto akci nelze vrátit zpět.",
+    "clearLocalDataConfirmAction": "Vymazat data",
+    "clearLocalDataSuccessTitle": "Data vymazána",
+    "clearLocalDataSuccessMessage": "Z tohoto zařízení byla odstraněna všechna místní data domácích mazlíčků.",
+    "clearLocalDataError": "Místní data se nepodařilo vymazat. Zkuste to prosím znovu."
   },
   "common": {
     "loading": "Načítání...",
@@ -1579,7 +1587,10 @@
     "verifyingPurchase": "Nakup prijat. Overujeme vase predplatne...",
     "verificationTakingLong": "Vas nakup se overuje. Pristup se automaticky odemkne za par sekund.",
     "noteIos": "Platba bude účtována přes váš účet App Store. Předplatné se automaticky obnovuje, pokud není zrušeno alespoň 24 hodin před koncem aktuálního období. Spravovat nebo zrušit jej můžete kdykoli v nastavení účtu obchodu.",
-    "noteAndroid": "Platba bude účtována přes váš účet Google Play. Předplatné se automaticky obnovuje, pokud není zrušeno alespoň 24 hodin před koncem aktuálního období. Spravovat nebo zrušit jej můžete kdykoli v nastavení účtu obchodu."
+    "noteAndroid": "Platba bude účtována přes váš účet Google Play. Předplatné se automaticky obnovuje, pokud není zrušeno alespoň 24 hodin před koncem aktuálního období. Spravovat nebo zrušit jej můžete kdykoli v nastavení účtu obchodu.",
+    "restoreConfirmTitle": "Obnovit nákupy?",
+    "restoreConfirmMessage": "Zkontrolujeme vaše nákupy v obchodě a obnovíme aktivní přístup Pro na tomto zařízení.",
+    "restoreConfirmAction": "Obnovit"
   },
   "downgrade": {
     "title": "Vyberte svého mazlíčka",

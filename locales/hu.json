@@ -614,7 +614,15 @@
       "indonesian": "Bahasa Indonesia"
     },
     "timezone": "Időzóna",
-    "selectTimezone": "Időzóna kiválasztása"
+    "selectTimezone": "Időzóna kiválasztása",
+    "clearLocalData": "Helyi adatok törlése",
+    "clearLocalDataDescription": "Véglegesen távolítson el minden háziállatot és rekordot erről az eszközről",
+    "clearLocalDataConfirmTitle": "Törli az összes helyi adatot?",
+    "clearLocalDataConfirmMessage": "Ezzel véglegesen eltávolítja az eszközről a háziállatokat, eseményeket, etetési ütemterveket, egészségügyi feljegyzéseket és kiadásokat. Ez a művelet nem vonható vissza.",
+    "clearLocalDataConfirmAction": "Adatok törlése",
+    "clearLocalDataSuccessTitle": "Adatok törölve",
+    "clearLocalDataSuccessMessage": "Az összes helyi háziállat-adat eltávolítva erről az eszközről.",
+    "clearLocalDataError": "Nem sikerült törölni a helyi adatokat. Kérjük, próbálja újra."
   },
   "common": {
     "loading": "Betöltés...",
@@ -1579,7 +1587,10 @@
     "verifyingPurchase": "Vasarlas fogadva. Elfizetesed ellenorzese folyamatban...",
     "verificationTakingLong": "A vasarlas ellenorzese folyamatban van. A hozzaferes nehany masodpercen belul automatikusan feloldodik.",
     "noteIos": "A fizetés az App Store fiókodból történik. Az előfizetések automatikusan megújulnak, hacsak legalább 24 órával az aktuális időszak vége előtt nem mondod le. A kezelést vagy lemondást bármikor elvégezheted az áruházfiók beállításaiban.",
-    "noteAndroid": "A fizetés az Google Play fiókodból történik. Az előfizetések automatikusan megújulnak, hacsak legalább 24 órával az aktuális időszak vége előtt nem mondod le. A kezelést vagy lemondást bármikor elvégezheted az áruházfiók beállításaiban."
+    "noteAndroid": "A fizetés az Google Play fiókodból történik. Az előfizetések automatikusan megújulnak, hacsak legalább 24 órával az aktuális időszak vége előtt nem mondod le. A kezelést vagy lemondást bármikor elvégezheted az áruházfiók beállításaiban.",
+    "restoreConfirmTitle": "Visszaállítja a vásárlásokat?",
+    "restoreConfirmMessage": "Ellenőrizzük bolti vásárlásait, és visszaállítjuk az aktív Pro-hozzáférést ezen az eszközön.",
+    "restoreConfirmAction": "Visszaállítás"
   },
   "downgrade": {
     "title": "Válassza ki kedvencét",

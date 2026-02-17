@@ -614,7 +614,15 @@
     },
     "selectCurrency": "Chọn tiền tệ",
     "timezone": "Múi giờ",
-    "selectTimezone": "Chọn múi giờ"
+    "selectTimezone": "Chọn múi giờ",
+    "clearLocalData": "Xóa dữ liệu cục bộ",
+    "clearLocalDataDescription": "Xóa vĩnh viễn tất cả vật nuôi và hồ sơ khỏi thiết bị này",
+    "clearLocalDataConfirmTitle": "Xóa tất cả dữ liệu cục bộ?",
+    "clearLocalDataConfirmMessage": "Thao tác này sẽ xóa vĩnh viễn vật nuôi, sự kiện, lịch cho ăn, hồ sơ sức khỏe và chi phí khỏi thiết bị này. Không thể hoàn tác hành động này.",
+    "clearLocalDataConfirmAction": "Xóa dữ liệu",
+    "clearLocalDataSuccessTitle": "Đã xóa dữ liệu",
+    "clearLocalDataSuccessMessage": "Tất cả dữ liệu thú cưng cục bộ đã bị xóa khỏi thiết bị này.",
+    "clearLocalDataError": "Không xóa được dữ liệu cục bộ. Vui lòng thử lại."
   },
   "common": {
     "loading": "Đang tải...",
@@ -1579,7 +1587,10 @@
     "verifyingPurchase": "Da nhan mua hang. Dang xac minh goi dang ky cua ban...",
     "verificationTakingLong": "Giao dich mua cua ban dang duoc xac minh. Quyen truy cap se tu dong mo trong vai giay.",
     "noteIos": "Thanh toán được tính qua tài khoản App Store của bạn. Gói đăng ký sẽ tự động gia hạn trừ khi được hủy ít nhất 24 giờ trước khi kỳ hiện tại kết thúc. Bạn có thể quản lý hoặc hủy bất cứ lúc nào trong phần cài đặt tài khoản cửa hàng.",
-    "noteAndroid": "Thanh toán được tính qua tài khoản Google Play của bạn. Gói đăng ký sẽ tự động gia hạn trừ khi được hủy ít nhất 24 giờ trước khi kỳ hiện tại kết thúc. Bạn có thể quản lý hoặc hủy bất cứ lúc nào trong phần cài đặt tài khoản cửa hàng."
+    "noteAndroid": "Thanh toán được tính qua tài khoản Google Play của bạn. Gói đăng ký sẽ tự động gia hạn trừ khi được hủy ít nhất 24 giờ trước khi kỳ hiện tại kết thúc. Bạn có thể quản lý hoặc hủy bất cứ lúc nào trong phần cài đặt tài khoản cửa hàng.",
+    "restoreConfirmTitle": "Khôi phục mua hàng?",
+    "restoreConfirmMessage": "Chúng tôi sẽ kiểm tra các giao dịch mua tại cửa hàng của bạn và khôi phục quyền truy cập Pro đang hoạt động trên thiết bị này.",
+    "restoreConfirmAction": "Khôi phục"
   },
   "downgrade": {
     "title": "Chọn thú cưng của bạn",

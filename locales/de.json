@@ -614,7 +614,15 @@
     },
     "selectCurrency": "Währung auswählen",
     "timezone": "Zeitzone",
-    "selectTimezone": "Zeitzone auswählen"
+    "selectTimezone": "Zeitzone auswählen",
+    "clearLocalData": "Lokale Daten löschen",
+    "clearLocalDataDescription": "Entfernen Sie dauerhaft alle Haustiere und Aufzeichnungen von diesem Gerät",
+    "clearLocalDataConfirmTitle": "Alle lokalen Daten löschen?",
+    "clearLocalDataConfirmMessage": "Dadurch werden Haustiere, Ereignisse, Fütterungspläne, Gesundheitsakten und Ausgaben dauerhaft von diesem Gerät entfernt. Diese Aktion kann nicht rückgängig gemacht werden.",
+    "clearLocalDataConfirmAction": "Daten löschen",
+    "clearLocalDataSuccessTitle": "Daten gelöscht",
+    "clearLocalDataSuccessMessage": "Alle lokalen Haustierdaten wurden von diesem Gerät entfernt.",
+    "clearLocalDataError": "Lokale Daten konnten nicht gelöscht werden. Bitte versuchen Sie es erneut."
   },
   "common": {
     "loading": "Lädt...",
@@ -1579,7 +1587,10 @@
     "verifyingPurchase": "Kauf erhalten. Dein Abonnement wird uberpruft...",
     "verificationTakingLong": "Dein Kauf wird uberpruft. Der Zugriff wird in wenigen Sekunden automatisch freigeschaltet.",
     "noteIos": "Die Zahlung wird über dein App Store-Konto abgerechnet. Abonnements verlängern sich automatisch, sofern sie nicht mindestens 24 Stunden vor Ende des aktuellen Zeitraums gekündigt werden. Du kannst sie jederzeit in den Kontoeinstellungen des Stores verwalten oder kündigen.",
-    "noteAndroid": "Die Zahlung wird über dein Google Play-Konto abgerechnet. Abonnements verlängern sich automatisch, sofern sie nicht mindestens 24 Stunden vor Ende des aktuellen Zeitraums gekündigt werden. Du kannst sie jederzeit in den Kontoeinstellungen des Stores verwalten oder kündigen."
+    "noteAndroid": "Die Zahlung wird über dein Google Play-Konto abgerechnet. Abonnements verlängern sich automatisch, sofern sie nicht mindestens 24 Stunden vor Ende des aktuellen Zeitraums gekündigt werden. Du kannst sie jederzeit in den Kontoeinstellungen des Stores verwalten oder kündigen.",
+    "restoreConfirmTitle": "Einkäufe wiederherstellen?",
+    "restoreConfirmMessage": "Wir überprüfen Ihre Einkäufe im Store und stellen den aktiven Pro-Zugriff auf diesem Gerät wieder her.",
+    "restoreConfirmAction": "Wiederherstellen"
   },
   "downgrade": {
     "title": "Wählen Sie Ihr Tier",

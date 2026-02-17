@@ -614,7 +614,15 @@
       "indonesian": "Bahasa Indonesia"
     },
     "timezone": "Tidszone",
-    "selectTimezone": "Vælg tidszone"
+    "selectTimezone": "Vælg tidszone",
+    "clearLocalData": "Ryd lokale data",
+    "clearLocalDataDescription": "Fjern permanent alle kæledyr og optegnelser fra denne enhed",
+    "clearLocalDataConfirmTitle": "Vil du rydde alle lokale data?",
+    "clearLocalDataConfirmMessage": "Dette fjerner permanent kæledyr, begivenheder, fodringsplaner, sundhedsjournaler og udgifter fra denne enhed. Denne handling kan ikke fortrydes.",
+    "clearLocalDataConfirmAction": "Ryd data",
+    "clearLocalDataSuccessTitle": "Data ryddet",
+    "clearLocalDataSuccessMessage": "Alle lokale kæledyrsdata er blevet fjernet fra denne enhed.",
+    "clearLocalDataError": "Kunne ikke rydde lokale data. Prøv venligst igen."
   },
   "common": {
     "loading": "Indlæser...",
@@ -1579,7 +1587,10 @@
     "verifyingPurchase": "Kob modtaget. Bekraefter dit abonnement...",
     "verificationTakingLong": "Dit kob bliver bekraeftet. Adgang laases op automatisk om fa sekunder.",
     "noteIos": "Betaling opkræves via din App Store-konto. Abonnementer fornyes automatisk, medmindre de annulleres mindst 24 timer før udløb af den aktuelle periode. Du kan administrere eller annullere når som helst i din butiks kontoindstillinger.",
-    "noteAndroid": "Betaling opkræves via din Google Play-konto. Abonnementer fornyes automatisk, medmindre de annulleres mindst 24 timer før udløb af den aktuelle periode. Du kan administrere eller annullere når som helst i din butiks kontoindstillinger."
+    "noteAndroid": "Betaling opkræves via din Google Play-konto. Abonnementer fornyes automatisk, medmindre de annulleres mindst 24 timer før udløb af den aktuelle periode. Du kan administrere eller annullere når som helst i din butiks kontoindstillinger.",
+    "restoreConfirmTitle": "Gendan køb?",
+    "restoreConfirmMessage": "Vi tjekker dine butikskøb og gendanner aktiv Pro-adgang på denne enhed.",
+    "restoreConfirmAction": "Gendan"
   },
   "downgrade": {
     "title": "Vælg dit kæledyr",

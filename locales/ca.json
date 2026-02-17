@@ -614,7 +614,15 @@
       "indonesian": "Bahasa Indonesia"
     },
     "timezone": "Zona horària",
-    "selectTimezone": "Selecciona la zona horària"
+    "selectTimezone": "Selecciona la zona horària",
+    "clearLocalData": "Esborra les dades locals",
+    "clearLocalDataDescription": "Elimina permanentment totes les mascotes i els registres d'aquest dispositiu",
+    "clearLocalDataConfirmTitle": "Esborrar totes les dades locals?",
+    "clearLocalDataConfirmMessage": "Això eliminarà permanentment les mascotes, els esdeveniments, els horaris d'alimentació, els registres de salut i les despeses d'aquest dispositiu. Aquesta acció no es pot desfer.",
+    "clearLocalDataConfirmAction": "Esborra les dades",
+    "clearLocalDataSuccessTitle": "Dades esborrades",
+    "clearLocalDataSuccessMessage": "Totes les dades locals de les mascotes s'han eliminat d'aquest dispositiu.",
+    "clearLocalDataError": "No s'han pogut esborrar les dades locals. Si us plau, torna-ho a provar."
   },
   "common": {
     "loading": "Carregant...",
@@ -1579,7 +1587,10 @@
     "verifyingPurchase": "S'ha rebut la compra. S'esta verificant la teva subscripcio...",
     "verificationTakingLong": "S'esta verificant la teva compra. L'acces s'activara automaticament en uns segons.",
     "noteIos": "El pagament es carrega al teu compte d'App Store. Les subscripcions es renoven automàticament tret que es cancel·lin almenys 24 hores abans del final del període actual. Pots gestionar-les o cancel·lar-les en qualsevol moment des de la configuració del compte de la botiga.",
-    "noteAndroid": "El pagament es carrega al teu compte d'Google Play. Les subscripcions es renoven automàticament tret que es cancel·lin almenys 24 hores abans del final del període actual. Pots gestionar-les o cancel·lar-les en qualsevol moment des de la configuració del compte de la botiga."
+    "noteAndroid": "El pagament es carrega al teu compte d'Google Play. Les subscripcions es renoven automàticament tret que es cancel·lin almenys 24 hores abans del final del període actual. Pots gestionar-les o cancel·lar-les en qualsevol moment des de la configuració del compte de la botiga.",
+    "restoreConfirmTitle": "Voleu restaurar les compres?",
+    "restoreConfirmMessage": "Comprovarem les compres de la teva botiga i restaurarem l'accés Pro actiu en aquest dispositiu.",
+    "restoreConfirmAction": "Restaurar"
   },
   "downgrade": {
     "title": "Tria la teva mascota",

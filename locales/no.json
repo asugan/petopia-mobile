@@ -614,7 +614,15 @@
       "indonesian": "Bahasa Indonesia"
     },
     "timezone": "Tidssone",
-    "selectTimezone": "Velg tidssone"
+    "selectTimezone": "Velg tidssone",
+    "clearLocalData": "Slett lokale data",
+    "clearLocalDataDescription": "Fjern alle kjæledyr og poster permanent fra denne enheten",
+    "clearLocalDataConfirmTitle": "Vil du slette alle lokale data?",
+    "clearLocalDataConfirmMessage": "Dette vil permanent fjerne kjæledyr, arrangementer, fôringsplaner, helsejournaler og utgifter fra denne enheten. Denne handlingen kan ikke angres.",
+    "clearLocalDataConfirmAction": "Fjern data",
+    "clearLocalDataSuccessTitle": "Data slettet",
+    "clearLocalDataSuccessMessage": "Alle lokale kjæledyrdata er fjernet fra denne enheten.",
+    "clearLocalDataError": "Kunne ikke slette lokale data. Vennligst prøv igjen."
   },
   "common": {
     "loading": "Laster...",
@@ -1579,7 +1587,10 @@
     "verifyingPurchase": "Kjop mottatt. Verifiserer abonnementet ditt...",
     "verificationTakingLong": "Kjopet ditt verifiseres. Tilgang blir automatisk last opp om noen sekunder.",
     "noteIos": "Betaling belastes via App Store-kontoen din. Abonnementer fornyes automatisk med mindre de kanselleres minst 24 timer før slutten av gjeldende periode. Du kan administrere eller kansellere når som helst i butikkonto-innstillingene dine.",
-    "noteAndroid": "Betaling belastes via Google Play-kontoen din. Abonnementer fornyes automatisk med mindre de kanselleres minst 24 timer før slutten av gjeldende periode. Du kan administrere eller kansellere når som helst i butikkonto-innstillingene dine."
+    "noteAndroid": "Betaling belastes via Google Play-kontoen din. Abonnementer fornyes automatisk med mindre de kanselleres minst 24 timer før slutten av gjeldende periode. Du kan administrere eller kansellere når som helst i butikkonto-innstillingene dine.",
+    "restoreConfirmTitle": "Gjenopprette kjøp?",
+    "restoreConfirmMessage": "Vi sjekker butikkkjøpene dine og gjenoppretter aktiv Pro-tilgang på denne enheten.",
+    "restoreConfirmAction": "Restaurere"
   },
   "downgrade": {
     "title": "Velg ditt kjæledyr",

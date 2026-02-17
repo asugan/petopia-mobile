@@ -614,7 +614,15 @@
     },
     "selectCurrency": "Seleccionar moneda",
     "timezone": "Zona horaria",
-    "selectTimezone": "Seleccionar zona horaria"
+    "selectTimezone": "Seleccionar zona horaria",
+    "clearLocalData": "Borrar datos locales",
+    "clearLocalDataDescription": "Eliminar permanentemente todas las mascotas y registros de este dispositivo",
+    "clearLocalDataConfirmTitle": "¿Borrar todos los datos locales?",
+    "clearLocalDataConfirmMessage": "Esto eliminará permanentemente mascotas, eventos, horarios de alimentación, registros de salud y gastos de este dispositivo. Esta acción no se puede deshacer.",
+    "clearLocalDataConfirmAction": "Borrar datos",
+    "clearLocalDataSuccessTitle": "Datos borrados",
+    "clearLocalDataSuccessMessage": "Todos los datos locales de mascotas se han eliminado de este dispositivo.",
+    "clearLocalDataError": "No se pudieron borrar los datos locales. Por favor inténtalo de nuevo."
   },
   "common": {
     "loading": "Cargando...",
@@ -1574,7 +1582,10 @@
     "verifyingPurchase": "Compra recibida. Verificando tu suscripcion...",
     "verificationTakingLong": "Tu compra se esta verificando. El acceso se desbloqueara automaticamente en unos segundos.",
     "noteIos": "El pago se carga a tu cuenta de App Store. Las suscripciones se renuevan automáticamente, a menos que se cancelen al menos 24 horas antes de que termine el periodo actual. Puedes gestionarlas o cancelarlas en cualquier momento desde los ajustes de tu cuenta de la tienda.",
-    "noteAndroid": "El pago se carga a tu cuenta de Google Play. Las suscripciones se renuevan automáticamente, a menos que se cancelen al menos 24 horas antes de que termine el periodo actual. Puedes gestionarlas o cancelarlas en cualquier momento desde los ajustes de tu cuenta de la tienda."
+    "noteAndroid": "El pago se carga a tu cuenta de Google Play. Las suscripciones se renuevan automáticamente, a menos que se cancelen al menos 24 horas antes de que termine el periodo actual. Puedes gestionarlas o cancelarlas en cualquier momento desde los ajustes de tu cuenta de la tienda.",
+    "restoreConfirmTitle": "¿Restaurar compras?",
+    "restoreConfirmMessage": "Revisaremos tus compras en la tienda y restauraremos el acceso Pro activo en este dispositivo.",
+    "restoreConfirmAction": "Restaurar"
   },
   "downgrade": {
     "title": "Elige tu mascota",

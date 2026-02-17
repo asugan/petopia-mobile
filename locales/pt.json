@@ -614,7 +614,15 @@
     },
     "selectCurrency": "Selecionar moeda",
     "timezone": "Fuso horário",
-    "selectTimezone": "Selecionar fuso horário"
+    "selectTimezone": "Selecionar fuso horário",
+    "clearLocalData": "Limpar dados locais",
+    "clearLocalDataDescription": "Remover permanentemente todos os animais de estimação e registros deste dispositivo",
+    "clearLocalDataConfirmTitle": "Limpar todos os dados locais?",
+    "clearLocalDataConfirmMessage": "Isso removerá permanentemente animais de estimação, eventos, horários de alimentação, registros de saúde e despesas deste dispositivo. Esta ação não pode ser desfeita.",
+    "clearLocalDataConfirmAction": "Limpar dados",
+    "clearLocalDataSuccessTitle": "Dados apagados",
+    "clearLocalDataSuccessMessage": "Todos os dados locais de animais de estimação foram removidos deste dispositivo.",
+    "clearLocalDataError": "Falha ao limpar os dados locais. Por favor, tente novamente."
   },
   "common": {
     "loading": "Carregando...",
@@ -1579,7 +1587,10 @@
     "verifyingPurchase": "Compra recebida. Verificando a sua subscricao...",
     "verificationTakingLong": "A sua compra esta a ser verificada. O acesso sera desbloqueado automaticamente em alguns segundos.",
     "noteIos": "O pagamento é cobrado pela sua conta App Store. As assinaturas renovam automaticamente, a menos que sejam canceladas pelo menos 24 horas antes do fim do período atual. Você pode gerenciar ou cancelar a qualquer momento nas configurações da conta da loja.",
-    "noteAndroid": "O pagamento é cobrado pela sua conta Google Play. As assinaturas renovam automaticamente, a menos que sejam canceladas pelo menos 24 horas antes do fim do período atual. Você pode gerenciar ou cancelar a qualquer momento nas configurações da conta da loja."
+    "noteAndroid": "O pagamento é cobrado pela sua conta Google Play. As assinaturas renovam automaticamente, a menos que sejam canceladas pelo menos 24 horas antes do fim do período atual. Você pode gerenciar ou cancelar a qualquer momento nas configurações da conta da loja.",
+    "restoreConfirmTitle": "Restaurar compras?",
+    "restoreConfirmMessage": "Verificaremos suas compras na loja e restauraremos o acesso Pro ativo neste dispositivo.",
+    "restoreConfirmAction": "Restaurar"
   },
   "downgrade": {
     "title": "Escolha seu Pet",

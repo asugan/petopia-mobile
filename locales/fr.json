@@ -614,7 +614,15 @@
     },
     "selectCurrency": "Sélectionner la devise",
     "timezone": "Fuseau horaire",
-    "selectTimezone": "Sélectionner le fuseau horaire"
+    "selectTimezone": "Sélectionner le fuseau horaire",
+    "clearLocalData": "Effacer les données locales",
+    "clearLocalDataDescription": "Supprimer définitivement tous les animaux et enregistrements de cet appareil",
+    "clearLocalDataConfirmTitle": "Effacer toutes les données locales ?",
+    "clearLocalDataConfirmMessage": "Cela supprimera définitivement les animaux de compagnie, les événements, les horaires d'alimentation, les dossiers de santé et les dépenses de cet appareil. Cette action ne peut pas être annulée.",
+    "clearLocalDataConfirmAction": "Effacer les données",
+    "clearLocalDataSuccessTitle": "Données effacées",
+    "clearLocalDataSuccessMessage": "Toutes les données locales sur les animaux de compagnie ont été supprimées de cet appareil.",
+    "clearLocalDataError": "Échec de la suppression des données locales. Veuillez réessayer."
   },
   "common": {
     "loading": "Chargement...",
@@ -1579,7 +1587,10 @@
     "verifyingPurchase": "Achat recu. Verification de votre abonnement...",
     "verificationTakingLong": "Votre achat est en cours de verification. L'acces sera debloque automatiquement dans quelques secondes.",
     "noteIos": "Le paiement est facturé via votre compte App Store. Les abonnements se renouvellent automatiquement, sauf annulation au moins 24 heures avant la fin de la période en cours. Vous pouvez les gérer ou les annuler à tout moment dans les réglages de votre compte store.",
-    "noteAndroid": "Le paiement est facturé via votre compte Google Play. Les abonnements se renouvellent automatiquement, sauf annulation au moins 24 heures avant la fin de la période en cours. Vous pouvez les gérer ou les annuler à tout moment dans les réglages de votre compte store."
+    "noteAndroid": "Le paiement est facturé via votre compte Google Play. Les abonnements se renouvellent automatiquement, sauf annulation au moins 24 heures avant la fin de la période en cours. Vous pouvez les gérer ou les annuler à tout moment dans les réglages de votre compte store.",
+    "restoreConfirmTitle": "Restaurer les achats ?",
+    "restoreConfirmMessage": "Nous vérifierons vos achats en magasin et restaurerons l'accès Pro actif sur cet appareil.",
+    "restoreConfirmAction": "Restaurer"
   },
   "downgrade": {
     "title": "Choisissez votre animal",

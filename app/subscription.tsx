@@ -1,4 +1,4 @@
-import { View, StyleSheet, ScrollView, Linking, Pressable, Platform } from 'react-native';
+import { View, StyleSheet, ScrollView, Linking, Pressable, Platform, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useTranslation } from 'react-i18next';
 import { useRouter, useLocalSearchParams } from 'expo-router';
@@ -141,8 +141,35 @@ export default function SubscriptionScreen() {
     };
   }, [getOfferings]);
 
-  const handleRestore = async () => {
-    await restorePurchases({ screen: 'subscription', source });
+  const runRestore = async () => {
+    const restored = await restorePurchases({ screen: 'subscription', source });
+    if (restored) {
+      setModalVisible(true);
+    }
+  };
+
+  const handleRestore = () => {
+    const storeName = isIOS ? 'App Store' : 'Google Play';
+
+    Alert.alert(
+      t('subscription.restoreConfirmTitle', 'Restore purchases?'),
+      t(
+        'subscription.restoreConfirmMessage',
+        `We will check your ${storeName} purchases and restore active Pro access on this account.`
+      ),
+      [
+        {
+          text: t('common.cancel'),
+          style: 'cancel',
+        },
+        {
+          text: t('subscription.restoreConfirmAction', t('subscription.restorePurchases')),
+          onPress: () => {
+            void runRestore();
+          },
+        },
+      ]
+    );
   };
 
   const selectedPackage = useMemo(

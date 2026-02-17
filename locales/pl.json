@@ -614,7 +614,15 @@
     },
     "selectCurrency": "Wybierz walutę",
     "timezone": "Strefa czasowa",
-    "selectTimezone": "Wybierz strefę czasową"
+    "selectTimezone": "Wybierz strefę czasową",
+    "clearLocalData": "Wyczyść dane lokalne",
+    "clearLocalDataDescription": "Usuń trwale wszystkie zwierzęta i nagrania z tego urządzenia",
+    "clearLocalDataConfirmTitle": "Wyczyścić wszystkie dane lokalne?",
+    "clearLocalDataConfirmMessage": "Spowoduje to trwałe usunięcie z tego urządzenia zwierząt domowych, wydarzeń, harmonogramów karmienia, dokumentacji zdrowotnej i wydatków. Tej akcji nie można cofnąć.",
+    "clearLocalDataConfirmAction": "Wyczyść dane",
+    "clearLocalDataSuccessTitle": "Dane wyczyszczone",
+    "clearLocalDataSuccessMessage": "Wszystkie lokalne dane zwierząt domowych zostały usunięte z tego urządzenia.",
+    "clearLocalDataError": "Nie udało się wyczyścić danych lokalnych. Spróbuj ponownie."
   },
   "common": {
     "loading": "Ładowanie...",
@@ -1579,7 +1587,10 @@
     "verifyingPurchase": "Zakup otrzymany. Weryfikujemy twoja subskrypcje...",
     "verificationTakingLong": "Twoj zakup jest weryfikowany. Dostep zostanie automatycznie odblokowany za kilka sekund.",
     "noteIos": "Płatność jest pobierana przez konto App Store. Subskrypcje odnawiają się automatycznie, chyba że zostaną anulowane co najmniej 24 godziny przed końcem bieżącego okresu. Możesz nimi zarządzać lub anulować je w dowolnym momencie w ustawieniach konta sklepu.",
-    "noteAndroid": "Płatność jest pobierana przez konto Google Play. Subskrypcje odnawiają się automatycznie, chyba że zostaną anulowane co najmniej 24 godziny przed końcem bieżącego okresu. Możesz nimi zarządzać lub anulować je w dowolnym momencie w ustawieniach konta sklepu."
+    "noteAndroid": "Płatność jest pobierana przez konto Google Play. Subskrypcje odnawiają się automatycznie, chyba że zostaną anulowane co najmniej 24 godziny przed końcem bieżącego okresu. Możesz nimi zarządzać lub anulować je w dowolnym momencie w ustawieniach konta sklepu.",
+    "restoreConfirmTitle": "Przywrócić zakupy?",
+    "restoreConfirmMessage": "Sprawdzimy Twoje zakupy w sklepie i przywrócimy aktywny dostęp Pro na tym urządzeniu.",
+    "restoreConfirmAction": "Przywrócić"
   },
   "downgrade": {
     "title": "Wybierz swojego zwierzaka",

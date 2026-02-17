@@ -614,7 +614,15 @@
     },
     "selectCurrency": "選擇貨幣",
     "timezone": "時區",
-    "selectTimezone": "選擇時區"
+    "selectTimezone": "選擇時區",
+    "clearLocalData": "清除本地數據",
+    "clearLocalDataDescription": "從此設備永久刪除所有寵物和記錄",
+    "clearLocalDataConfirmTitle": "清除所有本地資料？",
+    "clearLocalDataConfirmMessage": "這將從該設備中永久刪除寵物、活動、餵食時間表、健康記錄和費用。此操作無法撤銷。",
+    "clearLocalDataConfirmAction": "清除數據",
+    "clearLocalDataSuccessTitle": "資料已清除",
+    "clearLocalDataSuccessMessage": "所有本地寵物資料已從此裝置中刪除。",
+    "clearLocalDataError": "清除本地資料失敗。請再試一次。"
   },
   "common": {
     "loading": "加載中...",
@@ -1579,7 +1587,10 @@
     "verifyingPurchase": "已收到購買，正在驗證您的訂閱...",
     "verificationTakingLong": "正在驗證您的購買，存取權限將在幾秒內自動開通。",
     "noteIos": "費用將透過你的 App Store 帳號扣款。除非於目前週期結束前至少 24 小時取消，否則訂閱會自動續訂。你可以隨時在商店帳號設定中管理或取消訂閱。",
-    "noteAndroid": "費用將透過你的 Google Play 帳號扣款。除非於目前週期結束前至少 24 小時取消，否則訂閱會自動續訂。你可以隨時在商店帳號設定中管理或取消訂閱。"
+    "noteAndroid": "費用將透過你的 Google Play 帳號扣款。除非於目前週期結束前至少 24 小時取消，否則訂閱會自動續訂。你可以隨時在商店帳號設定中管理或取消訂閱。",
+    "restoreConfirmTitle": "恢復購買？",
+    "restoreConfirmMessage": "我們將檢查您的商店購買情況並恢復此裝置上的有效 Pro 存取權限。",
+    "restoreConfirmAction": "恢復"
   },
   "downgrade": {
     "title": "選擇您的寵物",

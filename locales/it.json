@@ -614,7 +614,15 @@
     },
     "selectCurrency": "Seleziona valuta",
     "timezone": "Fuso orario",
-    "selectTimezone": "Seleziona fuso orario"
+    "selectTimezone": "Seleziona fuso orario",
+    "clearLocalData": "Cancella dati locali",
+    "clearLocalDataDescription": "Rimuovi definitivamente tutti gli animali domestici e i record da questo dispositivo",
+    "clearLocalDataConfirmTitle": "Cancellare tutti i dati locali?",
+    "clearLocalDataConfirmMessage": "Questa operazione rimuoverà definitivamente gli animali domestici, gli eventi, i programmi di alimentazione, i dati sanitari e le spese da questo dispositivo. Questa azione non può essere annullata.",
+    "clearLocalDataConfirmAction": "Cancella dati",
+    "clearLocalDataSuccessTitle": "Dati cancellati",
+    "clearLocalDataSuccessMessage": "Tutti i dati locali sugli animali domestici sono stati rimossi da questo dispositivo.",
+    "clearLocalDataError": "Impossibile cancellare i dati locali. Per favore riprova."
   },
   "common": {
     "loading": "Caricamento...",
@@ -1579,7 +1587,10 @@
     "verifyingPurchase": "Acquisto ricevuto. Verifica del tuo abbonamento in corso...",
     "verificationTakingLong": "Il tuo acquisto e in verifica. L'accesso verra sbloccato automaticamente tra pochi secondi.",
     "noteIos": "Il pagamento viene addebitato sul tuo account App Store. Gli abbonamenti si rinnovano automaticamente, salvo cancellazione almeno 24 ore prima della fine del periodo corrente. Puoi gestire o annullare in qualsiasi momento dalle impostazioni dell'account dello store.",
-    "noteAndroid": "Il pagamento viene addebitato sul tuo account Google Play. Gli abbonamenti si rinnovano automaticamente, salvo cancellazione almeno 24 ore prima della fine del periodo corrente. Puoi gestire o annullare in qualsiasi momento dalle impostazioni dell'account dello store."
+    "noteAndroid": "Il pagamento viene addebitato sul tuo account Google Play. Gli abbonamenti si rinnovano automaticamente, salvo cancellazione almeno 24 ore prima della fine del periodo corrente. Puoi gestire o annullare in qualsiasi momento dalle impostazioni dell'account dello store.",
+    "restoreConfirmTitle": "Ripristinare gli acquisti?",
+    "restoreConfirmMessage": "Controlleremo i tuoi acquisti in negozio e ripristineremo l'accesso Pro attivo su questo dispositivo.",
+    "restoreConfirmAction": "Ripristinare"
   },
   "downgrade": {
     "title": "Scegli il tuo Animale",

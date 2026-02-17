@@ -614,7 +614,15 @@
     },
     "selectCurrency": "Valuta selecteren",
     "timezone": "Tijdzone",
-    "selectTimezone": "Tijdzone selecteren"
+    "selectTimezone": "Tijdzone selecteren",
+    "clearLocalData": "Lokale gegevens wissen",
+    "clearLocalDataDescription": "Verwijder permanent alle huisdieren en gegevens van dit apparaat",
+    "clearLocalDataConfirmTitle": "Alle lokale gegevens wissen?",
+    "clearLocalDataConfirmMessage": "Hiermee worden huisdieren, evenementen, voedingsschema's, gezondheidsdossiers en uitgaven permanent van dit apparaat verwijderd. Deze actie kan niet ongedaan worden gemaakt.",
+    "clearLocalDataConfirmAction": "Gegevens wissen",
+    "clearLocalDataSuccessTitle": "Gegevens gewist",
+    "clearLocalDataSuccessMessage": "Alle lokale huisdiergegevens zijn van dit apparaat verwijderd.",
+    "clearLocalDataError": "Kan lokale gegevens niet wissen. Probeer het opnieuw."
   },
   "common": {
     "loading": "Laden...",
@@ -1579,7 +1587,10 @@
     "verifyingPurchase": "Aankoop ontvangen. We verifieren je abonnement...",
     "verificationTakingLong": "Je aankoop wordt geverifieerd. Toegang wordt binnen enkele seconden automatisch ontgrendeld.",
     "noteIos": "Betaling verloopt via je App Store-account. Abonnementen worden automatisch verlengd, tenzij je minimaal 24 uur voor het einde van de huidige periode opzegt. Je kunt op elk moment beheren of opzeggen via je store-accountinstellingen.",
-    "noteAndroid": "Betaling verloopt via je Google Play-account. Abonnementen worden automatisch verlengd, tenzij je minimaal 24 uur voor het einde van de huidige periode opzegt. Je kunt op elk moment beheren of opzeggen via je store-accountinstellingen."
+    "noteAndroid": "Betaling verloopt via je Google Play-account. Abonnementen worden automatisch verlengd, tenzij je minimaal 24 uur voor het einde van de huidige periode opzegt. Je kunt op elk moment beheren of opzeggen via je store-accountinstellingen.",
+    "restoreConfirmTitle": "Aankopen herstellen?",
+    "restoreConfirmMessage": "We controleren uw winkelaankopen en herstellen de actieve Pro-toegang op dit apparaat.",
+    "restoreConfirmAction": "Herstellen"
   },
   "downgrade": {
     "title": "Kies Je Huisdier",

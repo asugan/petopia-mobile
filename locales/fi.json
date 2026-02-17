@@ -614,7 +614,15 @@
       "indonesian": "Bahasa Indonesia"
     },
     "timezone": "Aikavyöhyke",
-    "selectTimezone": "Valitse aikavyöhyke"
+    "selectTimezone": "Valitse aikavyöhyke",
+    "clearLocalData": "Tyhjennä paikalliset tiedot",
+    "clearLocalDataDescription": "Poista pysyvästi kaikki lemmikit ja tietueet tästä laitteesta",
+    "clearLocalDataConfirmTitle": "Poistetaanko kaikki paikalliset tiedot?",
+    "clearLocalDataConfirmMessage": "Tämä poistaa pysyvästi lemmikit, tapahtumat, ruokintaaikataulut, terveystiedot ja kulut tästä laitteesta. Tätä toimintoa ei voi kumota.",
+    "clearLocalDataConfirmAction": "Tyhjennä tiedot",
+    "clearLocalDataSuccessTitle": "Tiedot tyhjennetty",
+    "clearLocalDataSuccessMessage": "Kaikki paikalliset lemmikkitiedot on poistettu tältä laitteelta.",
+    "clearLocalDataError": "Paikallisten tietojen tyhjennys epäonnistui. Yritä uudelleen."
   },
   "common": {
     "loading": "Ladataan...",
@@ -1579,7 +1587,10 @@
     "verifyingPurchase": "Osto vastaanotettu. Vahvistetaan tilaustasi...",
     "verificationTakingLong": "Ostoasi vahvistetaan. Kaytto avautuu automaattisesti muutaman sekunnin kuluttua.",
     "noteIos": "Maksu veloitetaan App Store -tililtäsi. Tilaukset uusiutuvat automaattisesti, ellei niitä peruuteta vähintään 24 tuntia ennen nykyisen jakson päättymistä. Voit hallita tai peruuttaa tilauksen milloin tahansa kauppatilin asetuksista.",
-    "noteAndroid": "Maksu veloitetaan Google Play -tililtäsi. Tilaukset uusiutuvat automaattisesti, ellei niitä peruuteta vähintään 24 tuntia ennen nykyisen jakson päättymistä. Voit hallita tai peruuttaa tilauksen milloin tahansa kauppatilin asetuksista."
+    "noteAndroid": "Maksu veloitetaan Google Play -tililtäsi. Tilaukset uusiutuvat automaattisesti, ellei niitä peruuteta vähintään 24 tuntia ennen nykyisen jakson päättymistä. Voit hallita tai peruuttaa tilauksen milloin tahansa kauppatilin asetuksista.",
+    "restoreConfirmTitle": "Palauta ostokset?",
+    "restoreConfirmMessage": "Tarkistamme ostoksesi kaupasta ja palautamme aktiivisen Pro-käyttöoikeuden tälle laitteelle.",
+    "restoreConfirmAction": "Palauttaa"
   },
   "downgrade": {
     "title": "Valitse lemmikkisi",

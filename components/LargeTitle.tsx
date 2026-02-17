@@ -7,7 +7,6 @@ import { useTranslation } from "react-i18next";
 import { Image } from "expo-image";
 import { Text } from "@/components/ui";
 import { useTheme } from "@/lib/theme";
-import { useSubscription } from "@/lib/hooks/useSubscription";
 import {
   notificationService,
   enableLocalNotifications,
@@ -106,7 +105,6 @@ export const HeaderActions = () => {
   const { theme } = useTheme();
   const { t } = useTranslation();
   const router = useRouter();
-  const { subscriptionStatus } = useSubscription();
   const {
     settings,
     updateSettings,
@@ -184,32 +182,8 @@ export const HeaderActions = () => {
     }
   };
 
-  const statusLabel = subscriptionStatus === "pro" ? "Pro" : "Free";
-  const statusTheme = subscriptionStatus === "pro"
-    ? {
-      color: theme.colors.primary,
-      backgroundColor: theme.colors.primaryContainer,
-      icon: "crown" as const,
-    }
-    : {
-      color: theme.colors.onSurfaceVariant,
-      backgroundColor: theme.colors.surfaceVariant,
-      icon: "account-outline" as const,
-    };
-
   return (
     <View style={styles.headerActions}>
-      <View style={[styles.statusChip, { backgroundColor: statusTheme.backgroundColor, borderColor: statusTheme.color }]}
-      >
-        <MaterialCommunityIcons
-          name={statusTheme.icon}
-          size={14}
-          color={statusTheme.color}
-        />
-        <Text variant="labelSmall" style={{ color: statusTheme.color }}>
-          {statusLabel}
-        </Text>
-      </View>
       <Pressable
         onPress={handleNotificationToggle}
         disabled={isNotificationLoading || !settings}
@@ -329,14 +303,5 @@ const styles = StyleSheet.create({
   },
   iconPressed: {
     transform: [{ scale: 0.96 }],
-  },
-  statusChip: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 4,
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    borderRadius: 999,
-    borderWidth: 1,
   },
 });

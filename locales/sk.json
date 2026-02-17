@@ -614,7 +614,15 @@
       "indonesian": "Bahasa Indonesia"
     },
     "timezone": "Časové pásmo",
-    "selectTimezone": "Vyberte časové pásmo"
+    "selectTimezone": "Vyberte časové pásmo",
+    "clearLocalData": "Vymazať miestne údaje",
+    "clearLocalDataDescription": "Natrvalo odstráňte všetky domáce zvieratá a záznamy z tohto zariadenia",
+    "clearLocalDataConfirmTitle": "Vymazať všetky miestne údaje?",
+    "clearLocalDataConfirmMessage": "Tým sa natrvalo odstránia domáce zvieratá, udalosti, plány kŕmenia, zdravotné záznamy a výdavky z tohto zariadenia. Túto akciu nie je možné vrátiť späť.",
+    "clearLocalDataConfirmAction": "Vymazať údaje",
+    "clearLocalDataSuccessTitle": "Údaje vymazané",
+    "clearLocalDataSuccessMessage": "Všetky údaje o miestnych domácich miláčikoch boli z tohto zariadenia odstránené.",
+    "clearLocalDataError": "Miestne údaje sa nepodarilo vymazať. Skúste to znova."
   },
   "common": {
     "loading": "Načítava sa...",
@@ -1579,7 +1587,10 @@
     "verifyingPurchase": "Nakup prijaty. Overujeme vase predplatne...",
     "verificationTakingLong": "Vas nakup sa overuje. Pristup sa automaticky odomkne o niekolko sekund.",
     "noteIos": "Platba sa účtuje cez váš účet App Store. Predplatné sa automaticky obnovuje, ak ho nezrušíte aspoň 24 hodín pred koncom aktuálneho obdobia. Spravovať alebo zrušiť ho môžete kedykoľvek v nastaveniach účtu obchodu.",
-    "noteAndroid": "Platba sa účtuje cez váš účet Google Play. Predplatné sa automaticky obnovuje, ak ho nezrušíte aspoň 24 hodín pred koncom aktuálneho obdobia. Spravovať alebo zrušiť ho môžete kedykoľvek v nastaveniach účtu obchodu."
+    "noteAndroid": "Platba sa účtuje cez váš účet Google Play. Predplatné sa automaticky obnovuje, ak ho nezrušíte aspoň 24 hodín pred koncom aktuálneho obdobia. Spravovať alebo zrušiť ho môžete kedykoľvek v nastaveniach účtu obchodu.",
+    "restoreConfirmTitle": "Obnoviť nákupy?",
+    "restoreConfirmMessage": "Skontrolujeme vaše nákupy v obchode a obnovíme aktívny prístup Pro na tomto zariadení.",
+    "restoreConfirmAction": "Obnoviť"
   },
   "downgrade": {
     "title": "Vyberte si svoje zvieratko",

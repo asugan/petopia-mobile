@@ -614,7 +614,15 @@
       "indonesian": "Bahasa Indonesia"
     },
     "timezone": "Tidszon",
-    "selectTimezone": "Välj tidszon"
+    "selectTimezone": "Välj tidszon",
+    "clearLocalData": "Rensa lokal data",
+    "clearLocalDataDescription": "Ta bort alla husdjur och register permanent från den här enheten",
+    "clearLocalDataConfirmTitle": "Rensa alla lokala data?",
+    "clearLocalDataConfirmMessage": "Detta tar permanent bort husdjur, evenemang, matningsscheman, hälsojournaler och utgifter från den här enheten. Denna åtgärd kan inte ångras.",
+    "clearLocalDataConfirmAction": "Rensa data",
+    "clearLocalDataSuccessTitle": "Data raderade",
+    "clearLocalDataSuccessMessage": "Alla lokala husdjursdata har tagits bort från den här enheten.",
+    "clearLocalDataError": "Det gick inte att rensa lokal data. Försök igen."
   },
   "common": {
     "loading": "Laddar...",
@@ -1579,7 +1587,10 @@
     "verifyingPurchase": "Kop mottaget. Verifierar din prenumeration...",
     "verificationTakingLong": "Ditt kop verifieras. Atkomst lasses upp automatiskt om nagra sekunder.",
     "noteIos": "Betalning debiteras via ditt App Store-konto. Prenumerationer förnyas automatiskt om de inte avslutas minst 24 timmar före slutet av den aktuella perioden. Du kan hantera eller avsluta när som helst i butikskontots inställningar.",
-    "noteAndroid": "Betalning debiteras via ditt Google Play-konto. Prenumerationer förnyas automatiskt om de inte avslutas minst 24 timmar före slutet av den aktuella perioden. Du kan hantera eller avsluta när som helst i butikskontots inställningar."
+    "noteAndroid": "Betalning debiteras via ditt Google Play-konto. Prenumerationer förnyas automatiskt om de inte avslutas minst 24 timmar före slutet av den aktuella perioden. Du kan hantera eller avsluta när som helst i butikskontots inställningar.",
+    "restoreConfirmTitle": "Återställa köp?",
+    "restoreConfirmMessage": "Vi kontrollerar dina butiksköp och återställer aktiv Pro-åtkomst på den här enheten.",
+    "restoreConfirmAction": "Återställa"
   },
   "downgrade": {
     "title": "Välj ditt husdjur",

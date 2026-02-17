@@ -614,7 +614,15 @@
     },
     "selectCurrency": "选择货币",
     "timezone": "时区",
-    "selectTimezone": "选择时区"
+    "selectTimezone": "选择时区",
+    "clearLocalData": "清除本地数据",
+    "clearLocalDataDescription": "从此设备中永久删除所有宠物和记录",
+    "clearLocalDataConfirmTitle": "清除所有本地数据？",
+    "clearLocalDataConfirmMessage": "这将从该设备中永久删除宠物、活动、喂食时间表、健康记录和费用。此操作无法撤消。",
+    "clearLocalDataConfirmAction": "清除数据",
+    "clearLocalDataSuccessTitle": "数据已清除",
+    "clearLocalDataSuccessMessage": "所有本地宠物数据均已从此设备中删除。",
+    "clearLocalDataError": "清除本地数据失败。请再试一次。"
   },
   "common": {
     "loading": "加载中...",
@@ -1579,7 +1587,10 @@
     "verifyingPurchase": "已收到购买请求，正在验证您的订阅...",
     "verificationTakingLong": "正在验证您的购买，访问权限将在几秒内自动开通。",
     "noteIos": "费用将通过你的 App Store 账户扣款。除非在当前周期结束前至少 24 小时取消，否则订阅会自动续订。你可随时在商店账户设置中管理或取消订阅。",
-    "noteAndroid": "费用将通过你的 Google Play 账户扣款。除非在当前周期结束前至少 24 小时取消，否则订阅会自动续订。你可随时在商店账户设置中管理或取消订阅。"
+    "noteAndroid": "费用将通过你的 Google Play 账户扣款。除非在当前周期结束前至少 24 小时取消，否则订阅会自动续订。你可随时在商店账户设置中管理或取消订阅。",
+    "restoreConfirmTitle": "恢复购买？",
+    "restoreConfirmMessage": "我们将检查您的商店购买情况并恢复此设备上的有效 Pro 访问权限。",
+    "restoreConfirmAction": "恢复"
   },
   "downgrade": {
     "title": "选择您的宠物",

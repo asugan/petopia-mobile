@@ -614,7 +614,15 @@
       "indonesian": "Bahasa Indonesia"
     },
     "timezone": "Zona waktu",
-    "selectTimezone": "Pilih zona waktu"
+    "selectTimezone": "Pilih zona waktu",
+    "clearLocalData": "Hapus data lokal",
+    "clearLocalDataDescription": "Hapus semua hewan peliharaan dan catatan dari perangkat ini secara permanen",
+    "clearLocalDataConfirmTitle": "Hapus semua data lokal?",
+    "clearLocalDataConfirmMessage": "Tindakan ini akan menghapus hewan peliharaan, acara, jadwal makan, catatan kesehatan, dan pengeluaran secara permanen dari perangkat ini. Tindakan ini tidak dapat dibatalkan.",
+    "clearLocalDataConfirmAction": "Hapus Data",
+    "clearLocalDataSuccessTitle": "Data dihapus",
+    "clearLocalDataSuccessMessage": "Semua data hewan peliharaan lokal telah dihapus dari perangkat ini.",
+    "clearLocalDataError": "Gagal menghapus data lokal. Silakan coba lagi."
   },
   "common": {
     "loading": "Memuat...",
@@ -1592,6 +1600,9 @@
     "verifyingPurchase": "Pembelian diterima. Sedang memverifikasi langganan Anda...",
     "verificationTakingLong": "Pembelian Anda sedang diverifikasi. Akses akan terbuka otomatis dalam beberapa detik.",
     "noteIos": "Pembayaran ditagihkan melalui akun App Store Anda. Langganan diperpanjang otomatis kecuali dibatalkan setidaknya 24 jam sebelum akhir periode berjalan. Anda dapat mengelola atau membatalkan kapan saja dari pengaturan akun toko Anda.",
-    "noteAndroid": "Pembayaran ditagihkan melalui akun Google Play Anda. Langganan diperpanjang otomatis kecuali dibatalkan setidaknya 24 jam sebelum akhir periode berjalan. Anda dapat mengelola atau membatalkan kapan saja dari pengaturan akun toko Anda."
+    "noteAndroid": "Pembayaran ditagihkan melalui akun Google Play Anda. Langganan diperpanjang otomatis kecuali dibatalkan setidaknya 24 jam sebelum akhir periode berjalan. Anda dapat mengelola atau membatalkan kapan saja dari pengaturan akun toko Anda.",
+    "restoreConfirmTitle": "Pulihkan pembelian?",
+    "restoreConfirmMessage": "Kami akan memeriksa pembelian toko Anda dan memulihkan akses Pro aktif di perangkat ini.",
+    "restoreConfirmAction": "Memulihkan"
   }
 }

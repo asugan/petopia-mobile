@@ -614,7 +614,15 @@
       "indonesian": "Bahasa Indonesia"
     },
     "timezone": "Vremenska zona",
-    "selectTimezone": "Odaberi vremensku zonu"
+    "selectTimezone": "Odaberi vremensku zonu",
+    "clearLocalData": "Obriši lokalne podatke",
+    "clearLocalDataDescription": "Trajno uklonite sve ljubimce i zapise s ovog uređaja",
+    "clearLocalDataConfirmTitle": "Izbrisati sve lokalne podatke?",
+    "clearLocalDataConfirmMessage": "Ovo će trajno ukloniti kućne ljubimce, događaje, rasporede hranjenja, zdravstvene podatke i troškove s ovog uređaja. Ova se radnja ne može poništiti.",
+    "clearLocalDataConfirmAction": "Obriši podatke",
+    "clearLocalDataSuccessTitle": "Podaci izbrisani",
+    "clearLocalDataSuccessMessage": "Svi lokalni podaci o kućnim ljubimcima uklonjeni su s ovog uređaja.",
+    "clearLocalDataError": "Brisanje lokalnih podataka nije uspjelo. Molimo pokušajte ponovo."
   },
   "common": {
     "loading": "Učitavanje...",
@@ -1579,7 +1587,10 @@
     "verifyingPurchase": "Kupnja je zaprimljena. Provjeravamo vasu pretplatu...",
     "verificationTakingLong": "Vasa kupnja se provjerava. Pristup ce se automatski otkljucati za nekoliko sekundi.",
     "noteIos": "Plaćanje se naplaćuje putem vašeg App Store računa. Pretplate se automatski obnavljaju osim ako ih ne otkažete najmanje 24 sata prije kraja trenutnog razdoblja. Možete ih upravljati ili otkazati u bilo kojem trenutku u postavkama računa trgovine.",
-    "noteAndroid": "Plaćanje se naplaćuje putem vašeg Google Play računa. Pretplate se automatski obnavljaju osim ako ih ne otkažete najmanje 24 sata prije kraja trenutnog razdoblja. Možete ih upravljati ili otkazati u bilo kojem trenutku u postavkama računa trgovine."
+    "noteAndroid": "Plaćanje se naplaćuje putem vašeg Google Play računa. Pretplate se automatski obnavljaju osim ako ih ne otkažete najmanje 24 sata prije kraja trenutnog razdoblja. Možete ih upravljati ili otkazati u bilo kojem trenutku u postavkama računa trgovine.",
+    "restoreConfirmTitle": "Vratiti kupnje?",
+    "restoreConfirmMessage": "Provjerit ćemo vaše kupnje u trgovini i vratiti aktivni Pro pristup na ovom uređaju.",
+    "restoreConfirmAction": "Vratiti"
   },
   "downgrade": {
     "title": "Odaberite svog ljubimca",

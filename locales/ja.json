@@ -614,7 +614,15 @@
     },
     "selectCurrency": "通貨を選択",
     "timezone": "タイムゾーン",
-    "selectTimezone": "タイムゾーンを選択"
+    "selectTimezone": "タイムゾーンを選択",
+    "clearLocalData": "ローカルデータをクリアする",
+    "clearLocalDataDescription": "このデバイスからすべてのペットと記録を永久に削除します",
+    "clearLocalDataConfirmTitle": "ローカルデータをすべて消去しますか?",
+    "clearLocalDataConfirmMessage": "これにより、ペット、イベント、給餌スケジュール、健康記録、支出がこのデバイスから完全に削除されます。この操作は元に戻すことができません。",
+    "clearLocalDataConfirmAction": "データのクリア",
+    "clearLocalDataSuccessTitle": "データクリア",
+    "clearLocalDataSuccessMessage": "ローカルのペット データはすべてこのデバイスから削除されました。",
+    "clearLocalDataError": "ローカルデータのクリアに失敗しました。もう一度試してください。"
   },
   "common": {
     "loading": "読み込み中...",
@@ -1579,7 +1587,10 @@
     "verifyingPurchase": "購入を受け付けました。サブスクリプションを確認しています...",
     "verificationTakingLong": "購入を確認しています。数秒後にアクセスが自動的に有効になります。",
     "noteIos": "お支払いはApp Storeアカウントに請求されます。サブスクリプションは、現在の期間終了の24時間前までに解約しない限り自動更新されます。ストアのアカウント設定からいつでも管理・解約できます。",
-    "noteAndroid": "お支払いはGoogle Playアカウントに請求されます。サブスクリプションは、現在の期間終了の24時間前までに解約しない限り自動更新されます。ストアのアカウント設定からいつでも管理・解約できます。"
+    "noteAndroid": "お支払いはGoogle Playアカウントに請求されます。サブスクリプションは、現在の期間終了の24時間前までに解約しない限り自動更新されます。ストアのアカウント設定からいつでも管理・解約できます。",
+    "restoreConfirmTitle": "購入したものを復元しますか？",
+    "restoreConfirmMessage": "ストアでの購入内容を確認し、このデバイスでアクティブな Pro アクセスを復元します。",
+    "restoreConfirmAction": "復元する"
   },
   "downgrade": {
     "title": "ペットを選択",

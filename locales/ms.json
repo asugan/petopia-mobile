@@ -614,7 +614,15 @@
     },
     "selectCurrency": "Pilih mata wang",
     "timezone": "Zon waktu",
-    "selectTimezone": "Pilih zon waktu"
+    "selectTimezone": "Pilih zon waktu",
+    "clearLocalData": "Kosongkan data tempatan",
+    "clearLocalDataDescription": "Alih keluar semua haiwan peliharaan dan rekod secara kekal daripada peranti ini",
+    "clearLocalDataConfirmTitle": "Kosongkan semua data setempat?",
+    "clearLocalDataConfirmMessage": "Ini akan mengalih keluar haiwan peliharaan, acara, jadual pemakanan, rekod kesihatan dan perbelanjaan secara kekal daripada peranti ini. Tindakan ini tidak boleh dibuat asal.",
+    "clearLocalDataConfirmAction": "Kosongkan Data",
+    "clearLocalDataSuccessTitle": "Data dikosongkan",
+    "clearLocalDataSuccessMessage": "Semua data haiwan peliharaan tempatan telah dialih keluar daripada peranti ini.",
+    "clearLocalDataError": "Gagal mengosongkan data setempat. Sila cuba lagi."
   },
   "common": {
     "loading": "Memuatkan...",
@@ -1579,7 +1587,10 @@
     "verifyingPurchase": "Pembelian diterima. Sedang mengesahkan langganan anda...",
     "verificationTakingLong": "Pembelian anda sedang disahkan. Akses akan dibuka secara automatik dalam beberapa saat.",
     "noteIos": "Pembayaran dicaj melalui akaun App Store anda. Langganan akan diperbaharui secara automatik melainkan dibatalkan sekurang-kurangnya 24 jam sebelum tamat tempoh semasa. Anda boleh mengurus atau membatalkan pada bila-bila masa daripada tetapan akaun kedai anda.",
-    "noteAndroid": "Pembayaran dicaj melalui akaun Google Play anda. Langganan akan diperbaharui secara automatik melainkan dibatalkan sekurang-kurangnya 24 jam sebelum tamat tempoh semasa. Anda boleh mengurus atau membatalkan pada bila-bila masa daripada tetapan akaun kedai anda."
+    "noteAndroid": "Pembayaran dicaj melalui akaun Google Play anda. Langganan akan diperbaharui secara automatik melainkan dibatalkan sekurang-kurangnya 24 jam sebelum tamat tempoh semasa. Anda boleh mengurus atau membatalkan pada bila-bila masa daripada tetapan akaun kedai anda.",
+    "restoreConfirmTitle": "Pulihkan pembelian?",
+    "restoreConfirmMessage": "Kami akan menyemak pembelian kedai anda dan memulihkan akses Pro aktif pada peranti ini.",
+    "restoreConfirmAction": "Pulihkan"
   },
   "downgrade": {
     "title": "Pilih Haiwan Anda",
