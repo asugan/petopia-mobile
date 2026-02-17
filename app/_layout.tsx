@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { AppState } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
@@ -29,6 +29,7 @@ import { useReminderScheduler } from '@/hooks/useReminderScheduler';
 import { useBudgetAlertNotifications } from '@/lib/hooks/useUserBudget';
 import { createToastConfig } from '@/lib/toast/toastConfig';
 import NotificationPermissionPrompt from '@/components/NotificationPermissionPrompt';
+import { resolveNotificationSyncAction } from '@/lib/utils/notificationPermissionSync';
 import { SUBSCRIPTION_ROUTES, TAB_ROUTES } from '@/constants/routes';
 import { LAYOUT } from '@/constants';
 import { initDatabase } from '@/lib/db/init';
@@ -111,6 +112,7 @@ function RootLayoutContent() {
     updateSettings,
     updateBaseCurrency,
     syncDeviceTimezone,
+    setNotificationDisabledBySystemPermission,
   } = useUserSettingsStore();
   const {
     hasSeenOnboarding,
@@ -128,7 +130,48 @@ function RootLayoutContent() {
   const rescheduleSignatureRef = useRef<string | null>(null);
   const preferenceSyncInFlightRef = useRef(false);
   const hasCheckedLaunchNotificationPromptRef = useRef(false);
+  const lastKnownNotificationPermissionRef = useRef<boolean | null>(null);
   const [showNotificationPrompt, setShowNotificationPrompt] = useState(false);
+
+  const syncNotificationState = useCallback(async () => {
+    const {
+      settings: currentSettings,
+      notificationDisabledBySystemPermission: disabledBySystemPermission,
+      updateSettings: updateSettingsAction,
+      setNotificationDisabledBySystemPermission: setDisabledBySystemPermission,
+    } = useUserSettingsStore.getState();
+
+    if (!currentSettings) {
+      return false;
+    }
+
+    const permissionEnabled = await notificationService.areNotificationsEnabled();
+    const previousPermissionEnabled = lastKnownNotificationPermissionRef.current;
+    lastKnownNotificationPermissionRef.current = permissionEnabled;
+    const notificationsEnabled = currentSettings.notificationsEnabled === true;
+    const action = resolveNotificationSyncAction({
+      permissionEnabled,
+      notificationsEnabled,
+      disabledBySystemPermission,
+      previousPermissionEnabled,
+    });
+
+    if (action === 'disable') {
+      setDisabledBySystemPermission(true);
+      void disableLocalNotifications();
+      await updateSettingsAction({ notificationsEnabled: false });
+      return false;
+    }
+
+    if (action === 'enable') {
+      void enableLocalNotifications();
+      await updateSettingsAction({ notificationsEnabled: true });
+      setDisabledBySystemPermission(false);
+      return true;
+    }
+
+    return notificationsEnabled && permissionEnabled;
+  }, []);
 
   useEffect(() => {
     initialize();
@@ -142,14 +185,7 @@ function RootLayoutContent() {
     hasCheckedLaunchNotificationPromptRef.current = true;
 
     const syncAndMaybePrompt = async () => {
-      const permissionEnabled = await notificationService.areNotificationsEnabled();
-      const notificationsEnabled = settings.notificationsEnabled === true;
-      const notificationsActive = notificationsEnabled && permissionEnabled;
-
-      if (!permissionEnabled && notificationsEnabled) {
-        void disableLocalNotifications();
-        await updateSettings({ notificationsEnabled: false });
-      }
+      const notificationsActive = await syncNotificationState();
 
       if (!notificationsActive) {
         setShowNotificationPrompt(true);
@@ -157,19 +193,23 @@ function RootLayoutContent() {
     };
 
     void syncAndMaybePrompt();
-  }, [hasSeenOnboarding, settings, updateSettings]);
+  }, [hasSeenOnboarding, settings, syncNotificationState]);
 
   useEffect(() => {
     const subscription = AppState.addEventListener('change', (nextState) => {
       if (nextState === 'active') {
         void syncDeviceTimezone();
+        void syncNotificationState();
+        setTimeout(() => {
+          void syncNotificationState();
+        }, 600);
       }
     });
 
     return () => {
       subscription.remove();
     };
-  }, [syncDeviceTimezone]);
+  }, [syncDeviceTimezone, syncNotificationState]);
 
   useEffect(() => {
     if (!hasSeenOnboarding || !settings) {
@@ -352,9 +392,11 @@ function RootLayoutContent() {
         onPermissionGranted={async () => {
           void enableLocalNotifications();
           await updateSettings({ notificationsEnabled: true });
+          setNotificationDisabledBySystemPermission(false);
           setShowNotificationPrompt(false);
         }}
         onPermissionDenied={async () => {
+          setNotificationDisabledBySystemPermission(true);
           void disableLocalNotifications();
           await updateSettings({ notificationsEnabled: false });
         }}

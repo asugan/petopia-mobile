@@ -31,6 +31,7 @@ interface UserSettingsState {
   isRTL: boolean;
   theme: Theme;
   isDark: boolean;
+  notificationDisabledBySystemPermission: boolean;
 }
 
 interface UserSettingsActions {
@@ -38,6 +39,7 @@ interface UserSettingsActions {
   updateSettings: (updates: UserSettingsUpdate) => Promise<void>;
   updateBaseCurrency: (currency: SupportedCurrency) => Promise<void>;
   syncDeviceTimezone: () => Promise<void>;
+  setNotificationDisabledBySystemPermission: (value: boolean) => void;
   initialize: () => Promise<void>;
   clear: () => void;
 }
@@ -85,6 +87,7 @@ export const useUserSettingsStore = create<
       isRTL: false,
       theme: darkTheme,
       isDark: true,
+      notificationDisabledBySystemPermission: false,
 
       fetchSettings: async () => {
         set({ isLoading: true, error: null });
@@ -270,6 +273,10 @@ export const useUserSettingsStore = create<
         await timezoneSyncInFlight;
       },
 
+      setNotificationDisabledBySystemPermission: (value) => {
+        set({ notificationDisabledBySystemPermission: value });
+      },
+
       initialize: async () => {
         const { settings } = get();
 
@@ -288,6 +295,7 @@ export const useUserSettingsStore = create<
           isRTL: false,
           theme: darkTheme,
           isDark: true,
+          notificationDisabledBySystemPermission: false,
         });
       },
     }),
@@ -296,6 +304,8 @@ export const useUserSettingsStore = create<
       storage: createJSONStorage(() => AsyncStorage),
       partialize: (state) => ({
         settings: state.settings,
+        notificationDisabledBySystemPermission:
+          state.notificationDisabledBySystemPermission,
       }),
       onRehydrateStorage: () => (state) => {
         if (state && state.settings) {

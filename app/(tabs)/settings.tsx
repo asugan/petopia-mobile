@@ -34,7 +34,16 @@ type ModalState = "none" | "contact" | "deleteWarning" | "deleteConfirm";
 export default function SettingsScreen() {
   const { t } = useTranslation();
   const router = useRouter();
-  const { theme, settings, updateSettings, updateBaseCurrency, initialize, isLoading: settingsLoading, error } = useUserSettingsStore();
+  const {
+    theme,
+    settings,
+    updateSettings,
+    updateBaseCurrency,
+    initialize,
+    isLoading: settingsLoading,
+    error,
+    setNotificationDisabledBySystemPermission,
+  } = useUserSettingsStore();
   const { resetOnboarding } = useOnboardingStore();
   const [authLoading, setAuthLoading] = useState(false);
   const isDarkMode = settings?.theme === "dark";
@@ -68,17 +77,12 @@ export default function SettingsScreen() {
     try {
       const enabled = await notificationService.areNotificationsEnabled();
       setNotificationPermissionEnabled(enabled);
-
-      if (!enabled && settings?.notificationsEnabled === true) {
-        void disableLocalNotifications();
-        await updateSettings({ notificationsEnabled: false });
-      }
     } catch (error) {
       if (__DEV__) {
         console.warn('[Settings] Failed to fetch permission status:', error);
       }
     }
-  }, [settings?.notificationsEnabled, updateSettings]);
+  }, []);
 
   useEffect(() => {
     if (settings !== null) {
@@ -120,7 +124,9 @@ export default function SettingsScreen() {
         if (granted) {
           void enableLocalNotifications();
           await updateSettings({ notificationsEnabled: true });
+          setNotificationDisabledBySystemPermission(false);
         } else {
+          setNotificationDisabledBySystemPermission(true);
           // Permission denied - show modal
           setShowPermissionModal(true);
         }
@@ -133,6 +139,7 @@ export default function SettingsScreen() {
         });
         await notificationService.cancelAllNotifications();
         clearAllReminderState();
+        setNotificationDisabledBySystemPermission(false);
         void disableLocalNotifications();
         await updateSettings({ notificationsEnabled: false });
       }
@@ -850,10 +857,12 @@ export default function SettingsScreen() {
           setPermissionRefreshKey((prev) => prev + 1);
           void enableLocalNotifications();
           await updateSettings({ notificationsEnabled: true });
+          setNotificationDisabledBySystemPermission(false);
         }}
         onPermissionDenied={async () => {
           setNotificationPermissionEnabled(false);
           setPermissionRefreshKey((prev) => prev + 1);
+          setNotificationDisabledBySystemPermission(true);
           void disableLocalNotifications();
           await updateSettings({ notificationsEnabled: false });
         }}

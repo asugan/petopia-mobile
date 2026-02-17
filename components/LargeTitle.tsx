@@ -107,7 +107,12 @@ export const HeaderActions = () => {
   const { t } = useTranslation();
   const router = useRouter();
   const { subscriptionStatus } = useSubscription();
-  const { settings, updateSettings, isLoading } = useUserSettingsStore();
+  const {
+    settings,
+    updateSettings,
+    isLoading,
+    setNotificationDisabledBySystemPermission,
+  } = useUserSettingsStore();
   const clearAllReminderState = useEventReminderStore((state) => state.clearAllReminderState);
   const isDarkMode = settings?.theme === "dark";
   const notificationsEnabled = settings?.notificationsEnabled === true;
@@ -142,27 +147,6 @@ export const HeaderActions = () => {
     };
   }, [checkPermissionStatus]);
 
-  React.useEffect(() => {
-    if (
-      !settings ||
-      isLoading ||
-      permissions === null ||
-      notificationPermissionEnabled ||
-      settings.notificationsEnabled !== true
-    ) {
-      return;
-    }
-
-    void disableLocalNotifications();
-    void updateSettings({ notificationsEnabled: false });
-  }, [
-    settings,
-    isLoading,
-    permissions,
-    notificationPermissionEnabled,
-    updateSettings,
-  ]);
-
   const handleToggleTheme = async () => {
     if (!settings || isLoading) return;
     await updateSettings({ theme: isDarkMode ? "light" : "dark" });
@@ -179,6 +163,7 @@ export const HeaderActions = () => {
         });
         await notificationService.cancelAllNotifications();
         clearAllReminderState();
+        setNotificationDisabledBySystemPermission(false);
         void disableLocalNotifications();
         await updateSettings({ notificationsEnabled: false });
       } else {
@@ -186,7 +171,9 @@ export const HeaderActions = () => {
         if (granted) {
           void enableLocalNotifications();
           await updateSettings({ notificationsEnabled: true });
+          setNotificationDisabledBySystemPermission(false);
         } else {
+          setNotificationDisabledBySystemPermission(true);
           setShowPermissionModal(true);
         }
       }
@@ -275,8 +262,10 @@ export const HeaderActions = () => {
         onPermissionGranted={async () => {
           void enableLocalNotifications();
           await updateSettings({ notificationsEnabled: true });
+          setNotificationDisabledBySystemPermission(false);
         }}
         onPermissionDenied={async () => {
+          setNotificationDisabledBySystemPermission(true);
           void disableLocalNotifications();
           await updateSettings({ notificationsEnabled: false });
         }}
