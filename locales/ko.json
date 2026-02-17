@@ -1528,13 +1528,19 @@
     "features": {
       "title": "Pro 기능",
       "unlimited": "무제한 반려동물",
-      "unlimitedDesc": "모든 반려동물 프로필, 기록, 메모를 한곳에 보관",
+      "unlimitedDesc": "두 번째 애완동물을 잠금 해제하고 모든 프로필, 기록, 루틴을 함께 유지하세요.",
       "feedingSchedules": "무제한 급여 일정",
       "feedingSchedulesDesc": "일정 제한 없이 각 반려동물에 맞는 안정적인 루틴 구성",
-      "budgetTracking": "예산 추적 및 알림",
-      "budgetTrackingDesc": "월간 예산 알림으로 비용 증가를 조기에 확인",
-      "export": "데이터 내보내기",
-      "exportDesc": "가족이나 수의사와 명확한 리포트를 공유",
+      "budgetTracking": "고급 예산 통찰력",
+      "budgetTrackingDesc": "Pro 통찰력과 스마트 알림을 통해 과다 지출 추세를 조기에 감지하세요.",
+      "export": "수의사가 사용할 수 있는 보고서 및 내보내기",
+      "exportDesc": "CSV, PDF 및 수의사 요약을 내보내서 몇 초 안에 깔끔하게 공유하세요.",
+      "recurrence": "반복 진료 자동화",
+      "recurrenceDesc": "한 번 설정하면 고급 반복 루틴을 통해 자동으로 반복됩니다.",
+      "smartReminders": "스마트 알림 사전 설정",
+      "smartRemindersDesc": "더욱 풍부한 알림 주기를 사용하여 중요한 관리 작업을 놓치지 마세요.",
+      "urgentMode": "긴급 진료 초점",
+      "urgentModeDesc": "긴급한 건강 업무를 즉시 확인하고 가장 중요한 일의 우선순위를 정하세요.",
       "priority": "우선 지원",
       "priorityDesc": "긴급할 때 더 빠른 도움 받기",
       "petManagement": "반려동물 관리",
@@ -1546,7 +1552,7 @@
     },
     "paywall": {
       "title": "Petopia Petcare Pro 잠금 해제",
-      "subtitle": "모든 반려동물의 돌봄, 알림, 지출을 놓치지 않고 관리"
+      "subtitle": "내보내기, 자동화, 스마트 인사이트를 통해 애완동물 한 마리에서 완전한 관리 시스템으로 확장"
     },
     "success": {
       "title": "구독 성공!",

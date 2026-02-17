@@ -1528,13 +1528,19 @@
     "features": {
       "title": "Funzionalità Pro",
       "unlimited": "Animali Illimitati",
-      "unlimitedDesc": "Tieni insieme tutti i profili, registri e note dei tuoi animali",
+      "unlimitedDesc": "Sblocca il 2° animale domestico e mantieni insieme ogni profilo, record e routine",
       "feedingSchedules": "Programmi Alimentari Illimitati",
       "feedingSchedulesDesc": "Crea routine affidabili per ogni animale senza limiti di pianificazione",
-      "budgetTracking": "Monitoraggio Budget e Avvisi",
-      "budgetTrackingDesc": "Individua presto l'aumento dei costi con avvisi di budget mensili",
-      "export": "Esportazione Dati",
-      "exportDesc": "Condividi report chiari con la famiglia o il veterinario",
+      "budgetTracking": "Approfondimenti avanzati sul budget",
+      "budgetTrackingDesc": "Rileva tempestivamente le tendenze di spesa eccessiva con approfondimenti Pro e avvisi intelligenti",
+      "export": "Report ed esportazione pronti per il veterinario",
+      "exportDesc": "Esporta CSV, PDF e riepiloghi veterinari da condividere in modo pulito in pochi secondi",
+      "recurrence": "Automazioni delle cure ricorrenti",
+      "recurrenceDesc": "Imposta una volta, ripeti automaticamente con routine ricorrenti avanzate",
+      "smartReminders": "Preimpostazioni di promemoria intelligenti",
+      "smartRemindersDesc": "Utilizza cadenze di promemoria più ricche in modo che le attività assistenziali importanti non vengano mai perse",
+      "urgentMode": "Focus sulle cure urgenti",
+      "urgentModeDesc": "Visualizza istantaneamente le attività sanitarie urgenti e dai la priorità a ciò che conta di più",
       "priority": "Supporto Prioritario",
       "priorityDesc": "Ricevi aiuto più rapido quando è urgente",
       "petManagement": "Gestione Animali",
@@ -1546,7 +1552,7 @@
     },
     "paywall": {
       "title": "Sblocca Petopia Petcare Pro",
-      "subtitle": "Resta sempre sul pezzo con cura, promemoria e spese per ogni animale"
+      "subtitle": "Passa da un animale domestico a un sistema di cura completo con esportazioni, automazione e informazioni intelligenti"
     },
     "success": {
       "title": "Abbonamento Riuscito!",

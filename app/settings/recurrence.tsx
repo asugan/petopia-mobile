@@ -1,9 +1,10 @@
 import React from 'react';
 import { View, StyleSheet, FlatList, RefreshControl } from 'react-native';
-import { Stack } from 'expo-router';
+import { Stack, useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import { Text, Card, IconButton, ActivityIndicator, Chip } from '@/components/ui';
 import { useTheme } from '@/lib/theme';
+import { useSubscription } from '@/lib/hooks/useSubscription';
 import {
   useRecurrenceRules,
   useDeleteRecurrenceRule,
@@ -16,10 +17,13 @@ import { getEventColor } from '@/lib/utils/eventColors';
 import { showToast } from '@/lib/toast/showToast';
 import { RecurrenceRule } from '@/lib/schemas/recurrenceSchema';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { SUBSCRIPTION_ROUTES } from '@/constants/routes';
 
 export default function RecurrenceManagementScreen() {
   const { t } = useTranslation();
   const { theme } = useTheme();
+  const router = useRouter();
+  const { isProUser, isLoading: isSubscriptionLoading } = useSubscription();
   const { data, isLoading, refetch, isRefetching } = useRecurrenceRules();
   const { data: pets = [] } = usePets();
   const deleteRuleMutation = useDeleteRecurrenceRule();
@@ -27,6 +31,22 @@ export default function RecurrenceManagementScreen() {
   const regenerateRuleMutation = useRegenerateRecurrenceEvents();
 
   const rules = data || [];
+
+  React.useEffect(() => {
+    if (!isSubscriptionLoading && !isProUser) {
+      router.replace(`${SUBSCRIPTION_ROUTES.main}?source=recurrence_management`);
+    }
+  }, [isProUser, isSubscriptionLoading, router]);
+
+  if (isSubscriptionLoading || !isProUser) {
+    return (
+      <SafeAreaView style={[styles.container, { backgroundColor: theme.colors.background }]} edges={['bottom']}>
+        <View style={styles.center}>
+          <ActivityIndicator size="large" />
+        </View>
+      </SafeAreaView>
+    );
+  }
 
   const handleDelete = (id: string) => {
     deleteRuleMutation.mutate(id, {

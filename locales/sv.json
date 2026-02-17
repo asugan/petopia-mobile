@@ -1528,13 +1528,19 @@
     "features": {
       "title": "Pro-funktioner",
       "unlimited": "Obegränsat antal husdjur",
-      "unlimitedDesc": "Samla alla husdjursprofiler, journaler och anteckningar på ett ställe",
+      "unlimitedDesc": "Lås upp det andra husdjuret och håll alla profiler, register och rutiner tillsammans",
       "feedingSchedules": "Obegränsat antal matningsscheman",
       "feedingSchedulesDesc": "Bygg pålitliga rutiner för varje husdjur utan schemabegränsningar",
-      "budgetTracking": "Budgetuppföljning & varningar",
-      "budgetTrackingDesc": "Upptäck ökande kostnader tidigt med månatliga budgetvarningar",
-      "export": "Dataexport",
-      "exportDesc": "Dela tydliga rapporter med familjen eller veterinären",
+      "budgetTracking": "Avancerad budgetinsikt",
+      "budgetTrackingDesc": "Upptäck överutgiftstrender tidigt med Pro-insikter och smarta varningar",
+      "export": "Veterinär redo rapporter och export",
+      "exportDesc": "Exportera CSV-, PDF- och veterinärsammanfattningar för att dela rent på några sekunder",
+      "recurrence": "Återkommande vårdautomatiseringar",
+      "recurrenceDesc": "Ställ in en gång, upprepa automatiskt med avancerade återkommande rutiner",
+      "smartReminders": "Smarta påminnelser förinställningar",
+      "smartRemindersDesc": "Använd rikare påminnelsekadenser så att viktiga vårduppgifter aldrig missas",
+      "urgentMode": "Brådskande vårdfokus",
+      "urgentModeDesc": "Se akuta hälsouppgifter direkt och prioritera det som är viktigast",
       "priority": "Prioriterad support",
       "priorityDesc": "Få snabbare hjälp när det är bråttom",
       "petManagement": "Husdjurshantering",
@@ -1546,7 +1552,7 @@
     },
     "paywall": {
       "title": "Lås upp Petopia Petcare Pro",
-      "subtitle": "Håll koll på vård, påminnelser och utgifter för varje husdjur"
+      "subtitle": "Skala från ett husdjur till ett komplett vårdsystem med export, automatisering och smarta insikter"
     },
     "success": {
       "title": "Prenumerationen lyckades!",

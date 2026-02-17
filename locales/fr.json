@@ -1528,13 +1528,19 @@
     "features": {
       "title": "Fonctionnalités Pro",
       "unlimited": "Animaux illimités",
-      "unlimitedDesc": "Regrouper tous les profils, dossiers et notes de vos animaux au même endroit",
+      "unlimitedDesc": "Débloquez un 2e animal et gérez profils, dossiers et routines au même endroit.",
       "feedingSchedules": "Programmes d'alimentation illimités",
       "feedingSchedulesDesc": "Créer des routines fiables pour chaque animal sans limite de planning",
-      "budgetTracking": "Suivi budgétaire & Alertes",
-      "budgetTrackingDesc": "Détecter la hausse des coûts tôt grâce aux alertes budgétaires mensuelles",
-      "export": "Exportation de données",
-      "exportDesc": "Partager des rapports clairs avec la famille ou votre vétérinaire",
+      "budgetTracking": "Analyses budget avancées",
+      "budgetTrackingDesc": "Repérez les dérives de dépenses plus tôt grâce aux insights Pro et aux alertes intelligentes.",
+      "export": "Rapports vétérinaires & export",
+      "exportDesc": "Exportez en CSV, PDF et résumé vétérinaire pour partager clairement en quelques secondes.",
+      "recurrence": "Automatisations de soins récurrents",
+      "recurrenceDesc": "Configurez une fois et laissez les routines se répéter automatiquement.",
+      "smartReminders": "Préréglages de rappels intelligents",
+      "smartRemindersDesc": "Activez des rappels progressifs pour ne plus manquer les soins importants.",
+      "urgentMode": "Focus soins urgents",
+      "urgentModeDesc": "Repérez immédiatement les tâches de santé urgentes et priorisez l'essentiel.",
       "priority": "Support prioritaire",
       "priorityDesc": "Obtenir une aide plus rapide quand c'est urgent",
       "petManagement": "Gestion des animaux",
@@ -1546,7 +1552,7 @@
     },
     "paywall": {
       "title": "Débloquez Petopia Petcare Pro",
-      "subtitle": "Gardez le contrôle des soins, rappels et dépenses pour chaque animal"
+      "subtitle": "Passez d'un seul animal à un système de soins complet avec export, automatisation et insights intelligents"
     },
     "success": {
       "title": "Abonnement réussi !",

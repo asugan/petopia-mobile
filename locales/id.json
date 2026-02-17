@@ -1541,13 +1541,19 @@
     "features": {
       "title": "Fitur Pro",
       "unlimited": "Hewan Peliharaan Tanpa Batas",
-      "unlimitedDesc": "Simpan semua profil, catatan, dan catatan kecil hewan peliharaan dalam satu tempat",
+      "unlimitedDesc": "Buka kunci hewan peliharaan kedua dan satukan setiap profil, catatan, dan rutinitas",
       "feedingSchedules": "Jadwal Makan Tanpa Batas",
       "feedingSchedulesDesc": "Bangun rutinitas yang andal untuk setiap hewan tanpa batas jadwal",
-      "budgetTracking": "Pelacakan & Peringatan Anggaran",
-      "budgetTrackingDesc": "Tangkap kenaikan biaya lebih awal dengan peringatan anggaran bulanan",
-      "export": "Ekspor Data",
-      "exportDesc": "Bagikan laporan yang jelas dengan keluarga atau dokter hewan Anda",
+      "budgetTracking": "Wawasan Anggaran Tingkat Lanjut",
+      "budgetTrackingDesc": "Deteksi tren pengeluaran berlebihan sejak dini dengan wawasan Pro dan peringatan cerdas",
+      "export": "Laporan & Ekspor Siap Dokter Hewan",
+      "exportDesc": "Ekspor CSV, PDF, dan ringkasan dokter hewan untuk dibagikan dengan rapi dalam hitungan detik",
+      "recurrence": "Otomatisasi Perawatan Berulang",
+      "recurrenceDesc": "Atur sekali, ulangi secara otomatis dengan rutinitas berulang tingkat lanjut",
+      "smartReminders": "Preset Pengingat Cerdas",
+      "smartRemindersDesc": "Gunakan irama pengingat yang lebih kaya sehingga tugas perawatan penting tidak pernah terlewatkan",
+      "urgentMode": "Fokus Perawatan Mendesak",
+      "urgentModeDesc": "Lihat tugas kesehatan yang mendesak secara instan dan prioritaskan hal yang paling penting",
       "priority": "Prioritas Dukungan",
       "priorityDesc": "Dapatkan bantuan lebih cepat saat mendesak",
       "petManagement": "Kelola Hewan",
@@ -1559,7 +1565,7 @@
     },
     "paywall": {
       "title": "Buka Kunci Petopia Petcare Pro",
-      "subtitle": "Tetap terkontrol untuk perawatan, pengingat, dan pengeluaran tiap hewan peliharaan"
+      "subtitle": "Skalakan dari satu hewan peliharaan ke sistem perawatan lengkap dengan ekspor, otomatisasi, dan wawasan cerdas"
     },
     "success": {
       "title": "Berlangganan Berhasil!",

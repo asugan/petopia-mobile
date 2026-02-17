@@ -76,14 +76,13 @@ const resolveMessage = (error: ErrorLike, fallback: string): string => {
 };
 
 export function useUserBudget() {
-  const { enabled } = useSubscriptionQueryEnabled();
   const baseCurrency = useUserSettingsStore((state) => state.settings?.baseCurrency ?? 'TRY');
   const version = useBudgetVersion();
 
   return useLocalQuery<UserBudget | null>({
-    enabled,
+    enabled: true,
     defaultValue: null,
-    deps: [enabled, baseCurrency, version],
+    deps: [baseCurrency, version],
     queryFn: async () => {
       const response = await userBudgetService.getBudget({ targetCurrency: baseCurrency });
       if (response.success && response.data) {
@@ -98,15 +97,14 @@ export function useUserBudget() {
 }
 
 export function useUserBudgetStatus() {
-  const { enabled } = useSubscriptionQueryEnabled();
   const baseCurrency = useUserSettingsStore((state) => state.settings?.baseCurrency ?? 'TRY');
   const { data: budget } = useUserBudget();
   const version = useBudgetVersion();
 
   return useLocalQuery<UserBudgetStatus | null>({
-    enabled: enabled && !!budget && budget.isActive,
+    enabled: !!budget && budget.isActive,
     defaultValue: null,
-    deps: [enabled, budget?.id, budget?.isActive, baseCurrency, version],
+    deps: [budget?.id, budget?.isActive, baseCurrency, version],
     queryFn: async () => {
       const response = await userBudgetService.getBudgetStatus({ targetCurrency: baseCurrency });
       if (response.success && response.data) {

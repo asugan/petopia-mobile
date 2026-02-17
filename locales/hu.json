@@ -1528,13 +1528,19 @@
     "features": {
       "title": "Pro funkciók",
       "unlimited": "Korlátlan kedvenc",
-      "unlimitedDesc": "Tartsd egy helyen az összes kedvencprofilt, nyilvántartást és jegyzetet",
+      "unlimitedDesc": "Oldja fel a második kisállatot, és tartson együtt minden profilt, rekordot és rutint",
       "feedingSchedules": "Korlátlan etetési ütemterv",
       "feedingSchedulesDesc": "Építs megbízható rutint minden kedvencnek időbeosztási korlátok nélkül",
-      "budgetTracking": "Költségvetés-követés és riasztások",
-      "budgetTrackingDesc": "Havonkénti költségkeret-riasztásokkal időben észreveheted a növekvő költségeket",
-      "export": "Adatexportálása",
-      "exportDesc": "Ossz meg átlátható jelentéseket a családdal vagy az állatorvossal",
+      "budgetTracking": "Advanced Budget Insights",
+      "budgetTrackingDesc": "A Pro insights és intelligens figyelmeztetések segítségével korán észlelheti a túlköltekezési trendeket",
+      "export": "Állatorvos-kész jelentések és export",
+      "exportDesc": "Exportálhatja a CSV-t, PDF-et és az állatorvosi összefoglalókat, hogy másodpercek alatt megoszthassa azokat",
+      "recurrence": "Ismétlődő gondozási automatizálások",
+      "recurrenceDesc": "Egyszeri beállítás, automatikus ismétlés speciális ismétlődő rutinokkal",
+      "smartReminders": "Intelligens emlékeztető-beállítások",
+      "smartRemindersDesc": "Használjon gazdagabb emlékeztető ütemeket, így a fontos gondozási feladatok soha nem maradnak el",
+      "urgentMode": "Sürgős ellátás Fókuszban",
+      "urgentModeDesc": "Azonnal megtekintheti a sürgős egészségügyi feladatokat, és rangsorolhatja azt, ami a legfontosabb",
       "priority": "Elsőbbségi támogatás",
       "priorityDesc": "Sürgős helyzetben gyorsabb segítséget kapsz",
       "petManagement": "Kedvencek kezelése",
@@ -1546,7 +1552,7 @@
     },
     "paywall": {
       "title": "Oldja fel a Petopia Petcare Prót",
-      "subtitle": "Maradj képben minden kedvenc gondozásával, emlékeztetőivel és költségeivel"
+      "subtitle": "Egyetlen háziállatról egy komplett gondozási rendszerre léphet az exporttal, az automatizálással és az intelligens betekintésekkel"
     },
     "success": {
       "title": "Sikeres előfizetés!",

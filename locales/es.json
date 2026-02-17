@@ -1523,13 +1523,19 @@
     "features": {
       "title": "Funciones Pro",
       "unlimited": "Mascotas ilimitadas",
-      "unlimitedDesc": "Mantén juntos todos los perfiles, registros y notas de tus mascotas",
+      "unlimitedDesc": "Desbloquea la 2.ª mascota y gestiona perfiles, registros y rutinas en un solo lugar.",
       "feedingSchedules": "Horarios ilimitados",
       "feedingSchedulesDesc": "Crea rutinas fiables para cada mascota sin límites de horarios",
-      "budgetTracking": "Presupuestos y alertas",
-      "budgetTrackingDesc": "Detecta subidas de costes a tiempo con alertas mensuales de presupuesto",
-      "export": "Exportar datos",
-      "exportDesc": "Comparte informes claros con la familia o con tu veterinario",
+      "budgetTracking": "Insights avanzados de presupuesto",
+      "budgetTrackingDesc": "Detecta a tiempo tendencias de sobregasto con insights Pro y alertas inteligentes.",
+      "export": "Informes veterinarios y exportación",
+      "exportDesc": "Exporta CSV, PDF y resúmenes veterinarios para compartirlos en segundos.",
+      "recurrence": "Automatizaciones de cuidado recurrente",
+      "recurrenceDesc": "Configúralo una vez y repite automáticamente con rutinas avanzadas.",
+      "smartReminders": "Preajustes de recordatorios inteligentes",
+      "smartRemindersDesc": "Usa recordatorios escalonados para no volver a pasar por alto cuidados importantes.",
+      "urgentMode": "Enfoque de cuidado urgente",
+      "urgentModeDesc": "Visualiza al instante las tareas de salud urgentes y prioriza lo que más importa.",
       "priority": "Soporte prioritario",
       "priorityDesc": "Obtén ayuda más rápida cuando sea urgente",
       "petManagement": "Mascotas",
@@ -1541,7 +1547,7 @@
     },
     "paywall": {
       "title": "Petopia Petcare Pro",
-      "subtitle": "Mantente al día con el cuidado, los recordatorios y los gastos de cada mascota"
+      "subtitle": "Pasa de una sola mascota a un sistema de cuidado completo con exportación, automatización e insights inteligentes"
     },
     "success": {
       "title": "¡Éxito!",

@@ -215,24 +215,38 @@ export default function SubscriptionScreen() {
       description: t('subscription.features.unlimitedDesc'),
     },
     {
-      icon: 'silverware-fork-knife' as const,
-      title: t('subscription.features.feedingSchedules'),
-      description: t('subscription.features.feedingSchedulesDesc'),
-    },
-    {
-      icon: 'wallet' as const,
-      title: t('subscription.features.budgetTracking'),
-      description: t('subscription.features.budgetTrackingDesc'),
-    },
-    {
       icon: 'export' as const,
       title: t('subscription.features.export'),
       description: t('subscription.features.exportDesc'),
     },
     {
-      icon: 'headset' as const,
-      title: t('subscription.features.priority'),
-      description: t('subscription.features.priorityDesc'),
+      icon: 'chart-line' as const,
+      title: t('subscription.features.budgetTracking'),
+      description: t('subscription.features.budgetTrackingDesc'),
+    },
+    {
+      icon: 'repeat' as const,
+      title: t('subscription.features.recurrence', 'Recurring Care Automations'),
+      description: t(
+        'subscription.features.recurrenceDesc',
+        'Set once, repeat automatically with advanced recurring routines'
+      ),
+    },
+    {
+      icon: 'bell-ring-outline' as const,
+      title: t('subscription.features.smartReminders', 'Smart Reminder Presets'),
+      description: t(
+        'subscription.features.smartRemindersDesc',
+        'Use richer reminder cadences so important care tasks are never missed'
+      ),
+    },
+    {
+      icon: 'alert-circle-outline' as const,
+      title: t('subscription.features.urgentMode', 'Urgent Care Focus'),
+      description: t(
+        'subscription.features.urgentModeDesc',
+        'See urgent health tasks instantly and prioritize what matters most'
+      ),
     },
   ];
 

@@ -1528,13 +1528,19 @@
     "features": {
       "title": "Funkcie Pro",
       "unlimited": "Neobmedzene zvieratiek",
-      "unlimitedDesc": "Majte všetky profily, záznamy a poznámky o miláčikoch na jednom mieste",
+      "unlimitedDesc": "Odomknite 2. zvieratko a majte spolu každý profil, záznam a rutinu",
       "feedingSchedules": "Neobmedzene plánov kŕmenia",
       "feedingSchedulesDesc": "Vytvorte spoľahlivé rutiny pre každého miláčika bez obmedzení plánov",
-      "budgetTracking": "Sledovanie rozpočtu a upozornenia",
-      "budgetTrackingDesc": "Zachyťte rast nákladov včas vďaka mesačným rozpočtovým upozorneniam",
-      "export": "Export dát",
-      "exportDesc": "Zdieľajte prehľadné reporty s rodinou alebo veterinárom",
+      "budgetTracking": "Rozšírené štatistiky rozpočtu",
+      "budgetTrackingDesc": "Odhaľte trendy nadmerných výdavkov včas pomocou štatistík Pro a inteligentných upozornení",
+      "export": "Správy a export pripravené pre veterinára",
+      "exportDesc": "Exportujte CSV, PDF a súhrny veterinárov a zdieľajte ich v priebehu niekoľkých sekúnd",
+      "recurrence": "Opakujúce sa automatizácie starostlivosti",
+      "recurrenceDesc": "Nastavte raz, opakujte automaticky s pokročilými opakujúcimi sa postupmi",
+      "smartReminders": "Predvoľby inteligentných pripomenutí",
+      "smartRemindersDesc": "Použite bohatšiu kadenciu pripomenutia, aby ste nikdy nezmeškali dôležité úlohy starostlivosti",
+      "urgentMode": "Zameranie na urgentnú starostlivosť",
+      "urgentModeDesc": "Okamžite uvidíte naliehavé zdravotné úlohy a uprednostnite to, čo je najdôležitejšie",
       "priority": "Prioritná podpora",
       "priorityDesc": "Získajte rýchlejšiu pomoc, keď je to urgentné",
       "petManagement": "Správa zvieratiek",
@@ -1546,7 +1552,7 @@
     },
     "paywall": {
       "title": "Odomknite Petopia Petcare Pro",
-      "subtitle": "Majte pod kontrolou starostlivosť, pripomienky a výdavky každého miláčika"
+      "subtitle": "Škálujte od jedného domáceho maznáčika až po kompletný systém starostlivosti s exportom, automatizáciou a inteligentnými prehľadmi"
     },
     "success": {
       "title": "Predplatné úspešné!",

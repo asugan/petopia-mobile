@@ -23,7 +23,6 @@ import { showToast } from '@/lib/toast/showToast';
 import { HealthRecordForm } from '@/components/forms/HealthRecordForm';
 import LoadingSpinner from '@/components/LoadingSpinner';
 import EmptyState from '@/components/EmptyState';
-import { TURKCE_LABELS } from '@/constants';
 import { FALLBACK_IMAGES, PET_TYPE_AVATARS } from '@/constants/images';
 import { useUserTimezone } from '@/lib/hooks/useUserTimezone';
 import { formatInTimeZone } from '@/lib/utils/date';
@@ -293,7 +292,7 @@ export default function HealthRecordDetailScreen() {
 
     const shareContent = [
       healthRecord.title,
-      `${t('pets.type')}: ${TURKCE_LABELS.HEALTH_RECORD_TYPES[healthRecord.type as keyof typeof TURKCE_LABELS.HEALTH_RECORD_TYPES]}`,
+      `${t('pets.type')}: ${t(`health.types.${healthRecord.type}`, healthRecord.type)}`,
       `${t('events.date')}: ${formatInTimeZone(healthRecord.date, userTimezone, dateFormat)}`,
     ].join('\n');
 

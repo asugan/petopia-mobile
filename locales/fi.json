@@ -1528,13 +1528,19 @@
     "features": {
       "title": "Pro-ominaisuudet",
       "unlimited": "Rajattomasti lemmikkejä",
-      "unlimitedDesc": "Pidä kaikkien lemmikkien profiilit, tiedot ja muistiinpanot yhdessä",
+      "unlimitedDesc": "Avaa toinen lemmikki ja pidä kaikki profiilit, tietueet ja rutiini yhdessä",
       "feedingSchedules": "Rajattomat ruokinta-aikataulut",
       "feedingSchedulesDesc": "Rakenna luotettavat rutiinit jokaiselle lemmikille ilman aikataulurajoja",
-      "budgetTracking": "Budjetin seuranta & hälytykset",
-      "budgetTrackingDesc": "Havaitse kasvavat kulut ajoissa kuukausittaisten budjettihälytysten avulla",
-      "export": "Tietojen vienti",
-      "exportDesc": "Jaa selkeät raportit perheen tai eläinlääkärin kanssa",
+      "budgetTracking": "Advanced Budget Insights",
+      "budgetTrackingDesc": "Havaitse ylikulutustrendit ajoissa Pro-näkemysten ja älykkäiden hälytysten avulla",
+      "export": "Vet-Ready raportit ja vienti",
+      "exportDesc": "Vie CSV-, PDF- ja eläinlääkäriyhteenvedot jaettavaksi selkeästi sekunneissa",
+      "recurrence": "Toistuva hoitoautomaatio",
+      "recurrenceDesc": "Aseta kerran, toista automaattisesti kehittyneiden toistuvien rutiinien kanssa",
+      "smartReminders": "Älykkäät muistutuksen esiasetukset",
+      "smartRemindersDesc": "Käytä monipuolisempia muistutuspolkuja, jotta tärkeitä hoitotehtäviä ei koskaan jää huomaamatta",
+      "urgentMode": "Kiireellisen hoidon painopiste",
+      "urgentModeDesc": "Näet kiireelliset terveystehtävät välittömästi ja priorisoi tärkeimmät",
       "priority": "Ensisijainen tuki",
       "priorityDesc": "Saat nopeammin apua, kun on kiire",
       "petManagement": "Lemmikkien hallinta",
@@ -1546,7 +1552,7 @@
     },
     "paywall": {
       "title": "Avaa Petopia Petcare Pro",
-      "subtitle": "Pysy perillä jokaisen lemmikin hoidosta, muistutuksista ja kuluista"
+      "subtitle": "Skaalaa yhdestä lemmikistä täydelliseksi hoitojärjestelmäksi viennin, automaation ja älykkäiden näkemysten avulla"
     },
     "success": {
       "title": "Tilaus onnistui!",

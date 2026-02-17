@@ -1528,13 +1528,19 @@
     "features": {
       "title": "Pro 功能",
       "unlimited": "无限宠物数量",
-      "unlimitedDesc": "把所有宠物档案、记录和备注集中管理",
+      "unlimitedDesc": "解锁第二只宠物并将所有个人资料、记录和日常活动放在一起",
       "feedingSchedules": "无限喂养时间表",
       "feedingSchedulesDesc": "为每只宠物建立可靠日程，不受计划数量限制",
-      "budgetTracking": "预算跟踪和警报",
-      "budgetTrackingDesc": "通过每月预算提醒尽早发现成本上涨",
-      "export": "数据导出",
-      "exportDesc": "向家人或兽医分享清晰报告",
+      "budgetTracking": "高级预算洞察",
+      "budgetTrackingDesc": "通过专业见解和智能警报及早发现超支趋势",
+      "export": "兽医就绪报告和导出",
+      "exportDesc": "导出 CSV、PDF 和兽医摘要，以便在几秒钟内干净地共享",
+      "recurrence": "定期护理自动化",
+      "recurrenceDesc": "设置一次，自动重复高级重复例程",
+      "smartReminders": "智能提醒预设",
+      "smartRemindersDesc": "使用更丰富的提醒节奏，这样就不会错过重要的护理任务",
+      "urgentMode": "紧急护理重点",
+      "urgentModeDesc": "立即查看紧急健康任务并优先处理最重要的事情",
       "priority": "优先支持",
       "priorityDesc": "紧急时获得更快支持",
       "petManagement": "宠物管理",
@@ -1546,7 +1552,7 @@
     },
     "paywall": {
       "title": "解锁 Petopia Petcare Pro",
-      "subtitle": "全面掌握每只宠物的照护、提醒与支出"
+      "subtitle": "从一只宠物扩展到具有导出、自动化和智能洞察的完整护理系统"
     },
     "success": {
       "title": "订阅成功！",

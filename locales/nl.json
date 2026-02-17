@@ -1528,13 +1528,19 @@
     "features": {
       "title": "Pro Functies",
       "unlimited": "Onbeperkt Huisdieren",
-      "unlimitedDesc": "Bewaar alle huisdierprofielen, gegevens en notities samen op één plek",
+      "unlimitedDesc": "Ontgrendel het tweede huisdier en houd elk profiel, record en routine bij elkaar",
       "feedingSchedules": "Onbeperkt Voedingsschema's",
       "feedingSchedulesDesc": "Bouw betrouwbare routines voor elk huisdier zonder planningslimieten",
-      "budgetTracking": "Budgetbewaking & Alerts",
-      "budgetTrackingDesc": "Zie stijgende kosten vroeg met maandelijkse budgetmeldingen",
-      "export": "Gegevensexport",
-      "exportDesc": "Deel duidelijke rapporten met familie of dierenarts",
+      "budgetTracking": "Geavanceerde budgetinzichten",
+      "budgetTrackingDesc": "Ontdek trends in te hoge uitgaven vroegtijdig met Pro-inzichten en slimme waarschuwingen",
+      "export": "Veterinaire rapporten en export",
+      "exportDesc": "Exporteer CSV-, PDF- en dierenartsoverzichten om deze binnen enkele seconden netjes te delen",
+      "recurrence": "Terugkerende zorgautomatiseringen",
+      "recurrenceDesc": "Eén keer instellen, automatisch herhalen met geavanceerde terugkerende routines",
+      "smartReminders": "Slimme herinneringsvoorinstellingen",
+      "smartRemindersDesc": "Gebruik rijkere herinneringsfrequenties, zodat belangrijke zorgtaken nooit worden gemist",
+      "urgentMode": "Spoedeisende zorgfocus",
+      "urgentModeDesc": "Zie direct urgente gezondheidstaken en geef prioriteit aan wat het belangrijkst is",
       "priority": "Prioritaire Ondersteuning",
       "priorityDesc": "Krijg sneller hulp wanneer het urgent is",
       "petManagement": "Huisdierbeheer",
@@ -1546,7 +1552,7 @@
     },
     "paywall": {
       "title": "Ontgrendel Petopia Petcare Pro",
-      "subtitle": "Blijf bovenop zorg, herinneringen en uitgaven voor elk huisdier"
+      "subtitle": "Schaal van één huisdier naar een compleet zorgsysteem met export, automatisering en slimme inzichten"
     },
     "success": {
       "title": "Abonnement Geslaagd!",

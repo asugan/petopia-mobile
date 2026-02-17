@@ -1528,13 +1528,19 @@
     "features": {
       "title": "Funcions Pro",
       "unlimited": "Mascotes il·limitades",
-      "unlimitedDesc": "Guarda tots els perfils, registres i notes de les teves mascotes en un sol lloc",
+      "unlimitedDesc": "Desbloqueja la segona mascota i manté tots els perfils, registres i rutines junts",
       "feedingSchedules": "Horaris d'alimentació il·limitats",
       "feedingSchedulesDesc": "Crea rutines fiables per a cada mascota sense límits d'horaris",
-      "budgetTracking": "Seguiment del pressupost i alertes",
-      "budgetTrackingDesc": "Detecta l'augment de costos aviat amb alertes mensuals de pressupost",
-      "export": "Exportació de dades",
-      "exportDesc": "Comparteix informes clars amb la família o el veterinari",
+      "budgetTracking": "Estadístiques avançades del pressupost",
+      "budgetTrackingDesc": "Detecteu aviat les tendències de despesa excessiva amb les estadístiques de Pro i les alertes intel·ligents",
+      "export": "Informes preparats per a veterinaris i exportació",
+      "exportDesc": "Exporteu resums CSV, PDF i veterinaris per compartir-los de manera neta en qüestió de segons",
+      "recurrence": "Automatismes d'atenció recurrent",
+      "recurrenceDesc": "Estableix una vegada, repeteix automàticament amb rutines recurrents avançades",
+      "smartReminders": "Preestablerts de recordatori intel·ligents",
+      "smartRemindersDesc": "Utilitzeu cadències de recordatoris més riques perquè no es perdin mai les tasques de cura importants",
+      "urgentMode": "Focus d'atenció urgent",
+      "urgentModeDesc": "Consulta les tasques de salut urgents a l'instant i prioritza allò que més importa",
       "priority": "Suport prioritari",
       "priorityDesc": "Obtén ajuda més ràpida quan sigui urgent",
       "petManagement": "Gestió de mascotes",
@@ -1546,7 +1552,7 @@
     },
     "paywall": {
       "title": "Desbloqueja Petopia Petcare Pro",
-      "subtitle": "Controla la cura, els recordatoris i les despeses de cada mascota"
+      "subtitle": "Escala d'una mascota a un sistema de cura complet amb exportacions, automatització i informació intel·ligent"
     },
     "success": {
       "title": "Subscripció realitzada correctament!",

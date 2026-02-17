@@ -1528,13 +1528,19 @@
     "features": {
       "title": "Funções Pro",
       "unlimited": "Pets Ilimitados",
-      "unlimitedDesc": "Mantenha todos os perfis, registros e notas dos seus pets no mesmo lugar",
+      "unlimitedDesc": "Desbloqueie o 2.º pet e mantenha perfis, registos e rotinas num só lugar.",
       "feedingSchedules": "Planos Ilimitados",
       "feedingSchedulesDesc": "Crie rotinas confiáveis para cada pet sem limites de agenda",
-      "budgetTracking": "Orçamentos e Alertas",
-      "budgetTrackingDesc": "Perceba o aumento de custos cedo com alertas mensais de orçamento",
-      "export": "Exportar Dados",
-      "exportDesc": "Compartilhe relatórios claros com a família ou com o veterinário",
+      "budgetTracking": "Insights avançados de orçamento",
+      "budgetTrackingDesc": "Detete tendências de gastos excessivos mais cedo com insights Pro e alertas inteligentes.",
+      "export": "Relatórios veterinários e exportação",
+      "exportDesc": "Exporte CSV, PDF e resumos veterinários para partilhar com clareza em segundos.",
+      "recurrence": "Automações de cuidados recorrentes",
+      "recurrenceDesc": "Configure uma vez e repita automaticamente com rotinas recorrentes avançadas.",
+      "smartReminders": "Predefinições de lembretes inteligentes",
+      "smartRemindersDesc": "Use lembretes em cadência para não perder cuidados importantes.",
+      "urgentMode": "Foco em cuidados urgentes",
+      "urgentModeDesc": "Veja tarefas de saúde urgentes de imediato e priorize o que mais importa.",
       "priority": "Suporte Prioritário",
       "priorityDesc": "Receba ajuda mais rápida quando for urgente",
       "petManagement": "Gestão",
@@ -1546,7 +1552,7 @@
     },
     "paywall": {
       "title": "Petopia Pro",
-      "subtitle": "Fique por dentro dos cuidados, lembretes e gastos de cada pet"
+      "subtitle": "Evolua de um único pet para um sistema de cuidados completo com exportação, automação e insights inteligentes"
     },
     "success": {
       "title": "Sucesso!",

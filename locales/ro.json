@@ -1528,13 +1528,19 @@
     "features": {
       "title": "Funcții Pro",
       "unlimited": "Animale nelimitate",
-      "unlimitedDesc": "Păstrează toate profilele, înregistrările și notițele animalelor la un loc",
+      "unlimitedDesc": "Deblochează al doilea animal de companie și păstrează fiecare profil, înregistrare și rutină împreună",
       "feedingSchedules": "Programe de hrănire nelimitate",
       "feedingSchedulesDesc": "Construiește rutine fiabile pentru fiecare animal fără limite de programare",
-      "budgetTracking": "Urmărire buget și alerte",
-      "budgetTrackingDesc": "Observă din timp creșterea costurilor cu alerte lunare de buget",
-      "export": "Export date",
-      "exportDesc": "Distribuie rapoarte clare cu familia sau cu veterinarul",
+      "budgetTracking": "Informații avansate privind bugetul",
+      "budgetTrackingDesc": "Detectați din timp tendințele de cheltuire excesivă cu ajutorul statisticilor Pro și alertelor inteligente",
+      "export": "Rapoarte și export gata pentru veterinar",
+      "exportDesc": "Exportați CSV, PDF și rezumate veterinare pentru a le partaja curat în câteva secunde",
+      "recurrence": "Automatizări de îngrijire recurente",
+      "recurrenceDesc": "Setați o dată, repetați automat cu rutine avansate recurente",
+      "smartReminders": "Presetari inteligente de memento",
+      "smartRemindersDesc": "Utilizați cadențe de memento mai bogate, astfel încât sarcinile importante de îngrijire să nu fie ratate niciodată",
+      "urgentMode": "Focus de îngrijire urgentă",
+      "urgentModeDesc": "Vedeți sarcinile urgente de sănătate instantaneu și prioritizați ceea ce contează cel mai mult",
       "priority": "Asistență prioritară",
       "priorityDesc": "Primești ajutor mai rapid când este urgent",
       "petManagement": "Management animale",
@@ -1546,7 +1552,7 @@
     },
     "paywall": {
       "title": "Deblochează Petopia Petcare Pro",
-      "subtitle": "Rămâi la zi cu îngrijirea, mementourile și cheltuielile fiecărui animal"
+      "subtitle": "Scalați de la un animal de companie la un sistem complet de îngrijire cu exporturi, automatizare și informații inteligente"
     },
     "success": {
       "title": "Abonare reușită!",

@@ -1528,13 +1528,19 @@
     "features": {
       "title": "Ciri Pro",
       "unlimited": "Haiwan Tanpa Had",
-      "unlimitedDesc": "Simpan semua profil, rekod dan nota haiwan peliharaan di satu tempat",
+      "unlimitedDesc": "Buka kunci haiwan peliharaan ke-2 dan simpan setiap profil, rekod dan rutin bersama-sama",
       "feedingSchedules": "Jadual Pemakanan Tanpa Had",
       "feedingSchedulesDesc": "Bina rutin yang boleh dipercayai untuk setiap haiwan tanpa had jadual",
-      "budgetTracking": "Penjejakan Bajet & Amaran",
-      "budgetTrackingDesc": "Kesan kenaikan kos awal dengan amaran bajet bulanan",
-      "export": "Eksport Data",
-      "exportDesc": "Kongsi laporan yang jelas dengan keluarga atau doktor haiwan anda",
+      "budgetTracking": "Cerapan Belanjawan Lanjutan",
+      "budgetTrackingDesc": "Kesan lebih awal aliran perbelanjaan berlebihan dengan cerapan Pro dan makluman pintar",
+      "export": "Laporan & Eksport Sedia Vet",
+      "exportDesc": "Eksport CSV, PDF dan ringkasan doktor haiwan untuk dikongsi dengan bersih dalam beberapa saat",
+      "recurrence": "Automasi Penjagaan Berulang",
+      "recurrenceDesc": "Tetapkan sekali, ulang secara automatik dengan rutin berulang lanjutan",
+      "smartReminders": "Pratetap Peringatan Pintar",
+      "smartRemindersDesc": "Gunakan irama peringatan yang lebih kaya supaya tugas penjagaan penting tidak pernah terlepas",
+      "urgentMode": "Fokus Penjagaan Segera",
+      "urgentModeDesc": "Lihat tugas kesihatan yang mendesak serta-merta dan utamakan perkara yang paling penting",
       "priority": "Sokongan Utama",
       "priorityDesc": "Dapatkan bantuan lebih pantas apabila mendesak",
       "petManagement": "Pengurusan Haiwan",
@@ -1546,7 +1552,7 @@
     },
     "paywall": {
       "title": "Buka Petopia Petcare Pro",
-      "subtitle": "Kekal memantau penjagaan, peringatan dan perbelanjaan setiap haiwan peliharaan"
+      "subtitle": "Skala daripada satu haiwan peliharaan kepada sistem penjagaan lengkap dengan eksport, automasi dan cerapan pintar"
     },
     "success": {
       "title": "Langganan Berjaya!",

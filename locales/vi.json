@@ -1528,13 +1528,19 @@
     "features": {
       "title": "Tính năng Pro",
       "unlimited": "Thú cưng không giới hạn",
-      "unlimitedDesc": "Giữ tất cả hồ sơ, dữ liệu và ghi chú thú cưng ở cùng một nơi",
+      "unlimitedDesc": "Mở khóa thú cưng thứ 2 và lưu giữ mọi hồ sơ, hồ sơ và thói quen cùng nhau",
       "feedingSchedules": "Lịch trình ăn uống không giới hạn",
       "feedingSchedulesDesc": "Xây dựng thói quen đáng tin cậy cho từng thú cưng mà không giới hạn lịch",
-      "budgetTracking": "Theo dõi ngân sách & Cảnh báo",
-      "budgetTrackingDesc": "Phát hiện chi phí tăng sớm với cảnh báo ngân sách hàng tháng",
-      "export": "Xuất dữ liệu",
-      "exportDesc": "Chia sẻ báo cáo rõ ràng với gia đình hoặc bác sĩ thú y",
+      "budgetTracking": "Thông tin chi tiết về ngân sách nâng cao",
+      "budgetTrackingDesc": "Phát hiện sớm xu hướng bội chi với thông tin chi tiết chuyên nghiệp và cảnh báo thông minh",
+      "export": "Báo cáo và xuất khẩu sẵn sàng cho thú y",
+      "exportDesc": "Xuất các bản tóm tắt CSV, PDF và bác sĩ thú y để chia sẻ rõ ràng trong vài giây",
+      "recurrence": "Tự động hóa chăm sóc định kỳ",
+      "recurrenceDesc": "Đặt một lần, tự động lặp lại với các thói quen định kỳ nâng cao",
+      "smartReminders": "Cài đặt trước lời nhắc thông minh",
+      "smartRemindersDesc": "Sử dụng nhịp điệu nhắc nhở phong phú hơn để không bao giờ bỏ lỡ các nhiệm vụ chăm sóc quan trọng",
+      "urgentMode": "Trọng tâm chăm sóc khẩn cấp",
+      "urgentModeDesc": "Xem ngay các nhiệm vụ sức khỏe khẩn cấp và ưu tiên những gì quan trọng nhất",
       "priority": "Hỗ trợ ưu tiên",
       "priorityDesc": "Nhận hỗ trợ nhanh hơn khi khẩn cấp",
       "petManagement": "Quản lý thú cưng",
@@ -1546,7 +1552,7 @@
     },
     "paywall": {
       "title": "Mở khóa Petopia Petcare Pro",
-      "subtitle": "Luôn theo sát việc chăm sóc, nhắc nhở và chi tiêu của từng thú cưng"
+      "subtitle": "Mở rộng quy mô từ một thú cưng sang hệ thống chăm sóc hoàn chỉnh với tính năng xuất, tự động hóa và hiểu biết thông minh"
     },
     "success": {
       "title": "Đăng ký thành công!",

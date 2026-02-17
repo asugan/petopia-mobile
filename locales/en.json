@@ -1530,13 +1530,19 @@
     "features": {
       "title": "Pro Features",
       "unlimited": "Unlimited Pets",
-      "unlimitedDesc": "Keep every pet profile, records, and notes together",
+      "unlimitedDesc": "Unlock 2nd pet and keep every profile, record, and routine together",
       "feedingSchedules": "Unlimited Feeding Schedules",
       "feedingSchedulesDesc": "Build reliable routines for each pet without schedule limits",
-      "budgetTracking": "Budget Tracking & Alerts",
-      "budgetTrackingDesc": "Catch rising costs early with monthly budget alerts",
-      "export": "Data Export",
-      "exportDesc": "Share clear reports with family members or your vet",
+      "budgetTracking": "Advanced Budget Insights",
+      "budgetTrackingDesc": "Detect overspending trends early with Pro insights and smart alerts",
+      "export": "Vet-Ready Reports & Export",
+      "exportDesc": "Export CSV, PDF, and vet summaries to share cleanly in seconds",
+      "recurrence": "Recurring Care Automations",
+      "recurrenceDesc": "Set once, repeat automatically with advanced recurring routines",
+      "smartReminders": "Smart Reminder Presets",
+      "smartRemindersDesc": "Use richer reminder cadences so important care tasks are never missed",
+      "urgentMode": "Urgent Care Focus",
+      "urgentModeDesc": "See urgent health tasks instantly and prioritize what matters most",
       "priority": "Priority Support",
       "priorityDesc": "Get faster help when something is urgent",
       "petManagement": "Pet Management",
@@ -1548,7 +1554,7 @@
     },
     "paywall": {
       "title": "Unlock Petopia Petcare Pro",
-      "subtitle": "Stay on top of care, reminders, and spending for every pet"
+      "subtitle": "Scale from one pet to a complete care system with exports, automation, and smart insights"
     },
     "success": {
       "title": "Subscription Successful!",

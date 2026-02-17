@@ -1528,13 +1528,19 @@
     "features": {
       "title": "Pro-funksjoner",
       "unlimited": "Ubegrenset antall kjæledyr",
-      "unlimitedDesc": "Hold alle kjæledyrprofiler, journaler og notater samlet",
+      "unlimitedDesc": "Lås opp det andre kjæledyret og hold hver profil, post og rutine sammen",
       "feedingSchedules": "Ubegrensede fôringsplaner",
       "feedingSchedulesDesc": "Bygg stabile rutiner for hvert kjæledyr uten begrensninger i planlegging",
-      "budgetTracking": "Budsjettsporing og varsler",
-      "budgetTrackingDesc": "Oppdag økende kostnader tidlig med månedlige budsjettvarsler",
-      "export": "Dataeksport",
-      "exportDesc": "Del tydelige rapporter med familie eller veterinær",
+      "budgetTracking": "Avansert budsjettinnsikt",
+      "budgetTrackingDesc": "Oppdag overforbrukstrender tidlig med Pro-innsikt og smarte varsler",
+      "export": "Veterinærklare rapporter og eksport",
+      "exportDesc": "Eksporter CSV-, PDF- og veterinærsammendrag for å dele rent på sekunder",
+      "recurrence": "Tilbakevendende omsorgsautomatiseringer",
+      "recurrenceDesc": "Sett én gang, gjenta automatisk med avanserte gjentakende rutiner",
+      "smartReminders": "Smarte påminnelsesinnstillinger",
+      "smartRemindersDesc": "Bruk rikere påminnelseskadenser slik at viktige omsorgsoppgaver aldri går glipp av",
+      "urgentMode": "Hasteomsorgsfokus",
+      "urgentModeDesc": "Se akutte helseoppgaver umiddelbart og prioriter det som betyr mest",
       "priority": "Prioritert støtte",
       "priorityDesc": "Få raskere hjelp når det haster",
       "petManagement": "Kjæledyradministrasjon",
@@ -1546,7 +1552,7 @@
     },
     "paywall": {
       "title": "Lås opp Petopia Petcare Pro",
-      "subtitle": "Hold deg oppdatert på omsorg, påminnelser og utgifter for hvert kjæledyr"
+      "subtitle": "Skaler fra ett kjæledyr til et komplett pleiesystem med eksport, automatisering og smart innsikt"
     },
     "success": {
       "title": "Abonnement vellykket!",

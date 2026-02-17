@@ -1,8 +1,7 @@
-import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import React, { useEffect } from "react";
 import { useTranslation } from "react-i18next";
-import { ScrollView, StyleSheet, TouchableOpacity, View } from "react-native";
+import { ScrollView, StyleSheet, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import EmptyState from "@/components/EmptyState";
@@ -14,14 +13,13 @@ import { NextFeedingWidget } from "@/components/feeding/NextFeedingWidget";
 import { FinancialOverview } from "@/components/home/FinancialOverview";
 import { HomeEmptyPets } from "@/components/home/HomeEmptyPets";
 import { HeaderActions, LargeTitle } from "@/components/LargeTitle";
-import { Text } from "@/components/ui";
 import { useHomeData } from "@/lib/hooks/useHomeData";
 import { usePendingPet } from "@/lib/hooks/usePendingPet";
 import { useSubscription } from "@/lib/hooks/useSubscription";
 import { useTheme } from "@/lib/theme";
 import { LAYOUT } from "@/constants";
 import { showToast } from "@/lib/toast/showToast";
-import { SUBSCRIPTION_ROUTES, FEATURE_ROUTES } from "@/constants/routes";
+import { FEATURE_ROUTES } from "@/constants/routes";
 
 export default function HomeScreen() {
   return <HomeScreenContent />;
@@ -31,7 +29,7 @@ function HomeScreenContent() {
   const { theme } = useTheme();
   const { t } = useTranslation();
   const router = useRouter();
-  const { isProUser, isInitialized } = useSubscription();
+  const { isInitialized } = useSubscription();
   const { processPendingPet } = usePendingPet();
 
   // Tüm mantık useHomeData hook'unda toplandı
@@ -41,10 +39,6 @@ function HomeScreenContent() {
   useEffect(() => {
     processPendingPet(data.pets?.length ?? 0);
   }, [processPendingPet, data.pets?.length, isInitialized]);
-
-  const handleUpgradePress = async () => {
-    router.push(`${SUBSCRIPTION_ROUTES.main}?source=home_limit_card`);
-  };
 
   // Hook must be called unconditionally before any early returns
   useEffect(() => {
@@ -112,36 +106,6 @@ function HomeScreenContent() {
                   />
                 </View>
               ))}
-
-              {!isProUser && data.pets.length >= 1 && (
-                <TouchableOpacity
-                  onPress={handleUpgradePress}
-                  style={[
-                    styles.upgradeCard,
-                    {
-                      borderColor: theme.colors.primary,
-                      backgroundColor: theme.colors.surface,
-                    },
-                  ]}
-                  activeOpacity={0.85}
-                >
-                  <View style={[styles.upgradeIconWrap, { backgroundColor: theme.colors.primaryContainer }]}>
-                    <Ionicons name="lock-closed" size={20} color={theme.colors.primary} />
-                  </View>
-                  <Text variant="titleMedium" style={[styles.upgradeTitle, { color: theme.colors.onSurface }]}
-                  >
-                    {t("limits.pets.title")}
-                  </Text>
-                  <Text variant="bodySmall" style={[styles.upgradeSubtitle, { color: theme.colors.onSurfaceVariant }]}
-                  >
-                    {t("limits.pets.subtitle")}
-                  </Text>
-                  <Text variant="labelLarge" style={[styles.upgradeCta, { color: theme.colors.primary }]}
-                  >
-                    {t("limits.pets.cta")}
-                  </Text>
-                </TouchableOpacity>
-              )}
             </View>
           ) : (
             <HomeEmptyPets />
@@ -186,31 +150,4 @@ const styles = StyleSheet.create({
   sectionTitle: { fontWeight: "600", marginBottom: 16 },
   petList: { gap: 12 },
   petCardWrapper: { width: "100%" },
-  upgradeCard: {
-    borderWidth: 1,
-    borderStyle: "dashed",
-    borderRadius: 16,
-    paddingVertical: 16,
-    paddingHorizontal: 16,
-    alignItems: "center",
-    gap: 6,
-    opacity: 0.85,
-  },
-  upgradeIconWrap: {
-    width: 44,
-    height: 44,
-    borderRadius: 22,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  upgradeTitle: {
-    fontWeight: "700",
-    textAlign: "center",
-  },
-  upgradeSubtitle: {
-    textAlign: "center",
-  },
-  upgradeCta: {
-    fontWeight: "700",
-  },
 });

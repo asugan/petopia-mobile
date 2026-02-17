@@ -1528,13 +1528,19 @@
     "features": {
       "title": "Pro značajke",
       "unlimited": "Neograničen broj ljubimaca",
-      "unlimitedDesc": "Držite sve profile, zapise i bilješke o ljubimcima na jednom mjestu",
+      "unlimitedDesc": "Otključajte drugog ljubimca i držite svaki profil, evidenciju i rutinu zajedno",
       "feedingSchedules": "Neograničeni rasporedi hranjenja",
       "feedingSchedulesDesc": "Izgradite pouzdane rutine za svakog ljubimca bez ograničenja rasporeda",
-      "budgetTracking": "Praćenje proračuna i upozorenja",
-      "budgetTrackingDesc": "Rano otkrijte rast troškova uz mjesečna budžetska upozorenja",
-      "export": "Izvoz podataka",
-      "exportDesc": "Dijelite jasna izvješća s obitelji ili veterinarom",
+      "budgetTracking": "Napredni uvidi u proračun",
+      "budgetTrackingDesc": "Rano otkrijte trendove prekomjerne potrošnje uz Pro uvide i pametna upozorenja",
+      "export": "Izvješća spremna za veterinare i izvoz",
+      "exportDesc": "Izvezite CSV, PDF i veterinarske sažetke za čisto dijeljenje u nekoliko sekundi",
+      "recurrence": "Automatizacija periodične njege",
+      "recurrenceDesc": "Postavite jednom, automatski ponovite s naprednim ponavljajućim rutinama",
+      "smartReminders": "Unaprijed postavljeni pametni podsjetnici",
+      "smartRemindersDesc": "Upotrijebite bogatije kadence podsjetnika kako nikada ne biste propustili važne zadatke skrbi",
+      "urgentMode": "Fokus hitne skrbi",
+      "urgentModeDesc": "Odmah pogledajte hitne zdravstvene zadatke i odredite prioritete što je najvažnije",
       "priority": "Prioritetna podrška",
       "priorityDesc": "Dobijte bržu pomoć kada je hitno",
       "petManagement": "Upravljanje ljubimcima",
@@ -1546,7 +1552,7 @@
     },
     "paywall": {
       "title": "Otključajte Petopia Petcare Pro",
-      "subtitle": "Ostanite u tijeku s njegom, podsjetnicima i troškovima za svakog ljubimca"
+      "subtitle": "Skalirajte od jednog ljubimca do cjelovitog sustava skrbi s izvozom, automatizacijom i pametnim uvidima"
     },
     "success": {
       "title": "Pretplata uspješna!",

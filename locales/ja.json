@@ -1528,13 +1528,19 @@
     "features": {
       "title": "Pro機能",
       "unlimited": "ペット無制限",
-      "unlimitedDesc": "すべてのペットプロフィール、記録、メモを1か所に集約",
+      "unlimitedDesc": "2 番目のペットのロックを解除し、すべてのプロフィール、記録、ルーチンをまとめて保存します",
       "feedingSchedules": "無制限の食事スケジュール",
       "feedingSchedulesDesc": "スケジュール制限なしで、各ペットに信頼できるルーティンを作成",
-      "budgetTracking": "予算追跡 & アラート",
-      "budgetTrackingDesc": "月次予算アラートでコスト増を早めに把握",
-      "export": "データエクスポート",
-      "exportDesc": "家族や獣医と分かりやすいレポートを共有",
+      "budgetTracking": "高度な予算に関する洞察",
+      "budgetTrackingDesc": "プロの洞察とスマートなアラートで過剰支出の傾向を早期に検出",
+      "export": "獣医向けレポートとエクスポート",
+      "exportDesc": "CSV、PDF、および精査概要をエクスポートして、数秒できれいに共有できます",
+      "recurrence": "定期的なケアの自動化",
+      "recurrenceDesc": "一度設定すれば、高度な繰り返しルーチンで自動的に繰り返す",
+      "smartReminders": "スマートリマインダーのプリセット",
+      "smartRemindersDesc": "重要なケアタスクを見逃さないように、より豊富なリマインダー頻度を使用します",
+      "urgentMode": "救急医療に重点を置く",
+      "urgentModeDesc": "緊急の医療タスクを即座に確認し、最も重要なものに優先順位を付けます",
       "priority": "優先サポート",
       "priorityDesc": "緊急時により速いサポートを受けられる",
       "petManagement": "ペット管理",
@@ -1546,7 +1552,7 @@
     },
     "paywall": {
       "title": "Petopia Petcare Proをアンロック",
-      "subtitle": "すべてのペットのケア、リマインダー、支出をしっかり把握"
+      "subtitle": "エクスポート、自動化、スマートな洞察を使用して、1 匹のペットから完全なケア システムまで拡張します"
     },
     "success": {
       "title": "サブスクリプション成功！",

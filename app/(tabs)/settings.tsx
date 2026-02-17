@@ -27,7 +27,8 @@ import { CurrencySettings } from "@/components/CurrencySettings";
 import NotificationPermissionPrompt, { NotificationPermissionCard } from "@/components/NotificationPermissionPrompt";
 import { subscriptionStyles } from "@/lib/styles/subscription";
 import { useNotifications } from "@/lib/hooks/useNotifications";
-import { ONBOARDING_ROUTES, SETTINGS_ROUTES } from "@/constants/routes";
+import { useSubscription } from "@/lib/hooks/useSubscription";
+import { ONBOARDING_ROUTES, SETTINGS_ROUTES, SUBSCRIPTION_ROUTES } from "@/constants/routes";
 
 type ModalState = "none" | "contact" | "deleteWarning" | "deleteConfirm";
 
@@ -45,6 +46,7 @@ export default function SettingsScreen() {
     setNotificationDisabledBySystemPermission,
   } = useUserSettingsStore();
   const { resetOnboarding } = useOnboardingStore();
+  const { isProUser } = useSubscription();
   const [authLoading, setAuthLoading] = useState(false);
   const isDarkMode = settings?.theme === "dark";
   const [notificationPermissionEnabled, setNotificationPermissionEnabled] = useState(false);
@@ -603,7 +605,14 @@ export default function SettingsScreen() {
                   color={theme.colors.onSurfaceVariant}
                 />
               }
-              onPress={() => router.push(SETTINGS_ROUTES.recurrence)}
+              onPress={() => {
+                if (!isProUser) {
+                  router.push(`${SUBSCRIPTION_ROUTES.main}?source=settings_recurrence`);
+                  return;
+                }
+
+                router.push(SETTINGS_ROUTES.recurrence);
+              }}
               right={
                 <MaterialCommunityIcons
                   name="chevron-right"

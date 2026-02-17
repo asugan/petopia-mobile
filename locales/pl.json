@@ -1528,13 +1528,19 @@
     "features": {
       "title": "Funkcje Pro",
       "unlimited": "Nieograniczona liczba zwierząt",
-      "unlimitedDesc": "Trzymaj wszystkie profile, zapisy i notatki o pupilach w jednym miejscu",
+      "unlimitedDesc": "Odblokuj drugiego zwierzaka i zachowaj wszystkie profile, nagrania i rutyny razem",
       "feedingSchedules": "Nieograniczone harmonogramy karmienia",
       "feedingSchedulesDesc": "Buduj niezawodne rutyny dla każdego pupila bez ograniczeń harmonogramu",
-      "budgetTracking": "Śledzenie budżetu i alerty",
-      "budgetTrackingDesc": "Szybciej wykrywaj rosnące koszty dzięki miesięcznym alertom budżetowym",
-      "export": "Eksport danych",
-      "exportDesc": "Udostępniaj przejrzyste raporty rodzinie lub weterynarzowi",
+      "budgetTracking": "Zaawansowane analizy budżetu",
+      "budgetTrackingDesc": "Wykrywaj na wczesnym etapie tendencje dotyczące nadmiernych wydatków dzięki profesjonalnym statystykom i inteligentnym alertom",
+      "export": "Gotowe raporty i eksport dla weterynarzy",
+      "exportDesc": "Eksportuj streszczenia w formacie CSV, PDF i weterynarza, aby udostępniać je w ciągu kilku sekund",
+      "recurrence": "Powtarzające się automatyzacje opieki",
+      "recurrenceDesc": "Ustaw raz, powtórz automatycznie dzięki zaawansowanym procedurom cyklicznym",
+      "smartReminders": "Ustawienia inteligentnych przypomnień",
+      "smartRemindersDesc": "Używaj bogatszych częstotliwości przypomnień, aby nigdy nie przegapić ważnych zadań związanych z opieką",
+      "urgentMode": "Pilna uwaga dotycząca opieki",
+      "urgentModeDesc": "Natychmiast przeglądaj pilne zadania zdrowotne i ustalaj priorytety tego, co najważniejsze",
       "priority": "Wsparcie priorytetowe",
       "priorityDesc": "Uzyskaj szybszą pomoc, gdy sprawa jest pilna",
       "petManagement": "Zarządzanie zwierzętami",
@@ -1546,7 +1552,7 @@
     },
     "paywall": {
       "title": "Odblokuj Petopia Petcare Pro",
-      "subtitle": "Bądź na bieżąco z opieką, przypomnieniami i wydatkami dla każdego pupila"
+      "subtitle": "Skaluj od jednego zwierzaka do kompletnego systemu opieki z eksportem, automatyzacją i inteligentnymi spostrzeżeniami"
     },
     "success": {
       "title": "Subskrypcja udana!",

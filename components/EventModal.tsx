@@ -1,9 +1,11 @@
 import React from 'react';
 import { View, StyleSheet, Modal as RNModal, Platform } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import { Text, Button } from '@/components/ui';
 import { useTheme } from '@/lib/theme';
+import { useSubscription } from '@/lib/hooks/useSubscription';
 import { Event } from '../lib/types';
 import { EventFormData, transformFormDataToAPI, transformFormDataToRecurrenceRule } from '../lib/schemas/eventSchema';
 import { EventForm } from './forms/EventForm';
@@ -18,6 +20,7 @@ import { usePets } from '../lib/hooks/usePets';
 import { useUserTimezone } from '@/lib/hooks/useUserTimezone';
 import { ReminderPresetKey } from '@/constants/reminders';
 import { showToast } from '@/lib/toast/showToast';
+import { SUBSCRIPTION_ROUTES } from '@/constants/routes';
 
 interface EventModalProps {
   visible: boolean;
@@ -40,6 +43,8 @@ export function EventModal({
 }: EventModalProps) {
   const { t } = useTranslation();
   const { theme } = useTheme();
+  const router = useRouter();
+  const { isProUser } = useSubscription();
   const [loading, setLoading] = React.useState(false);
 
   // Local-first domain hooks
@@ -55,7 +60,17 @@ export function EventModal({
 
   const handleSubmit = React.useCallback(async (data: EventFormData) => {
     try {
-      const reminderPresetKey: ReminderPresetKey = data.reminderPreset || 'standard';
+      if (data.isRecurring && !isProUser) {
+        router.push(`${SUBSCRIPTION_ROUTES.main}?source=events_recurrence_submit`);
+        return;
+      }
+
+      if (!isProUser && data.reminder && data.reminderPreset && data.reminderPreset !== 'minimal') {
+        router.push(`${SUBSCRIPTION_ROUTES.main}?source=events_reminder_preset_submit`);
+        return;
+      }
+
+      const reminderPresetKey: ReminderPresetKey = data.reminderPreset || (isProUser ? 'standard' : 'minimal');
       const reminderEnabled = data.reminder === true;
 
       setLoading(true);
@@ -163,6 +178,8 @@ export function EventModal({
     onSuccess,
     t,
     recurrenceRule,
+    isProUser,
+    router,
     updateEventMutation,
     updateRecurrenceRuleMutation,
     userTimezone,

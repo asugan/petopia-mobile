@@ -1528,13 +1528,19 @@
     "features": {
       "title": "Pro-Funktionen",
       "unlimited": "Unbegrenzt Tiere",
-      "unlimitedDesc": "Alle Haustierprofile, Aufzeichnungen und Notizen an einem Ort",
+      "unlimitedDesc": "Schalte dein 2. Haustier frei und verwalte Profile, Aufzeichnungen und Routinen an einem Ort.",
       "feedingSchedules": "Unbegrenzte Fütterungspläne",
       "feedingSchedulesDesc": "Zuverlässige Routinen für jedes Haustier ohne Plan-Limits aufbauen",
-      "budgetTracking": "Budgetverfolgung & Warnungen",
-      "budgetTrackingDesc": "Steigende Kosten früh mit monatlichen Budgetwarnungen erkennen",
-      "export": "Datenexport",
-      "exportDesc": "Klare Berichte mit Familie oder Tierarzt teilen",
+      "budgetTracking": "Erweiterte Budget-Insights",
+      "budgetTrackingDesc": "Erkenne steigende Ausgaben fruehzeitig mit Pro-Insights und smarten Warnungen.",
+      "export": "Tierarzt-Reports & Export",
+      "exportDesc": "Exportiere CSV, PDF und Tierarzt-Zusammenfassungen und teile sie in Sekunden.",
+      "recurrence": "Automatisierte Pflege-Routinen",
+      "recurrenceDesc": "Einmal einstellen, automatisch wiederholen - mit erweiterten Wiederholungsregeln.",
+      "smartReminders": "Smarte Erinnerungs-Presets",
+      "smartRemindersDesc": "Nutze abgestufte Erinnerungen, damit keine wichtige Pflegeaufgabe untergeht.",
+      "urgentMode": "Fokus auf dringende Aufgaben",
+      "urgentModeDesc": "Sieh dringende Gesundheitsaufgaben sofort und priorisiere, was jetzt zaehlt.",
       "priority": "Vorrangiger Support",
       "priorityDesc": "Schnellere Hilfe erhalten, wenn es dringend ist",
       "petManagement": "Tier-Management",
@@ -1546,7 +1552,7 @@
     },
     "paywall": {
       "title": "Petopia Petcare Pro freischalten",
-      "subtitle": "Pflege, Erinnerungen und Ausgaben für jedes Haustier im Blick behalten"
+      "subtitle": "Wachse von einem Haustier zu einem kompletten Pflegesystem mit Exporten, Automatisierung und smarten Insights"
     },
     "success": {
       "title": "Abonnement erfolgreich!",
