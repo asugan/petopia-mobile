@@ -77,14 +77,15 @@ const resolveMessage = (error: ErrorLike, fallback: string): string => {
 
 export function useUserBudget() {
   const { enabled } = useSubscriptionQueryEnabled();
+  const baseCurrency = useUserSettingsStore((state) => state.settings?.baseCurrency ?? 'TRY');
   const version = useBudgetVersion();
 
   return useLocalQuery<UserBudget | null>({
     enabled,
     defaultValue: null,
-    deps: [enabled, version],
+    deps: [enabled, baseCurrency, version],
     queryFn: async () => {
-      const response = await userBudgetService.getBudget();
+      const response = await userBudgetService.getBudget({ targetCurrency: baseCurrency });
       if (response.success && response.data) {
         return response.data;
       }
@@ -98,15 +99,16 @@ export function useUserBudget() {
 
 export function useUserBudgetStatus() {
   const { enabled } = useSubscriptionQueryEnabled();
+  const baseCurrency = useUserSettingsStore((state) => state.settings?.baseCurrency ?? 'TRY');
   const { data: budget } = useUserBudget();
   const version = useBudgetVersion();
 
   return useLocalQuery<UserBudgetStatus | null>({
     enabled: enabled && !!budget && budget.isActive,
     defaultValue: null,
-    deps: [enabled, budget?.id, budget?.isActive, version],
+    deps: [enabled, budget?.id, budget?.isActive, baseCurrency, version],
     queryFn: async () => {
-      const response = await userBudgetService.getBudgetStatus();
+      const response = await userBudgetService.getBudgetStatus({ targetCurrency: baseCurrency });
       if (response.success && response.data) {
         return response.data;
       }
@@ -150,6 +152,7 @@ export function useDeleteUserBudget() {
 
 export function useBudgetAlerts() {
   const { enabled } = useSubscriptionQueryEnabled();
+  const baseCurrency = useUserSettingsStore((state) => state.settings?.baseCurrency ?? 'TRY');
   const { data: budget } = useUserBudget();
   const notificationsEnabled = useUserSettingsStore(
     (state) => state.settings?.notificationsEnabled ?? true
@@ -171,13 +174,14 @@ export function useBudgetAlerts() {
       enabled,
       budget?.id,
       budget?.isActive,
+      baseCurrency,
       notificationsEnabled,
       budgetNotificationsEnabled,
       version,
     ],
     refetchInterval: 30_000,
     queryFn: async () => {
-      const response = await userBudgetService.checkBudgetAlerts();
+      const response = await userBudgetService.checkBudgetAlerts({ targetCurrency: baseCurrency });
       if (response.success && response.data) {
         return response.data;
       }
@@ -191,15 +195,18 @@ export function useBudgetAlerts() {
 
 export function usePetSpendingBreakdown() {
   const { enabled } = useSubscriptionQueryEnabled();
+  const baseCurrency = useUserSettingsStore((state) => state.settings?.baseCurrency ?? 'TRY');
   const { data: budget } = useUserBudget();
   const version = useBudgetVersion();
 
   return useLocalQuery<PetBreakdown[]>({
     enabled: enabled && !!budget && budget.isActive,
     defaultValue: [],
-    deps: [enabled, budget?.id, budget?.isActive, version],
+    deps: [enabled, budget?.id, budget?.isActive, baseCurrency, version],
     queryFn: async () => {
-      const response = await userBudgetService.getPetSpendingBreakdown();
+      const response = await userBudgetService.getPetSpendingBreakdown({
+        targetCurrency: baseCurrency,
+      });
       if (response.success && response.data) {
         return response.data;
       }
@@ -230,6 +237,7 @@ export function useHasActiveBudget() {
 
 export function useBudgetSummary() {
   const { enabled } = useSubscriptionQueryEnabled();
+  const baseCurrency = useUserSettingsStore((state) => state.settings?.baseCurrency ?? 'TRY');
   const version = useBudgetVersion();
 
   return useLocalQuery<{
@@ -240,9 +248,9 @@ export function useBudgetSummary() {
   } | null>({
     enabled,
     defaultValue: null,
-    deps: [enabled, version],
+    deps: [enabled, baseCurrency, version],
     queryFn: async () => {
-      const response = await userBudgetService.getBudgetSummary();
+      const response = await userBudgetService.getBudgetSummary({ targetCurrency: baseCurrency });
       if (response.success && response.data) {
         return response.data;
       }

@@ -4,6 +4,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import i18n from "@/lib/i18n";
 import { lightTheme, darkTheme } from "@/lib/theme/themes";
 import { userSettingsService } from "@/lib/services/userSettingsService";
+import { exchangeRateService } from "@/lib/services/exchangeRateService";
 import { getCurrencySymbol as getCurrencySymbolUtil } from "@/lib/utils/currency";
 import { detectDeviceTimezone, isValidTimezone } from "@/lib/utils/timezone";
 import type { Theme, ThemeMode } from "@/lib/theme/types";
@@ -211,6 +212,8 @@ export const useUserSettingsStore = create<
               isLoading: false,
               error: null,
             });
+
+            void exchangeRateService.prefetchRates(updatedSettings.baseCurrency);
           } else {
             throw new Error(
               response.message || "Failed to update base currency",

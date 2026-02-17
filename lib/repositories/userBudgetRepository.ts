@@ -12,6 +12,7 @@ import type {
   BudgetAlert,
   SetUserBudgetInput,
   UserBudget,
+  UserBudgetStatus,
 } from '@/lib/types';
 import { expenseRepository } from '@/lib/repositories/expenseRepository';
 import { calculateBudgetStatus } from '@/lib/utils/budgetCalculations';
@@ -132,8 +133,8 @@ export class UserBudgetRepository {
     );
   }
 
-  checkBudgetAlerts(): BudgetAlert | null {
-    const status = this.getBudgetStatus();
+  checkBudgetAlerts(statusOverride?: UserBudgetStatus | null): BudgetAlert | null {
+    const status = statusOverride ?? this.getBudgetStatus();
     if (!status) {
       return null;
     }

@@ -4,6 +4,7 @@ import { initDatabase } from '@/lib/db/init';
 import { createObjectId, nowIsoString } from '@/lib/db/utils';
 import { expensesTable, type ExpenseRow } from '@/lib/db/schema/expenses';
 import { petsTable } from '@/lib/db/schema/pets';
+import { userSettingsRepository } from '@/lib/repositories/userSettingsRepository';
 import type {
   CreateExpenseInput,
   Expense,
@@ -155,6 +156,7 @@ export class ExpenseRepository {
   createExpense(data: CreateExpenseInput): Expense {
     const now = nowIsoString();
     const _id = createObjectId();
+    const defaultCurrency = userSettingsRepository.getSettings().baseCurrency;
 
     db.insert(expensesTable)
       .values({
@@ -162,7 +164,7 @@ export class ExpenseRepository {
         petId: data.petId,
         category: data.category,
         amount: data.amount,
-        currency: data.currency ?? 'USD',
+        currency: data.currency ?? defaultCurrency,
         paymentMethod: data.paymentMethod ?? null,
         date: normalizeToISOString(data.date) ?? now,
         amountBase: null,

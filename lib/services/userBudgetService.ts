@@ -1,15 +1,80 @@
 import type { ApiResponse } from '@/lib/contracts/api';
+import { expenseRepository } from '@/lib/repositories/expenseRepository';
 import { userBudgetRepository } from '@/lib/repositories/userBudgetRepository';
+import { exchangeRateService } from '@/lib/services/exchangeRateService';
 import type {
   BudgetAlert,
+  Currency,
+  Expense,
   PetBreakdown,
   SetUserBudgetInput,
   UserBudget,
   UserBudgetStatus,
 } from '@/lib/types';
+import { calculateBudgetStatus } from '@/lib/utils/budgetCalculations';
+
+const normalizeCurrency = (currency: string): Currency => currency.toUpperCase() as Currency;
 
 export class UserBudgetService {
-  async getBudget(): Promise<ApiResponse<UserBudget>> {
+  private resolveTargetCurrency(budget: UserBudget, targetCurrency?: Currency): Currency {
+    return normalizeCurrency(targetCurrency ?? budget.currency);
+  }
+
+  private async convertBudgetToCurrency(
+    budget: UserBudget,
+    targetCurrency?: Currency,
+  ): Promise<UserBudget> {
+    const target = this.resolveTargetCurrency(budget, targetCurrency);
+    if (budget.currency === target) {
+      return {
+        ...budget,
+        currency: target,
+      };
+    }
+
+    const convertedAmount = await exchangeRateService.convertAmount(budget.amount, budget.currency, target);
+    if (convertedAmount === null) {
+      return budget;
+    }
+
+    return {
+      ...budget,
+      amount: convertedAmount,
+      currency: target,
+    };
+  }
+
+  private async calculateConvertedBudgetStatus(targetCurrency?: Currency): Promise<UserBudgetStatus | null> {
+    const budget = userBudgetRepository.getBudget();
+    if (!budget || !budget.isActive) {
+      return null;
+    }
+
+    const convertedBudget = await this.convertBudgetToCurrency(budget, targetCurrency);
+    const allExpenses = expenseRepository.getAllExpenses();
+    const convertedExpenses = await exchangeRateService.convertExpensesToCurrency(
+      allExpenses,
+      convertedBudget.currency,
+    );
+
+    const normalizedExpenses: Expense[] = convertedExpenses.map((expense) => ({
+      ...expense,
+      amount:
+        expense.currency === convertedBudget.currency
+          ? expense.amount
+          : (expense.amountBase ?? expense.amount),
+      currency: convertedBudget.currency,
+    }));
+
+    return calculateBudgetStatus(
+      convertedBudget,
+      normalizedExpenses,
+      (petId: string) => expenseRepository.getPetNameById(petId),
+      new Date(),
+    );
+  }
+
+  async getBudget(options?: { targetCurrency?: Currency }): Promise<ApiResponse<UserBudget>> {
     try {
       const budget = userBudgetRepository.getBudget();
 
@@ -23,9 +88,11 @@ export class UserBudgetService {
         };
       }
 
+      const convertedBudget = await this.convertBudgetToCurrency(budget, options?.targetCurrency);
+
       return {
         success: true,
-        data: budget,
+        data: convertedBudget,
         message: 'serviceResponse.budget.fetchSuccess',
       };
     } catch {
@@ -88,9 +155,9 @@ export class UserBudgetService {
     }
   }
 
-  async getBudgetStatus(): Promise<ApiResponse<UserBudgetStatus>> {
+  async getBudgetStatus(options?: { targetCurrency?: Currency }): Promise<ApiResponse<UserBudgetStatus>> {
     try {
-      const status = userBudgetRepository.getBudgetStatus();
+      const status = await this.calculateConvertedBudgetStatus(options?.targetCurrency);
 
       if (!status) {
         return {
@@ -118,9 +185,10 @@ export class UserBudgetService {
     }
   }
 
-  async checkBudgetAlerts(): Promise<ApiResponse<BudgetAlert>> {
+  async checkBudgetAlerts(options?: { targetCurrency?: Currency }): Promise<ApiResponse<BudgetAlert>> {
     try {
-      const alert = userBudgetRepository.checkBudgetAlerts();
+      const status = await this.calculateConvertedBudgetStatus(options?.targetCurrency);
+      const alert = status ? userBudgetRepository.checkBudgetAlerts(status) : null;
 
       if (!alert) {
         return {
@@ -171,9 +239,9 @@ export class UserBudgetService {
     }
   }
 
-  async getPetSpendingBreakdown(): Promise<ApiResponse<PetBreakdown[]>> {
+  async getPetSpendingBreakdown(options?: { targetCurrency?: Currency }): Promise<ApiResponse<PetBreakdown[]>> {
     try {
-      const status = userBudgetRepository.getBudgetStatus();
+      const status = await this.calculateConvertedBudgetStatus(options?.targetCurrency);
 
       if (!status) {
         return {
@@ -221,7 +289,7 @@ export class UserBudgetService {
     }
   }
 
-  async getBudgetSummary(): Promise<
+  async getBudgetSummary(options?: { targetCurrency?: Currency }): Promise<
     ApiResponse<{
       budget: UserBudget | null;
       status: UserBudgetStatus | null;
@@ -230,9 +298,12 @@ export class UserBudgetService {
     }>
   > {
     try {
-      const budget = userBudgetRepository.getBudget();
-      const status = userBudgetRepository.getBudgetStatus();
-      const alerts = userBudgetRepository.checkBudgetAlerts();
+      const rawBudget = userBudgetRepository.getBudget();
+      const budget = rawBudget
+        ? await this.convertBudgetToCurrency(rawBudget, options?.targetCurrency)
+        : null;
+      const status = await this.calculateConvertedBudgetStatus(options?.targetCurrency);
+      const alerts = status ? userBudgetRepository.checkBudgetAlerts(status) : null;
       const hasActiveBudget = userBudgetRepository.hasActiveBudget();
 
       return {

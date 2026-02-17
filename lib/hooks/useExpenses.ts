@@ -8,6 +8,8 @@ import { useResources } from './core/useResources';
 import { useConditionalQuery } from './core/useConditionalQuery';
 import { useLocalInfiniteQuery, useLocalMutation, useLocalQuery } from './core/useLocalAsync';
 import { expenseKeys } from './queryKeys';
+import { useUserSettingsStore } from '@/stores/userSettingsStore';
+import { exchangeRateService } from '@/lib/services/exchangeRateService';
 
 export { expenseKeys } from './queryKeys';
 
@@ -43,8 +45,10 @@ interface PeriodParams {
 
 // Hook for fetching expenses by pet ID with filters
 export function useExpenses(petId?: string, filters: Omit<ExpenseFilters, 'petId'> = {}) {
+  const baseCurrency = useUserSettingsStore((state) => state.settings?.baseCurrency ?? 'TRY');
+
   return useLocalQuery<{ expenses: Expense[]; total: number }>({
-    deps: [JSON.stringify(expenseKeys.list({ petId, ...filters }))],
+    deps: [JSON.stringify(expenseKeys.list({ petId, ...filters })), baseCurrency],
     defaultValue: { expenses: [], total: 0 },
     queryFn: async () => {
       if (!petId) {
@@ -76,9 +80,13 @@ export function useExpenses(petId?: string, filters: Omit<ExpenseFilters, 'petId
         const startIndex = (page - 1) * limit;
         const endIndex = startIndex + limit;
         const paginated = combined.slice(startIndex, endIndex);
+        const convertedExpenses = await exchangeRateService.convertExpensesToCurrency(
+          paginated,
+          baseCurrency,
+        );
 
         return {
-          expenses: paginated,
+          expenses: convertedExpenses,
           total
         };
       } else {
@@ -86,7 +94,12 @@ export function useExpenses(petId?: string, filters: Omit<ExpenseFilters, 'petId
         if (!result.success) {
           throw new Error('Failed to load expenses');
         }
-        return result.data || { expenses: [], total: 0 };
+
+        const data = result.data || { expenses: [], total: 0 };
+        return {
+          ...data,
+          expenses: await exchangeRateService.convertExpensesToCurrency(data.expenses, baseCurrency),
+        };
       }
     },
   });
@@ -105,6 +118,7 @@ export function useExpense(id?: string) {
 // Hook for infinite scrolling expenses (single pet only - requires petId)
 export function useInfiniteExpenses(petId: string | undefined, filters?: Omit<ExpenseFilters, 'petId' | 'page'>) {
   const defaultLimit = ENV.DEFAULT_LIMIT || 20;
+  const baseCurrency = useUserSettingsStore((state) => state.settings?.baseCurrency ?? 'TRY');
 
   return useLocalInfiniteQuery<Expense[], number>({
     queryFn: async ({ pageParam = 1 }) => {
@@ -127,7 +141,8 @@ export function useInfiniteExpenses(petId: string | undefined, filters?: Omit<Ex
         throw new Error(errorMessage);
       }
 
-      return result.data?.expenses || [];
+      const expenses = result.data?.expenses || [];
+      return exchangeRateService.convertExpensesToCurrency(expenses, baseCurrency);
     },
     initialPageParam: 1,
     getNextPageParam: (lastPage, _allPages, lastPageParam) => {
@@ -137,17 +152,49 @@ export function useInfiniteExpenses(petId: string | undefined, filters?: Omit<Ex
       return (lastPageParam as number) + 1;
     },
     enabled: !!petId,
-    deps: [JSON.stringify(expenseKeys.infinite(petId, filters))],
+    deps: [JSON.stringify(expenseKeys.infinite(petId, filters)), baseCurrency],
   });
 }
 
 // Hook for expense statistics
 export function useExpenseStats(params?: StatsParams) {
-  return useConditionalQuery<ExpenseStats | null>({
-    deps: [JSON.stringify(expenseKeys.stats(params))],
-    queryFn: () => expenseService.getExpenseStats(params),
+  const baseCurrency = useUserSettingsStore((state) => state.settings?.baseCurrency ?? 'TRY');
+
+  return useLocalQuery<ExpenseStats | null>({
+    deps: [JSON.stringify(expenseKeys.stats(params)), baseCurrency],
+    queryFn: async () => {
+      const response = await expenseService.getExpenseStats(params);
+      if (!response.success) {
+        const errorMessage =
+          typeof response.error === 'string'
+            ? response.error
+            : response.error?.message || 'Failed to load expense statistics';
+        throw new Error(errorMessage);
+      }
+
+      const stats = response.data ?? null;
+      if (!stats) return null;
+
+      const convertedTotal = await exchangeRateService.convertTotalsToCurrency(
+        stats.byCurrency,
+        baseCurrency,
+      );
+
+      if (convertedTotal === null) {
+        return stats;
+      }
+
+      return {
+        ...stats,
+        total: convertedTotal,
+        average: stats.count > 0 ? convertedTotal / stats.count : 0,
+        byCurrency: [{
+          currency: baseCurrency,
+          total: convertedTotal,
+        }],
+      };
+    },
     defaultValue: null,
-    errorMessage: 'Failed to load expense statistics',
   });
 }
 
