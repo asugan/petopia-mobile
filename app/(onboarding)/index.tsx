@@ -234,7 +234,7 @@ export default function OnboardingLanguageStep() {
           <Text style={styles.description}>
             {t(
               'onboarding.language.description',
-              'We will use your selections on the next screens and sync them after sign in. You can change all anytime in Settings.',
+              'We will use your selections on the next screens. You can change them anytime in Settings.',
             )}
           </Text>
         </View>

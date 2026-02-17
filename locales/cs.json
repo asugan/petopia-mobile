@@ -1317,14 +1317,14 @@
     "screen3": {
       "title": "Jste připraveni!",
       "description": "Vše je připraveno ke správě péče a zdravotních dat vašeho mazlíčka.",
-      "trialNotice": "Přidejte svého prvního mazlíčka hned teď a Pro odemkněte, až budete potřebovat více.",
+      "trialNotice": "Přidejte svého prvního mazlíčka nyní. Další můžete kdykoli přidat později.",
       "addPet": "Přidat mazlíčka",
       "skipPet": "Udělat později",
       "addYourFirstPet": "Přidat svého prvního mazlíčka"
     },
     "language": {
       "title": "Vyberte jazyk, měnu a časové pásmo",
-      "description": "Vaše volby použijeme na dalších obrazovkách a po přihlášení je synchronizujeme. Vše můžete kdykoli změnit v Nastavení.",
+      "description": "Vaše volby použijeme na následujících obrazovkách. Kdykoli je můžete změnit v Nastavení.",
       "continue": "Pokračovat"
     }
   },

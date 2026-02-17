@@ -1317,14 +1317,14 @@
     "screen3": {
       "title": "Pronto!",
       "description": "Tudo certo para começar.",
-      "trialNotice": "Adicione seu primeiro pet agora e desbloqueie o Pro quando precisar de mais.",
+      "trialNotice": "Adicione seu primeiro pet agora. Você sempre pode adicionar mais depois.",
       "addPet": "Add Pet",
       "skipPet": "Depois",
       "addYourFirstPet": "Primeiro Pet"
     },
     "language": {
       "title": "Escolha seu idioma, moeda e fuso horário",
-      "description": "Usaremos suas seleções nas próximas telas e as sincronizaremos após o login. Você pode alterar tudo a qualquer momento em Configurações.",
+      "description": "Usaremos suas escolhas nas próximas telas. Você pode alterá-las a qualquer momento em Configurações.",
       "continue": "Continuar"
     }
   },

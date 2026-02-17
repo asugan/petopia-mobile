@@ -1317,14 +1317,14 @@
     "screen3": {
       "title": "Sei Pronto!",
       "description": "Tutto è pronto per gestire la cura e i dati sanitari del tuo animale.",
-      "trialNotice": "Aggiungi ora il tuo primo animale, poi sblocca Pro quando ne avrai bisogno.",
+      "trialNotice": "Aggiungi ora il tuo primo animale domestico. Potrai sempre aggiungerne altri in seguito.",
       "addPet": "Aggiungi il tuo Animale",
       "skipPet": "Fallo più tardi",
       "addYourFirstPet": "Aggiungi il tuo Primo Animale"
     },
     "language": {
       "title": "Scegli lingua, valuta e fuso orario",
-      "description": "Useremo le tue scelte nelle schermate successive e le sincronizzeremo dopo l'accesso. Puoi modificare tutto in qualsiasi momento nelle Impostazioni.",
+      "description": "Useremo le tue scelte nelle schermate successive. Puoi modificarle in qualsiasi momento nelle Impostazioni.",
       "continue": "Continua"
     }
   },

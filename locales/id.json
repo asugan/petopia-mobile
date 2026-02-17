@@ -1317,14 +1317,14 @@
     "screen3": {
       "title": "Anda Siap!",
       "description": "Semuanya siap untuk mengelola data perawatan dan kesehatan hewan peliharaan Anda.",
-      "trialNotice": "Tambahkan hewan peliharaan pertama Anda sekarang, lalu buka Pro saat Anda butuh lebih banyak.",
+      "trialNotice": "Tambahkan hewan peliharaan pertama Anda sekarang. Anda selalu bisa menambahkan lagi nanti.",
       "addPet": "Tambah Hewan Anda",
       "skipPet": "Nanti saja",
       "addYourFirstPet": "Tambah Hewan Pertama Anda"
     },
     "language": {
       "title": "Pilih bahasa, mata uang, dan zona waktu Anda",
-      "description": "Kami akan menggunakan pilihan Anda di layar berikutnya dan menyinkronkannya setelah masuk. Anda dapat mengubah semuanya kapan saja di Pengaturan.",
+      "description": "Kami akan menggunakan pilihan Anda di layar berikutnya. Anda dapat mengubahnya kapan saja di Pengaturan.",
       "continue": "Lanjutkan"
     }
   },

@@ -1317,14 +1317,14 @@
     "screen3": {
       "title": "Du är redo!",
       "description": "Allt är redo för att hantera ditt husdjurs vård- och hälsodata.",
-      "trialNotice": "Lägg till ditt första husdjur nu och lås upp Pro när du behöver mer.",
+      "trialNotice": "Lägg till ditt första husdjur nu. Du kan alltid lägga till fler senare.",
       "addPet": "Lägg till ditt husdjur",
       "skipPet": "Gör det senare",
       "addYourFirstPet": "Lägg till ditt första husdjur"
     },
     "language": {
       "title": "Välj språk, valuta och tidszon",
-      "description": "Vi använder dina val på nästa skärmar och synkroniserar dem efter inloggning. Du kan ändra allt när som helst i Inställningar.",
+      "description": "Vi använder dina val på nästa skärmar. Du kan ändra dem när som helst i Inställningar.",
       "continue": "Fortsätt"
     }
   },

@@ -1317,14 +1317,14 @@
     "screen3": {
       "title": "Sie sind bereit!",
       "description": "Alles ist bereit, um die Pflege und die Gesundheitsdaten Ihres Tieres zu verwalten.",
-      "trialNotice": "Füge jetzt dein erstes Haustier hinzu und schalte Pro frei, wenn du mehr brauchst.",
+      "trialNotice": "Füge jetzt dein erstes Haustier hinzu. Du kannst später jederzeit weitere hinzufügen.",
       "addPet": "Tier hinzufügen",
       "skipPet": "Später machen",
       "addYourFirstPet": "Erstes Tier hinzufügen"
     },
     "language": {
       "title": "Wähle Sprache, Währung und Zeitzone",
-      "description": "Wir verwenden deine Auswahl in den nächsten Schritten und synchronisieren sie nach der Anmeldung. Alles kannst du jederzeit in den Einstellungen ändern.",
+      "description": "Wir verwenden deine Auswahl in den nächsten Bildschirmen. Du kannst sie jederzeit in den Einstellungen ändern.",
       "continue": "Weiter"
     }
   },

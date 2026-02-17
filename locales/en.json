@@ -1287,7 +1287,7 @@
   "onboarding": {
     "language": {
       "title": "Choose your language, currency and timezone",
-      "description": "We'll use your selections on the next screens and sync them after sign in. You can change all anytime in Settings.",
+      "description": "We'll use your selections on the next screens. You can change them anytime in Settings.",
       "continue": "Continue"
     },
     "screen1": {
@@ -1322,7 +1322,7 @@
     "screen3": {
       "title": "You Are Ready!",
       "description": "Everything is ready to manage your pet's care and health data.",
-      "trialNotice": "Add your first pet now, then unlock Pro when you need more.",
+      "trialNotice": "Add your first pet now. You can always add more later.",
       "addPet": "Add Your Pet",
       "skipPet": "Do it later",
       "addYourFirstPet": "Add Your First Pet"

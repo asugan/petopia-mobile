@@ -1317,14 +1317,14 @@
     "screen3": {
       "title": "Készen áll!",
       "description": "Minden kész kedvence gondozásának és adatainak kezeléséhez.",
-      "trialNotice": "Add hozzá az első kedvenced most, és oldd fel a Pro-t, amikor többre lesz szükséged.",
+      "trialNotice": "Add hozzá az első kisállatodat most. Később bármikor hozzáadhatsz még.",
       "addPet": "Kedvenc hozzáadása",
       "skipPet": "Majd később",
       "addYourFirstPet": "Első kedvenc hozzáadása"
     },
     "language": {
       "title": "Válaszd ki a nyelvet, pénznemet és időzónát",
-      "description": "A választásaidat a következő képernyőkön használjuk, és bejelentkezés után szinkronizáljuk. Mindent bármikor módosíthatsz a Beállításokban.",
+      "description": "A választásaidat a következő képernyőkön fogjuk használni. Bármikor módosíthatod őket a Beállításokban.",
       "continue": "Folytatás"
     }
   },

@@ -1317,14 +1317,14 @@
     "screen3": {
       "title": "Jesteś gotowy!",
       "description": "Wszystko jest gotowe do zarządzania opieką i danymi zdrowotnymi pupila.",
-      "trialNotice": "Dodaj teraz pierwszego pupila, a Pro odblokuj, gdy będziesz potrzebować więcej.",
+      "trialNotice": "Dodaj teraz swojego pierwszego pupila. Zawsze możesz dodać więcej później.",
       "addPet": "Dodaj zwierzaka",
       "skipPet": "Zrobię to później",
       "addYourFirstPet": "Dodaj swoje pierwsze zwierzę"
     },
     "language": {
       "title": "Wybierz język, walutę i strefę czasową",
-      "description": "Użyjemy Twoich wyborów na kolejnych ekranach i zsynchronizujemy je po zalogowaniu. Wszystko możesz zmienić w dowolnym momencie w Ustawieniach.",
+      "description": "Użyjemy Twoich wyborów na kolejnych ekranach. Możesz je zmienić w dowolnym momencie w Ustawieniach.",
       "continue": "Dalej"
     }
   },

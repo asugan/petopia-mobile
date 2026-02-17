@@ -1317,14 +1317,14 @@
     "screen3": {
       "title": "Bạn đã sẵn sàng!",
       "description": "Mọi thứ đã sẵn sàng để quản lý dữ liệu chăm sóc và sức khỏe thú cưng của bạn.",
-      "trialNotice": "Thêm thú cưng đầu tiên ngay bây giờ, rồi mở khóa Pro khi bạn cần nhiều hơn.",
+      "trialNotice": "Thêm thú cưng đầu tiên của bạn ngay bây giờ. Bạn luôn có thể thêm nhiều hơn sau.",
       "addPet": "Thêm thú cưng của bạn",
       "skipPet": "Để sau",
       "addYourFirstPet": "Thêm thú cưng đầu tiên của bạn"
     },
     "language": {
       "title": "Chọn ngôn ngữ, tiền tệ và múi giờ của bạn",
-      "description": "Chúng tôi sẽ dùng lựa chọn của bạn ở các màn hình tiếp theo và đồng bộ sau khi đăng nhập. Bạn có thể thay đổi mọi thứ bất cứ lúc nào trong Cài đặt.",
+      "description": "Chúng tôi sẽ dùng các lựa chọn của bạn ở các màn hình tiếp theo. Bạn có thể thay đổi chúng bất cứ lúc nào trong Cài đặt.",
       "continue": "Tiếp tục"
     }
   },

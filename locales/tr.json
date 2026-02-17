@@ -1317,14 +1317,14 @@
     "screen3": {
       "title": "Artık Hazırsınız!",
       "description": "Evcil hayvanınızın bakım ve sağlık verilerini yönetmek için her şey hazır.",
-      "trialNotice": "İlk petini şimdi ekle, daha fazlası için dilediğinde Pro'ya geç.",
+      "trialNotice": "İlk petini şimdi ekle. Daha sonra dilediğin zaman yenilerini ekleyebilirsin.",
       "addPet": "Petini Ekle",
       "skipPet": "Sonra Yaparım",
       "addYourFirstPet": "İlk Petini Ekle"
     },
     "language": {
       "title": "Dilini, para birimini ve saat dilimini seç",
-      "description": "Seçimlerini sonraki ekranlarda kullanacağız ve giriş yaptıktan sonra senkronize edeceğiz. Tümünü istediğin zaman Ayarlar’dan değiştirebilirsin.",
+      "description": "Seçimlerini sonraki ekranlarda kullanacağız. Hepsini istediğin zaman Ayarlar'dan değiştirebilirsin.",
       "continue": "Devam et"
     }
   },

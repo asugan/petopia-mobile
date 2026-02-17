@@ -1317,14 +1317,14 @@
     "screen3": {
       "title": "Du er klar!",
       "description": "Alt er klar til at administrere dit kæledyrs pleje og sundhedsdata.",
-      "trialNotice": "Tilføj dit første kæledyr nu, og lås op for Pro, når du får brug for mere.",
+      "trialNotice": "Tilføj dit første kæledyr nu. Du kan altid tilføje flere senere.",
       "addPet": "Tilføj dit kæledyr",
       "skipPet": "Gør det senere",
       "addYourFirstPet": "Tilføj dit første kæledyr"
     },
     "language": {
       "title": "Vælg sprog, valuta og tidszone",
-      "description": "Vi bruger dine valg på de næste skærme og synkroniserer dem efter login. Du kan altid ændre alt i Indstillinger.",
+      "description": "Vi bruger dine valg på de næste skærme. Du kan til enhver tid ændre dem i Indstillinger.",
       "continue": "Fortsæt"
     }
   },

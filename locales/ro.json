@@ -1317,14 +1317,14 @@
     "screen3": {
       "title": "Ești gata!",
       "description": "Totul este pregătit pentru a gestiona datele de îngrijire și sănătate ale animalului tău.",
-      "trialNotice": "Adaugă acum primul tău animal de companie, apoi deblochează Pro când ai nevoie de mai mult.",
+      "trialNotice": "Adaugă acum primul tău animal de companie. Poți adăuga oricând mai multe mai târziu.",
       "addPet": "Adaugă animalul tău",
       "skipPet": "Fă-o mai târziu",
       "addYourFirstPet": "Adaugă primul tău animal"
     },
     "language": {
       "title": "Alege limba, moneda și fusul orar",
-      "description": "Vom folosi selecțiile tale pe ecranele următoare și le vom sincroniza după autentificare. Poți schimba totul oricând din Setări.",
+      "description": "Vom folosi selecțiile tale pe ecranele următoare. Le poți schimba oricând din Setări.",
       "continue": "Continuă"
     }
   },

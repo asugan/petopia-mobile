@@ -1317,14 +1317,14 @@
     "screen3": {
       "title": "Je Bent Er Klaar Voor!",
       "description": "Alles is gereed om de zorg en gezondheidsgegevens van je huisdier te beheren.",
-      "trialNotice": "Voeg nu je eerste huisdier toe en ontgrendel Pro wanneer je meer nodig hebt.",
+      "trialNotice": "Voeg nu je eerste huisdier toe. Je kunt later altijd meer toevoegen.",
       "addPet": "Huisdier Toevoegen",
       "skipPet": "Later doen",
       "addYourFirstPet": "Voeg Je Eerste Huisdier Toe"
     },
     "language": {
       "title": "Kies je taal, valuta en tijdzone",
-      "description": "We gebruiken je keuzes op de volgende schermen en synchroniseren ze na het inloggen. Je kunt alles op elk moment wijzigen in Instellingen.",
+      "description": "We gebruiken je keuzes op de volgende schermen. Je kunt ze altijd aanpassen in Instellingen.",
       "continue": "Doorgaan"
     }
   },

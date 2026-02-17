@@ -1317,14 +1317,14 @@
     "screen3": {
       "title": "Ja estàs a punt!",
       "description": "Tot està a punt per gestionar les dades de cura i salut de la teva mascota.",
-      "trialNotice": "Afegeix ara la teva primera mascota i desbloqueja Pro quan en necessitis més.",
+      "trialNotice": "Afegeix ara la teva primera mascota. Sempre en pots afegir més més endavant.",
       "addPet": "Afegeix la teva mascota",
       "skipPet": "Fes-ho més tard",
       "addYourFirstPet": "Afegeix la teva primera mascota"
     },
     "language": {
       "title": "Tria idioma, moneda i zona horària",
-      "description": "Farem servir les teves seleccions a les pantalles següents i les sincronitzarem després d’iniciar sessió. Ho pots canviar tot en qualsevol moment a Configuració.",
+      "description": "Farem servir les teves seleccions a les pantalles següents. Les pots canviar en qualsevol moment a Configuració.",
       "continue": "Continua"
     }
   },

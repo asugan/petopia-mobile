@@ -1317,14 +1317,14 @@
     "screen3": {
       "title": "Olet valmis!",
       "description": "Kaikki on valmista lemmikkisi hoidon ja terveystietojen hallintaan.",
-      "trialNotice": "Lisää ensimmäinen lemmikkisi nyt ja avaa Pro, kun tarvitset enemmän.",
+      "trialNotice": "Lisää ensimmäinen lemmikkisi nyt. Voit aina lisätä myöhemmin lisää.",
       "addPet": "Lisää lemmikkisi",
       "skipPet": "Tee se myöhemmin",
       "addYourFirstPet": "Lisää ensimmäinen lemmikkisi"
     },
     "language": {
       "title": "Valitse kieli, valuutta ja aikavyöhyke",
-      "description": "Käytämme valintojasi seuraavissa näkymissä ja synkronoimme ne kirjautumisen jälkeen. Voit muuttaa kaikkea milloin tahansa Asetuksissa.",
+      "description": "Käytämme valintojasi seuraavissa näkymissä. Voit muuttaa niitä milloin tahansa Asetuksissa.",
       "continue": "Jatka"
     }
   },

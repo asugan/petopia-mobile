@@ -17,7 +17,6 @@ import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import { useRouter } from "expo-router";
 import { useTranslation } from "react-i18next";
 import { Alert, Keyboard, KeyboardAvoidingView, Platform, Pressable, ScrollView, StyleSheet, TextInput, View } from "react-native";
-import { Image } from "expo-image";
 import { showToast } from "@/lib/toast/showToast";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { LAYOUT } from "@/constants";
@@ -38,11 +37,6 @@ export default function SettingsScreen() {
   const { theme, settings, updateSettings, updateBaseCurrency, initialize, isLoading: settingsLoading, error } = useUserSettingsStore();
   const { resetOnboarding } = useOnboardingStore();
   const [authLoading, setAuthLoading] = useState(false);
-  const user = {
-    name: "Petopia User",
-    email: "local@petopia.app",
-    image: null as string | null,
-  };
   const isDarkMode = settings?.theme === "dark";
   const [notificationPermissionEnabled, setNotificationPermissionEnabled] = useState(false);
   const quietHoursEnabled = settings?.quietHoursEnabled ?? true;
@@ -288,51 +282,6 @@ export default function SettingsScreen() {
           <View style={styles.loadingContainer}>
             <LoadingSpinner />
           </View>
-        )}
-
-        {/* User Profile */}
-        {user && (
-          <Card
-            style={[
-              styles.sectionCard,
-              { backgroundColor: theme.colors.surface },
-            ]}
-          >
-            <View style={styles.cardContent}>
-              <View style={styles.profileContainer}>
-                <View
-                  style={[
-                    styles.avatarContainer,
-                    { backgroundColor: theme.colors.primaryContainer },
-                  ]}
-                >
-                  {user.image ? (
-                    <Image source={{ uri: user.image }} style={styles.avatar} />
-                  ) : (
-                    <Ionicons
-                      name="person"
-                      size={32}
-                      color={theme.colors.primary}
-                    />
-                  )}
-                </View>
-                <View style={styles.profileInfo}>
-                  <Text
-                    variant="titleMedium"
-                    style={{ color: theme.colors.onSurface }}
-                  >
-                    {user.name || t("settings.userPlaceholder")}
-                  </Text>
-                  <Text
-                    variant="bodySmall"
-                    style={{ color: theme.colors.onSurfaceVariant }}
-                  >
-                    {user.email}
-                  </Text>
-                </View>
-              </View>
-            </View>
-          </Card>
         )}
 
         {/* Subscription Status */}
@@ -920,27 +869,6 @@ const styles = StyleSheet.create({
   },
   cardContent: {
     padding: 16,
-  },
-  profileContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 16,
-  },
-  avatarContainer: {
-    width: 56,
-    height: 56,
-    borderRadius: 28,
-    justifyContent: "center",
-    alignItems: "center",
-    overflow: "hidden",
-  },
-  avatar: {
-    width: 56,
-    height: 56,
-  },
-  profileInfo: {
-    flex: 1,
-    gap: 4,
   },
   sectionTitle: {
     marginBottom: 8,

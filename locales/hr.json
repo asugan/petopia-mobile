@@ -1317,14 +1317,14 @@
     "screen3": {
       "title": "Spremni ste!",
       "description": "Sve je spremno za upravljanje podacima o njezi i zdravlju vašeg ljubimca.",
-      "trialNotice": "Dodajte svog prvog ljubimca sada, a Pro otključajte kada vam zatreba više.",
+      "trialNotice": "Dodajte svog prvog ljubimca sada. Uvijek možete kasnije dodati još.",
       "addPet": "Dodaj svog ljubimca",
       "skipPet": "Učini to kasnije",
       "addYourFirstPet": "Dodaj svog prvog ljubimca"
     },
     "language": {
       "title": "Odaberite jezik, valutu i vremensku zonu",
-      "description": "Vaše odabire koristit ćemo na sljedećim zaslonima i sinkronizirati ih nakon prijave. Sve možete promijeniti u bilo kojem trenutku u Postavkama.",
+      "description": "Vaše odabire koristit ćemo na sljedećim zaslonima. Možete ih promijeniti bilo kada u Postavkama.",
       "continue": "Nastavi"
     }
   },
