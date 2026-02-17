@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useRef, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { SubscriptionCard } from "@/components/subscription";
 import { Button, Card, ListItem, Switch, Text } from "@/components/ui";
 import { LargeTitle } from "@/components/LargeTitle";
@@ -16,7 +16,7 @@ import { Ionicons } from "@expo/vector-icons";
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import { useRouter } from "expo-router";
 import { useTranslation } from "react-i18next";
-import { Alert, Keyboard, KeyboardAvoidingView, Platform, Pressable, ScrollView, StyleSheet, TextInput, View } from "react-native";
+import { Alert, AppState, Keyboard, KeyboardAvoidingView, Platform, Pressable, ScrollView, StyleSheet, TextInput, View } from "react-native";
 import { showToast } from "@/lib/toast/showToast";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { LAYOUT } from "@/constants";
@@ -48,7 +48,7 @@ export default function SettingsScreen() {
       endMinute: 0,
     }
   ), [settings?.quietHours]);
-  const notificationsEnabled = settings?.notificationsEnabled ?? true;
+  const notificationsEnabled = settings?.notificationsEnabled === true;
   const budgetNotificationsEnabled = settings?.budgetNotificationsEnabled ?? true;
   const feedingRemindersEnabled = settings?.feedingRemindersEnabled ?? true;
   const notificationsActive = notificationsEnabled && notificationPermissionEnabled;
@@ -59,35 +59,44 @@ export default function SettingsScreen() {
   const [deleteConfirmText, setDeleteConfirmText] = useState("");
   const [deletingAccount, setDeletingAccount] = useState(false);
   const [permissionRefreshKey, setPermissionRefreshKey] = useState(0);
-  const hasSyncedPermission = useRef(false);
   const [showPermissionModal, setShowPermissionModal] = useState(false);
 
   // Notifications hook
   const { requestPermission, isLoading: isNotificationLoading } = useNotifications();
 
-  useEffect(() => {
-    const fetchPermissionStatus = async () => {
-      try {
-        const enabled = await notificationService.areNotificationsEnabled();
-        setNotificationPermissionEnabled(enabled);
+  const syncNotificationPermission = React.useCallback(async () => {
+    try {
+      const enabled = await notificationService.areNotificationsEnabled();
+      setNotificationPermissionEnabled(enabled);
 
-        // Keep local setting aligned with system permission (one-time sync)
-        if (!hasSyncedPermission.current && !enabled && settings?.notificationsEnabled === true) {
-          hasSyncedPermission.current = true;
-          void disableLocalNotifications();
-          await updateSettings({ notificationsEnabled: false });
-        }
-      } catch (error) {
-        if (__DEV__) {
-          console.warn('[Settings] Failed to fetch permission status:', error);
-        }
+      if (!enabled && settings?.notificationsEnabled === true) {
+        void disableLocalNotifications();
+        await updateSettings({ notificationsEnabled: false });
       }
-    };
-
-    if (settings !== null) {
-      fetchPermissionStatus();
+    } catch (error) {
+      if (__DEV__) {
+        console.warn('[Settings] Failed to fetch permission status:', error);
+      }
     }
-  }, [settings, updateSettings]);
+  }, [settings?.notificationsEnabled, updateSettings]);
+
+  useEffect(() => {
+    if (settings !== null) {
+      void syncNotificationPermission();
+    }
+  }, [settings, syncNotificationPermission]);
+
+  useEffect(() => {
+    const subscription = AppState.addEventListener('change', (nextState) => {
+      if (nextState === 'active' && settings !== null) {
+        void syncNotificationPermission();
+      }
+    });
+
+    return () => {
+      subscription.remove();
+    };
+  }, [settings, syncNotificationPermission]);
 
 
   React.useEffect(() => {

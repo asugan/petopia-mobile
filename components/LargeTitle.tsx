@@ -1,7 +1,8 @@
 import React from "react";
-import { Pressable, StyleSheet, View, ViewStyle, useWindowDimensions } from "react-native";
+import { AppState, Pressable, StyleSheet, View, ViewStyle, useWindowDimensions } from "react-native";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
+import * as Notifications from "expo-notifications";
 import { useTranslation } from "react-i18next";
 import { Image } from "expo-image";
 import { Text } from "@/components/ui";
@@ -24,6 +25,28 @@ interface LargeTitleProps {
   style?: ViewStyle;
   actions?: React.ReactNode;
 }
+
+const isNotificationPermissionGranted = (
+  permissions: Notifications.NotificationPermissionsStatus | null,
+): boolean => {
+  if (!permissions) {
+    return false;
+  }
+
+  if (
+    permissions.granted ||
+    permissions.status === Notifications.PermissionStatus.GRANTED
+  ) {
+    return true;
+  }
+
+  const iosStatus = permissions.ios?.status;
+  return (
+    iosStatus === Notifications.IosAuthorizationStatus.AUTHORIZED ||
+    iosStatus === Notifications.IosAuthorizationStatus.PROVISIONAL ||
+    iosStatus === Notifications.IosAuthorizationStatus.EPHEMERAL
+  );
+};
 
 export const LargeTitle = ({ title, style, actions }: LargeTitleProps) => {
   const { theme } = useTheme();
@@ -87,11 +110,58 @@ export const HeaderActions = () => {
   const { settings, updateSettings, isLoading } = useUserSettingsStore();
   const clearAllReminderState = useEventReminderStore((state) => state.clearAllReminderState);
   const isDarkMode = settings?.theme === "dark";
-  const notificationsEnabled = settings?.notificationsEnabled ?? true;
+  const notificationsEnabled = settings?.notificationsEnabled === true;
   const [showPermissionModal, setShowPermissionModal] = React.useState(false);
 
   // Notifications hook
-  const { requestPermission, isLoading: isNotificationLoading } = useNotifications();
+  const {
+    requestPermission,
+    isLoading: isNotificationLoading,
+    permissions,
+    checkPermissionStatus,
+  } = useNotifications();
+  const notificationPermissionEnabled = React.useMemo(
+    () => isNotificationPermissionGranted(permissions),
+    [permissions],
+  );
+  const notificationsActive = notificationsEnabled && notificationPermissionEnabled;
+
+  React.useEffect(() => {
+    void checkPermissionStatus();
+  }, [checkPermissionStatus]);
+
+  React.useEffect(() => {
+    const subscription = AppState.addEventListener("change", (nextState) => {
+      if (nextState === "active") {
+        void checkPermissionStatus();
+      }
+    });
+
+    return () => {
+      subscription.remove();
+    };
+  }, [checkPermissionStatus]);
+
+  React.useEffect(() => {
+    if (
+      !settings ||
+      isLoading ||
+      permissions === null ||
+      notificationPermissionEnabled ||
+      settings.notificationsEnabled !== true
+    ) {
+      return;
+    }
+
+    void disableLocalNotifications();
+    void updateSettings({ notificationsEnabled: false });
+  }, [
+    settings,
+    isLoading,
+    permissions,
+    notificationPermissionEnabled,
+    updateSettings,
+  ]);
 
   const handleToggleTheme = async () => {
     if (!settings || isLoading) return;
@@ -169,9 +239,9 @@ export const HeaderActions = () => {
         ]}
       >
         <MaterialCommunityIcons
-          name={notificationsEnabled ? "bell" : "bell-outline"}
+          name={notificationsActive ? "bell" : "bell-outline"}
           size={18}
-          color={notificationsEnabled ? theme.colors.warning : theme.colors.onSurface}
+          color={notificationsActive ? theme.colors.warning : theme.colors.onSurface}
         />
       </Pressable>
       <Pressable
