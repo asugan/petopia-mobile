@@ -1590,7 +1590,15 @@
     "noteAndroid": "Platba sa účtuje cez váš účet Google Play. Predplatné sa automaticky obnovuje, ak ho nezrušíte aspoň 24 hodín pred koncom aktuálneho obdobia. Spravovať alebo zrušiť ho môžete kedykoľvek v nastaveniach účtu obchodu.",
     "restoreConfirmTitle": "Obnoviť nákupy?",
     "restoreConfirmMessage": "Skontrolujeme vaše nákupy v obchode a obnovíme aktívny prístup Pro na tomto zariadení.",
-    "restoreConfirmAction": "Obnoviť"
+    "restoreConfirmAction": "Obnoviť",
+    "loadingPlans": "Načítavajú sa plány...",
+    "planLifetime": "Doživotný",
+    "oneTimePayment": "Jednorazová platba",
+    "bestValue": "Najlepšia hodnota",
+    "planYearly": "Ročný",
+    "planYearlyDescription": "Účtované ročne",
+    "planMonthly": "Mesačný",
+    "planMonthlyDescription": "Účtované mesačne"
   },
   "downgrade": {
     "title": "Vyberte si svoje zvieratko",

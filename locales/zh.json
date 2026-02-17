@@ -1590,7 +1590,15 @@
     "noteAndroid": "费用将通过你的 Google Play 账户扣款。除非在当前周期结束前至少 24 小时取消，否则订阅会自动续订。你可随时在商店账户设置中管理或取消订阅。",
     "restoreConfirmTitle": "恢复购买？",
     "restoreConfirmMessage": "我们将检查您的商店购买情况并恢复此设备上的有效 Pro 访问权限。",
-    "restoreConfirmAction": "恢复"
+    "restoreConfirmAction": "恢复",
+    "loadingPlans": "正在加载套餐...",
+    "planLifetime": "终身",
+    "oneTimePayment": "一次性付款",
+    "bestValue": "最划算",
+    "planYearly": "年付",
+    "planYearlyDescription": "按年计费",
+    "planMonthly": "月付",
+    "planMonthlyDescription": "按月计费"
   },
   "downgrade": {
     "title": "选择您的宠物",

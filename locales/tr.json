@@ -1590,7 +1590,15 @@
       "cancelAnytimeAndroid": "Google Play hesap ayarlarından istediğiniz zaman iptal edin",
       "billedByStoreAndroid": "Ödeme altyapısı Google Play hesabınız üzerinden güvenli şekilde çalışır",
       "secureCheckoutAndroid": "Uygulama içinde manuel kart bilgisi girmeniz gerekmez"
-    }
+    },
+    "loadingPlans": "Planlar yükleniyor...",
+    "planLifetime": "Ömür boyu",
+    "oneTimePayment": "Tek seferlik ödeme",
+    "bestValue": "En iyi değer",
+    "planYearly": "Yıllık",
+    "planYearlyDescription": "Yıllık faturalandırılır",
+    "planMonthly": "Aylık",
+    "planMonthlyDescription": "Aylık faturalandırılır"
   },
   "downgrade": {
     "title": "Evcil Hayvanınızı Seçin",

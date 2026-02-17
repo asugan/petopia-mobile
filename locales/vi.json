@@ -1590,7 +1590,15 @@
     "noteAndroid": "Thanh toán được tính qua tài khoản Google Play của bạn. Gói đăng ký sẽ tự động gia hạn trừ khi được hủy ít nhất 24 giờ trước khi kỳ hiện tại kết thúc. Bạn có thể quản lý hoặc hủy bất cứ lúc nào trong phần cài đặt tài khoản cửa hàng.",
     "restoreConfirmTitle": "Khôi phục mua hàng?",
     "restoreConfirmMessage": "Chúng tôi sẽ kiểm tra các giao dịch mua tại cửa hàng của bạn và khôi phục quyền truy cập Pro đang hoạt động trên thiết bị này.",
-    "restoreConfirmAction": "Khôi phục"
+    "restoreConfirmAction": "Khôi phục",
+    "loadingPlans": "Đang tải các gói...",
+    "planLifetime": "Trọn đời",
+    "oneTimePayment": "Thanh toán một lần",
+    "bestValue": "Giá trị tốt nhất",
+    "planYearly": "Hàng năm",
+    "planYearlyDescription": "Thanh toán hàng năm",
+    "planMonthly": "Hàng tháng",
+    "planMonthlyDescription": "Thanh toán hàng tháng"
   },
   "downgrade": {
     "title": "Chọn thú cưng của bạn",

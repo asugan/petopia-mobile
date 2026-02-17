@@ -1590,7 +1590,15 @@
     "noteAndroid": "費用將透過你的 Google Play 帳號扣款。除非於目前週期結束前至少 24 小時取消，否則訂閱會自動續訂。你可以隨時在商店帳號設定中管理或取消訂閱。",
     "restoreConfirmTitle": "恢復購買？",
     "restoreConfirmMessage": "我們將檢查您的商店購買情況並恢復此裝置上的有效 Pro 存取權限。",
-    "restoreConfirmAction": "恢復"
+    "restoreConfirmAction": "恢復",
+    "loadingPlans": "正在載入方案...",
+    "planLifetime": "終身",
+    "oneTimePayment": "一次性付款",
+    "bestValue": "最划算",
+    "planYearly": "年繳",
+    "planYearlyDescription": "按年計費",
+    "planMonthly": "月繳",
+    "planMonthlyDescription": "按月計費"
   },
   "downgrade": {
     "title": "選擇您的寵物",
