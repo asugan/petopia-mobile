@@ -1,13 +1,11 @@
-import { useQuery, useQueries, useQueryClient } from '@tanstack/react-query';
 import { healthRecordService } from '../services/healthRecordService';
 import { petService } from '../services/petService';
 import type { CreateHealthRecordInput, HealthRecord, Pet, UpdateHealthRecordInput } from '../types';
-import { CACHE_TIMES } from '../config/queryConfig';
 import { useCreateResource, useDeleteResource, useUpdateResource } from './useCrud';
 import { useResource } from './core/useResource';
 import { useConditionalQuery } from './core/useConditionalQuery';
-import { useAuthQueryEnabled } from './useAuthQueryEnabled';
-import { expenseKeys, healthRecordKeys } from './queryKeys';
+import { useLocalQuery } from './core/useLocalAsync';
+import { healthRecordKeys } from './queryKeys';
 
 export { healthRecordKeys } from './queryKeys';
 
@@ -21,13 +19,14 @@ interface HealthRecordFilters {
 
 // Get all health records for a pet with type-safe filters
 // Note: This hook has complex client-side sorting logic,
-// so it uses useQuery directly instead of generic hooks
+// so it uses useLocalQuery directly instead of generic wrappers.
 export function useHealthRecords(petId?: string, filters: HealthRecordFilters = {}) {
-  const { enabled } = useAuthQueryEnabled();
-
-  return useQuery({
-    queryKey: healthRecordKeys.list(petId || 'all', filters),
+  return useLocalQuery<HealthRecord[]>({
+    defaultValue: [],
+    deps: [JSON.stringify(healthRecordKeys.list(petId || 'all', filters))],
     queryFn: async () => {
+      let records: HealthRecord[];
+
       if (!petId) {
         // If no petId, fetch all pets and combine their records
         const petsResult = await petService.getPets();
@@ -36,14 +35,14 @@ export function useHealthRecords(petId?: string, filters: HealthRecordFilters = 
         }
 
         const pets = petsResult.data || [];
-        const allRecords = await Promise.all(
+        const allRecordsByPet = await Promise.all(
           pets.map(async (pet: Pet) => {
             const result = await healthRecordService.getHealthRecordsByPetId(pet._id);
             return result.success ? (result.data || []) : [];
           })
         );
 
-        return allRecords.flat();
+        records = allRecordsByPet.flat();
       } else {
         const result = await healthRecordService.getHealthRecordsByPetId(petId);
         if (!result.success) {
@@ -52,15 +51,12 @@ export function useHealthRecords(petId?: string, filters: HealthRecordFilters = 
             : result.error?.message || 'Sağlık kayıtları yüklenemedi';
           throw new Error(errorMessage);
         }
-        return result.data || [];
+        records = result.data || [];
       }
-    },
-    staleTime: CACHE_TIMES.MEDIUM,
-    enabled,
-    select: (data) => {
+
       // Apply client-side sorting if specified
       if (filters.sortBy) {
-        return [...data].sort((a, b) => {
+        return [...records].sort((a, b) => {
           const aValue = a[filters.sortBy!];
           const bValue = b[filters.sortBy!];
 
@@ -72,7 +68,7 @@ export function useHealthRecords(petId?: string, filters: HealthRecordFilters = 
           return String(aValue) > String(bValue) ? 1 : String(aValue) < String(bValue) ? -1 : 0;
         });
       }
-      return data;
+      return records;
     },
   });
 }
@@ -80,59 +76,51 @@ export function useHealthRecords(petId?: string, filters: HealthRecordFilters = 
 
 // Get a single health record by ID
 export function useHealthRecord(id: string) {
-  const { enabled } = useAuthQueryEnabled();
-
   return useResource<HealthRecord>({
-    queryKey: healthRecordKeys.detail(id),
+    deps: [JSON.stringify(healthRecordKeys.detail(id))],
     queryFn: () => healthRecordService.getHealthRecordById(id),
-    staleTime: CACHE_TIMES.LONG,
-    enabled: enabled && !!id,
+    enabled: !!id,
     errorMessage: 'Sağlık kaydı yüklenemedi',
   });
 }
 
 // Get all health records for all pets (for homepage overview)
 export function useAllPetsHealthRecords(petIds: string[]) {
-  const { enabled } = useAuthQueryEnabled();
+  const query = useLocalQuery<HealthRecord[]>({
+    enabled: petIds.length > 0,
+    defaultValue: [],
+    deps: [petIds.join('|')],
+    queryFn: async () => {
+      const recordsByPet = await Promise.all(
+        petIds.map(async (petId) => {
+          const result = await healthRecordService.getHealthRecordsByPetId(petId);
+          if (!result.success) {
+            return [];
+          }
+          return result.data || [];
+        })
+      );
 
-  const queries = useQueries({
-    queries: petIds.map(petId => ({
-      queryKey: healthRecordKeys.list(petId),
-      queryFn: async () => {
-        const result = await healthRecordService.getHealthRecordsByPetId(petId);
-        if (!result.success) {
-          return [];
-        }
-        return result.data || [];
-      },
-      staleTime: CACHE_TIMES.MEDIUM,
-      enabled: enabled && !!petId,
-    })),
+      return recordsByPet
+        .flat()
+        .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+        .slice(0, 5);
+    },
   });
 
-  // Combine all results from all pets
-  const allRecords = queries
-    .filter(q => q.data && Array.isArray(q.data))
-    .flatMap(q => q.data as HealthRecord[])
-    .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
-    .slice(0, 5);
-
   return {
-    data: allRecords,
-    isLoading: queries.some(q => q.isLoading),
-    isError: queries.some(q => q.isError),
+    data: query.data,
+    isLoading: query.isLoading,
+    isError: query.isError,
   };
 }
 
 // Get health records by type
 export function useHealthRecordsByType(petId: string, type: string) {
-  const { enabled } = useAuthQueryEnabled();
-
   return useConditionalQuery<HealthRecord[]>({
-    queryKey: healthRecordKeys.byType(petId, type),
+    deps: [JSON.stringify(healthRecordKeys.byType(petId, type))],
     queryFn: () => healthRecordService.getHealthRecordsByType(petId, type),
-    staleTime: CACHE_TIMES.MEDIUM,
-    enabled: enabled && !!petId && !!type,
+    enabled: !!petId && !!type,
     defaultValue: [],
     errorMessage: 'Sağlık kayıtları yüklenemedi',
   });
@@ -140,13 +128,10 @@ export function useHealthRecordsByType(petId: string, type: string) {
 
 // Get health records by date range (using existing service method)
 export function useHealthRecordsByDateRange(petId: string, dateFrom: string, dateTo: string) {
-  const { enabled } = useAuthQueryEnabled();
-
   return useConditionalQuery<HealthRecord[]>({
-    queryKey: healthRecordKeys.byDateRange(petId, dateFrom, dateTo),
+    deps: [JSON.stringify(healthRecordKeys.byDateRange(petId, dateFrom, dateTo))],
     queryFn: () => healthRecordService.getHealthRecordsByPetId(petId),
-    staleTime: CACHE_TIMES.MEDIUM,
-    enabled: enabled && !!petId && !!dateFrom && !!dateTo,
+    enabled: !!petId && !!dateFrom && !!dateTo,
     defaultValue: [],
     errorMessage: 'Sağlık kayıtları yüklenemedi',
     select: (allRecords) => {
@@ -163,59 +148,22 @@ export function useHealthRecordsByDateRange(petId: string, dateFrom: string, dat
 
 // Create health record mutation with optimistic updates
 export function useCreateHealthRecord() {
-  const queryClient = useQueryClient();
-
-  return useCreateResource<HealthRecord, CreateHealthRecordInput>(
-    (data) => healthRecordService.createHealthRecord(data).then(res => res.data!),
-    {
-      listQueryKey: healthRecordKeys.lists(),
-      onSettled: (newRecord) => {
-        if (newRecord) {
-          queryClient.invalidateQueries({ queryKey: healthRecordKeys.list(newRecord.petId) });
-          queryClient.invalidateQueries({ queryKey: healthRecordKeys.lists() });
-        }
-        queryClient.invalidateQueries({ queryKey: expenseKeys.all });
-      },
-    }
+  return useCreateResource<HealthRecord, CreateHealthRecordInput>((data) =>
+    healthRecordService.createHealthRecord(data).then((res) => res.data!)
   );
 }
 
 // Update health record mutation with optimistic updates
 export function useUpdateHealthRecord() {
-  const queryClient = useQueryClient();
-
   return useUpdateResource<HealthRecord, UpdateHealthRecordInput>(
-    ({ _id, data }) => healthRecordService.updateHealthRecord(_id, data).then(res => res.data!),
-    {
-      listQueryKey: healthRecordKeys.lists(),
-      detailQueryKey: healthRecordKeys.detail,
-      onSettled: (data) => {
-        queryClient.invalidateQueries({ queryKey: healthRecordKeys.lists() });
-        if (data) {
-            queryClient.invalidateQueries({ queryKey: healthRecordKeys.detail(data._id) });
-        }
-        queryClient.invalidateQueries({ queryKey: expenseKeys.all });
-      },
-    }
+    ({ _id, data }) => healthRecordService.updateHealthRecord(_id, data).then((res) => res.data!)
   );
 }
 
 // Delete health record mutation with optimistic updates
 export function useDeleteHealthRecord() {
-  const queryClient = useQueryClient();
-
-  return useDeleteResource<HealthRecord>(
-    (id) => healthRecordService.deleteHealthRecord(id).then(res => res.data),
-    {
-      listQueryKey: healthRecordKeys.lists(),
-      detailQueryKey: healthRecordKeys.detail,
-      onSuccess: (data, id) => {
-      },
-      onSettled: () => {
-        queryClient.invalidateQueries({ queryKey: healthRecordKeys.lists() });
-        queryClient.invalidateQueries({ queryKey: expenseKeys.all });
-      },
-    }
+  return useDeleteResource<HealthRecord>((id) =>
+    healthRecordService.deleteHealthRecord(id).then((res) => res.data)
   );
 }
 

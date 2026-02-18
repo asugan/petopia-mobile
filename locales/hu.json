@@ -614,7 +614,15 @@
       "indonesian": "Bahasa Indonesia"
     },
     "timezone": "Időzóna",
-    "selectTimezone": "Időzóna kiválasztása"
+    "selectTimezone": "Időzóna kiválasztása",
+    "clearLocalData": "Helyi adatok törlése",
+    "clearLocalDataDescription": "Véglegesen távolítson el minden háziállatot és rekordot erről az eszközről",
+    "clearLocalDataConfirmTitle": "Törli az összes helyi adatot?",
+    "clearLocalDataConfirmMessage": "Ezzel véglegesen eltávolítja az eszközről a háziállatokat, eseményeket, etetési ütemterveket, egészségügyi feljegyzéseket és kiadásokat. Ez a művelet nem vonható vissza.",
+    "clearLocalDataConfirmAction": "Adatok törlése",
+    "clearLocalDataSuccessTitle": "Adatok törölve",
+    "clearLocalDataSuccessMessage": "Az összes helyi háziállat-adat eltávolítva erről az eszközről.",
+    "clearLocalDataError": "Nem sikerült törölni a helyi adatokat. Kérjük, próbálja újra."
   },
   "common": {
     "loading": "Betöltés...",
@@ -1317,14 +1325,14 @@
     "screen3": {
       "title": "Készen áll!",
       "description": "Minden kész kedvence gondozásának és adatainak kezeléséhez.",
-      "trialNotice": "Add hozzá az első kedvenced most, és oldd fel a Pro-t, amikor többre lesz szükséged.",
+      "trialNotice": "Add hozzá az első kisállatodat most. Később bármikor hozzáadhatsz még.",
       "addPet": "Kedvenc hozzáadása",
       "skipPet": "Majd később",
       "addYourFirstPet": "Első kedvenc hozzáadása"
     },
     "language": {
       "title": "Válaszd ki a nyelvet, pénznemet és időzónát",
-      "description": "A választásaidat a következő képernyőkön használjuk, és bejelentkezés után szinkronizáljuk. Mindent bármikor módosíthatsz a Beállításokban.",
+      "description": "A választásaidat a következő képernyőkön fogjuk használni. Bármikor módosíthatod őket a Beállításokban.",
       "continue": "Folytatás"
     }
   },
@@ -1508,6 +1516,14 @@
     "autoRenews": "Automatikusan megújul: {{date}}",
     "cancelled": "Lemondva - lejár: {{date}}",
     "paywallError": "Nem sikerült betölteni az előfizetési opciókat",
+    "loadingPlans": "Csomagok betoltese...",
+    "planLifetime": "Elethosszig",
+    "oneTimePayment": "Egyszeri fizetes",
+    "bestValue": "Legjobb ertek",
+    "planYearly": "Eves",
+    "planYearlyDescription": "Evente szamlazva",
+    "planMonthly": "Havi",
+    "planMonthlyDescription": "Havonta szamlazva",
     "trialAlreadySubscribed": "Már van aktív előfizetése",
     "trialAlreadyUsed": "Ez a készülék már használta az ingyenes próbát",
     "trialStartFailed": "Sikertelen próba indítás. Próbálja újra.",
@@ -1528,13 +1544,19 @@
     "features": {
       "title": "Pro funkciók",
       "unlimited": "Korlátlan kedvenc",
-      "unlimitedDesc": "Tartsd egy helyen az összes kedvencprofilt, nyilvántartást és jegyzetet",
+      "unlimitedDesc": "Oldja fel a második kisállatot, és tartson együtt minden profilt, rekordot és rutint",
       "feedingSchedules": "Korlátlan etetési ütemterv",
       "feedingSchedulesDesc": "Építs megbízható rutint minden kedvencnek időbeosztási korlátok nélkül",
-      "budgetTracking": "Költségvetés-követés és riasztások",
-      "budgetTrackingDesc": "Havonkénti költségkeret-riasztásokkal időben észreveheted a növekvő költségeket",
-      "export": "Adatexportálása",
-      "exportDesc": "Ossz meg átlátható jelentéseket a családdal vagy az állatorvossal",
+      "budgetTracking": "Advanced Budget Insights",
+      "budgetTrackingDesc": "A Pro insights és intelligens figyelmeztetések segítségével korán észlelheti a túlköltekezési trendeket",
+      "export": "Állatorvos-kész jelentések és export",
+      "exportDesc": "Exportálhatja a CSV-t, PDF-et és az állatorvosi összefoglalókat, hogy másodpercek alatt megoszthassa azokat",
+      "recurrence": "Ismétlődő gondozási automatizálások",
+      "recurrenceDesc": "Egyszeri beállítás, automatikus ismétlés speciális ismétlődő rutinokkal",
+      "smartReminders": "Intelligens emlékeztető-beállítások",
+      "smartRemindersDesc": "Használjon gazdagabb emlékeztető ütemeket, így a fontos gondozási feladatok soha nem maradnak el",
+      "urgentMode": "Sürgős ellátás Fókuszban",
+      "urgentModeDesc": "Azonnal megtekintheti a sürgős egészségügyi feladatokat, és rangsorolhatja azt, ami a legfontosabb",
       "priority": "Elsőbbségi támogatás",
       "priorityDesc": "Sürgős helyzetben gyorsabb segítséget kapsz",
       "petManagement": "Kedvencek kezelése",
@@ -1546,7 +1568,7 @@
     },
     "paywall": {
       "title": "Oldja fel a Petopia Petcare Prót",
-      "subtitle": "Maradj képben minden kedvenc gondozásával, emlékeztetőivel és költségeivel"
+      "subtitle": "Egyetlen háziállatról egy komplett gondozási rendszerre léphet az exporttal, az automatizálással és az intelligens betekintésekkel"
     },
     "success": {
       "title": "Sikeres előfizetés!",
@@ -1562,10 +1584,21 @@
     "trust": {
       "cancelAnytime": "Az App Store / Google Play beállításaiban bármikor lemondhatod",
       "billedByStore": "A számlázás biztonságosan az alkalmazásbolt-fiókodon keresztül történik",
-      "secureCheckout": "Az alkalmazásban nem szükséges kézzel megadni a bankkártyaadatokat"
+      "secureCheckout": "Az alkalmazásban nem szükséges kézzel megadni a bankkártyaadatokat",
+      "cancelAnytimeIos": "Az App Store beállításaiban bármikor lemondhatod",
+      "cancelAnytimeAndroid": "Az Google Play beállításaiban bármikor lemondhatod",
+      "billedByStoreIos": "A számlázás biztonságosan az alkalmazásbolt-fiókodon keresztül történik",
+      "billedByStoreAndroid": "A számlázás biztonságosan az alkalmazásbolt-fiókodon keresztül történik",
+      "secureCheckoutIos": "Az alkalmazásban nem szükséges kézzel megadni a bankkártyaadatokat",
+      "secureCheckoutAndroid": "Az alkalmazásban nem szükséges kézzel megadni a bankkártyaadatokat"
     },
     "verifyingPurchase": "Vasarlas fogadva. Elfizetesed ellenorzese folyamatban...",
-    "verificationTakingLong": "A vasarlas ellenorzese folyamatban van. A hozzaferes nehany masodpercen belul automatikusan feloldodik."
+    "verificationTakingLong": "A vasarlas ellenorzese folyamatban van. A hozzaferes nehany masodpercen belul automatikusan feloldodik.",
+    "noteIos": "A fizetés az App Store fiókodból történik. Az előfizetések automatikusan megújulnak, hacsak legalább 24 órával az aktuális időszak vége előtt nem mondod le. A kezelést vagy lemondást bármikor elvégezheted az áruházfiók beállításaiban.",
+    "noteAndroid": "A fizetés az Google Play fiókodból történik. Az előfizetések automatikusan megújulnak, hacsak legalább 24 órával az aktuális időszak vége előtt nem mondod le. A kezelést vagy lemondást bármikor elvégezheted az áruházfiók beállításaiban.",
+    "restoreConfirmTitle": "Visszaállítja a vásárlásokat?",
+    "restoreConfirmMessage": "Ellenőrizzük bolti vásárlásait, és visszaállítjuk az aktív Pro-hozzáférést ezen az eszközön.",
+    "restoreConfirmAction": "Visszaállítás"
   },
   "downgrade": {
     "title": "Válassza ki kedvencét",

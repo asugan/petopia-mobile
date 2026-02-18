@@ -614,7 +614,15 @@
     },
     "selectCurrency": "Valuta selecteren",
     "timezone": "Tijdzone",
-    "selectTimezone": "Tijdzone selecteren"
+    "selectTimezone": "Tijdzone selecteren",
+    "clearLocalData": "Lokale gegevens wissen",
+    "clearLocalDataDescription": "Verwijder permanent alle huisdieren en gegevens van dit apparaat",
+    "clearLocalDataConfirmTitle": "Alle lokale gegevens wissen?",
+    "clearLocalDataConfirmMessage": "Hiermee worden huisdieren, evenementen, voedingsschema's, gezondheidsdossiers en uitgaven permanent van dit apparaat verwijderd. Deze actie kan niet ongedaan worden gemaakt.",
+    "clearLocalDataConfirmAction": "Gegevens wissen",
+    "clearLocalDataSuccessTitle": "Gegevens gewist",
+    "clearLocalDataSuccessMessage": "Alle lokale huisdiergegevens zijn van dit apparaat verwijderd.",
+    "clearLocalDataError": "Kan lokale gegevens niet wissen. Probeer het opnieuw."
   },
   "common": {
     "loading": "Laden...",
@@ -1317,14 +1325,14 @@
     "screen3": {
       "title": "Je Bent Er Klaar Voor!",
       "description": "Alles is gereed om de zorg en gezondheidsgegevens van je huisdier te beheren.",
-      "trialNotice": "Voeg nu je eerste huisdier toe en ontgrendel Pro wanneer je meer nodig hebt.",
+      "trialNotice": "Voeg nu je eerste huisdier toe. Je kunt later altijd meer toevoegen.",
       "addPet": "Huisdier Toevoegen",
       "skipPet": "Later doen",
       "addYourFirstPet": "Voeg Je Eerste Huisdier Toe"
     },
     "language": {
       "title": "Kies je taal, valuta en tijdzone",
-      "description": "We gebruiken je keuzes op de volgende schermen en synchroniseren ze na het inloggen. Je kunt alles op elk moment wijzigen in Instellingen.",
+      "description": "We gebruiken je keuzes op de volgende schermen. Je kunt ze altijd aanpassen in Instellingen.",
       "continue": "Doorgaan"
     }
   },
@@ -1508,6 +1516,14 @@
     "autoRenews": "Wordt automatisch verlengd op {{date}}",
     "cancelled": "Opgezegd - verloopt op {{date}}",
     "paywallError": "Kon abonnementsopties niet laden",
+    "loadingPlans": "Abonnementen laden...",
+    "planLifetime": "Levenslang",
+    "oneTimePayment": "Eenmalige betaling",
+    "bestValue": "Beste waarde",
+    "planYearly": "Jaarlijks",
+    "planYearlyDescription": "Jaarlijks gefactureerd",
+    "planMonthly": "Maandelijks",
+    "planMonthlyDescription": "Maandelijks gefactureerd",
     "trialAlreadySubscribed": "Je hebt al een actief abonnement",
     "trialAlreadyUsed": "Dit apparaat heeft al een gratis proefperiode gebruikt",
     "trialStartFailed": "Kon gratis proefperiode niet starten. Probeer het opnieuw.",
@@ -1528,13 +1544,19 @@
     "features": {
       "title": "Pro Functies",
       "unlimited": "Onbeperkt Huisdieren",
-      "unlimitedDesc": "Bewaar alle huisdierprofielen, gegevens en notities samen op één plek",
+      "unlimitedDesc": "Ontgrendel het tweede huisdier en houd elk profiel, record en routine bij elkaar",
       "feedingSchedules": "Onbeperkt Voedingsschema's",
       "feedingSchedulesDesc": "Bouw betrouwbare routines voor elk huisdier zonder planningslimieten",
-      "budgetTracking": "Budgetbewaking & Alerts",
-      "budgetTrackingDesc": "Zie stijgende kosten vroeg met maandelijkse budgetmeldingen",
-      "export": "Gegevensexport",
-      "exportDesc": "Deel duidelijke rapporten met familie of dierenarts",
+      "budgetTracking": "Geavanceerde budgetinzichten",
+      "budgetTrackingDesc": "Ontdek trends in te hoge uitgaven vroegtijdig met Pro-inzichten en slimme waarschuwingen",
+      "export": "Veterinaire rapporten en export",
+      "exportDesc": "Exporteer CSV-, PDF- en dierenartsoverzichten om deze binnen enkele seconden netjes te delen",
+      "recurrence": "Terugkerende zorgautomatiseringen",
+      "recurrenceDesc": "Eén keer instellen, automatisch herhalen met geavanceerde terugkerende routines",
+      "smartReminders": "Slimme herinneringsvoorinstellingen",
+      "smartRemindersDesc": "Gebruik rijkere herinneringsfrequenties, zodat belangrijke zorgtaken nooit worden gemist",
+      "urgentMode": "Spoedeisende zorgfocus",
+      "urgentModeDesc": "Zie direct urgente gezondheidstaken en geef prioriteit aan wat het belangrijkst is",
       "priority": "Prioritaire Ondersteuning",
       "priorityDesc": "Krijg sneller hulp wanneer het urgent is",
       "petManagement": "Huisdierbeheer",
@@ -1546,7 +1568,7 @@
     },
     "paywall": {
       "title": "Ontgrendel Petopia Petcare Pro",
-      "subtitle": "Blijf bovenop zorg, herinneringen en uitgaven voor elk huisdier"
+      "subtitle": "Schaal van één huisdier naar een compleet zorgsysteem met export, automatisering en slimme inzichten"
     },
     "success": {
       "title": "Abonnement Geslaagd!",
@@ -1562,10 +1584,21 @@
     "trust": {
       "cancelAnytime": "Je kunt op elk moment opzeggen via de instellingen van App Store / Google Play",
       "billedByStore": "Facturatie wordt veilig afgehandeld via je appstore-account",
-      "secureCheckout": "Geen handmatige invoer van creditcardgegevens in de app nodig"
+      "secureCheckout": "Geen handmatige invoer van creditcardgegevens in de app nodig",
+      "cancelAnytimeIos": "Je kunt op elk moment opzeggen via de instellingen van App Store",
+      "cancelAnytimeAndroid": "Je kunt op elk moment opzeggen via de instellingen van Google Play",
+      "billedByStoreIos": "Facturatie wordt veilig afgehandeld via je appstore-account",
+      "billedByStoreAndroid": "Facturatie wordt veilig afgehandeld via je appstore-account",
+      "secureCheckoutIos": "Geen handmatige invoer van creditcardgegevens in de app nodig",
+      "secureCheckoutAndroid": "Geen handmatige invoer van creditcardgegevens in de app nodig"
     },
     "verifyingPurchase": "Aankoop ontvangen. We verifieren je abonnement...",
-    "verificationTakingLong": "Je aankoop wordt geverifieerd. Toegang wordt binnen enkele seconden automatisch ontgrendeld."
+    "verificationTakingLong": "Je aankoop wordt geverifieerd. Toegang wordt binnen enkele seconden automatisch ontgrendeld.",
+    "noteIos": "Betaling verloopt via je App Store-account. Abonnementen worden automatisch verlengd, tenzij je minimaal 24 uur voor het einde van de huidige periode opzegt. Je kunt op elk moment beheren of opzeggen via je store-accountinstellingen.",
+    "noteAndroid": "Betaling verloopt via je Google Play-account. Abonnementen worden automatisch verlengd, tenzij je minimaal 24 uur voor het einde van de huidige periode opzegt. Je kunt op elk moment beheren of opzeggen via je store-accountinstellingen.",
+    "restoreConfirmTitle": "Aankopen herstellen?",
+    "restoreConfirmMessage": "We controleren uw winkelaankopen en herstellen de actieve Pro-toegang op dit apparaat.",
+    "restoreConfirmAction": "Herstellen"
   },
   "downgrade": {
     "title": "Kies Je Huisdier",

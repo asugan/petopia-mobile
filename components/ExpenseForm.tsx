@@ -15,6 +15,7 @@ import { SmartPaymentMethodPicker } from './forms/SmartPaymentMethodPicker';
 import { SmartPetPicker } from './forms/SmartPetPicker';
 import { FormSection } from './forms/FormSection';
 import { StepHeader } from './forms/StepHeader';
+import { useUserSettingsStore } from '@/stores/userSettingsStore';
 
 interface ExpenseFormProps {
   petId?: string;
@@ -33,13 +34,16 @@ const ExpenseForm: React.FC<ExpenseFormProps> = ({
 }) => {
   const { theme } = useTheme();
   const { t } = useTranslation();
+  const baseCurrency = useUserSettingsStore((state) => state.settings?.baseCurrency ?? 'TRY');
   const [currentStep, setCurrentStep] = React.useState(0);
   const [showStepError, setShowStepError] = React.useState(false);
+  const expenseCurrency = initialData?.currency ?? baseCurrency;
 
   const defaultValues = {
     petId,
     category: initialData?.category || ('food' as ExpenseCategory),
     amount: initialData?.amount || 0,
+    currency: expenseCurrency,
     paymentMethod: initialData?.paymentMethod || undefined,
     date: initialData?.date || toISODateString(new Date()) || '',
   };
@@ -53,9 +57,12 @@ const ExpenseForm: React.FC<ExpenseFormProps> = ({
 
   const handleFormSubmit = React.useCallback(
     (data: ExpenseCreateFormInput) => {
-      onSubmit(data as CreateExpenseInputType);
+      onSubmit({
+        ...(data as CreateExpenseInputType),
+        currency: data.currency ?? expenseCurrency,
+      });
     },
-    [onSubmit]
+    [onSubmit, expenseCurrency]
   );
 
   const isEditMode = Boolean(initialData);

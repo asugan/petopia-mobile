@@ -1,13 +1,10 @@
-import { useCallback } from 'react';
-import { useQueryClient } from '@tanstack/react-query';
+import { useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { usePendingPetStore } from '@/stores/pendingPetStore';
 import { useCreatePet } from './usePets';
 import { useSubscriptionStore } from '@/stores/subscriptionStore';
 import { showToast } from '@/lib/toast/showToast';
 import { PetCreateInput, PetCreateSchema } from '@/lib/schemas/petSchema';
-
-const PENDING_PET_PROCESSING_KEY = ['pending-pet-processing'] as const;
 
 interface UsePendingPetReturn {
   processPendingPet: (existingPetsCount?: number) => Promise<void>;
@@ -18,13 +15,12 @@ interface UsePendingPetReturn {
 }
 
 export function usePendingPet(): UsePendingPetReturn {
-  const queryClient = useQueryClient();
   const { t } = useTranslation();
   const { hasPendingPet, getPetData, clearPendingPet } = usePendingPetStore();
   const createPetMutation = useCreatePet();
   const { isInitialized } = useSubscriptionStore();
+  const [isProcessing, setIsProcessing] = useState(false);
 
-  const isProcessing = queryClient.getQueryData(PENDING_PET_PROCESSING_KEY) === true;
   const { isPending, isError, error } = createPetMutation;
 
   const processPendingPet = useCallback(async (existingPetsCount: number = 0) => {
@@ -56,7 +52,7 @@ export function usePendingPet(): UsePendingPetReturn {
       return;
     }
 
-    queryClient.setQueryData(PENDING_PET_PROCESSING_KEY, true);
+    setIsProcessing(true);
 
     try {
       const apiData: PetCreateInput = PetCreateSchema().parse(petData);
@@ -73,7 +69,7 @@ export function usePendingPet(): UsePendingPetReturn {
         title: t('pets.pendingPetError'),
       });
     } finally {
-      queryClient.setQueryData(PENDING_PET_PROCESSING_KEY, false);
+      setIsProcessing(false);
     }
   }, [
     hasPendingPet,
@@ -82,7 +78,6 @@ export function usePendingPet(): UsePendingPetReturn {
     clearPendingPet,
     createPetMutation,
     t,
-    queryClient,
     isInitialized,
   ]);
 

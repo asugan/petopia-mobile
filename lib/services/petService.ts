@@ -1,41 +1,18 @@
-import { api, ApiError, ApiResponse } from '../api/client';
-import { ENV } from '../config/env';
-import type { Pet, CreatePetInput, UpdatePetInput } from '../types';
-import { normalizeToISOString } from '../utils/dateConversion';
+import type { ApiResponse } from '@/lib/contracts/api';
+import { petRepository } from '@/lib/repositories/petRepository';
+import type { CreatePetInput, Pet, UpdatePetInput } from '@/lib/types';
 
-/**
- * Pet Service - Tüm pet API operasyonlarını yönetir
- */
 export class PetService {
-  /**
-   * Yeni pet oluşturur
-   */
   async createPet(data: CreatePetInput): Promise<ApiResponse<Pet>> {
     try {
-      // Clean up the data before sending to API
-      const cleanedData = {
-        ...data,
-        birthDate: normalizeToISOString(data.birthDate),
-        profilePhoto: data.profilePhoto || undefined,
-      };
-
-      const response = await api.post<Pet>(ENV.ENDPOINTS.PETS, cleanedData);
+      const createdPet = petRepository.createPet(data);
 
       return {
         success: true,
-        data: response.data!,
+        data: createdPet,
         message: 'serviceResponse.pet.createSuccess',
       };
-    } catch (error) {
-      if (error instanceof ApiError) {
-      return {
-        success: false,
-        error: {
-          code: 'CREATE_ERROR',
-          message: 'serviceResponse.pet.createError',
-        },
-      };
-      }
+    } catch {
       return {
         success: false,
         error: {
@@ -46,10 +23,6 @@ export class PetService {
     }
   }
 
-  /**
-   * Tüm petleri listeler (en yeni başa)
-   * Supports pagination, filtering by type, search, and sorting
-   */
   async getPets(params?: {
     page?: number;
     limit?: number;
@@ -59,36 +32,21 @@ export class PetService {
     sortOrder?: 'asc' | 'desc';
   }): Promise<ApiResponse<Pet[]>> {
     try {
-      const queryParams: Record<string, string | number> = {};
-
-      // Build query params from all available filters
-      if (params?.page !== undefined) queryParams.page = params.page;
-      if (params?.limit !== undefined) queryParams.limit = params.limit;
-      if (params?.type) queryParams.type = params.type;
-      if (params?.search) queryParams.search = params.search;
-      if (params?.sortBy) queryParams.sortBy = params.sortBy;
-      if (params?.sortOrder) queryParams.sortOrder = params.sortOrder;
-
-      const response = await api.get<Pet[]>(
-        ENV.ENDPOINTS.PETS,
-        Object.keys(queryParams).length > 0 ? queryParams : undefined
-      );
+      const pets = petRepository.getPets({
+        page: params?.page,
+        limit: params?.limit,
+        type: params?.type,
+        search: params?.search,
+        sortBy: params?.sortBy as 'name' | 'createdAt' | 'updatedAt' | 'type' | undefined,
+        sortOrder: params?.sortOrder,
+      });
 
       return {
         success: true,
-        data: response.data || [],
+        data: pets,
         message: 'serviceResponse.pet.fetchSuccess',
       };
-    } catch (error) {
-      if (error instanceof ApiError) {
-        return {
-          success: false,
-          error: {
-            code: error.code || 'FETCH_ERROR',
-            message: error.message,
-          },
-        };
-      }
+    } catch {
       return {
         success: false,
         error: {
@@ -99,37 +57,26 @@ export class PetService {
     }
   }
 
-  /**
-   * ID'ye göre tek bir pet getirir
-   */
   async getPetById(id: string): Promise<ApiResponse<Pet>> {
     try {
-      const response = await api.get<Pet>(ENV.ENDPOINTS.PET_BY_ID(id));
+      const pet = petRepository.getPetById(id);
 
-      return {
-        success: true,
-        data: response.data!,
-        message: 'serviceResponse.pet.fetchOneSuccess',
-      };
-    } catch (error) {
-      if (error instanceof ApiError) {
-        if (error.status === 404) {
-          return {
-            success: false,
-            error: {
-              code: 'NOT_FOUND',
-              message: 'serviceResponse.pet.notFound',
-            },
-          };
-        }
+      if (!pet) {
         return {
           success: false,
           error: {
-            code: error.code || 'FETCH_ERROR',
-            message: error.message,
+            code: 'NOT_FOUND',
+            message: 'serviceResponse.pet.notFound',
           },
         };
       }
+
+      return {
+        success: true,
+        data: pet,
+        message: 'serviceResponse.pet.fetchOneSuccess',
+      };
+    } catch {
       return {
         success: false,
         error: {
@@ -140,44 +87,26 @@ export class PetService {
     }
   }
 
-  /**
-   * Pet bilgilerini günceller
-   */
   async updatePet(id: string, data: UpdatePetInput): Promise<ApiResponse<Pet>> {
     try {
-      // Clean up the data before sending to API
-      const updateData = {
-        ...data,
-        birthDate: normalizeToISOString(data.birthDate),
-        profilePhoto: data.profilePhoto || undefined,
-      };
+      const updatedPet = petRepository.updatePet(id, data);
 
-      const response = await api.put<Pet>(ENV.ENDPOINTS.PET_BY_ID(id), updateData);
-
-      return {
-        success: true,
-        data: response.data!,
-        message: 'serviceResponse.pet.updateSuccess',
-      };
-    } catch (error) {
-      if (error instanceof ApiError) {
-        if (error.status === 404) {
-          return {
-            success: false,
-            error: {
-              code: 'NOT_FOUND',
-              message: 'serviceResponse.pet.notFoundUpdate',
-            },
-          };
-        }
+      if (!updatedPet) {
         return {
           success: false,
           error: {
-            code: error.code || 'UPDATE_ERROR',
-            message: error.message,
+            code: 'NOT_FOUND',
+            message: 'serviceResponse.pet.notFoundUpdate',
           },
         };
       }
+
+      return {
+        success: true,
+        data: updatedPet,
+        message: 'serviceResponse.pet.updateSuccess',
+      };
+    } catch {
       return {
         success: false,
         error: {
@@ -188,36 +117,25 @@ export class PetService {
     }
   }
 
-  /**
-   * Pet siler
-   */
   async deletePet(id: string): Promise<ApiResponse<void>> {
     try {
-      await api.delete(ENV.ENDPOINTS.PET_BY_ID(id));
+      const deleted = petRepository.deletePet(id);
+
+      if (!deleted) {
+        return {
+          success: false,
+          error: {
+            code: 'NOT_FOUND',
+            message: 'serviceResponse.pet.notFoundDelete',
+          },
+        };
+      }
 
       return {
         success: true,
         message: 'serviceResponse.pet.deleteSuccess',
       };
-    } catch (error) {
-      if (error instanceof ApiError) {
-        if (error.status === 404) {
-          return {
-            success: false,
-            error: {
-              code: 'NOT_FOUND',
-              message: 'serviceResponse.pet.notFoundDelete',
-            },
-          };
-        }
-        return {
-          success: false,
-          error: {
-            code: error.code || 'DELETE_ERROR',
-            message: error.message,
-          },
-        };
-      }
+    } catch {
       return {
         success: false,
         error: {
@@ -228,60 +146,20 @@ export class PetService {
     }
   }
 
-  /**
-   * Petleri türe göre filtreler
-   */
   async getPetsByType(type: string): Promise<ApiResponse<Pet[]>> {
-    try {
-      const response = await api.get<Pet[]>(ENV.ENDPOINTS.PETS, { type });
-
-      return {
-        success: true,
-        data: response.data || [],
-        message: 'serviceResponse.pet.fetchByTypeSuccess',
-      };
-    } catch (error) {
-      if (error instanceof ApiError) {
-        return {
-          success: false,
-          error: {
-            code: error.code || 'FETCH_ERROR',
-            message: error.message,
-          },
-        };
-      }
-      return {
-        success: false,
-        error: {
-          code: 'FETCH_ERROR',
-          message: 'serviceResponse.pet.fetchError',
-        },
-      };
-    }
+    return this.getPets({ type });
   }
 
-  /**
-   * Pet arama (isime göre)
-   */
   async searchPets(query: string): Promise<ApiResponse<Pet[]>> {
     try {
-      const response = await api.get<Pet[]>(ENV.ENDPOINTS.PETS, { search: query });
+      const pets = petRepository.getPets({ search: query });
 
       return {
         success: true,
-        data: response.data || [],
+        data: pets,
         message: 'serviceResponse.pet.searchSuccess',
       };
-    } catch (error) {
-      if (error instanceof ApiError) {
-        return {
-          success: false,
-          error: {
-            code: error.code || 'SEARCH_ERROR',
-            message: error.message,
-          },
-        };
-      }
+    } catch {
       return {
         success: false,
         error: {
@@ -292,38 +170,26 @@ export class PetService {
     }
   }
 
-  /**
-   * Pet fotoğrafı yükler
-   */
   async uploadPetPhoto(id: string, photoUri: string): Promise<ApiResponse<Pet>> {
     try {
-      const formData = new FormData();
-      // React Native FormData blob type
-      const photoBlob = {
-        uri: photoUri,
-        type: 'image/jpeg',
-        name: 'pet-photo.jpg',
-      } as unknown as Blob;
-      formData.append('photo', photoBlob);
+      const updatedPet = petRepository.updatePet(id, { profilePhoto: photoUri });
 
-      const response = await api.upload<Pet>(ENV.ENDPOINTS.PET_PHOTO(id), formData);
-
-      return {
-        success: true,
-        data: response.data!,
-        message: 'serviceResponse.pet.uploadPhotoSuccess',
-      };
-    } catch (error) {
-      if (error instanceof ApiError) {
+      if (!updatedPet) {
         return {
           success: false,
           error: {
-            code: error.code || 'UPLOAD_ERROR',
-            message: error.message,
-            details: error.details,
+            code: 'NOT_FOUND',
+            message: 'serviceResponse.pet.notFoundUpdate',
           },
         };
       }
+
+      return {
+        success: true,
+        data: updatedPet,
+        message: 'serviceResponse.pet.uploadPhotoSuccess',
+      };
+    } catch {
       return {
         success: false,
         error: {
@@ -334,9 +200,6 @@ export class PetService {
     }
   }
 
-  /**
-   * Pet istatistiklerini getirir
-   */
   async getPetStats(): Promise<ApiResponse<{
     total: number;
     byType: Record<string, number>;
@@ -344,28 +207,24 @@ export class PetService {
     averageAge: number;
   }>> {
     try {
-      // Backend'de bu endpoint olabilir ya da tüm petleri çekip hesaplayabiliriz
-      const allPetsResponse = await api.get<Pet[]>(ENV.ENDPOINTS.PETS);
-      const allPets = allPetsResponse.data || [];
+      const allPets = petRepository.getPets();
 
       const byType: Record<string, number> = {};
       const byGender: Record<string, number> = {};
       let totalAge = 0;
 
-      allPets.forEach(pet => {
-        // Tür sayımı
+      allPets.forEach((pet) => {
         byType[pet.type] = (byType[pet.type] || 0) + 1;
 
-        // Cinsiyet sayımı
         if (pet.gender) {
           byGender[pet.gender] = (byGender[pet.gender] || 0) + 1;
         }
 
-        // Yaş hesaplama
         if (pet.birthDate) {
           const birthDate = new Date(pet.birthDate);
           const now = new Date();
-          const ageInYears = (now.getTime() - birthDate.getTime()) / (1000 * 60 * 60 * 24 * 365.25);
+          const ageInYears =
+            (now.getTime() - birthDate.getTime()) / (1000 * 60 * 60 * 24 * 365.25);
           totalAge += ageInYears;
         }
       });
@@ -378,21 +237,11 @@ export class PetService {
           total: allPets.length,
           byType,
           byGender,
-          averageAge: Math.round(averageAge * 10) / 10, // 1 decimal basamak
+          averageAge: Math.round(averageAge * 10) / 10,
         },
         message: 'serviceResponse.pet.statsCalculatedSuccess',
       };
-    } catch (error) {
-      if (error instanceof ApiError) {
-        return {
-          success: false,
-          error: {
-            code: error.code || 'STATS_ERROR',
-            message: error.message,
-            details: error.details,
-          },
-        };
-      }
+    } catch {
       return {
         success: false,
         error: {
@@ -404,5 +253,4 @@ export class PetService {
   }
 }
 
-// Singleton instance
 export const petService = new PetService();

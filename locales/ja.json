@@ -614,7 +614,15 @@
     },
     "selectCurrency": "通貨を選択",
     "timezone": "タイムゾーン",
-    "selectTimezone": "タイムゾーンを選択"
+    "selectTimezone": "タイムゾーンを選択",
+    "clearLocalData": "ローカルデータをクリアする",
+    "clearLocalDataDescription": "このデバイスからすべてのペットと記録を永久に削除します",
+    "clearLocalDataConfirmTitle": "ローカルデータをすべて消去しますか?",
+    "clearLocalDataConfirmMessage": "これにより、ペット、イベント、給餌スケジュール、健康記録、支出がこのデバイスから完全に削除されます。この操作は元に戻すことができません。",
+    "clearLocalDataConfirmAction": "データのクリア",
+    "clearLocalDataSuccessTitle": "データクリア",
+    "clearLocalDataSuccessMessage": "ローカルのペット データはすべてこのデバイスから削除されました。",
+    "clearLocalDataError": "ローカルデータのクリアに失敗しました。もう一度試してください。"
   },
   "common": {
     "loading": "読み込み中...",
@@ -1317,14 +1325,14 @@
     "screen3": {
       "title": "準備完了！",
       "description": "ペットのケアと健康データの管理準備が整いました。",
-      "trialNotice": "今すぐ最初のペットを追加し、さらに必要になったらProをアンロックしましょう。",
+      "trialNotice": "まずは最初のペットを追加しましょう。あとからいつでも追加できます。",
       "addPet": "ペットを追加",
       "skipPet": "後で行う",
       "addYourFirstPet": "最初のペットを追加"
     },
     "language": {
       "title": "言語、通貨、タイムゾーンを選択してください",
-      "description": "次の画面で選択内容を使用し、サインイン後に同期します。すべての設定はいつでも設定画面で変更できます。",
+      "description": "次の画面では、あなたの選択内容を使用します。設定からいつでも変更できます。",
       "continue": "続行"
     }
   },
@@ -1508,6 +1516,14 @@
     "autoRenews": "自動更新: {{date}}",
     "cancelled": "キャンセル済 - 有効期限: {{date}}",
     "paywallError": "サブスクリプションオプションを読み込めません",
+    "loadingPlans": "プランを読み込み中...",
+    "planLifetime": "生涯",
+    "oneTimePayment": "買い切り",
+    "bestValue": "最もお得",
+    "planYearly": "年額",
+    "planYearlyDescription": "年額請求",
+    "planMonthly": "月額",
+    "planMonthlyDescription": "月額請求",
     "trialAlreadySubscribed": "すでに有効なサブスクリプションがあります",
     "trialAlreadyUsed": "このデバイスではすでに無料トライアルを使用しました",
     "trialStartFailed": "無料トライアルを開始できません。再試行してください。",
@@ -1528,13 +1544,19 @@
     "features": {
       "title": "Pro機能",
       "unlimited": "ペット無制限",
-      "unlimitedDesc": "すべてのペットプロフィール、記録、メモを1か所に集約",
+      "unlimitedDesc": "2 番目のペットのロックを解除し、すべてのプロフィール、記録、ルーチンをまとめて保存します",
       "feedingSchedules": "無制限の食事スケジュール",
       "feedingSchedulesDesc": "スケジュール制限なしで、各ペットに信頼できるルーティンを作成",
-      "budgetTracking": "予算追跡 & アラート",
-      "budgetTrackingDesc": "月次予算アラートでコスト増を早めに把握",
-      "export": "データエクスポート",
-      "exportDesc": "家族や獣医と分かりやすいレポートを共有",
+      "budgetTracking": "高度な予算に関する洞察",
+      "budgetTrackingDesc": "プロの洞察とスマートなアラートで過剰支出の傾向を早期に検出",
+      "export": "獣医向けレポートとエクスポート",
+      "exportDesc": "CSV、PDF、および精査概要をエクスポートして、数秒できれいに共有できます",
+      "recurrence": "定期的なケアの自動化",
+      "recurrenceDesc": "一度設定すれば、高度な繰り返しルーチンで自動的に繰り返す",
+      "smartReminders": "スマートリマインダーのプリセット",
+      "smartRemindersDesc": "重要なケアタスクを見逃さないように、より豊富なリマインダー頻度を使用します",
+      "urgentMode": "救急医療に重点を置く",
+      "urgentModeDesc": "緊急の医療タスクを即座に確認し、最も重要なものに優先順位を付けます",
       "priority": "優先サポート",
       "priorityDesc": "緊急時により速いサポートを受けられる",
       "petManagement": "ペット管理",
@@ -1546,7 +1568,7 @@
     },
     "paywall": {
       "title": "Petopia Petcare Proをアンロック",
-      "subtitle": "すべてのペットのケア、リマインダー、支出をしっかり把握"
+      "subtitle": "エクスポート、自動化、スマートな洞察を使用して、1 匹のペットから完全なケア システムまで拡張します"
     },
     "success": {
       "title": "サブスクリプション成功！",
@@ -1562,10 +1584,21 @@
     "trust": {
       "cancelAnytime": "App Store / Google Play の設定からいつでも解約できます",
       "billedByStore": "請求はアプリストアのアカウントを通じて安全に処理されます",
-      "secureCheckout": "アプリ内でクレジットカード情報を手入力する必要はありません"
+      "secureCheckout": "アプリ内でクレジットカード情報を手入力する必要はありません",
+      "cancelAnytimeIos": "App Store の設定からいつでも解約できます",
+      "cancelAnytimeAndroid": "Google Play の設定からいつでも解約できます",
+      "billedByStoreIos": "請求はアプリストアのアカウントを通じて安全に処理されます",
+      "billedByStoreAndroid": "請求はアプリストアのアカウントを通じて安全に処理されます",
+      "secureCheckoutIos": "アプリ内でクレジットカード情報を手入力する必要はありません",
+      "secureCheckoutAndroid": "アプリ内でクレジットカード情報を手入力する必要はありません"
     },
     "verifyingPurchase": "購入を受け付けました。サブスクリプションを確認しています...",
-    "verificationTakingLong": "購入を確認しています。数秒後にアクセスが自動的に有効になります。"
+    "verificationTakingLong": "購入を確認しています。数秒後にアクセスが自動的に有効になります。",
+    "noteIos": "お支払いはApp Storeアカウントに請求されます。サブスクリプションは、現在の期間終了の24時間前までに解約しない限り自動更新されます。ストアのアカウント設定からいつでも管理・解約できます。",
+    "noteAndroid": "お支払いはGoogle Playアカウントに請求されます。サブスクリプションは、現在の期間終了の24時間前までに解約しない限り自動更新されます。ストアのアカウント設定からいつでも管理・解約できます。",
+    "restoreConfirmTitle": "購入したものを復元しますか？",
+    "restoreConfirmMessage": "ストアでの購入内容を確認し、このデバイスでアクティブな Pro アクセスを復元します。",
+    "restoreConfirmAction": "復元する"
   },
   "downgrade": {
     "title": "ペットを選択",

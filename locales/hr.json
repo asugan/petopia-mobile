@@ -614,7 +614,15 @@
       "indonesian": "Bahasa Indonesia"
     },
     "timezone": "Vremenska zona",
-    "selectTimezone": "Odaberi vremensku zonu"
+    "selectTimezone": "Odaberi vremensku zonu",
+    "clearLocalData": "Obriši lokalne podatke",
+    "clearLocalDataDescription": "Trajno uklonite sve ljubimce i zapise s ovog uređaja",
+    "clearLocalDataConfirmTitle": "Izbrisati sve lokalne podatke?",
+    "clearLocalDataConfirmMessage": "Ovo će trajno ukloniti kućne ljubimce, događaje, rasporede hranjenja, zdravstvene podatke i troškove s ovog uređaja. Ova se radnja ne može poništiti.",
+    "clearLocalDataConfirmAction": "Obriši podatke",
+    "clearLocalDataSuccessTitle": "Podaci izbrisani",
+    "clearLocalDataSuccessMessage": "Svi lokalni podaci o kućnim ljubimcima uklonjeni su s ovog uređaja.",
+    "clearLocalDataError": "Brisanje lokalnih podataka nije uspjelo. Molimo pokušajte ponovo."
   },
   "common": {
     "loading": "Učitavanje...",
@@ -1317,14 +1325,14 @@
     "screen3": {
       "title": "Spremni ste!",
       "description": "Sve je spremno za upravljanje podacima o njezi i zdravlju vašeg ljubimca.",
-      "trialNotice": "Dodajte svog prvog ljubimca sada, a Pro otključajte kada vam zatreba više.",
+      "trialNotice": "Dodajte svog prvog ljubimca sada. Uvijek možete kasnije dodati još.",
       "addPet": "Dodaj svog ljubimca",
       "skipPet": "Učini to kasnije",
       "addYourFirstPet": "Dodaj svog prvog ljubimca"
     },
     "language": {
       "title": "Odaberite jezik, valutu i vremensku zonu",
-      "description": "Vaše odabire koristit ćemo na sljedećim zaslonima i sinkronizirati ih nakon prijave. Sve možete promijeniti u bilo kojem trenutku u Postavkama.",
+      "description": "Vaše odabire koristit ćemo na sljedećim zaslonima. Možete ih promijeniti bilo kada u Postavkama.",
       "continue": "Nastavi"
     }
   },
@@ -1508,6 +1516,14 @@
     "autoRenews": "Automatski se obnavlja {{date}}",
     "cancelled": "Otkazano - istječe {{date}}",
     "paywallError": "Nije moguće učitati opcije pretplate",
+    "loadingPlans": "Ucitavanje planova...",
+    "planLifetime": "Dozivotno",
+    "oneTimePayment": "Jednokratno placanje",
+    "bestValue": "Najbolja vrijednost",
+    "planYearly": "Godisnje",
+    "planYearlyDescription": "Naplata godisnje",
+    "planMonthly": "Mjesecno",
+    "planMonthlyDescription": "Naplata mjesecno",
     "trialAlreadySubscribed": "Već imate aktivnu pretplatu",
     "trialAlreadyUsed": "Ovaj uređaj je već iskoristio besplatno probno razdoblje",
     "trialStartFailed": "Nije moguće započeti besplatno probno razdoblje. Pokušajte ponovno.",
@@ -1528,13 +1544,19 @@
     "features": {
       "title": "Pro značajke",
       "unlimited": "Neograničen broj ljubimaca",
-      "unlimitedDesc": "Držite sve profile, zapise i bilješke o ljubimcima na jednom mjestu",
+      "unlimitedDesc": "Otključajte drugog ljubimca i držite svaki profil, evidenciju i rutinu zajedno",
       "feedingSchedules": "Neograničeni rasporedi hranjenja",
       "feedingSchedulesDesc": "Izgradite pouzdane rutine za svakog ljubimca bez ograničenja rasporeda",
-      "budgetTracking": "Praćenje proračuna i upozorenja",
-      "budgetTrackingDesc": "Rano otkrijte rast troškova uz mjesečna budžetska upozorenja",
-      "export": "Izvoz podataka",
-      "exportDesc": "Dijelite jasna izvješća s obitelji ili veterinarom",
+      "budgetTracking": "Napredni uvidi u proračun",
+      "budgetTrackingDesc": "Rano otkrijte trendove prekomjerne potrošnje uz Pro uvide i pametna upozorenja",
+      "export": "Izvješća spremna za veterinare i izvoz",
+      "exportDesc": "Izvezite CSV, PDF i veterinarske sažetke za čisto dijeljenje u nekoliko sekundi",
+      "recurrence": "Automatizacija periodične njege",
+      "recurrenceDesc": "Postavite jednom, automatski ponovite s naprednim ponavljajućim rutinama",
+      "smartReminders": "Unaprijed postavljeni pametni podsjetnici",
+      "smartRemindersDesc": "Upotrijebite bogatije kadence podsjetnika kako nikada ne biste propustili važne zadatke skrbi",
+      "urgentMode": "Fokus hitne skrbi",
+      "urgentModeDesc": "Odmah pogledajte hitne zdravstvene zadatke i odredite prioritete što je najvažnije",
       "priority": "Prioritetna podrška",
       "priorityDesc": "Dobijte bržu pomoć kada je hitno",
       "petManagement": "Upravljanje ljubimcima",
@@ -1546,7 +1568,7 @@
     },
     "paywall": {
       "title": "Otključajte Petopia Petcare Pro",
-      "subtitle": "Ostanite u tijeku s njegom, podsjetnicima i troškovima za svakog ljubimca"
+      "subtitle": "Skalirajte od jednog ljubimca do cjelovitog sustava skrbi s izvozom, automatizacijom i pametnim uvidima"
     },
     "success": {
       "title": "Pretplata uspješna!",
@@ -1562,10 +1584,21 @@
     "trust": {
       "cancelAnytime": "Pretplatu možete otkazati u bilo kojem trenutku u postavkama App Store / Google Play",
       "billedByStore": "Naplata se sigurno obrađuje putem vašeg računa trgovine aplikacija",
-      "secureCheckout": "U aplikaciji nije potrebno ručno unositi podatke kartice"
+      "secureCheckout": "U aplikaciji nije potrebno ručno unositi podatke kartice",
+      "cancelAnytimeIos": "Pretplatu možete otkazati u bilo kojem trenutku u postavkama App Store",
+      "cancelAnytimeAndroid": "Pretplatu možete otkazati u bilo kojem trenutku u postavkama Google Play",
+      "billedByStoreIos": "Naplata se sigurno obrađuje putem vašeg računa trgovine aplikacija",
+      "billedByStoreAndroid": "Naplata se sigurno obrađuje putem vašeg računa trgovine aplikacija",
+      "secureCheckoutIos": "U aplikaciji nije potrebno ručno unositi podatke kartice",
+      "secureCheckoutAndroid": "U aplikaciji nije potrebno ručno unositi podatke kartice"
     },
     "verifyingPurchase": "Kupnja je zaprimljena. Provjeravamo vasu pretplatu...",
-    "verificationTakingLong": "Vasa kupnja se provjerava. Pristup ce se automatski otkljucati za nekoliko sekundi."
+    "verificationTakingLong": "Vasa kupnja se provjerava. Pristup ce se automatski otkljucati za nekoliko sekundi.",
+    "noteIos": "Plaćanje se naplaćuje putem vašeg App Store računa. Pretplate se automatski obnavljaju osim ako ih ne otkažete najmanje 24 sata prije kraja trenutnog razdoblja. Možete ih upravljati ili otkazati u bilo kojem trenutku u postavkama računa trgovine.",
+    "noteAndroid": "Plaćanje se naplaćuje putem vašeg Google Play računa. Pretplate se automatski obnavljaju osim ako ih ne otkažete najmanje 24 sata prije kraja trenutnog razdoblja. Možete ih upravljati ili otkazati u bilo kojem trenutku u postavkama računa trgovine.",
+    "restoreConfirmTitle": "Vratiti kupnje?",
+    "restoreConfirmMessage": "Provjerit ćemo vaše kupnje u trgovini i vratiti aktivni Pro pristup na ovom uređaju.",
+    "restoreConfirmAction": "Vratiti"
   },
   "downgrade": {
     "title": "Odaberite svog ljubimca",

@@ -25,7 +25,6 @@ npm run test:coverage  # Coverage report
 
 ### Navigation (Expo Router)
 File-based routing in `app/` directory:
-- `(auth)/` - Authentication screens (login, register)
 - `(tabs)/` - Main app tabs (calendar, care, finance, pets, settings)
 - `(onboarding)/` - Onboarding flow
 - `pet/` - Pet detail screens
@@ -35,16 +34,21 @@ File-based routing in `app/` directory:
 
 ### State Management
 
-**Server State (TanStack Query)** - `lib/hooks/`:
-- Query key factory pattern: `petKeys.list(filters)`, `petKeys.detail(id)`
-- Core hooks in `lib/hooks/core/`: `useResource`, `useConditionalQuery`, `useCreateResource`, etc.
-- Optimistic updates for mutations
+**Local-first Domain Hooks** - `lib/hooks/`:
+- Local dependency key pattern: `petKeys.list(filters)`, `petKeys.detail(id)`
+- Core hooks in `lib/hooks/core/`: `useLocalQuery`, `useResource`, `useConditionalQuery`, etc.
+- Mutations publish local data refresh via `notifyLocalDataChanged()`
 
 **Client State (Zustand)** - `stores/`:
 - Persisted stores with AsyncStorage (user settings, theme, subscription)
 - Pattern: `create() + persist()` with actions in same hook
 
 ### Data Layer
+
+**Local DB** - `lib/db/` + `lib/repositories/`:
+- Engine: `expo-sqlite`
+- ORM: `drizzle-orm`
+- Tables are created idempotently at app startup
 
 **Services Pattern** - `lib/services/`:
 ```typescript
@@ -56,10 +60,6 @@ class PetService {
 export const petService = new PetService();
 ```
 
-**API Client** - `lib/api/client.ts`:
-- Axios with auth interceptors (session cookies)
-- Returns `ApiResponse<T>` with success/data/message/error/meta structure
-
 ### Forms
 
 **Pattern** - Schema → Hook → Component:
@@ -70,11 +70,11 @@ export const petService = new PetService();
 ### Providers Hierarchy
 
 ```
-QueryClientProvider
-  → OnlineManagerProvider (network status)
+NetworkStatus
+  → PostHogProviderWrapper
     → LanguageProvider (i18n)
       → ApiErrorBoundary
-        → AuthProvider (Better Auth)
+        → AnalyticsIdentityProvider (device identity)
           → SubscriptionProvider (RevenueCat)
             → App Content (Stack navigator)
 ```
@@ -89,7 +89,7 @@ QueryClientProvider
 
 ## Important Files
 
-- `lib/config/queryConfig.ts` - TanStack Query mobile-optimized caching settings
-- `lib/config/env.ts` - API endpoints and environment config
+- `lib/db/init.ts` - Local database initialization
+- `lib/config/env.ts` - App runtime constants
 - `lib/theme/` - Theme colors, fonts, and types
-- `providers/` - Auth, Subscription, and Language providers
+- `providers/` - Subscription, analytics identity, and language providers

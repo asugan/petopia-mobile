@@ -17,6 +17,7 @@ import {
 } from '@/constants/recurrence';
 import type { RecurrenceFrequency } from '@/constants/recurrence';
 import { useUserTimezone } from '@/lib/hooks/useUserTimezone';
+import { resolveEffectiveTimezone } from '@/lib/utils/timezone';
 
 interface RecurrenceSettingsProps {
   disabled?: boolean;
@@ -42,8 +43,12 @@ export function RecurrenceSettings({
   // Initialize timezone on mount
   React.useEffect(() => {
     const currentTimezone = getValues('recurrence.timezone');
-    if (!currentTimezone) {
-      setValue('recurrence.timezone', userTimezone);
+    const safeTimezone = resolveEffectiveTimezone(currentTimezone ?? userTimezone);
+    if (currentTimezone !== safeTimezone) {
+      setValue('recurrence.timezone', safeTimezone, {
+        shouldDirty: false,
+        shouldValidate: false,
+      });
     }
   }, [getValues, setValue, userTimezone]);
 

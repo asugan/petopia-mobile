@@ -614,7 +614,15 @@
       "indonesian": "Bahasa Indonesia"
     },
     "timezone": "Tidssone",
-    "selectTimezone": "Velg tidssone"
+    "selectTimezone": "Velg tidssone",
+    "clearLocalData": "Slett lokale data",
+    "clearLocalDataDescription": "Fjern alle kjæledyr og poster permanent fra denne enheten",
+    "clearLocalDataConfirmTitle": "Vil du slette alle lokale data?",
+    "clearLocalDataConfirmMessage": "Dette vil permanent fjerne kjæledyr, arrangementer, fôringsplaner, helsejournaler og utgifter fra denne enheten. Denne handlingen kan ikke angres.",
+    "clearLocalDataConfirmAction": "Fjern data",
+    "clearLocalDataSuccessTitle": "Data slettet",
+    "clearLocalDataSuccessMessage": "Alle lokale kjæledyrdata er fjernet fra denne enheten.",
+    "clearLocalDataError": "Kunne ikke slette lokale data. Vennligst prøv igjen."
   },
   "common": {
     "loading": "Laster...",
@@ -1317,14 +1325,14 @@
     "screen3": {
       "title": "Du er klar!",
       "description": "Alt er klart for å administrere omsorg og helse for kjæledyret ditt.",
-      "trialNotice": "Legg til ditt første kjæledyr nå, og lås opp Pro når du trenger mer.",
+      "trialNotice": "Legg til ditt første kjæledyr nå. Du kan alltid legge til flere senere.",
       "addPet": "Legg til kjæledyr",
       "skipPet": "Gjør det senere",
       "addYourFirstPet": "Legg til ditt første kjæledyr"
     },
     "language": {
       "title": "Velg språk, valuta og tidssone",
-      "description": "Vi bruker valgene dine på de neste skjermene og synkroniserer dem etter innlogging. Du kan endre alt når som helst i Innstillinger.",
+      "description": "Vi bruker valgene dine på de neste skjermene. Du kan når som helst endre dem i Innstillinger.",
       "continue": "Fortsett"
     }
   },
@@ -1508,6 +1516,14 @@
     "autoRenews": "Fornyes automatisk {{date}}",
     "cancelled": "Avbrutt – utløper {{date}}",
     "paywallError": "Kunne ikke laste abonnementsvalg",
+    "loadingPlans": "Laster abonnementer...",
+    "planLifetime": "Livstid",
+    "oneTimePayment": "Engangsbetaling",
+    "bestValue": "Best verdi",
+    "planYearly": "Arlig",
+    "planYearlyDescription": "Faktureres arlig",
+    "planMonthly": "Manedlig",
+    "planMonthlyDescription": "Faktureres manedlig",
     "trialAlreadySubscribed": "Du har allerede et aktivt abonnement",
     "trialAlreadyUsed": "Denne enheten har allerede brukt en gratis prøveperiode",
     "trialStartFailed": "Kunne ikke starte gratis prøveperiode. Vennligst prøv igjen.",
@@ -1528,13 +1544,19 @@
     "features": {
       "title": "Pro-funksjoner",
       "unlimited": "Ubegrenset antall kjæledyr",
-      "unlimitedDesc": "Hold alle kjæledyrprofiler, journaler og notater samlet",
+      "unlimitedDesc": "Lås opp det andre kjæledyret og hold hver profil, post og rutine sammen",
       "feedingSchedules": "Ubegrensede fôringsplaner",
       "feedingSchedulesDesc": "Bygg stabile rutiner for hvert kjæledyr uten begrensninger i planlegging",
-      "budgetTracking": "Budsjettsporing og varsler",
-      "budgetTrackingDesc": "Oppdag økende kostnader tidlig med månedlige budsjettvarsler",
-      "export": "Dataeksport",
-      "exportDesc": "Del tydelige rapporter med familie eller veterinær",
+      "budgetTracking": "Avansert budsjettinnsikt",
+      "budgetTrackingDesc": "Oppdag overforbrukstrender tidlig med Pro-innsikt og smarte varsler",
+      "export": "Veterinærklare rapporter og eksport",
+      "exportDesc": "Eksporter CSV-, PDF- og veterinærsammendrag for å dele rent på sekunder",
+      "recurrence": "Tilbakevendende omsorgsautomatiseringer",
+      "recurrenceDesc": "Sett én gang, gjenta automatisk med avanserte gjentakende rutiner",
+      "smartReminders": "Smarte påminnelsesinnstillinger",
+      "smartRemindersDesc": "Bruk rikere påminnelseskadenser slik at viktige omsorgsoppgaver aldri går glipp av",
+      "urgentMode": "Hasteomsorgsfokus",
+      "urgentModeDesc": "Se akutte helseoppgaver umiddelbart og prioriter det som betyr mest",
       "priority": "Prioritert støtte",
       "priorityDesc": "Få raskere hjelp når det haster",
       "petManagement": "Kjæledyradministrasjon",
@@ -1546,7 +1568,7 @@
     },
     "paywall": {
       "title": "Lås opp Petopia Petcare Pro",
-      "subtitle": "Hold deg oppdatert på omsorg, påminnelser og utgifter for hvert kjæledyr"
+      "subtitle": "Skaler fra ett kjæledyr til et komplett pleiesystem med eksport, automatisering og smart innsikt"
     },
     "success": {
       "title": "Abonnement vellykket!",
@@ -1562,10 +1584,21 @@
     "trust": {
       "cancelAnytime": "Du kan når som helst avslutte i innstillingene for App Store / Google Play",
       "billedByStore": "Fakturering håndteres trygt via appbutikk-kontoen din",
-      "secureCheckout": "Du trenger ikke å skrive inn kortinformasjon manuelt i appen"
+      "secureCheckout": "Du trenger ikke å skrive inn kortinformasjon manuelt i appen",
+      "cancelAnytimeIos": "Du kan når som helst avslutte i innstillingene for App Store",
+      "cancelAnytimeAndroid": "Du kan når som helst avslutte i innstillingene for Google Play",
+      "billedByStoreIos": "Fakturering håndteres trygt via appbutikk-kontoen din",
+      "billedByStoreAndroid": "Fakturering håndteres trygt via appbutikk-kontoen din",
+      "secureCheckoutIos": "Du trenger ikke å skrive inn kortinformasjon manuelt i appen",
+      "secureCheckoutAndroid": "Du trenger ikke å skrive inn kortinformasjon manuelt i appen"
     },
     "verifyingPurchase": "Kjop mottatt. Verifiserer abonnementet ditt...",
-    "verificationTakingLong": "Kjopet ditt verifiseres. Tilgang blir automatisk last opp om noen sekunder."
+    "verificationTakingLong": "Kjopet ditt verifiseres. Tilgang blir automatisk last opp om noen sekunder.",
+    "noteIos": "Betaling belastes via App Store-kontoen din. Abonnementer fornyes automatisk med mindre de kanselleres minst 24 timer før slutten av gjeldende periode. Du kan administrere eller kansellere når som helst i butikkonto-innstillingene dine.",
+    "noteAndroid": "Betaling belastes via Google Play-kontoen din. Abonnementer fornyes automatisk med mindre de kanselleres minst 24 timer før slutten av gjeldende periode. Du kan administrere eller kansellere når som helst i butikkonto-innstillingene dine.",
+    "restoreConfirmTitle": "Gjenopprette kjøp?",
+    "restoreConfirmMessage": "Vi sjekker butikkkjøpene dine og gjenoppretter aktiv Pro-tilgang på denne enheten.",
+    "restoreConfirmAction": "Restaurere"
   },
   "downgrade": {
     "title": "Velg ditt kjæledyr",

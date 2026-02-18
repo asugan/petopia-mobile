@@ -1,16 +1,18 @@
-import { useQuery } from '@tanstack/react-query';
 import { usePets } from './usePets';
 import { expenseService } from '../services/expenseService';
 import { Expense } from '../types';
-import { useAuthQueryEnabled } from './useAuthQueryEnabled';
+import { useLocalQuery } from './core/useLocalAsync';
+import { useUserSettingsStore } from '@/stores/userSettingsStore';
+import { exchangeRateService } from '@/lib/services/exchangeRateService';
 
 export const useRecentExpenses = () => {
-  const { enabled } = useAuthQueryEnabled();
   const { data: pets } = usePets();
+  const baseCurrency = useUserSettingsStore((state) => state.settings?.baseCurrency ?? 'TRY');
 
   // Fetch expenses for all pets at once
-  const { data, isLoading, isError } = useQuery({
-    queryKey: ['expenses', 'all-pets', { limit: 3 }],
+  const { data, isLoading, isError, error } = useLocalQuery<Expense[]>({
+    defaultValue: [],
+    deps: [pets?.map((pet) => pet._id).join('|') ?? '', baseCurrency],
     queryFn: async () => {
       if (!pets || pets.length === 0) return [];
 
@@ -29,17 +31,19 @@ export const useRecentExpenses = () => {
       });
 
       // Sort by date (newest first) and take top 3
-      return allExpenses
+      const recentExpenses = allExpenses
         .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
         .slice(0, 3);
+
+      return exchangeRateService.convertExpensesToCurrency(recentExpenses, baseCurrency);
     },
-    enabled: enabled && !!pets && pets.length > 0,
+    enabled: !!pets && pets.length > 0,
   });
 
   return {
     data: data || [],
     isLoading,
     isError,
-    error: null
+    error,
   };
 };

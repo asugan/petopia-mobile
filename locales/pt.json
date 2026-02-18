@@ -614,7 +614,15 @@
     },
     "selectCurrency": "Selecionar moeda",
     "timezone": "Fuso horário",
-    "selectTimezone": "Selecionar fuso horário"
+    "selectTimezone": "Selecionar fuso horário",
+    "clearLocalData": "Limpar dados locais",
+    "clearLocalDataDescription": "Remover permanentemente todos os animais de estimação e registros deste dispositivo",
+    "clearLocalDataConfirmTitle": "Limpar todos os dados locais?",
+    "clearLocalDataConfirmMessage": "Isso removerá permanentemente animais de estimação, eventos, horários de alimentação, registros de saúde e despesas deste dispositivo. Esta ação não pode ser desfeita.",
+    "clearLocalDataConfirmAction": "Limpar dados",
+    "clearLocalDataSuccessTitle": "Dados apagados",
+    "clearLocalDataSuccessMessage": "Todos os dados locais de animais de estimação foram removidos deste dispositivo.",
+    "clearLocalDataError": "Falha ao limpar os dados locais. Por favor, tente novamente."
   },
   "common": {
     "loading": "Carregando...",
@@ -1317,14 +1325,14 @@
     "screen3": {
       "title": "Pronto!",
       "description": "Tudo certo para começar.",
-      "trialNotice": "Adicione seu primeiro pet agora e desbloqueie o Pro quando precisar de mais.",
+      "trialNotice": "Adicione seu primeiro pet agora. Você sempre pode adicionar mais depois.",
       "addPet": "Add Pet",
       "skipPet": "Depois",
       "addYourFirstPet": "Primeiro Pet"
     },
     "language": {
       "title": "Escolha seu idioma, moeda e fuso horário",
-      "description": "Usaremos suas seleções nas próximas telas e as sincronizaremos após o login. Você pode alterar tudo a qualquer momento em Configurações.",
+      "description": "Usaremos suas escolhas nas próximas telas. Você pode alterá-las a qualquer momento em Configurações.",
       "continue": "Continuar"
     }
   },
@@ -1508,6 +1516,14 @@
     "autoRenews": "Renova em {{date}}",
     "cancelled": "Cancelado - expira {{date}}",
     "paywallError": "Erro ao carregar",
+    "loadingPlans": "Carregando planos...",
+    "planLifetime": "Vitalicio",
+    "oneTimePayment": "Pagamento unico",
+    "bestValue": "Melhor custo-beneficio",
+    "planYearly": "Anual",
+    "planYearlyDescription": "Cobrado anualmente",
+    "planMonthly": "Mensal",
+    "planMonthlyDescription": "Cobrado mensalmente",
     "trialAlreadySubscribed": "Já assinado",
     "trialAlreadyUsed": "Já usado neste aparelho",
     "trialStartFailed": "Falha iniciar",
@@ -1528,13 +1544,19 @@
     "features": {
       "title": "Funções Pro",
       "unlimited": "Pets Ilimitados",
-      "unlimitedDesc": "Mantenha todos os perfis, registros e notas dos seus pets no mesmo lugar",
+      "unlimitedDesc": "Desbloqueie o 2.º pet e mantenha perfis, registos e rotinas num só lugar.",
       "feedingSchedules": "Planos Ilimitados",
       "feedingSchedulesDesc": "Crie rotinas confiáveis para cada pet sem limites de agenda",
-      "budgetTracking": "Orçamentos e Alertas",
-      "budgetTrackingDesc": "Perceba o aumento de custos cedo com alertas mensais de orçamento",
-      "export": "Exportar Dados",
-      "exportDesc": "Compartilhe relatórios claros com a família ou com o veterinário",
+      "budgetTracking": "Insights avançados de orçamento",
+      "budgetTrackingDesc": "Detete tendências de gastos excessivos mais cedo com insights Pro e alertas inteligentes.",
+      "export": "Relatórios veterinários e exportação",
+      "exportDesc": "Exporte CSV, PDF e resumos veterinários para partilhar com clareza em segundos.",
+      "recurrence": "Automações de cuidados recorrentes",
+      "recurrenceDesc": "Configure uma vez e repita automaticamente com rotinas recorrentes avançadas.",
+      "smartReminders": "Predefinições de lembretes inteligentes",
+      "smartRemindersDesc": "Use lembretes em cadência para não perder cuidados importantes.",
+      "urgentMode": "Foco em cuidados urgentes",
+      "urgentModeDesc": "Veja tarefas de saúde urgentes de imediato e priorize o que mais importa.",
       "priority": "Suporte Prioritário",
       "priorityDesc": "Receba ajuda mais rápida quando for urgente",
       "petManagement": "Gestão",
@@ -1546,7 +1568,7 @@
     },
     "paywall": {
       "title": "Petopia Pro",
-      "subtitle": "Fique por dentro dos cuidados, lembretes e gastos de cada pet"
+      "subtitle": "Evolua de um único pet para um sistema de cuidados completo com exportação, automação e insights inteligentes"
     },
     "success": {
       "title": "Sucesso!",
@@ -1562,10 +1584,21 @@
     "trust": {
       "cancelAnytime": "Pode cancelar a qualquer momento nas definições da App Store / Google Play",
       "billedByStore": "A faturação é processada com segurança através da sua conta da loja de apps",
-      "secureCheckout": "Não é necessário inserir manualmente os dados do cartão na aplicação"
+      "secureCheckout": "Não é necessário inserir manualmente os dados do cartão na aplicação",
+      "cancelAnytimeIos": "Pode cancelar a qualquer momento nas definições da App Store",
+      "cancelAnytimeAndroid": "Pode cancelar a qualquer momento nas definições da Google Play",
+      "billedByStoreIos": "A faturação é processada com segurança através da sua conta da loja de apps",
+      "billedByStoreAndroid": "A faturação é processada com segurança através da sua conta da loja de apps",
+      "secureCheckoutIos": "Não é necessário inserir manualmente os dados do cartão na aplicação",
+      "secureCheckoutAndroid": "Não é necessário inserir manualmente os dados do cartão na aplicação"
     },
     "verifyingPurchase": "Compra recebida. Verificando a sua subscricao...",
-    "verificationTakingLong": "A sua compra esta a ser verificada. O acesso sera desbloqueado automaticamente em alguns segundos."
+    "verificationTakingLong": "A sua compra esta a ser verificada. O acesso sera desbloqueado automaticamente em alguns segundos.",
+    "noteIos": "O pagamento é cobrado pela sua conta App Store. As assinaturas renovam automaticamente, a menos que sejam canceladas pelo menos 24 horas antes do fim do período atual. Você pode gerenciar ou cancelar a qualquer momento nas configurações da conta da loja.",
+    "noteAndroid": "O pagamento é cobrado pela sua conta Google Play. As assinaturas renovam automaticamente, a menos que sejam canceladas pelo menos 24 horas antes do fim do período atual. Você pode gerenciar ou cancelar a qualquer momento nas configurações da conta da loja.",
+    "restoreConfirmTitle": "Restaurar compras?",
+    "restoreConfirmMessage": "Verificaremos suas compras na loja e restauraremos o acesso Pro ativo neste dispositivo.",
+    "restoreConfirmAction": "Restaurar"
   },
   "downgrade": {
     "title": "Escolha seu Pet",

@@ -1,7 +1,6 @@
 import React from 'react';
 import { View, StyleSheet, Modal as RNModal, Platform } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { useRouter } from 'expo-router';
 import { Text, Button } from '@/components/ui';
 import { useTheme } from '@/lib/theme';
 import { useTranslation } from 'react-i18next';
@@ -11,11 +10,8 @@ import { type FeedingScheduleFormData, transformFormDataToAPI } from '../lib/sch
 import {
   useCreateFeedingSchedule,
   useUpdateFeedingSchedule,
-  useAllFeedingSchedules,
 } from '../lib/hooks/useFeedingSchedules';
-import { useSubscription } from '@/lib/hooks/useSubscription';
 import { showToast } from '@/lib/toast/showToast';
-import { SUBSCRIPTION_ROUTES } from '@/constants/routes';
 
 interface FeedingScheduleModalProps {
   visible: boolean;
@@ -38,14 +34,9 @@ export function FeedingScheduleModal({
 }: FeedingScheduleModalProps) {
   const { theme } = useTheme();
   const { t } = useTranslation();
-  const router = useRouter();
   const [loading, setLoading] = React.useState(false);
 
-  const { isProUser } = useSubscription();
-  const { data: feedingSchedulesAll = [] } = useAllFeedingSchedules();
-  const activeFeedingSchedules = feedingSchedulesAll.filter((schedule) => schedule.isActive);
-
-  // React Query hooks for server state
+  // Local-first domain hooks
   const createMutation = useCreateFeedingSchedule();
   const updateMutation = useUpdateFeedingSchedule();
 
@@ -53,21 +44,6 @@ export function FeedingScheduleModal({
   const handleSubmit = React.useCallback(async (data: FeedingScheduleFormData) => {
     try {
       const apiData = transformFormDataToAPI(data);
-      const willBeActive = apiData.isActive !== false;
-
-      if (schedule) {
-        // Update existing schedule
-        if (willBeActive && !schedule.isActive && !isProUser && activeFeedingSchedules.length >= 1) {
-          router.push(`${SUBSCRIPTION_ROUTES.main}?source=feeding_modal_activate_limit`);
-          return;
-        }
-      } else {
-        // Create new schedule
-        if (willBeActive && !isProUser && activeFeedingSchedules.length >= 1) {
-          router.push(`${SUBSCRIPTION_ROUTES.main}?source=feeding_modal_create_limit`);
-          return;
-        }
-      }
 
       setLoading(true);
       if (schedule) {
@@ -89,7 +65,7 @@ export function FeedingScheduleModal({
     } finally {
       setLoading(false);
     }
-  }, [schedule, createMutation, updateMutation, onSuccess, onClose, t, activeFeedingSchedules.length, isProUser, router]);
+  }, [schedule, createMutation, updateMutation, onSuccess, onClose, t]);
 
   const handleClose = React.useCallback(() => {
     if (!loading) {

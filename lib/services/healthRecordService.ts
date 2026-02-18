@@ -1,34 +1,24 @@
-import { api, ApiError, ApiResponse } from '@/lib/api/client';
-import { ENV } from '@/lib/config/env';
-import type { HealthRecord, CreateHealthRecordInput, UpdateHealthRecordInput } from '@/lib/types';
+import type { ApiResponse } from '@/lib/contracts/api';
+import { healthRecordRepository } from '@/lib/repositories/healthRecordRepository';
+import type {
+  CreateHealthRecordInput,
+  HealthRecord,
+  UpdateHealthRecordInput,
+} from '@/lib/types';
 
-/**
- * Health Record Service - Tüm health record API operasyonlarını yönetir
- */
 export class HealthRecordService {
-  /**
-   * Yeni health record oluşturur
-   */
-  async createHealthRecord(data: CreateHealthRecordInput): Promise<ApiResponse<HealthRecord>> {
+  async createHealthRecord(
+    data: CreateHealthRecordInput,
+  ): Promise<ApiResponse<HealthRecord>> {
     try {
-      const response = await api.post<HealthRecord>(ENV.ENDPOINTS.HEALTH_RECORDS, data);
+      const record = healthRecordRepository.createHealthRecord(data);
 
       return {
         success: true,
-        data: response.data!,
+        data: record,
         message: 'serviceResponse.healthRecord.createSuccess',
       };
-    } catch (error) {
-      if (error instanceof ApiError) {
-        return {
-          success: false,
-          error: {
-            code: error.code || 'CREATE_ERROR',
-            message: 'serviceResponse.healthRecord.createError',
-            details: { rawMessage: error.message },
-          },
-        };
-      }
+    } catch {
       return {
         success: false,
         error: {
@@ -39,29 +29,16 @@ export class HealthRecordService {
     }
   }
 
-  /**
-   * Tüm health recordları listeler
-   */
   async getHealthRecords(): Promise<ApiResponse<HealthRecord[]>> {
     try {
-      const response = await api.get<HealthRecord[]>(ENV.ENDPOINTS.HEALTH_RECORDS);
+      const records = healthRecordRepository.getHealthRecords();
 
       return {
         success: true,
-        data: response.data || [],
+        data: records,
         message: 'serviceResponse.healthRecord.fetchSuccess',
       };
-    } catch (error) {
-      if (error instanceof ApiError) {
-        return {
-          success: false,
-          error: {
-            code: error.code || 'FETCH_ERROR',
-            message: 'serviceResponse.healthRecord.fetchError',
-            details: { rawMessage: error.message },
-          },
-        };
-      }
+    } catch {
       return {
         success: false,
         error: {
@@ -72,29 +49,16 @@ export class HealthRecordService {
     }
   }
 
-  /**
-   * Pet ID'ye göre health recordları getirir
-   */
   async getHealthRecordsByPetId(petId: string): Promise<ApiResponse<HealthRecord[]>> {
     try {
-      const response = await api.get<HealthRecord[]>(ENV.ENDPOINTS.HEALTH_RECORDS_BY_PET(petId));
+      const records = healthRecordRepository.getHealthRecordsByPetId(petId);
 
       return {
         success: true,
-        data: response.data || [],
+        data: records,
         message: 'serviceResponse.healthRecord.fetchSuccess',
       };
-    } catch (error) {
-      if (error instanceof ApiError) {
-        return {
-          success: false,
-          error: {
-            code: error.code || 'FETCH_ERROR',
-            message: 'serviceResponse.healthRecord.fetchError',
-            details: { rawMessage: error.message },
-          },
-        };
-      }
+    } catch {
       return {
         success: false,
         error: {
@@ -105,38 +69,26 @@ export class HealthRecordService {
     }
   }
 
-  /**
-   * ID'ye göre tek bir health record getirir
-   */
   async getHealthRecordById(id: string): Promise<ApiResponse<HealthRecord>> {
     try {
-      const response = await api.get<HealthRecord>(ENV.ENDPOINTS.HEALTH_RECORD_BY_ID(id));
+      const record = healthRecordRepository.getHealthRecordById(id);
 
-      return {
-        success: true,
-        data: response.data!,
-        message: 'serviceResponse.healthRecord.fetchOneSuccess',
-      };
-    } catch (error) {
-      if (error instanceof ApiError) {
-        if (error.status === 404) {
-          return {
-            success: false,
-            error: {
-              code: 'NOT_FOUND',
-              message: 'serviceResponse.healthRecord.notFound',
-            },
-          };
-        }
+      if (!record) {
         return {
           success: false,
           error: {
-            code: error.code || 'FETCH_ERROR',
-            message: 'serviceResponse.healthRecord.fetchError',
-            details: { rawMessage: error.message },
+            code: 'NOT_FOUND',
+            message: 'serviceResponse.healthRecord.notFound',
           },
         };
       }
+
+      return {
+        success: true,
+        data: record,
+        message: 'serviceResponse.healthRecord.fetchOneSuccess',
+      };
+    } catch {
       return {
         success: false,
         error: {
@@ -147,38 +99,29 @@ export class HealthRecordService {
     }
   }
 
-  /**
-   * Health record bilgilerini günceller
-   */
-  async updateHealthRecord(id: string, data: UpdateHealthRecordInput): Promise<ApiResponse<HealthRecord>> {
+  async updateHealthRecord(
+    id: string,
+    data: UpdateHealthRecordInput,
+  ): Promise<ApiResponse<HealthRecord>> {
     try {
-      const response = await api.put<HealthRecord>(ENV.ENDPOINTS.HEALTH_RECORD_BY_ID(id), data);
+      const updated = healthRecordRepository.updateHealthRecord(id, data);
 
-      return {
-        success: true,
-        data: response.data!,
-        message: 'serviceResponse.healthRecord.updateSuccess',
-      };
-    } catch (error) {
-      if (error instanceof ApiError) {
-        if (error.status === 404) {
-          return {
-            success: false,
-            error: {
-              code: 'NOT_FOUND',
-              message: 'serviceResponse.healthRecord.notFoundUpdate',
-            },
-          };
-        }
+      if (!updated) {
         return {
           success: false,
           error: {
-            code: error.code || 'UPDATE_ERROR',
-            message: 'serviceResponse.healthRecord.updateError',
-            details: { rawMessage: error.message },
+            code: 'NOT_FOUND',
+            message: 'serviceResponse.healthRecord.notFoundUpdate',
           },
         };
       }
+
+      return {
+        success: true,
+        data: updated,
+        message: 'serviceResponse.healthRecord.updateSuccess',
+      };
+    } catch {
       return {
         success: false,
         error: {
@@ -189,37 +132,25 @@ export class HealthRecordService {
     }
   }
 
-  /**
-   * Health record siler
-   */
   async deleteHealthRecord(id: string): Promise<ApiResponse<void>> {
     try {
-      await api.delete(ENV.ENDPOINTS.HEALTH_RECORD_BY_ID(id));
+      const deleted = healthRecordRepository.deleteHealthRecord(id);
+
+      if (!deleted) {
+        return {
+          success: false,
+          error: {
+            code: 'NOT_FOUND',
+            message: 'serviceResponse.healthRecord.notFoundDelete',
+          },
+        };
+      }
 
       return {
         success: true,
         message: 'serviceResponse.healthRecord.deleteSuccess',
       };
-    } catch (error) {
-      if (error instanceof ApiError) {
-        if (error.status === 404) {
-          return {
-            success: false,
-            error: {
-              code: 'NOT_FOUND',
-              message: 'serviceResponse.healthRecord.notFoundDelete',
-            },
-          };
-        }
-        return {
-          success: false,
-          error: {
-            code: error.code || 'DELETE_ERROR',
-            message: 'serviceResponse.healthRecord.deleteError',
-            details: { rawMessage: error.message },
-          },
-        };
-      }
+    } catch {
       return {
         success: false,
         error: {
@@ -230,33 +161,21 @@ export class HealthRecordService {
     }
   }
 
-  /**
-   * Pet ID ve tip'e göre sağlık kayıtlarını getirir
-   */
-  async getHealthRecordsByType(petId: string, type: string): Promise<ApiResponse<HealthRecord[]>> {
+  async getHealthRecordsByType(
+    petId: string,
+    type: string,
+  ): Promise<ApiResponse<HealthRecord[]>> {
     try {
-      const response = await this.getHealthRecordsByPetId(petId);
-      if (!response.success) {
-        return response;
-      }
-      const filteredRecords = (response.data || []).filter((record: HealthRecord) => record.type === type);
+      const records = healthRecordRepository
+        .getHealthRecordsByPetId(petId)
+        .filter((record) => record.type === type);
 
       return {
         success: true,
-        data: filteredRecords,
+        data: records,
         message: 'serviceResponse.healthRecord.fetchByTypeSuccess',
       };
-    } catch (error) {
-      if (error instanceof ApiError) {
-        return {
-          success: false,
-          error: {
-            code: error.code || 'FETCH_ERROR',
-            message: 'serviceResponse.healthRecord.fetchByTypeError',
-            details: { rawMessage: error.message },
-          },
-        };
-      }
+    } catch {
       return {
         success: false,
         error: {
@@ -268,5 +187,4 @@ export class HealthRecordService {
   }
 }
 
-// Singleton instance
 export const healthRecordService = new HealthRecordService();

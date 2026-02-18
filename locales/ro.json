@@ -614,7 +614,15 @@
     },
     "selectCurrency": "Selectați moneda",
     "timezone": "Fus orar",
-    "selectTimezone": "Selectează fusul orar"
+    "selectTimezone": "Selectează fusul orar",
+    "clearLocalData": "Ștergeți datele locale",
+    "clearLocalDataDescription": "Eliminați definitiv toate animalele de companie și înregistrările de pe acest dispozitiv",
+    "clearLocalDataConfirmTitle": "Ștergeți toate datele locale?",
+    "clearLocalDataConfirmMessage": "Acest lucru va elimina definitiv animalele de companie, evenimentele, programele de hrănire, dosarele de sănătate și cheltuielile de pe acest dispozitiv. Această acțiune nu poate fi anulată.",
+    "clearLocalDataConfirmAction": "Ștergeți datele",
+    "clearLocalDataSuccessTitle": "Datele au fost șterse",
+    "clearLocalDataSuccessMessage": "Toate datele locale despre animalele de companie au fost eliminate de pe acest dispozitiv.",
+    "clearLocalDataError": "Nu s-au șters datele locale. Vă rugăm să încercați din nou."
   },
   "common": {
     "loading": "Se încarcă...",
@@ -1317,14 +1325,14 @@
     "screen3": {
       "title": "Ești gata!",
       "description": "Totul este pregătit pentru a gestiona datele de îngrijire și sănătate ale animalului tău.",
-      "trialNotice": "Adaugă acum primul tău animal de companie, apoi deblochează Pro când ai nevoie de mai mult.",
+      "trialNotice": "Adaugă acum primul tău animal de companie. Poți adăuga oricând mai multe mai târziu.",
       "addPet": "Adaugă animalul tău",
       "skipPet": "Fă-o mai târziu",
       "addYourFirstPet": "Adaugă primul tău animal"
     },
     "language": {
       "title": "Alege limba, moneda și fusul orar",
-      "description": "Vom folosi selecțiile tale pe ecranele următoare și le vom sincroniza după autentificare. Poți schimba totul oricând din Setări.",
+      "description": "Vom folosi selecțiile tale pe ecranele următoare. Le poți schimba oricând din Setări.",
       "continue": "Continuă"
     }
   },
@@ -1508,6 +1516,14 @@
     "autoRenews": "Se reînnoiește automat la {{date}}",
     "cancelled": "Anulat - expiră la {{date}}",
     "paywallError": "Nu s-au putut încărca opțiunile de abonament",
+    "loadingPlans": "Se incarca planurile...",
+    "planLifetime": "Pe viata",
+    "oneTimePayment": "Plata unica",
+    "bestValue": "Cea mai buna valoare",
+    "planYearly": "Anual",
+    "planYearlyDescription": "Facturat anual",
+    "planMonthly": "Lunar",
+    "planMonthlyDescription": "Facturat lunar",
     "trialAlreadySubscribed": "Ai deja un abonament activ",
     "trialAlreadyUsed": "Acest dispozitiv a folosit deja o probă gratuită",
     "trialStartFailed": "Nu s-a putut începe proba gratuită. Te rugăm să încerci din nou.",
@@ -1528,13 +1544,19 @@
     "features": {
       "title": "Funcții Pro",
       "unlimited": "Animale nelimitate",
-      "unlimitedDesc": "Păstrează toate profilele, înregistrările și notițele animalelor la un loc",
+      "unlimitedDesc": "Deblochează al doilea animal de companie și păstrează fiecare profil, înregistrare și rutină împreună",
       "feedingSchedules": "Programe de hrănire nelimitate",
       "feedingSchedulesDesc": "Construiește rutine fiabile pentru fiecare animal fără limite de programare",
-      "budgetTracking": "Urmărire buget și alerte",
-      "budgetTrackingDesc": "Observă din timp creșterea costurilor cu alerte lunare de buget",
-      "export": "Export date",
-      "exportDesc": "Distribuie rapoarte clare cu familia sau cu veterinarul",
+      "budgetTracking": "Informații avansate privind bugetul",
+      "budgetTrackingDesc": "Detectați din timp tendințele de cheltuire excesivă cu ajutorul statisticilor Pro și alertelor inteligente",
+      "export": "Rapoarte și export gata pentru veterinar",
+      "exportDesc": "Exportați CSV, PDF și rezumate veterinare pentru a le partaja curat în câteva secunde",
+      "recurrence": "Automatizări de îngrijire recurente",
+      "recurrenceDesc": "Setați o dată, repetați automat cu rutine avansate recurente",
+      "smartReminders": "Presetari inteligente de memento",
+      "smartRemindersDesc": "Utilizați cadențe de memento mai bogate, astfel încât sarcinile importante de îngrijire să nu fie ratate niciodată",
+      "urgentMode": "Focus de îngrijire urgentă",
+      "urgentModeDesc": "Vedeți sarcinile urgente de sănătate instantaneu și prioritizați ceea ce contează cel mai mult",
       "priority": "Asistență prioritară",
       "priorityDesc": "Primești ajutor mai rapid când este urgent",
       "petManagement": "Management animale",
@@ -1546,7 +1568,7 @@
     },
     "paywall": {
       "title": "Deblochează Petopia Petcare Pro",
-      "subtitle": "Rămâi la zi cu îngrijirea, mementourile și cheltuielile fiecărui animal"
+      "subtitle": "Scalați de la un animal de companie la un sistem complet de îngrijire cu exporturi, automatizare și informații inteligente"
     },
     "success": {
       "title": "Abonare reușită!",
@@ -1562,10 +1584,21 @@
     "trust": {
       "cancelAnytime": "Poți anula oricând din setările App Store / Google Play",
       "billedByStore": "Facturarea este procesată în siguranță prin contul tău din magazinul de aplicații",
-      "secureCheckout": "Nu este necesară introducerea manuală a cardului în aplicație"
+      "secureCheckout": "Nu este necesară introducerea manuală a cardului în aplicație",
+      "cancelAnytimeIos": "Poți anula oricând din setările App Store",
+      "cancelAnytimeAndroid": "Poți anula oricând din setările Google Play",
+      "billedByStoreIos": "Facturarea este procesată în siguranță prin contul tău din magazinul de aplicații",
+      "billedByStoreAndroid": "Facturarea este procesată în siguranță prin contul tău din magazinul de aplicații",
+      "secureCheckoutIos": "Nu este necesară introducerea manuală a cardului în aplicație",
+      "secureCheckoutAndroid": "Nu este necesară introducerea manuală a cardului în aplicație"
     },
     "verifyingPurchase": "Achizitie primita. Se verifica abonamentul tau...",
-    "verificationTakingLong": "Achizitia ta este verificata. Accesul va fi deblocat automat in cateva secunde."
+    "verificationTakingLong": "Achizitia ta este verificata. Accesul va fi deblocat automat in cateva secunde.",
+    "noteIos": "Plata este facturată prin contul tău App Store. Abonamentele se reînnoiesc automat dacă nu sunt anulate cu cel puțin 24 de ore înainte de finalul perioadei curente. Le poți gestiona sau anula oricând din setările contului din store.",
+    "noteAndroid": "Plata este facturată prin contul tău Google Play. Abonamentele se reînnoiesc automat dacă nu sunt anulate cu cel puțin 24 de ore înainte de finalul perioadei curente. Le poți gestiona sau anula oricând din setările contului din store.",
+    "restoreConfirmTitle": "Restabiliți achizițiile?",
+    "restoreConfirmMessage": "Vom verifica achizițiile din magazin și vom restabili accesul Pro activ pe acest dispozitiv.",
+    "restoreConfirmAction": "Restabili"
   },
   "downgrade": {
     "title": "Alege-ți animalul",

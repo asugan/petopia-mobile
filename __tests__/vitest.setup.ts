@@ -179,19 +179,6 @@ vi.mock('i18next', () => ({
   },
 }));
 
-// Mock Better Auth client for hooks that read session info
-vi.mock('@/lib/auth/client', () => ({
-  authClient: {
-    useSession: vi.fn(() => ({
-      data: {
-        user: {
-          id: 'test-user-id',
-        },
-      },
-    })),
-  },
-}));
-
 // Mock @expo/vector-icons
 vi.mock(
   '@expo/vector-icons',
@@ -297,14 +284,12 @@ vi.mock('@/stores/userSettingsStore', () => ({
     isDark: false,
     isLoading: false,
     error: null,
-    isAuthenticated: false,
     isRTL: false,
     fetchSettings: vi.fn(),
     updateSettings: vi.fn(),
     updateBaseCurrency: vi.fn(),
     initialize: vi.fn(),
     clear: vi.fn(),
-    setAuthenticated: vi.fn(),
   }),
   isLanguageSupported: (lang: unknown): lang is 'tr' | 'en' =>
     typeof lang === 'string' && ['tr', 'en'].includes(lang),

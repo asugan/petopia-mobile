@@ -614,7 +614,15 @@
       "indonesian": "Bahasa Indonesia"
     },
     "timezone": "Časové pásmo",
-    "selectTimezone": "Vyberte časové pásmo"
+    "selectTimezone": "Vyberte časové pásmo",
+    "clearLocalData": "Vymazať miestne údaje",
+    "clearLocalDataDescription": "Natrvalo odstráňte všetky domáce zvieratá a záznamy z tohto zariadenia",
+    "clearLocalDataConfirmTitle": "Vymazať všetky miestne údaje?",
+    "clearLocalDataConfirmMessage": "Tým sa natrvalo odstránia domáce zvieratá, udalosti, plány kŕmenia, zdravotné záznamy a výdavky z tohto zariadenia. Túto akciu nie je možné vrátiť späť.",
+    "clearLocalDataConfirmAction": "Vymazať údaje",
+    "clearLocalDataSuccessTitle": "Údaje vymazané",
+    "clearLocalDataSuccessMessage": "Všetky údaje o miestnych domácich miláčikoch boli z tohto zariadenia odstránené.",
+    "clearLocalDataError": "Miestne údaje sa nepodarilo vymazať. Skúste to znova."
   },
   "common": {
     "loading": "Načítava sa...",
@@ -1317,14 +1325,14 @@
     "screen3": {
       "title": "Ste pripravení!",
       "description": "Všetko je pripravené na správu údajov o starostlivosti a zdraví vášho miláčika.",
-      "trialNotice": "Pridajte svojho prvého miláčika hneď teraz a Pro odomknite, keď budete potrebovať viac.",
+      "trialNotice": "Pridajte svojho prvého miláčika teraz. Neskôr môžete kedykoľvek pridať ďalších.",
       "addPet": "Pridať zvieratko",
       "skipPet": "Urobiť neskôr",
       "addYourFirstPet": "Pridať prvé zvieratko"
     },
     "language": {
       "title": "Vyberte jazyk, menu a časové pásmo",
-      "description": "Vaše voľby použijeme na ďalších obrazovkách a po prihlásení ich zosynchronizujeme. Všetko môžete kedykoľvek zmeniť v Nastaveniach.",
+      "description": "Vaše voľby použijeme na nasledujúcich obrazovkách. Kedykoľvek ich môžete zmeniť v Nastaveniach.",
       "continue": "Pokračovať"
     }
   },
@@ -1528,13 +1536,19 @@
     "features": {
       "title": "Funkcie Pro",
       "unlimited": "Neobmedzene zvieratiek",
-      "unlimitedDesc": "Majte všetky profily, záznamy a poznámky o miláčikoch na jednom mieste",
+      "unlimitedDesc": "Odomknite 2. zvieratko a majte spolu každý profil, záznam a rutinu",
       "feedingSchedules": "Neobmedzene plánov kŕmenia",
       "feedingSchedulesDesc": "Vytvorte spoľahlivé rutiny pre každého miláčika bez obmedzení plánov",
-      "budgetTracking": "Sledovanie rozpočtu a upozornenia",
-      "budgetTrackingDesc": "Zachyťte rast nákladov včas vďaka mesačným rozpočtovým upozorneniam",
-      "export": "Export dát",
-      "exportDesc": "Zdieľajte prehľadné reporty s rodinou alebo veterinárom",
+      "budgetTracking": "Rozšírené štatistiky rozpočtu",
+      "budgetTrackingDesc": "Odhaľte trendy nadmerných výdavkov včas pomocou štatistík Pro a inteligentných upozornení",
+      "export": "Správy a export pripravené pre veterinára",
+      "exportDesc": "Exportujte CSV, PDF a súhrny veterinárov a zdieľajte ich v priebehu niekoľkých sekúnd",
+      "recurrence": "Opakujúce sa automatizácie starostlivosti",
+      "recurrenceDesc": "Nastavte raz, opakujte automaticky s pokročilými opakujúcimi sa postupmi",
+      "smartReminders": "Predvoľby inteligentných pripomenutí",
+      "smartRemindersDesc": "Použite bohatšiu kadenciu pripomenutia, aby ste nikdy nezmeškali dôležité úlohy starostlivosti",
+      "urgentMode": "Zameranie na urgentnú starostlivosť",
+      "urgentModeDesc": "Okamžite uvidíte naliehavé zdravotné úlohy a uprednostnite to, čo je najdôležitejšie",
       "priority": "Prioritná podpora",
       "priorityDesc": "Získajte rýchlejšiu pomoc, keď je to urgentné",
       "petManagement": "Správa zvieratiek",
@@ -1546,7 +1560,7 @@
     },
     "paywall": {
       "title": "Odomknite Petopia Petcare Pro",
-      "subtitle": "Majte pod kontrolou starostlivosť, pripomienky a výdavky každého miláčika"
+      "subtitle": "Škálujte od jedného domáceho maznáčika až po kompletný systém starostlivosti s exportom, automatizáciou a inteligentnými prehľadmi"
     },
     "success": {
       "title": "Predplatné úspešné!",
@@ -1562,10 +1576,29 @@
     "trust": {
       "cancelAnytime": "Predplatné môžete kedykoľvek zrušiť v nastaveniach App Store / Google Play",
       "billedByStore": "Platba sa bezpečne spracúva cez váš účet v obchode s aplikáciami",
-      "secureCheckout": "V aplikácii nie je potrebné ručne zadávať údaje karty"
+      "secureCheckout": "V aplikácii nie je potrebné ručne zadávať údaje karty",
+      "cancelAnytimeIos": "Predplatné môžete kedykoľvek zrušiť v nastaveniach App Store",
+      "cancelAnytimeAndroid": "Predplatné môžete kedykoľvek zrušiť v nastaveniach Google Play",
+      "billedByStoreIos": "Platba sa bezpečne spracúva cez váš účet v obchode s aplikáciami",
+      "billedByStoreAndroid": "Platba sa bezpečne spracúva cez váš účet v obchode s aplikáciami",
+      "secureCheckoutIos": "V aplikácii nie je potrebné ručne zadávať údaje karty",
+      "secureCheckoutAndroid": "V aplikácii nie je potrebné ručne zadávať údaje karty"
     },
     "verifyingPurchase": "Nakup prijaty. Overujeme vase predplatne...",
-    "verificationTakingLong": "Vas nakup sa overuje. Pristup sa automaticky odomkne o niekolko sekund."
+    "verificationTakingLong": "Vas nakup sa overuje. Pristup sa automaticky odomkne o niekolko sekund.",
+    "noteIos": "Platba sa účtuje cez váš účet App Store. Predplatné sa automaticky obnovuje, ak ho nezrušíte aspoň 24 hodín pred koncom aktuálneho obdobia. Spravovať alebo zrušiť ho môžete kedykoľvek v nastaveniach účtu obchodu.",
+    "noteAndroid": "Platba sa účtuje cez váš účet Google Play. Predplatné sa automaticky obnovuje, ak ho nezrušíte aspoň 24 hodín pred koncom aktuálneho obdobia. Spravovať alebo zrušiť ho môžete kedykoľvek v nastaveniach účtu obchodu.",
+    "restoreConfirmTitle": "Obnoviť nákupy?",
+    "restoreConfirmMessage": "Skontrolujeme vaše nákupy v obchode a obnovíme aktívny prístup Pro na tomto zariadení.",
+    "restoreConfirmAction": "Obnoviť",
+    "loadingPlans": "Načítavajú sa plány...",
+    "planLifetime": "Doživotný",
+    "oneTimePayment": "Jednorazová platba",
+    "bestValue": "Najlepšia hodnota",
+    "planYearly": "Ročný",
+    "planYearlyDescription": "Účtované ročne",
+    "planMonthly": "Mesačný",
+    "planMonthlyDescription": "Účtované mesačne"
   },
   "downgrade": {
     "title": "Vyberte si svoje zvieratko",

@@ -614,7 +614,15 @@
     },
     "selectCurrency": "Sélectionner la devise",
     "timezone": "Fuseau horaire",
-    "selectTimezone": "Sélectionner le fuseau horaire"
+    "selectTimezone": "Sélectionner le fuseau horaire",
+    "clearLocalData": "Effacer les données locales",
+    "clearLocalDataDescription": "Supprimer définitivement tous les animaux et enregistrements de cet appareil",
+    "clearLocalDataConfirmTitle": "Effacer toutes les données locales ?",
+    "clearLocalDataConfirmMessage": "Cela supprimera définitivement les animaux de compagnie, les événements, les horaires d'alimentation, les dossiers de santé et les dépenses de cet appareil. Cette action ne peut pas être annulée.",
+    "clearLocalDataConfirmAction": "Effacer les données",
+    "clearLocalDataSuccessTitle": "Données effacées",
+    "clearLocalDataSuccessMessage": "Toutes les données locales sur les animaux de compagnie ont été supprimées de cet appareil.",
+    "clearLocalDataError": "Échec de la suppression des données locales. Veuillez réessayer."
   },
   "common": {
     "loading": "Chargement...",
@@ -1317,14 +1325,14 @@
     "screen3": {
       "title": "Vous êtes prêt !",
       "description": "Tout est prêt pour gérer les soins et les données de santé de votre animal.",
-      "trialNotice": "Ajoutez votre premier animal maintenant, puis débloquez Pro quand vous en aurez besoin davantage.",
+      "trialNotice": "Ajoutez votre premier animal maintenant. Vous pourrez toujours en ajouter d'autres plus tard.",
       "addPet": "Ajouter votre animal",
       "skipPet": "Plus tard",
       "addYourFirstPet": "Ajouter votre premier animal"
     },
     "language": {
       "title": "Choisissez votre langue, devise et fuseau horaire",
-      "description": "Nous utiliserons vos choix sur les écrans suivants et les synchroniserons après la connexion. Vous pouvez tout modifier à tout moment dans les Paramètres.",
+      "description": "Nous utiliserons vos sélections sur les prochains écrans. Vous pouvez les modifier à tout moment dans les Réglages.",
       "continue": "Continuer"
     }
   },
@@ -1508,6 +1516,14 @@
     "autoRenews": "Se renouvelle le {{date}}",
     "cancelled": "Résilié - expire le {{date}}",
     "paywallError": "Impossible de charger les options d'abonnement",
+    "loadingPlans": "Chargement des offres...",
+    "planLifetime": "A vie",
+    "oneTimePayment": "Paiement unique",
+    "bestValue": "Meilleur rapport qualite-prix",
+    "planYearly": "Annuel",
+    "planYearlyDescription": "Facture annuellement",
+    "planMonthly": "Mensuel",
+    "planMonthlyDescription": "Facture mensuellement",
     "trialAlreadySubscribed": "Vous avez déjà un abonnement actif",
     "trialAlreadyUsed": "Cet appareil a déjà utilisé un essai gratuit",
     "trialStartFailed": "Impossible de démarrer l'essai gratuit. Veuillez réessayer.",
@@ -1528,13 +1544,19 @@
     "features": {
       "title": "Fonctionnalités Pro",
       "unlimited": "Animaux illimités",
-      "unlimitedDesc": "Regrouper tous les profils, dossiers et notes de vos animaux au même endroit",
+      "unlimitedDesc": "Débloquez un 2e animal et gérez profils, dossiers et routines au même endroit.",
       "feedingSchedules": "Programmes d'alimentation illimités",
       "feedingSchedulesDesc": "Créer des routines fiables pour chaque animal sans limite de planning",
-      "budgetTracking": "Suivi budgétaire & Alertes",
-      "budgetTrackingDesc": "Détecter la hausse des coûts tôt grâce aux alertes budgétaires mensuelles",
-      "export": "Exportation de données",
-      "exportDesc": "Partager des rapports clairs avec la famille ou votre vétérinaire",
+      "budgetTracking": "Analyses budget avancées",
+      "budgetTrackingDesc": "Repérez les dérives de dépenses plus tôt grâce aux insights Pro et aux alertes intelligentes.",
+      "export": "Rapports vétérinaires & export",
+      "exportDesc": "Exportez en CSV, PDF et résumé vétérinaire pour partager clairement en quelques secondes.",
+      "recurrence": "Automatisations de soins récurrents",
+      "recurrenceDesc": "Configurez une fois et laissez les routines se répéter automatiquement.",
+      "smartReminders": "Préréglages de rappels intelligents",
+      "smartRemindersDesc": "Activez des rappels progressifs pour ne plus manquer les soins importants.",
+      "urgentMode": "Focus soins urgents",
+      "urgentModeDesc": "Repérez immédiatement les tâches de santé urgentes et priorisez l'essentiel.",
       "priority": "Support prioritaire",
       "priorityDesc": "Obtenir une aide plus rapide quand c'est urgent",
       "petManagement": "Gestion des animaux",
@@ -1546,7 +1568,7 @@
     },
     "paywall": {
       "title": "Débloquez Petopia Petcare Pro",
-      "subtitle": "Gardez le contrôle des soins, rappels et dépenses pour chaque animal"
+      "subtitle": "Passez d'un seul animal à un système de soins complet avec export, automatisation et insights intelligents"
     },
     "success": {
       "title": "Abonnement réussi !",
@@ -1562,10 +1584,21 @@
     "trust": {
       "cancelAnytime": "Vous pouvez annuler à tout moment depuis les réglages App Store / Google Play",
       "billedByStore": "La facturation est gérée de manière sécurisée via votre compte de boutique d'apps",
-      "secureCheckout": "Aucune saisie manuelle de carte bancaire n'est nécessaire dans l'application"
+      "secureCheckout": "Aucune saisie manuelle de carte bancaire n'est nécessaire dans l'application",
+      "cancelAnytimeIos": "Vous pouvez annuler à tout moment depuis les réglages App Store",
+      "cancelAnytimeAndroid": "Vous pouvez annuler à tout moment depuis les réglages Google Play",
+      "billedByStoreIos": "La facturation est gérée de manière sécurisée via votre compte de boutique d'apps",
+      "billedByStoreAndroid": "La facturation est gérée de manière sécurisée via votre compte de boutique d'apps",
+      "secureCheckoutIos": "Aucune saisie manuelle de carte bancaire n'est nécessaire dans l'application",
+      "secureCheckoutAndroid": "Aucune saisie manuelle de carte bancaire n'est nécessaire dans l'application"
     },
     "verifyingPurchase": "Achat recu. Verification de votre abonnement...",
-    "verificationTakingLong": "Votre achat est en cours de verification. L'acces sera debloque automatiquement dans quelques secondes."
+    "verificationTakingLong": "Votre achat est en cours de verification. L'acces sera debloque automatiquement dans quelques secondes.",
+    "noteIos": "Le paiement est facturé via votre compte App Store. Les abonnements se renouvellent automatiquement, sauf annulation au moins 24 heures avant la fin de la période en cours. Vous pouvez les gérer ou les annuler à tout moment dans les réglages de votre compte store.",
+    "noteAndroid": "Le paiement est facturé via votre compte Google Play. Les abonnements se renouvellent automatiquement, sauf annulation au moins 24 heures avant la fin de la période en cours. Vous pouvez les gérer ou les annuler à tout moment dans les réglages de votre compte store.",
+    "restoreConfirmTitle": "Restaurer les achats ?",
+    "restoreConfirmMessage": "Nous vérifierons vos achats en magasin et restaurerons l'accès Pro actif sur cet appareil.",
+    "restoreConfirmAction": "Restaurer"
   },
   "downgrade": {
     "title": "Choisissez votre animal",

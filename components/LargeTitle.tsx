@@ -1,16 +1,16 @@
 import React from "react";
-import { Pressable, StyleSheet, View, ViewStyle, useWindowDimensions } from "react-native";
+import { AppState, Pressable, StyleSheet, View, ViewStyle, useWindowDimensions } from "react-native";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
+import * as Notifications from "expo-notifications";
 import { useTranslation } from "react-i18next";
 import { Image } from "expo-image";
 import { Text } from "@/components/ui";
 import { useTheme } from "@/lib/theme";
-import { useSubscription } from "@/lib/hooks/useSubscription";
 import {
   notificationService,
-  registerPushTokenWithBackend,
-  unregisterPushTokenFromBackend,
+  enableLocalNotifications,
+  disableLocalNotifications,
 } from "@/lib/services/notificationService";
 import { showToast } from "@/lib/toast/showToast";
 import { useEventReminderStore } from "@/stores/eventReminderStore";
@@ -24,6 +24,28 @@ interface LargeTitleProps {
   style?: ViewStyle;
   actions?: React.ReactNode;
 }
+
+const isNotificationPermissionGranted = (
+  permissions: Notifications.NotificationPermissionsStatus | null,
+): boolean => {
+  if (!permissions) {
+    return false;
+  }
+
+  if (
+    permissions.granted ||
+    permissions.status === Notifications.PermissionStatus.GRANTED
+  ) {
+    return true;
+  }
+
+  const iosStatus = permissions.ios?.status;
+  return (
+    iosStatus === Notifications.IosAuthorizationStatus.AUTHORIZED ||
+    iosStatus === Notifications.IosAuthorizationStatus.PROVISIONAL ||
+    iosStatus === Notifications.IosAuthorizationStatus.EPHEMERAL
+  );
+};
 
 export const LargeTitle = ({ title, style, actions }: LargeTitleProps) => {
   const { theme } = useTheme();
@@ -83,15 +105,45 @@ export const HeaderActions = () => {
   const { theme } = useTheme();
   const { t } = useTranslation();
   const router = useRouter();
-  const { subscriptionStatus } = useSubscription();
-  const { settings, updateSettings, isLoading } = useUserSettingsStore();
+  const {
+    settings,
+    updateSettings,
+    isLoading,
+    setNotificationDisabledBySystemPermission,
+  } = useUserSettingsStore();
   const clearAllReminderState = useEventReminderStore((state) => state.clearAllReminderState);
   const isDarkMode = settings?.theme === "dark";
-  const notificationsEnabled = settings?.notificationsEnabled ?? true;
+  const notificationsEnabled = settings?.notificationsEnabled === true;
   const [showPermissionModal, setShowPermissionModal] = React.useState(false);
 
   // Notifications hook
-  const { requestPermission, isLoading: isNotificationLoading } = useNotifications();
+  const {
+    requestPermission,
+    isLoading: isNotificationLoading,
+    permissions,
+    checkPermissionStatus,
+  } = useNotifications();
+  const notificationPermissionEnabled = React.useMemo(
+    () => isNotificationPermissionGranted(permissions),
+    [permissions],
+  );
+  const notificationsActive = notificationsEnabled && notificationPermissionEnabled;
+
+  React.useEffect(() => {
+    void checkPermissionStatus();
+  }, [checkPermissionStatus]);
+
+  React.useEffect(() => {
+    const subscription = AppState.addEventListener("change", (nextState) => {
+      if (nextState === "active") {
+        void checkPermissionStatus();
+      }
+    });
+
+    return () => {
+      subscription.remove();
+    };
+  }, [checkPermissionStatus]);
 
   const handleToggleTheme = async () => {
     if (!settings || isLoading) return;
@@ -109,15 +161,17 @@ export const HeaderActions = () => {
         });
         await notificationService.cancelAllNotifications();
         clearAllReminderState();
-        void unregisterPushTokenFromBackend();
+        setNotificationDisabledBySystemPermission(false);
+        void disableLocalNotifications();
         await updateSettings({ notificationsEnabled: false });
       } else {
         const granted = await requestPermission();
         if (granted) {
-          // Register push token after permission granted
-          void registerPushTokenWithBackend();
+          void enableLocalNotifications();
           await updateSettings({ notificationsEnabled: true });
+          setNotificationDisabledBySystemPermission(false);
         } else {
+          setNotificationDisabledBySystemPermission(true);
           setShowPermissionModal(true);
         }
       }
@@ -128,38 +182,8 @@ export const HeaderActions = () => {
     }
   };
 
-  const statusLabel = subscriptionStatus === "pro" ? "Pro" : subscriptionStatus === "trial" ? "Trial" : "Free";
-  const statusTheme = subscriptionStatus === "pro"
-    ? {
-      color: theme.colors.primary,
-      backgroundColor: theme.colors.primaryContainer,
-      icon: "crown" as const,
-    }
-    : subscriptionStatus === "trial"
-      ? {
-        color: theme.colors.tertiary,
-        backgroundColor: theme.colors.tertiaryContainer,
-        icon: "clock-outline" as const,
-      }
-      : {
-        color: theme.colors.onSurfaceVariant,
-        backgroundColor: theme.colors.surfaceVariant,
-        icon: "account-outline" as const,
-      };
-
   return (
     <View style={styles.headerActions}>
-      <View style={[styles.statusChip, { backgroundColor: statusTheme.backgroundColor, borderColor: statusTheme.color }]}
-      >
-        <MaterialCommunityIcons
-          name={statusTheme.icon}
-          size={14}
-          color={statusTheme.color}
-        />
-        <Text variant="labelSmall" style={{ color: statusTheme.color }}>
-          {statusLabel}
-        </Text>
-      </View>
       <Pressable
         onPress={handleNotificationToggle}
         disabled={isNotificationLoading || !settings}
@@ -170,9 +194,9 @@ export const HeaderActions = () => {
         ]}
       >
         <MaterialCommunityIcons
-          name={notificationsEnabled ? "bell" : "bell-outline"}
+          name={notificationsActive ? "bell" : "bell-outline"}
           size={18}
-          color={notificationsEnabled ? theme.colors.warning : theme.colors.onSurface}
+          color={notificationsActive ? theme.colors.warning : theme.colors.onSurface}
         />
       </Pressable>
       <Pressable
@@ -204,11 +228,13 @@ export const HeaderActions = () => {
         visible={showPermissionModal}
         onDismiss={() => setShowPermissionModal(false)}
         onPermissionGranted={async () => {
-          void registerPushTokenWithBackend();
+          void enableLocalNotifications();
           await updateSettings({ notificationsEnabled: true });
+          setNotificationDisabledBySystemPermission(false);
         }}
         onPermissionDenied={async () => {
-          void unregisterPushTokenFromBackend();
+          setNotificationDisabledBySystemPermission(true);
+          void disableLocalNotifications();
           await updateSettings({ notificationsEnabled: false });
         }}
       />
@@ -277,14 +303,5 @@ const styles = StyleSheet.create({
   },
   iconPressed: {
     transform: [{ scale: 0.96 }],
-  },
-  statusChip: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 4,
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    borderRadius: 999,
-    borderWidth: 1,
   },
 });

@@ -614,7 +614,15 @@
     },
     "selectCurrency": "Währung auswählen",
     "timezone": "Zeitzone",
-    "selectTimezone": "Zeitzone auswählen"
+    "selectTimezone": "Zeitzone auswählen",
+    "clearLocalData": "Lokale Daten löschen",
+    "clearLocalDataDescription": "Entfernen Sie dauerhaft alle Haustiere und Aufzeichnungen von diesem Gerät",
+    "clearLocalDataConfirmTitle": "Alle lokalen Daten löschen?",
+    "clearLocalDataConfirmMessage": "Dadurch werden Haustiere, Ereignisse, Fütterungspläne, Gesundheitsakten und Ausgaben dauerhaft von diesem Gerät entfernt. Diese Aktion kann nicht rückgängig gemacht werden.",
+    "clearLocalDataConfirmAction": "Daten löschen",
+    "clearLocalDataSuccessTitle": "Daten gelöscht",
+    "clearLocalDataSuccessMessage": "Alle lokalen Haustierdaten wurden von diesem Gerät entfernt.",
+    "clearLocalDataError": "Lokale Daten konnten nicht gelöscht werden. Bitte versuchen Sie es erneut."
   },
   "common": {
     "loading": "Lädt...",
@@ -1317,14 +1325,14 @@
     "screen3": {
       "title": "Sie sind bereit!",
       "description": "Alles ist bereit, um die Pflege und die Gesundheitsdaten Ihres Tieres zu verwalten.",
-      "trialNotice": "Füge jetzt dein erstes Haustier hinzu und schalte Pro frei, wenn du mehr brauchst.",
+      "trialNotice": "Füge jetzt dein erstes Haustier hinzu. Du kannst später jederzeit weitere hinzufügen.",
       "addPet": "Tier hinzufügen",
       "skipPet": "Später machen",
       "addYourFirstPet": "Erstes Tier hinzufügen"
     },
     "language": {
       "title": "Wähle Sprache, Währung und Zeitzone",
-      "description": "Wir verwenden deine Auswahl in den nächsten Schritten und synchronisieren sie nach der Anmeldung. Alles kannst du jederzeit in den Einstellungen ändern.",
+      "description": "Wir verwenden deine Auswahl in den nächsten Bildschirmen. Du kannst sie jederzeit in den Einstellungen ändern.",
       "continue": "Weiter"
     }
   },
@@ -1508,6 +1516,14 @@
     "autoRenews": "Erneuert sich automatisch am {{date}}",
     "cancelled": "Gekündigt - läuft ab am {{date}}",
     "paywallError": "Abonnement-Optionen konnten nicht geladen werden",
+    "loadingPlans": "Plane werden geladen...",
+    "planLifetime": "Lebenslang",
+    "oneTimePayment": "Einmalzahlung",
+    "bestValue": "Bestes Angebot",
+    "planYearly": "Jahrlich",
+    "planYearlyDescription": "Jahrliche Abrechnung",
+    "planMonthly": "Monatlich",
+    "planMonthlyDescription": "Monatliche Abrechnung",
     "trialAlreadySubscribed": "Sie haben bereits ein aktives Abonnement",
     "trialAlreadyUsed": "Dieses Gerät hat bereits eine kostenlose Testversion genutzt",
     "trialStartFailed": "Kostenlose Testversion konnte nicht gestartet werden. Bitte versuchen Sie es erneut.",
@@ -1528,13 +1544,19 @@
     "features": {
       "title": "Pro-Funktionen",
       "unlimited": "Unbegrenzt Tiere",
-      "unlimitedDesc": "Alle Haustierprofile, Aufzeichnungen und Notizen an einem Ort",
+      "unlimitedDesc": "Schalte dein 2. Haustier frei und verwalte Profile, Aufzeichnungen und Routinen an einem Ort.",
       "feedingSchedules": "Unbegrenzte Fütterungspläne",
       "feedingSchedulesDesc": "Zuverlässige Routinen für jedes Haustier ohne Plan-Limits aufbauen",
-      "budgetTracking": "Budgetverfolgung & Warnungen",
-      "budgetTrackingDesc": "Steigende Kosten früh mit monatlichen Budgetwarnungen erkennen",
-      "export": "Datenexport",
-      "exportDesc": "Klare Berichte mit Familie oder Tierarzt teilen",
+      "budgetTracking": "Erweiterte Budget-Insights",
+      "budgetTrackingDesc": "Erkenne steigende Ausgaben fruehzeitig mit Pro-Insights und smarten Warnungen.",
+      "export": "Tierarzt-Reports & Export",
+      "exportDesc": "Exportiere CSV, PDF und Tierarzt-Zusammenfassungen und teile sie in Sekunden.",
+      "recurrence": "Automatisierte Pflege-Routinen",
+      "recurrenceDesc": "Einmal einstellen, automatisch wiederholen - mit erweiterten Wiederholungsregeln.",
+      "smartReminders": "Smarte Erinnerungs-Presets",
+      "smartRemindersDesc": "Nutze abgestufte Erinnerungen, damit keine wichtige Pflegeaufgabe untergeht.",
+      "urgentMode": "Fokus auf dringende Aufgaben",
+      "urgentModeDesc": "Sieh dringende Gesundheitsaufgaben sofort und priorisiere, was jetzt zaehlt.",
       "priority": "Vorrangiger Support",
       "priorityDesc": "Schnellere Hilfe erhalten, wenn es dringend ist",
       "petManagement": "Tier-Management",
@@ -1546,7 +1568,7 @@
     },
     "paywall": {
       "title": "Petopia Petcare Pro freischalten",
-      "subtitle": "Pflege, Erinnerungen und Ausgaben für jedes Haustier im Blick behalten"
+      "subtitle": "Wachse von einem Haustier zu einem kompletten Pflegesystem mit Exporten, Automatisierung und smarten Insights"
     },
     "success": {
       "title": "Abonnement erfolgreich!",
@@ -1562,10 +1584,21 @@
     "trust": {
       "cancelAnytime": "Jederzeit in den Einstellungen von App Store / Google Play kündbar",
       "billedByStore": "Die Abrechnung wird sicher über dein App-Store-Konto abgewickelt",
-      "secureCheckout": "Keine manuelle Kreditkarteneingabe in der App erforderlich"
+      "secureCheckout": "Keine manuelle Kreditkarteneingabe in der App erforderlich",
+      "cancelAnytimeIos": "Jederzeit in den Einstellungen von App Store kündbar",
+      "cancelAnytimeAndroid": "Jederzeit in den Einstellungen von Google Play kündbar",
+      "billedByStoreIos": "Die Abrechnung wird sicher über dein App-Store-Konto abgewickelt",
+      "billedByStoreAndroid": "Die Abrechnung wird sicher über dein App-Store-Konto abgewickelt",
+      "secureCheckoutIos": "Keine manuelle Kreditkarteneingabe in der App erforderlich",
+      "secureCheckoutAndroid": "Keine manuelle Kreditkarteneingabe in der App erforderlich"
     },
     "verifyingPurchase": "Kauf erhalten. Dein Abonnement wird uberpruft...",
-    "verificationTakingLong": "Dein Kauf wird uberpruft. Der Zugriff wird in wenigen Sekunden automatisch freigeschaltet."
+    "verificationTakingLong": "Dein Kauf wird uberpruft. Der Zugriff wird in wenigen Sekunden automatisch freigeschaltet.",
+    "noteIos": "Die Zahlung wird über dein App Store-Konto abgerechnet. Abonnements verlängern sich automatisch, sofern sie nicht mindestens 24 Stunden vor Ende des aktuellen Zeitraums gekündigt werden. Du kannst sie jederzeit in den Kontoeinstellungen des Stores verwalten oder kündigen.",
+    "noteAndroid": "Die Zahlung wird über dein Google Play-Konto abgerechnet. Abonnements verlängern sich automatisch, sofern sie nicht mindestens 24 Stunden vor Ende des aktuellen Zeitraums gekündigt werden. Du kannst sie jederzeit in den Kontoeinstellungen des Stores verwalten oder kündigen.",
+    "restoreConfirmTitle": "Einkäufe wiederherstellen?",
+    "restoreConfirmMessage": "Wir überprüfen Ihre Einkäufe im Store und stellen den aktiven Pro-Zugriff auf diesem Gerät wieder her.",
+    "restoreConfirmAction": "Wiederherstellen"
   },
   "downgrade": {
     "title": "Wählen Sie Ihr Tier",

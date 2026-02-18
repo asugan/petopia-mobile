@@ -614,7 +614,15 @@
       "indonesian": "Bahasa Indonesia"
     },
     "timezone": "Tidszon",
-    "selectTimezone": "Välj tidszon"
+    "selectTimezone": "Välj tidszon",
+    "clearLocalData": "Rensa lokal data",
+    "clearLocalDataDescription": "Ta bort alla husdjur och register permanent från den här enheten",
+    "clearLocalDataConfirmTitle": "Rensa alla lokala data?",
+    "clearLocalDataConfirmMessage": "Detta tar permanent bort husdjur, evenemang, matningsscheman, hälsojournaler och utgifter från den här enheten. Denna åtgärd kan inte ångras.",
+    "clearLocalDataConfirmAction": "Rensa data",
+    "clearLocalDataSuccessTitle": "Data raderade",
+    "clearLocalDataSuccessMessage": "Alla lokala husdjursdata har tagits bort från den här enheten.",
+    "clearLocalDataError": "Det gick inte att rensa lokal data. Försök igen."
   },
   "common": {
     "loading": "Laddar...",
@@ -1317,14 +1325,14 @@
     "screen3": {
       "title": "Du är redo!",
       "description": "Allt är redo för att hantera ditt husdjurs vård- och hälsodata.",
-      "trialNotice": "Lägg till ditt första husdjur nu och lås upp Pro när du behöver mer.",
+      "trialNotice": "Lägg till ditt första husdjur nu. Du kan alltid lägga till fler senare.",
       "addPet": "Lägg till ditt husdjur",
       "skipPet": "Gör det senare",
       "addYourFirstPet": "Lägg till ditt första husdjur"
     },
     "language": {
       "title": "Välj språk, valuta och tidszon",
-      "description": "Vi använder dina val på nästa skärmar och synkroniserar dem efter inloggning. Du kan ändra allt när som helst i Inställningar.",
+      "description": "Vi använder dina val på nästa skärmar. Du kan ändra dem när som helst i Inställningar.",
       "continue": "Fortsätt"
     }
   },
@@ -1528,13 +1536,19 @@
     "features": {
       "title": "Pro-funktioner",
       "unlimited": "Obegränsat antal husdjur",
-      "unlimitedDesc": "Samla alla husdjursprofiler, journaler och anteckningar på ett ställe",
+      "unlimitedDesc": "Lås upp det andra husdjuret och håll alla profiler, register och rutiner tillsammans",
       "feedingSchedules": "Obegränsat antal matningsscheman",
       "feedingSchedulesDesc": "Bygg pålitliga rutiner för varje husdjur utan schemabegränsningar",
-      "budgetTracking": "Budgetuppföljning & varningar",
-      "budgetTrackingDesc": "Upptäck ökande kostnader tidigt med månatliga budgetvarningar",
-      "export": "Dataexport",
-      "exportDesc": "Dela tydliga rapporter med familjen eller veterinären",
+      "budgetTracking": "Avancerad budgetinsikt",
+      "budgetTrackingDesc": "Upptäck överutgiftstrender tidigt med Pro-insikter och smarta varningar",
+      "export": "Veterinär redo rapporter och export",
+      "exportDesc": "Exportera CSV-, PDF- och veterinärsammanfattningar för att dela rent på några sekunder",
+      "recurrence": "Återkommande vårdautomatiseringar",
+      "recurrenceDesc": "Ställ in en gång, upprepa automatiskt med avancerade återkommande rutiner",
+      "smartReminders": "Smarta påminnelser förinställningar",
+      "smartRemindersDesc": "Använd rikare påminnelsekadenser så att viktiga vårduppgifter aldrig missas",
+      "urgentMode": "Brådskande vårdfokus",
+      "urgentModeDesc": "Se akuta hälsouppgifter direkt och prioritera det som är viktigast",
       "priority": "Prioriterad support",
       "priorityDesc": "Få snabbare hjälp när det är bråttom",
       "petManagement": "Husdjurshantering",
@@ -1546,7 +1560,7 @@
     },
     "paywall": {
       "title": "Lås upp Petopia Petcare Pro",
-      "subtitle": "Håll koll på vård, påminnelser och utgifter för varje husdjur"
+      "subtitle": "Skala från ett husdjur till ett komplett vårdsystem med export, automatisering och smarta insikter"
     },
     "success": {
       "title": "Prenumerationen lyckades!",
@@ -1562,10 +1576,29 @@
     "trust": {
       "cancelAnytime": "Du kan avsluta när som helst i inställningarna för App Store / Google Play",
       "billedByStore": "Debiteringen hanteras säkert via ditt appbutikskonto",
-      "secureCheckout": "Du behöver inte ange kortuppgifter manuellt i appen"
+      "secureCheckout": "Du behöver inte ange kortuppgifter manuellt i appen",
+      "cancelAnytimeIos": "Du kan avsluta när som helst i inställningarna för App Store",
+      "cancelAnytimeAndroid": "Du kan avsluta när som helst i inställningarna för Google Play",
+      "billedByStoreIos": "Debiteringen hanteras säkert via ditt appbutikskonto",
+      "billedByStoreAndroid": "Debiteringen hanteras säkert via ditt appbutikskonto",
+      "secureCheckoutIos": "Du behöver inte ange kortuppgifter manuellt i appen",
+      "secureCheckoutAndroid": "Du behöver inte ange kortuppgifter manuellt i appen"
     },
     "verifyingPurchase": "Kop mottaget. Verifierar din prenumeration...",
-    "verificationTakingLong": "Ditt kop verifieras. Atkomst lasses upp automatiskt om nagra sekunder."
+    "verificationTakingLong": "Ditt kop verifieras. Atkomst lasses upp automatiskt om nagra sekunder.",
+    "noteIos": "Betalning debiteras via ditt App Store-konto. Prenumerationer förnyas automatiskt om de inte avslutas minst 24 timmar före slutet av den aktuella perioden. Du kan hantera eller avsluta när som helst i butikskontots inställningar.",
+    "noteAndroid": "Betalning debiteras via ditt Google Play-konto. Prenumerationer förnyas automatiskt om de inte avslutas minst 24 timmar före slutet av den aktuella perioden. Du kan hantera eller avsluta när som helst i butikskontots inställningar.",
+    "restoreConfirmTitle": "Återställa köp?",
+    "restoreConfirmMessage": "Vi kontrollerar dina butiksköp och återställer aktiv Pro-åtkomst på den här enheten.",
+    "restoreConfirmAction": "Återställa",
+    "loadingPlans": "Laddar planer...",
+    "planLifetime": "Livstid",
+    "oneTimePayment": "Engångsbetalning",
+    "bestValue": "Bäst värde",
+    "planYearly": "Årlig",
+    "planYearlyDescription": "Debiteras årligen",
+    "planMonthly": "Månatlig",
+    "planMonthlyDescription": "Debiteras månadsvis"
   },
   "downgrade": {
     "title": "Välj ditt husdjur",

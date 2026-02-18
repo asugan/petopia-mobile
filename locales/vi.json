@@ -614,7 +614,15 @@
     },
     "selectCurrency": "Chọn tiền tệ",
     "timezone": "Múi giờ",
-    "selectTimezone": "Chọn múi giờ"
+    "selectTimezone": "Chọn múi giờ",
+    "clearLocalData": "Xóa dữ liệu cục bộ",
+    "clearLocalDataDescription": "Xóa vĩnh viễn tất cả vật nuôi và hồ sơ khỏi thiết bị này",
+    "clearLocalDataConfirmTitle": "Xóa tất cả dữ liệu cục bộ?",
+    "clearLocalDataConfirmMessage": "Thao tác này sẽ xóa vĩnh viễn vật nuôi, sự kiện, lịch cho ăn, hồ sơ sức khỏe và chi phí khỏi thiết bị này. Không thể hoàn tác hành động này.",
+    "clearLocalDataConfirmAction": "Xóa dữ liệu",
+    "clearLocalDataSuccessTitle": "Đã xóa dữ liệu",
+    "clearLocalDataSuccessMessage": "Tất cả dữ liệu thú cưng cục bộ đã bị xóa khỏi thiết bị này.",
+    "clearLocalDataError": "Không xóa được dữ liệu cục bộ. Vui lòng thử lại."
   },
   "common": {
     "loading": "Đang tải...",
@@ -1317,14 +1325,14 @@
     "screen3": {
       "title": "Bạn đã sẵn sàng!",
       "description": "Mọi thứ đã sẵn sàng để quản lý dữ liệu chăm sóc và sức khỏe thú cưng của bạn.",
-      "trialNotice": "Thêm thú cưng đầu tiên ngay bây giờ, rồi mở khóa Pro khi bạn cần nhiều hơn.",
+      "trialNotice": "Thêm thú cưng đầu tiên của bạn ngay bây giờ. Bạn luôn có thể thêm nhiều hơn sau.",
       "addPet": "Thêm thú cưng của bạn",
       "skipPet": "Để sau",
       "addYourFirstPet": "Thêm thú cưng đầu tiên của bạn"
     },
     "language": {
       "title": "Chọn ngôn ngữ, tiền tệ và múi giờ của bạn",
-      "description": "Chúng tôi sẽ dùng lựa chọn của bạn ở các màn hình tiếp theo và đồng bộ sau khi đăng nhập. Bạn có thể thay đổi mọi thứ bất cứ lúc nào trong Cài đặt.",
+      "description": "Chúng tôi sẽ dùng các lựa chọn của bạn ở các màn hình tiếp theo. Bạn có thể thay đổi chúng bất cứ lúc nào trong Cài đặt.",
       "continue": "Tiếp tục"
     }
   },
@@ -1528,13 +1536,19 @@
     "features": {
       "title": "Tính năng Pro",
       "unlimited": "Thú cưng không giới hạn",
-      "unlimitedDesc": "Giữ tất cả hồ sơ, dữ liệu và ghi chú thú cưng ở cùng một nơi",
+      "unlimitedDesc": "Mở khóa thú cưng thứ 2 và lưu giữ mọi hồ sơ, hồ sơ và thói quen cùng nhau",
       "feedingSchedules": "Lịch trình ăn uống không giới hạn",
       "feedingSchedulesDesc": "Xây dựng thói quen đáng tin cậy cho từng thú cưng mà không giới hạn lịch",
-      "budgetTracking": "Theo dõi ngân sách & Cảnh báo",
-      "budgetTrackingDesc": "Phát hiện chi phí tăng sớm với cảnh báo ngân sách hàng tháng",
-      "export": "Xuất dữ liệu",
-      "exportDesc": "Chia sẻ báo cáo rõ ràng với gia đình hoặc bác sĩ thú y",
+      "budgetTracking": "Thông tin chi tiết về ngân sách nâng cao",
+      "budgetTrackingDesc": "Phát hiện sớm xu hướng bội chi với thông tin chi tiết chuyên nghiệp và cảnh báo thông minh",
+      "export": "Báo cáo và xuất khẩu sẵn sàng cho thú y",
+      "exportDesc": "Xuất các bản tóm tắt CSV, PDF và bác sĩ thú y để chia sẻ rõ ràng trong vài giây",
+      "recurrence": "Tự động hóa chăm sóc định kỳ",
+      "recurrenceDesc": "Đặt một lần, tự động lặp lại với các thói quen định kỳ nâng cao",
+      "smartReminders": "Cài đặt trước lời nhắc thông minh",
+      "smartRemindersDesc": "Sử dụng nhịp điệu nhắc nhở phong phú hơn để không bao giờ bỏ lỡ các nhiệm vụ chăm sóc quan trọng",
+      "urgentMode": "Trọng tâm chăm sóc khẩn cấp",
+      "urgentModeDesc": "Xem ngay các nhiệm vụ sức khỏe khẩn cấp và ưu tiên những gì quan trọng nhất",
       "priority": "Hỗ trợ ưu tiên",
       "priorityDesc": "Nhận hỗ trợ nhanh hơn khi khẩn cấp",
       "petManagement": "Quản lý thú cưng",
@@ -1546,7 +1560,7 @@
     },
     "paywall": {
       "title": "Mở khóa Petopia Petcare Pro",
-      "subtitle": "Luôn theo sát việc chăm sóc, nhắc nhở và chi tiêu của từng thú cưng"
+      "subtitle": "Mở rộng quy mô từ một thú cưng sang hệ thống chăm sóc hoàn chỉnh với tính năng xuất, tự động hóa và hiểu biết thông minh"
     },
     "success": {
       "title": "Đăng ký thành công!",
@@ -1562,10 +1576,29 @@
     "trust": {
       "cancelAnytime": "Bạn có thể hủy bất cứ lúc nào trong phần cài đặt App Store / Google Play",
       "billedByStore": "Thanh toán được xử lý an toàn thông qua tài khoản cửa hàng ứng dụng của bạn",
-      "secureCheckout": "Không cần nhập thủ công thông tin thẻ tín dụng trong ứng dụng"
+      "secureCheckout": "Không cần nhập thủ công thông tin thẻ tín dụng trong ứng dụng",
+      "cancelAnytimeIos": "Bạn có thể hủy bất cứ lúc nào trong phần cài đặt App Store",
+      "cancelAnytimeAndroid": "Bạn có thể hủy bất cứ lúc nào trong phần cài đặt Google Play",
+      "billedByStoreIos": "Thanh toán được xử lý an toàn thông qua tài khoản cửa hàng ứng dụng của bạn",
+      "billedByStoreAndroid": "Thanh toán được xử lý an toàn thông qua tài khoản cửa hàng ứng dụng của bạn",
+      "secureCheckoutIos": "Không cần nhập thủ công thông tin thẻ tín dụng trong ứng dụng",
+      "secureCheckoutAndroid": "Không cần nhập thủ công thông tin thẻ tín dụng trong ứng dụng"
     },
     "verifyingPurchase": "Da nhan mua hang. Dang xac minh goi dang ky cua ban...",
-    "verificationTakingLong": "Giao dich mua cua ban dang duoc xac minh. Quyen truy cap se tu dong mo trong vai giay."
+    "verificationTakingLong": "Giao dich mua cua ban dang duoc xac minh. Quyen truy cap se tu dong mo trong vai giay.",
+    "noteIos": "Thanh toán được tính qua tài khoản App Store của bạn. Gói đăng ký sẽ tự động gia hạn trừ khi được hủy ít nhất 24 giờ trước khi kỳ hiện tại kết thúc. Bạn có thể quản lý hoặc hủy bất cứ lúc nào trong phần cài đặt tài khoản cửa hàng.",
+    "noteAndroid": "Thanh toán được tính qua tài khoản Google Play của bạn. Gói đăng ký sẽ tự động gia hạn trừ khi được hủy ít nhất 24 giờ trước khi kỳ hiện tại kết thúc. Bạn có thể quản lý hoặc hủy bất cứ lúc nào trong phần cài đặt tài khoản cửa hàng.",
+    "restoreConfirmTitle": "Khôi phục mua hàng?",
+    "restoreConfirmMessage": "Chúng tôi sẽ kiểm tra các giao dịch mua tại cửa hàng của bạn và khôi phục quyền truy cập Pro đang hoạt động trên thiết bị này.",
+    "restoreConfirmAction": "Khôi phục",
+    "loadingPlans": "Đang tải các gói...",
+    "planLifetime": "Trọn đời",
+    "oneTimePayment": "Thanh toán một lần",
+    "bestValue": "Giá trị tốt nhất",
+    "planYearly": "Hàng năm",
+    "planYearlyDescription": "Thanh toán hàng năm",
+    "planMonthly": "Hàng tháng",
+    "planMonthlyDescription": "Thanh toán hàng tháng"
   },
   "downgrade": {
     "title": "Chọn thú cưng của bạn",

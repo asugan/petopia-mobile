@@ -614,7 +614,15 @@
     },
     "selectCurrency": "選擇貨幣",
     "timezone": "時區",
-    "selectTimezone": "選擇時區"
+    "selectTimezone": "選擇時區",
+    "clearLocalData": "清除本地數據",
+    "clearLocalDataDescription": "從此設備永久刪除所有寵物和記錄",
+    "clearLocalDataConfirmTitle": "清除所有本地資料？",
+    "clearLocalDataConfirmMessage": "這將從該設備中永久刪除寵物、活動、餵食時間表、健康記錄和費用。此操作無法撤銷。",
+    "clearLocalDataConfirmAction": "清除數據",
+    "clearLocalDataSuccessTitle": "資料已清除",
+    "clearLocalDataSuccessMessage": "所有本地寵物資料已從此裝置中刪除。",
+    "clearLocalDataError": "清除本地資料失敗。請再試一次。"
   },
   "common": {
     "loading": "加載中...",
@@ -1317,14 +1325,14 @@
     "screen3": {
       "title": "您準備好了！",
       "description": "一切準備就緒，可以管理您寵物的護理和健康數據。",
-      "trialNotice": "現在先加入你的第一隻寵物，之後需要更多時再解鎖 Pro。",
+      "trialNotice": "現在先新增你的第一隻寵物。之後你隨時都可以再新增。",
       "addPet": "添加您的寵物",
       "skipPet": "以後再說",
       "addYourFirstPet": "添加您的第一隻寵物"
     },
     "language": {
       "title": "選擇您的語言、貨幣與時區",
-      "description": "我們會在接下來的畫面使用您的選擇，並在登入後進行同步。您可隨時在設定中修改全部內容。",
+      "description": "我們會在接下來的畫面使用你的選擇。你可以隨時在設定中更改。",
       "continue": "繼續"
     }
   },
@@ -1528,13 +1536,19 @@
     "features": {
       "title": "Pro 功能",
       "unlimited": "無限寵物數量",
-      "unlimitedDesc": "把所有寵物檔案、紀錄與筆記集中管理",
+      "unlimitedDesc": "解鎖第二隻寵物並將所有個人資料、記錄和日常活動放在一起",
       "feedingSchedules": "無限餵養時間表",
       "feedingSchedulesDesc": "為每隻寵物建立可靠的日常節奏，不受排程數量限制",
-      "budgetTracking": "預算跟踪和警報",
-      "budgetTrackingDesc": "透過每月預算提醒及早發現成本上升",
-      "export": "數據導出",
-      "exportDesc": "與家人或獸醫分享清楚報表",
+      "budgetTracking": "高級預算洞察",
+      "budgetTrackingDesc": "透過專業見解和智慧警報及早發現超支趨勢",
+      "export": "獸醫就緒報告和匯出",
+      "exportDesc": "匯出 CSV、PDF 和獸醫摘要，以便在幾秒鐘內乾淨地分享",
+      "recurrence": "定期護理自動化",
+      "recurrenceDesc": "設定一次，自動重複進階重複例程",
+      "smartReminders": "智慧提醒預設",
+      "smartRemindersDesc": "使用更豐富的提醒節奏，這樣就不會錯過重要的護理任務",
+      "urgentMode": "緊急護理重點",
+      "urgentModeDesc": "立即查看緊急健康任務並優先處理最重要的事情",
       "priority": "優先支持",
       "priorityDesc": "在緊急時更快獲得協助",
       "petManagement": "寵物管理",
@@ -1546,7 +1560,7 @@
     },
     "paywall": {
       "title": "解鎖 Petopia Petcare Pro",
-      "subtitle": "完整掌握每隻寵物的照護、提醒與支出"
+      "subtitle": "從一隻寵物擴展到具有匯出、自動化和智慧洞察的完整護理系統"
     },
     "success": {
       "title": "訂閱成功！",
@@ -1562,10 +1576,29 @@
     "trust": {
       "cancelAnytime": "可隨時在 App Store / Google Play 設定中取消",
       "billedByStore": "帳務會透過您的應用商店帳號安全處理",
-      "secureCheckout": "不需要在 App 內手動輸入信用卡資訊"
+      "secureCheckout": "不需要在 App 內手動輸入信用卡資訊",
+      "cancelAnytimeIos": "可隨時在 App Store 設定中取消",
+      "cancelAnytimeAndroid": "可隨時在 Google Play 設定中取消",
+      "billedByStoreIos": "帳務會透過您的應用商店帳號安全處理",
+      "billedByStoreAndroid": "帳務會透過您的應用商店帳號安全處理",
+      "secureCheckoutIos": "不需要在 App 內手動輸入信用卡資訊",
+      "secureCheckoutAndroid": "不需要在 App 內手動輸入信用卡資訊"
     },
     "verifyingPurchase": "已收到購買，正在驗證您的訂閱...",
-    "verificationTakingLong": "正在驗證您的購買，存取權限將在幾秒內自動開通。"
+    "verificationTakingLong": "正在驗證您的購買，存取權限將在幾秒內自動開通。",
+    "noteIos": "費用將透過你的 App Store 帳號扣款。除非於目前週期結束前至少 24 小時取消，否則訂閱會自動續訂。你可以隨時在商店帳號設定中管理或取消訂閱。",
+    "noteAndroid": "費用將透過你的 Google Play 帳號扣款。除非於目前週期結束前至少 24 小時取消，否則訂閱會自動續訂。你可以隨時在商店帳號設定中管理或取消訂閱。",
+    "restoreConfirmTitle": "恢復購買？",
+    "restoreConfirmMessage": "我們將檢查您的商店購買情況並恢復此裝置上的有效 Pro 存取權限。",
+    "restoreConfirmAction": "恢復",
+    "loadingPlans": "正在載入方案...",
+    "planLifetime": "終身",
+    "oneTimePayment": "一次性付款",
+    "bestValue": "最划算",
+    "planYearly": "年繳",
+    "planYearlyDescription": "按年計費",
+    "planMonthly": "月繳",
+    "planMonthlyDescription": "按月計費"
   },
   "downgrade": {
     "title": "選擇您的寵物",

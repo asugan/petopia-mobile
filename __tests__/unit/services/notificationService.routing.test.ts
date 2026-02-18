@@ -1,27 +1,9 @@
 import { beforeAll, describe, expect, it, vi } from 'vitest';
 
-vi.mock('expo-device', () => ({
-  default: {},
-  deviceName: 'test-device',
-}));
-
-vi.mock('expo-application', () => ({
-  default: {},
-  nativeApplicationVersion: '1.0.0',
-}));
-
 vi.mock('expo-secure-store', () => ({
   getItemAsync: vi.fn(async () => null),
   setItemAsync: vi.fn(async () => undefined),
   deleteItemAsync: vi.fn(async () => undefined),
-}));
-
-vi.mock('@/lib/api/client', () => ({
-  api: {
-    post: vi.fn(async () => ({})),
-    get: vi.fn(async () => ({ data: [] })),
-    delete: vi.fn(async () => ({})),
-  },
 }));
 
 let notificationService: (typeof import('@/lib/services/notificationService'))['notificationService'];

@@ -1,16 +1,19 @@
 import React from 'react';
 import { Alert, StyleSheet, View } from 'react-native';
 import { FormProvider, useWatch } from 'react-hook-form';
+import { useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import { Button, Text, KeyboardAwareView } from '@/components/ui';
 import { useEventForm } from '@/hooks/useEventForm';
 import { useRequestDeduplication } from '@/lib/hooks/useRequestCancellation';
+import { useSubscription } from '@/lib/hooks/useSubscription';
 import { useTheme } from '@/lib/theme';
 import { REMINDER_PRESETS, ReminderPresetKey } from '@/constants/reminders';
-import { registerPushTokenWithBackend } from '@/lib/services/notificationService';
+import { enableLocalNotifications } from '@/lib/services/notificationService';
 import { useNotifications } from '@/lib/hooks/useNotifications';
 import NotificationPermissionPrompt from '@/components/NotificationPermissionPrompt';
 import { type EventFormData } from '../../lib/schemas/eventSchema';
+import { type RecurrenceRule } from '../../lib/schemas/recurrenceSchema';
 import { Event, Pet } from '../../lib/types';
 import { FormSection } from './FormSection';
 import { SmartDateTimePicker } from './SmartDateTimePicker';
@@ -22,6 +25,7 @@ import { SmartSwitch } from './SmartSwitch';
 import { StepHeader } from './StepHeader';
 import { RecurrenceSettings } from './RecurrenceSettings';
 import { showToast } from '@/lib/toast/showToast';
+import { SUBSCRIPTION_ROUTES } from '@/constants/routes';
 
 interface EventFormProps {
   event?: Event;
@@ -31,6 +35,7 @@ interface EventFormProps {
   loading?: boolean;
   initialPetId?: string;
   pets?: Pet[];
+  recurrenceRule?: RecurrenceRule | null;
   testID?: string;
 }
 
@@ -42,22 +47,70 @@ export function EventForm({
   loading = false,
   initialPetId,
   pets = [],
+  recurrenceRule,
   testID,
 }: EventFormProps) {
   const { t } = useTranslation();
   const { theme } = useTheme();
+  const router = useRouter();
+  const { isProUser } = useSubscription();
   const { requestPermission, isLoading: isNotificationLoading } = useNotifications();
   const { executeWithDeduplication: executePermissionRequest } = useRequestDeduplication();
   const [isSubmitting, setIsSubmitting] = React.useState(false);
   const [currentStep, setCurrentStep] = React.useState(0);
   const [showPermissionModal, setShowPermissionModal] = React.useState(false);
+  const previousIsRecurringRef = React.useRef<boolean | undefined>(undefined);
+  const previousReminderPresetRef = React.useRef<ReminderPresetKey | undefined>(undefined);
+  const reminderPresetMountedRef = React.useRef(false);
 
   // Use the custom hook for form management
-  const { form, control, handleSubmit, isDirty } = useEventForm(event, initialPetId);
+  const { form, control, handleSubmit, isDirty } = useEventForm(event, initialPetId, {
+    editType,
+    recurrenceRule,
+  });
 
   // Watch form values for dynamic behavior
   const eventType = useWatch({ control, name: 'type' });
   const reminderEnabled = useWatch({ control, name: 'reminder' });
+  const isRecurring = useWatch({ control, name: 'isRecurring' });
+  const reminderPreset = useWatch({ control, name: 'reminderPreset' }) as ReminderPresetKey | undefined;
+
+  React.useEffect(() => {
+    if (!isProUser && reminderEnabled && reminderPreset !== 'minimal') {
+      form.setValue('reminderPreset', 'minimal', { shouldDirty: true, shouldValidate: true });
+    }
+  }, [form, isProUser, reminderEnabled, reminderPreset]);
+
+  React.useEffect(() => {
+    const previous = previousIsRecurringRef.current;
+    previousIsRecurringRef.current = isRecurring;
+
+    if (!isProUser && previous === false && isRecurring === true) {
+      form.setValue('isRecurring', false, { shouldDirty: true, shouldValidate: true });
+      router.push(`${SUBSCRIPTION_ROUTES.main}?source=events_recurrence_toggle`);
+    }
+  }, [form, isProUser, isRecurring, router]);
+
+  React.useEffect(() => {
+    const previous = previousReminderPresetRef.current;
+    previousReminderPresetRef.current = reminderPreset;
+
+    if (!reminderPresetMountedRef.current) {
+      reminderPresetMountedRef.current = true;
+      return;
+    }
+
+    if (
+      !isProUser &&
+      reminderEnabled &&
+      reminderPreset &&
+      previous !== reminderPreset &&
+      reminderPreset !== 'minimal'
+    ) {
+      form.setValue('reminderPreset', 'minimal', { shouldDirty: true, shouldValidate: true });
+      router.push(`${SUBSCRIPTION_ROUTES.main}?source=events_reminder_preset_lock`);
+    }
+  }, [form, isProUser, reminderEnabled, reminderPreset, router]);
 
   const reminderPresetOptions = React.useMemo(
     () =>
@@ -81,7 +134,7 @@ export function EventForm({
       });
       if (granted) {
         form.setValue('reminder', true);
-        void registerPushTokenWithBackend();
+        void enableLocalNotifications();
       } else {
         form.setValue('reminder', false);
         setShowPermissionModal(true);
@@ -94,6 +147,16 @@ export function EventForm({
   // Handle form submission
   const onFormSubmit = React.useCallback(
     async (data: EventFormData) => {
+      if (!isProUser && data.isRecurring) {
+        router.push(`${SUBSCRIPTION_ROUTES.main}?source=events_recurrence_submit`);
+        return;
+      }
+
+      if (!isProUser && data.reminder && data.reminderPreset && data.reminderPreset !== 'minimal') {
+        router.push(`${SUBSCRIPTION_ROUTES.main}?source=events_reminder_preset_submit`);
+        return;
+      }
+
       try {
         setIsSubmitting(true);
 
@@ -108,7 +171,7 @@ export function EventForm({
         setIsSubmitting(false);
       }
     },
-    [onSubmit, t]
+    [isProUser, onSubmit, router, t]
   );
 
   // Form actions
@@ -421,7 +484,7 @@ export function EventForm({
         onDismiss={() => setShowPermissionModal(false)}
         onPermissionGranted={() => {
           form.setValue('reminder', true);
-          void registerPushTokenWithBackend();
+          void enableLocalNotifications();
         }}
         onPermissionDenied={() => {
           form.setValue('reminder', false);

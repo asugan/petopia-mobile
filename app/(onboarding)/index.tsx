@@ -9,7 +9,6 @@ import { useTheme } from '@/lib/theme';
 import { ONBOARDING_ROUTES } from '@/constants/routes';
 import { LanguageSettings } from '@/components/LanguageSettings';
 import { CurrencySettings } from '@/components/CurrencySettings';
-import { TimezoneSettings } from '@/components/TimezoneSettings';
 import { useOnboardingStore } from '@/stores/onboardingStore';
 import type { SupportedCurrency, SupportedLanguage } from '@/lib/types';
 import i18n from '@/lib/i18n';
@@ -19,8 +18,7 @@ export default function OnboardingLanguageStep() {
   const router = useRouter();
   const { t } = useTranslation();
   const { theme, isDark } = useTheme();
-  const { preferredLanguage, preferredCurrency, preferredTimezone, setOnboardingPreferences } =
-    useOnboardingStore();
+  const { preferredLanguage, preferredCurrency, setOnboardingPreferences } = useOnboardingStore();
 
   const recommended = useMemo(() => getRecommendedOnboardingPreferences(), []);
   const [selectedLanguage, setSelectedLanguage] = useState<SupportedLanguage>(
@@ -29,15 +27,11 @@ export default function OnboardingLanguageStep() {
   const [selectedCurrency, setSelectedCurrency] = useState<SupportedCurrency>(
     preferredCurrency ?? recommended.currency,
   );
-  const [selectedTimezone, setSelectedTimezone] = useState<string>(
-    preferredTimezone ?? recommended.timezone,
-  );
 
   const handleContinue = () => {
     setOnboardingPreferences({
       language: selectedLanguage,
       currency: selectedCurrency,
-      timezone: selectedTimezone,
     });
 
     if (i18n.language !== selectedLanguage) {
@@ -235,12 +229,12 @@ export default function OnboardingLanguageStep() {
           </View>
           <Text style={styles.appName}>{t('auth.brandName')}</Text>
           <Text style={styles.title}>
-            {t('onboarding.language.title', 'Choose your language, currency and timezone')}
+            {t('settings.appSettings', 'App settings')}
           </Text>
           <Text style={styles.description}>
             {t(
               'onboarding.language.description',
-              'We will use your selections on the next screens and sync them after sign in. You can change all anytime in Settings.',
+              'We will use your selections on the next screens. You can change them anytime in Settings.',
             )}
           </Text>
         </View>
@@ -267,14 +261,6 @@ export default function OnboardingLanguageStep() {
             variant="embedded"
             selectedCurrency={selectedCurrency}
             onSelect={setSelectedCurrency}
-          />
-        </View>
-
-        <View style={styles.sectionCard}>
-          <TimezoneSettings
-            variant="embedded"
-            selectedTimezone={selectedTimezone}
-            onSelect={setSelectedTimezone}
           />
         </View>
       </ScrollView>

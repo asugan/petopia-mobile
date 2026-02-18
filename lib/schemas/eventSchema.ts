@@ -189,13 +189,6 @@ export const eventFormSchema = (timezone?: string) =>
             path: ['recurrence', 'frequency'],
           });
         }
-        if (!data.recurrence?.timezone) {
-          ctx.addIssue({
-            code: z.ZodIssueCode.custom,
-            message: t('forms.validation.recurrence.timezoneRequired'),
-            path: ['recurrence', 'timezone'],
-          });
-        }
       }
     });
 
@@ -448,7 +441,7 @@ export const transformFormDataToRecurrenceRule = (
     dailyTimes: formData.recurrence.dailyTimes ?? [formData.startTime],
 
     // Timezone
-    timezone: formData.recurrence.timezone!,
+    timezone: resolveEffectiveTimezone(formData.recurrence.timezone),
 
     // Date boundaries
     startDate: recurrenceStartDate,

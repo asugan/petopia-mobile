@@ -614,7 +614,15 @@
       "indonesian": "Bahasa Indonesia"
     },
     "timezone": "Zona waktu",
-    "selectTimezone": "Pilih zona waktu"
+    "selectTimezone": "Pilih zona waktu",
+    "clearLocalData": "Hapus data lokal",
+    "clearLocalDataDescription": "Hapus semua hewan peliharaan dan catatan dari perangkat ini secara permanen",
+    "clearLocalDataConfirmTitle": "Hapus semua data lokal?",
+    "clearLocalDataConfirmMessage": "Tindakan ini akan menghapus hewan peliharaan, acara, jadwal makan, catatan kesehatan, dan pengeluaran secara permanen dari perangkat ini. Tindakan ini tidak dapat dibatalkan.",
+    "clearLocalDataConfirmAction": "Hapus Data",
+    "clearLocalDataSuccessTitle": "Data dihapus",
+    "clearLocalDataSuccessMessage": "Semua data hewan peliharaan lokal telah dihapus dari perangkat ini.",
+    "clearLocalDataError": "Gagal menghapus data lokal. Silakan coba lagi."
   },
   "common": {
     "loading": "Memuat...",
@@ -1317,14 +1325,14 @@
     "screen3": {
       "title": "Anda Siap!",
       "description": "Semuanya siap untuk mengelola data perawatan dan kesehatan hewan peliharaan Anda.",
-      "trialNotice": "Tambahkan hewan peliharaan pertama Anda sekarang, lalu buka Pro saat Anda butuh lebih banyak.",
+      "trialNotice": "Tambahkan hewan peliharaan pertama Anda sekarang. Anda selalu bisa menambahkan lagi nanti.",
       "addPet": "Tambah Hewan Anda",
       "skipPet": "Nanti saja",
       "addYourFirstPet": "Tambah Hewan Pertama Anda"
     },
     "language": {
       "title": "Pilih bahasa, mata uang, dan zona waktu Anda",
-      "description": "Kami akan menggunakan pilihan Anda di layar berikutnya dan menyinkronkannya setelah masuk. Anda dapat mengubah semuanya kapan saja di Pengaturan.",
+      "description": "Kami akan menggunakan pilihan Anda di layar berikutnya. Anda dapat mengubahnya kapan saja di Pengaturan.",
       "continue": "Lanjutkan"
     }
   },
@@ -1521,6 +1529,14 @@
     "autoRenews": "Perpanjang otomatis pada {{date}}",
     "cancelled": "Dibatalkan - berakhir {{date}}",
     "paywallError": "Tidak dapat memuat opsi langganan",
+    "loadingPlans": "Memuat paket...",
+    "planLifetime": "Seumur hidup",
+    "oneTimePayment": "Pembayaran satu kali",
+    "bestValue": "Nilai terbaik",
+    "planYearly": "Tahunan",
+    "planYearlyDescription": "Ditagih tahunan",
+    "planMonthly": "Bulanan",
+    "planMonthlyDescription": "Ditagih bulanan",
     "trialAlreadySubscribed": "Anda sudah memiliki langganan aktif",
     "trialAlreadyUsed": "Perangkat ini sudah menggunakan percobaan gratis",
     "trialStartFailed": "Tidak dapat memulai percobaan gratis. Silakan coba lagi.",
@@ -1541,13 +1557,19 @@
     "features": {
       "title": "Fitur Pro",
       "unlimited": "Hewan Peliharaan Tanpa Batas",
-      "unlimitedDesc": "Simpan semua profil, catatan, dan catatan kecil hewan peliharaan dalam satu tempat",
+      "unlimitedDesc": "Buka kunci hewan peliharaan kedua dan satukan setiap profil, catatan, dan rutinitas",
       "feedingSchedules": "Jadwal Makan Tanpa Batas",
       "feedingSchedulesDesc": "Bangun rutinitas yang andal untuk setiap hewan tanpa batas jadwal",
-      "budgetTracking": "Pelacakan & Peringatan Anggaran",
-      "budgetTrackingDesc": "Tangkap kenaikan biaya lebih awal dengan peringatan anggaran bulanan",
-      "export": "Ekspor Data",
-      "exportDesc": "Bagikan laporan yang jelas dengan keluarga atau dokter hewan Anda",
+      "budgetTracking": "Wawasan Anggaran Tingkat Lanjut",
+      "budgetTrackingDesc": "Deteksi tren pengeluaran berlebihan sejak dini dengan wawasan Pro dan peringatan cerdas",
+      "export": "Laporan & Ekspor Siap Dokter Hewan",
+      "exportDesc": "Ekspor CSV, PDF, dan ringkasan dokter hewan untuk dibagikan dengan rapi dalam hitungan detik",
+      "recurrence": "Otomatisasi Perawatan Berulang",
+      "recurrenceDesc": "Atur sekali, ulangi secara otomatis dengan rutinitas berulang tingkat lanjut",
+      "smartReminders": "Preset Pengingat Cerdas",
+      "smartRemindersDesc": "Gunakan irama pengingat yang lebih kaya sehingga tugas perawatan penting tidak pernah terlewatkan",
+      "urgentMode": "Fokus Perawatan Mendesak",
+      "urgentModeDesc": "Lihat tugas kesehatan yang mendesak secara instan dan prioritaskan hal yang paling penting",
       "priority": "Prioritas Dukungan",
       "priorityDesc": "Dapatkan bantuan lebih cepat saat mendesak",
       "petManagement": "Kelola Hewan",
@@ -1559,7 +1581,7 @@
     },
     "paywall": {
       "title": "Buka Kunci Petopia Petcare Pro",
-      "subtitle": "Tetap terkontrol untuk perawatan, pengingat, dan pengeluaran tiap hewan peliharaan"
+      "subtitle": "Skalakan dari satu hewan peliharaan ke sistem perawatan lengkap dengan ekspor, otomatisasi, dan wawasan cerdas"
     },
     "success": {
       "title": "Berlangganan Berhasil!",
@@ -1575,9 +1597,20 @@
     "trust": {
       "cancelAnytime": "Batalkan kapan saja dari pengaturan App Store / Google Play",
       "billedByStore": "Penagihan diproses dengan aman melalui akun toko aplikasi Anda",
-      "secureCheckout": "Tidak perlu memasukkan detail kartu kredit secara manual di dalam aplikasi"
+      "secureCheckout": "Tidak perlu memasukkan detail kartu kredit secara manual di dalam aplikasi",
+      "cancelAnytimeIos": "Batalkan kapan saja dari pengaturan App Store",
+      "cancelAnytimeAndroid": "Batalkan kapan saja dari pengaturan Google Play",
+      "billedByStoreIos": "Penagihan diproses dengan aman melalui akun toko aplikasi Anda",
+      "billedByStoreAndroid": "Penagihan diproses dengan aman melalui akun toko aplikasi Anda",
+      "secureCheckoutIos": "Tidak perlu memasukkan detail kartu kredit secara manual di dalam aplikasi",
+      "secureCheckoutAndroid": "Tidak perlu memasukkan detail kartu kredit secara manual di dalam aplikasi"
     },
     "verifyingPurchase": "Pembelian diterima. Sedang memverifikasi langganan Anda...",
-    "verificationTakingLong": "Pembelian Anda sedang diverifikasi. Akses akan terbuka otomatis dalam beberapa detik."
+    "verificationTakingLong": "Pembelian Anda sedang diverifikasi. Akses akan terbuka otomatis dalam beberapa detik.",
+    "noteIos": "Pembayaran ditagihkan melalui akun App Store Anda. Langganan diperpanjang otomatis kecuali dibatalkan setidaknya 24 jam sebelum akhir periode berjalan. Anda dapat mengelola atau membatalkan kapan saja dari pengaturan akun toko Anda.",
+    "noteAndroid": "Pembayaran ditagihkan melalui akun Google Play Anda. Langganan diperpanjang otomatis kecuali dibatalkan setidaknya 24 jam sebelum akhir periode berjalan. Anda dapat mengelola atau membatalkan kapan saja dari pengaturan akun toko Anda.",
+    "restoreConfirmTitle": "Pulihkan pembelian?",
+    "restoreConfirmMessage": "Kami akan memeriksa pembelian toko Anda dan memulihkan akses Pro aktif di perangkat ini.",
+    "restoreConfirmAction": "Memulihkan"
   }
 }

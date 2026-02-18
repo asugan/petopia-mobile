@@ -56,13 +56,11 @@ export function UpgradePrompt({
   const { trackEvent } = useTracking();
   const {
     isProUser,
-    isTrialActive,
-    daysRemaining,
     isLoading,
   } = useSubscription();
 
-  // Don't show if user already has Pro access (unless in trial)
-  if (isProUser && !isTrialActive) {
+  // Don't show if user already has Pro access
+  if (isProUser) {
     return null;
   }
 
@@ -75,11 +73,7 @@ export function UpgradePrompt({
     router.push(`${SUBSCRIPTION_ROUTES.main}?source=upgrade_prompt_${variant}`);
   };
 
-  const displayMessage = message ?? (
-    isTrialActive
-      ? t('subscription.trialPrompt', { days: daysRemaining })
-      : t('subscription.upgradePrompt')
-  );
+  const displayMessage = message ?? t('subscription.upgradePrompt');
 
   // Inline variant - minimal text with link
   if (variant === 'inline') {
@@ -114,11 +108,6 @@ export function UpgradePrompt({
             <Text variant="labelMedium" style={{ color: theme.colors.onPrimaryContainer }}>
               {displayMessage}
             </Text>
-            {isTrialActive && (
-              <Text variant="labelSmall" style={{ color: theme.colors.onPrimaryContainer, opacity: 0.8 }}>
-                {t('subscription.trialDaysRemaining', { days: daysRemaining })}
-              </Text>
-            )}
           </View>
           <Button
             mode="contained"
@@ -197,9 +186,7 @@ export function UpgradePrompt({
           disabled={isLoading}
           style={styles.cardButton}
         >
-          {isTrialActive
-            ? t('subscription.upgradeBeforeTrialEnds')
-            : t('subscription.upgrade')}
+          {t('subscription.upgrade')}
         </Button>
       </View>
     </Card>

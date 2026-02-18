@@ -1,17 +1,10 @@
 // @vitest-environment happy-dom
-import React from 'react';
 import { describe, expect, it, vi } from 'vitest';
 import { renderHook, waitFor } from '@testing-library/react';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { useCalendarEvents, useUpcomingEvents } from '@/lib/hooks/useEvents';
 import { eventService } from '@/lib/services/eventService';
-import { eventKeys } from '@/lib/hooks/queryKeys';
 
 let mockTimezone = 'Europe/Istanbul';
-
-vi.mock('@/lib/hooks/useAuthQueryEnabled', () => ({
-  useAuthQueryEnabled: () => ({ enabled: true }),
-}));
 
 vi.mock('@/lib/hooks/useUserTimezone', () => ({
   useUserTimezone: () => mockTimezone,
@@ -51,18 +44,8 @@ vi.mock('@/lib/services/eventService', () => ({
 }));
 
 describe('useUpcomingEvents timezone cache behavior', () => {
-  it('scopes cache by timezone and invalidates legacy key on timezone change', async () => {
-    const queryClient = new QueryClient({
-      defaultOptions: { queries: { retry: false } },
-    });
-
-    const invalidateSpy = vi.spyOn(queryClient, 'invalidateQueries');
-
-    const wrapper = ({ children }: { children: React.ReactNode }) => (
-      <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
-    );
-
-    const { result, rerender } = renderHook(() => useUpcomingEvents(), { wrapper });
+  it('refetches upcoming events when timezone changes', async () => {
+    const { result, rerender } = renderHook(() => useUpcomingEvents());
 
     await waitFor(() => expect(result.current.isSuccess).toBe(true));
     expect(eventService.getUpcomingEvents).toHaveBeenCalledWith('Europe/Istanbul');
@@ -73,47 +56,22 @@ describe('useUpcomingEvents timezone cache behavior', () => {
 
     await waitFor(() => {
       expect(eventService.getUpcomingEvents).toHaveBeenCalledWith('America/New_York');
+      expect(result.current.data?.[0]?._id).toBe('America/New_York-event');
     });
-
-    const nyData = queryClient.getQueryData(eventKeys.upcomingScoped('America/New_York')) as
-      | Array<{ _id: string }>
-      | undefined;
-    expect(nyData?.[0]?._id).toBe('America/New_York-event');
-
-    expect(invalidateSpy).toHaveBeenCalledWith({ queryKey: eventKeys.upcoming() });
 
     mockTimezone = 'Europe/Istanbul';
   });
 
-  it('invalidates legacy calendar key while using timezone-scoped calendar key', async () => {
-    const queryClient = new QueryClient({
-      defaultOptions: { queries: { retry: false } },
-    });
-
-    const invalidateSpy = vi.spyOn(queryClient, 'invalidateQueries');
-
-    const wrapper = ({ children }: { children: React.ReactNode }) => (
-      <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
-    );
-
+  it('refetches calendar events with timezone-scoped key inputs', async () => {
     const { result, rerender } = renderHook(
       ({ timezone }) => useCalendarEvents('2026-02-12', { timezone }),
-      { wrapper, initialProps: { timezone: 'Europe/Istanbul' } }
+      { initialProps: { timezone: 'Europe/Istanbul' } }
     );
 
     await waitFor(() => expect(result.current.isSuccess).toBe(true));
 
     expect(eventService.getEventsByDate).toHaveBeenCalledWith('2026-02-12', 'Europe/Istanbul');
-    expect(invalidateSpy).toHaveBeenCalledWith(
-      expect.objectContaining({ predicate: expect.any(Function) })
-    );
-
-    const invalidateArg = invalidateSpy.mock.calls[0]?.[0] as
-      | { predicate?: (query: { queryKey: readonly unknown[] }) => boolean }
-      | undefined;
-    expect(invalidateArg?.predicate?.({ queryKey: eventKeys.calendar('2026-02-12') } as any)).toBe(
-      true
-    );
+    expect(result.current.data?.[0]?._id).toBe('Europe/Istanbul-calendar');
 
     rerender({ timezone: 'America/New_York' });
 
@@ -122,12 +80,7 @@ describe('useUpcomingEvents timezone cache behavior', () => {
         '2026-02-12',
         'America/New_York'
       );
+      expect(result.current.data?.[0]?._id).toBe('America/New_York-calendar');
     });
-
-    const nyData = queryClient.getQueryData(
-      eventKeys.calendarScoped('2026-02-12', 'America/New_York')
-    ) as Array<{ _id: string }> | undefined;
-
-    expect(nyData?.[0]?._id).toBe('America/New_York-calendar');
   });
 });

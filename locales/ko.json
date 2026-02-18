@@ -614,7 +614,15 @@
     },
     "selectCurrency": "통화 선택",
     "timezone": "시간대",
-    "selectTimezone": "시간대 선택"
+    "selectTimezone": "시간대 선택",
+    "clearLocalData": "로컬 데이터 지우기",
+    "clearLocalDataDescription": "이 기기에서 모든 애완동물과 기록을 영구적으로 삭제합니다.",
+    "clearLocalDataConfirmTitle": "모든 로컬 데이터를 삭제하시겠습니까?",
+    "clearLocalDataConfirmMessage": "이렇게 하면 이 기기에서 애완동물, 이벤트, 급식 일정, 건강 기록, 비용이 영구적으로 삭제됩니다. 이 작업은 취소할 수 없습니다.",
+    "clearLocalDataConfirmAction": "데이터 지우기",
+    "clearLocalDataSuccessTitle": "데이터가 삭제되었습니다.",
+    "clearLocalDataSuccessMessage": "모든 지역 애완동물 데이터가 이 기기에서 삭제되었습니다.",
+    "clearLocalDataError": "로컬 데이터를 지우지 못했습니다. 다시 시도해 주세요."
   },
   "common": {
     "loading": "불러오는 중...",
@@ -1317,14 +1325,14 @@
     "screen3": {
       "title": "준비가 되었습니다!",
       "description": "반려동물의 케어 및 건강 데이터를 관리할 모든 준비가 끝났습니다.",
-      "trialNotice": "지금 첫 반려동물을 추가하고, 더 필요해질 때 Pro를 열어보세요.",
+      "trialNotice": "지금 첫 반려동물을 추가하세요. 나중에 언제든 더 추가할 수 있어요.",
       "addPet": "반려동물 추가",
       "skipPet": "나중에 하기",
       "addYourFirstPet": "첫 반려동물 추가"
     },
     "language": {
       "title": "언어, 통화, 시간대를 선택하세요",
-      "description": "선택한 항목은 다음 화면에서 사용되며 로그인 후 동기화됩니다. 모든 항목은 언제든지 설정에서 변경할 수 있습니다.",
+      "description": "다음 화면에서 선택한 항목을 사용합니다. 설정에서 언제든지 변경할 수 있어요.",
       "continue": "계속"
     }
   },
@@ -1508,6 +1516,14 @@
     "autoRenews": "{{date}}에 자동 갱신",
     "cancelled": "취소됨 - {{date}}에 만료",
     "paywallError": "구독 옵션을 불러올 수 없습니다",
+    "loadingPlans": "요금제 불러오는 중...",
+    "planLifetime": "평생",
+    "oneTimePayment": "일회성 결제",
+    "bestValue": "최고의 가치",
+    "planYearly": "연간",
+    "planYearlyDescription": "연간 결제",
+    "planMonthly": "월간",
+    "planMonthlyDescription": "월간 결제",
     "trialAlreadySubscribed": "이미 활성 구독이 있습니다",
     "trialAlreadyUsed": "이 기기는 이미 무료 체험을 사용했습니다",
     "trialStartFailed": "무료 체험을 시작할 수 없습니다. 다시 시도하세요.",
@@ -1528,13 +1544,19 @@
     "features": {
       "title": "Pro 기능",
       "unlimited": "무제한 반려동물",
-      "unlimitedDesc": "모든 반려동물 프로필, 기록, 메모를 한곳에 보관",
+      "unlimitedDesc": "두 번째 애완동물을 잠금 해제하고 모든 프로필, 기록, 루틴을 함께 유지하세요.",
       "feedingSchedules": "무제한 급여 일정",
       "feedingSchedulesDesc": "일정 제한 없이 각 반려동물에 맞는 안정적인 루틴 구성",
-      "budgetTracking": "예산 추적 및 알림",
-      "budgetTrackingDesc": "월간 예산 알림으로 비용 증가를 조기에 확인",
-      "export": "데이터 내보내기",
-      "exportDesc": "가족이나 수의사와 명확한 리포트를 공유",
+      "budgetTracking": "고급 예산 통찰력",
+      "budgetTrackingDesc": "Pro 통찰력과 스마트 알림을 통해 과다 지출 추세를 조기에 감지하세요.",
+      "export": "수의사가 사용할 수 있는 보고서 및 내보내기",
+      "exportDesc": "CSV, PDF 및 수의사 요약을 내보내서 몇 초 안에 깔끔하게 공유하세요.",
+      "recurrence": "반복 진료 자동화",
+      "recurrenceDesc": "한 번 설정하면 고급 반복 루틴을 통해 자동으로 반복됩니다.",
+      "smartReminders": "스마트 알림 사전 설정",
+      "smartRemindersDesc": "더욱 풍부한 알림 주기를 사용하여 중요한 관리 작업을 놓치지 마세요.",
+      "urgentMode": "긴급 진료 초점",
+      "urgentModeDesc": "긴급한 건강 업무를 즉시 확인하고 가장 중요한 일의 우선순위를 정하세요.",
       "priority": "우선 지원",
       "priorityDesc": "긴급할 때 더 빠른 도움 받기",
       "petManagement": "반려동물 관리",
@@ -1546,7 +1568,7 @@
     },
     "paywall": {
       "title": "Petopia Petcare Pro 잠금 해제",
-      "subtitle": "모든 반려동물의 돌봄, 알림, 지출을 놓치지 않고 관리"
+      "subtitle": "내보내기, 자동화, 스마트 인사이트를 통해 애완동물 한 마리에서 완전한 관리 시스템으로 확장"
     },
     "success": {
       "title": "구독 성공!",
@@ -1562,10 +1584,21 @@
     "trust": {
       "cancelAnytime": "App Store / Google Play 설정에서 언제든지 취소할 수 있습니다",
       "billedByStore": "결제는 앱 스토어 계정을 통해 안전하게 처리됩니다",
-      "secureCheckout": "앱 안에서 신용카드 정보를 수동으로 입력할 필요가 없습니다"
+      "secureCheckout": "앱 안에서 신용카드 정보를 수동으로 입력할 필요가 없습니다",
+      "cancelAnytimeIos": "App Store 설정에서 언제든지 취소할 수 있습니다",
+      "cancelAnytimeAndroid": "Google Play 설정에서 언제든지 취소할 수 있습니다",
+      "billedByStoreIos": "결제는 앱 스토어 계정을 통해 안전하게 처리됩니다",
+      "billedByStoreAndroid": "결제는 앱 스토어 계정을 통해 안전하게 처리됩니다",
+      "secureCheckoutIos": "앱 안에서 신용카드 정보를 수동으로 입력할 필요가 없습니다",
+      "secureCheckoutAndroid": "앱 안에서 신용카드 정보를 수동으로 입력할 필요가 없습니다"
     },
     "verifyingPurchase": "구매가 접수되었습니다. 구독을 확인하는 중입니다...",
-    "verificationTakingLong": "구매 내역을 확인하는 중입니다. 몇 초 후 자동으로 이용이 활성화됩니다."
+    "verificationTakingLong": "구매 내역을 확인하는 중입니다. 몇 초 후 자동으로 이용이 활성화됩니다.",
+    "noteIos": "결제는 App Store 계정으로 청구됩니다. 구독은 현재 기간 종료 최소 24시간 전에 취소하지 않으면 자동 갱신됩니다. 스토어 계정 설정에서 언제든지 관리 또는 취소할 수 있습니다.",
+    "noteAndroid": "결제는 Google Play 계정으로 청구됩니다. 구독은 현재 기간 종료 최소 24시간 전에 취소하지 않으면 자동 갱신됩니다. 스토어 계정 설정에서 언제든지 관리 또는 취소할 수 있습니다.",
+    "restoreConfirmTitle": "구매를 복원하시겠습니까?",
+    "restoreConfirmMessage": "매장 구매 내역을 확인하고 이 기기에서 활성 Pro 액세스를 복원해 드리겠습니다.",
+    "restoreConfirmAction": "복원하다"
   },
   "downgrade": {
     "title": "반려동물 선택",

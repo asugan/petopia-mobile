@@ -1,17 +1,15 @@
-import React, { useEffect, useMemo, useRef, useState } from "react";
-import { useQueryClient } from "@tanstack/react-query";
+import React, { useEffect, useMemo, useState } from "react";
 import { SubscriptionCard } from "@/components/subscription";
 import { Button, Card, ListItem, Switch, Text } from "@/components/ui";
 import { LargeTitle } from "@/components/LargeTitle";
 import { DateTimePicker } from "@/components/DateTimePicker";
-import { useAuth } from "@/lib/auth";
-import { accountService } from "@/lib/services/accountService";
+import { resetDatabase } from "@/lib/db/init";
 import {
   notificationService,
-  registerPushTokenWithBackend,
-  unregisterPushTokenFromBackend,
+  enableLocalNotifications,
+  disableLocalNotifications,
 } from "@/lib/services/notificationService";
-import { useAuthStore } from "@/stores/authStore";
+import { notifyLocalDataChanged } from "@/lib/hooks/core/useLocalAsync";
 import { useEventReminderStore } from "@/stores/eventReminderStore";
 import { SupportedCurrency, useUserSettingsStore } from "@/stores/userSettingsStore";
 import Constants from 'expo-constants';
@@ -19,8 +17,7 @@ import { Ionicons } from "@expo/vector-icons";
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import { useRouter } from "expo-router";
 import { useTranslation } from "react-i18next";
-import { Alert, Keyboard, KeyboardAvoidingView, Platform, Pressable, ScrollView, StyleSheet, TextInput, View } from "react-native";
-import { Image } from "expo-image";
+import { Alert, AppState, Keyboard, KeyboardAvoidingView, Platform, Pressable, ScrollView, StyleSheet, View } from "react-native";
 import { showToast } from "@/lib/toast/showToast";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { LAYOUT } from "@/constants";
@@ -28,22 +25,30 @@ import { useOnboardingStore } from "@/stores/onboardingStore";
 import LoadingSpinner from "@/components/LoadingSpinner";
 import { LanguageSettings } from "@/components/LanguageSettings";
 import { CurrencySettings } from "@/components/CurrencySettings";
-import { TimezoneSettings } from "@/components/TimezoneSettings";
 import NotificationPermissionPrompt, { NotificationPermissionCard } from "@/components/NotificationPermissionPrompt";
 import { subscriptionStyles } from "@/lib/styles/subscription";
 import { useNotifications } from "@/lib/hooks/useNotifications";
-import { AUTH_ROUTES, ONBOARDING_ROUTES, SETTINGS_ROUTES } from "@/constants/routes";
+import { useSubscription } from "@/lib/hooks/useSubscription";
+import { ONBOARDING_ROUTES, SETTINGS_ROUTES, SUBSCRIPTION_ROUTES } from "@/constants/routes";
 
-type ModalState = "none" | "contact" | "deleteWarning" | "deleteConfirm";
+type ModalState = "none" | "contact";
 
 export default function SettingsScreen() {
   const { t } = useTranslation();
   const router = useRouter();
-  const queryClient = useQueryClient();
-  const { theme, settings, updateSettings, updateBaseCurrency, isLoading: settingsLoading, error } = useUserSettingsStore();
-  const { user, signOut } = useAuth();
-  const { isLoading: authLoading, setLoading } = useAuthStore();
+  const {
+    theme,
+    settings,
+    updateSettings,
+    updateBaseCurrency,
+    initialize,
+    isLoading: settingsLoading,
+    error,
+    setNotificationDisabledBySystemPermission,
+  } = useUserSettingsStore();
   const { resetOnboarding } = useOnboardingStore();
+  const { isProUser } = useSubscription();
+  const [authLoading, setAuthLoading] = useState(false);
   const isDarkMode = settings?.theme === "dark";
   const [notificationPermissionEnabled, setNotificationPermissionEnabled] = useState(false);
   const quietHoursEnabled = settings?.quietHoursEnabled ?? true;
@@ -55,7 +60,7 @@ export default function SettingsScreen() {
       endMinute: 0,
     }
   ), [settings?.quietHours]);
-  const notificationsEnabled = settings?.notificationsEnabled ?? true;
+  const notificationsEnabled = settings?.notificationsEnabled === true;
   const budgetNotificationsEnabled = settings?.budgetNotificationsEnabled ?? true;
   const feedingRemindersEnabled = settings?.feedingRemindersEnabled ?? true;
   const notificationsActive = notificationsEnabled && notificationPermissionEnabled;
@@ -63,39 +68,41 @@ export default function SettingsScreen() {
   const setQuietHours = useEventReminderStore((state) => state.setQuietHours);
   const clearAllReminderState = useEventReminderStore((state) => state.clearAllReminderState);
   const [activeModal, setActiveModal] = useState<ModalState>("none");
-  const [deleteConfirmText, setDeleteConfirmText] = useState("");
-  const [deletingAccount, setDeletingAccount] = useState(false);
+  const [clearingData, setClearingData] = useState(false);
   const [permissionRefreshKey, setPermissionRefreshKey] = useState(0);
-  const hasSyncedPermission = useRef(false);
   const [showPermissionModal, setShowPermissionModal] = useState(false);
 
   // Notifications hook
   const { requestPermission, isLoading: isNotificationLoading } = useNotifications();
 
-  useEffect(() => {
-    const fetchPermissionStatus = async () => {
-      try {
-        const enabled = await notificationService.areNotificationsEnabled();
-        setNotificationPermissionEnabled(enabled);
-
-        // Sync backend with system permission if they differ
-        // Only auto-disable backend if system is disabled (one-time sync)
-        if (!hasSyncedPermission.current && !enabled && settings?.notificationsEnabled === true) {
-          hasSyncedPermission.current = true;
-          void unregisterPushTokenFromBackend();
-          await updateSettings({ notificationsEnabled: false });
-        }
-      } catch (error) {
-        if (__DEV__) {
-          console.warn('[Settings] Failed to fetch permission status:', error);
-        }
+  const syncNotificationPermission = React.useCallback(async () => {
+    try {
+      const enabled = await notificationService.areNotificationsEnabled();
+      setNotificationPermissionEnabled(enabled);
+    } catch (error) {
+      if (__DEV__) {
+        console.warn('[Settings] Failed to fetch permission status:', error);
       }
-    };
-
-    if (settings !== null) {
-      fetchPermissionStatus();
     }
-  }, [settings, updateSettings]);
+  }, []);
+
+  useEffect(() => {
+    if (settings !== null) {
+      void syncNotificationPermission();
+    }
+  }, [settings, syncNotificationPermission]);
+
+  useEffect(() => {
+    const subscription = AppState.addEventListener('change', (nextState) => {
+      if (nextState === 'active' && settings !== null) {
+        void syncNotificationPermission();
+      }
+    });
+
+    return () => {
+      subscription.remove();
+    };
+  }, [settings, syncNotificationPermission]);
 
 
   React.useEffect(() => {
@@ -117,15 +124,16 @@ export default function SettingsScreen() {
         setPermissionRefreshKey((prev) => prev + 1);
 
         if (granted) {
-          // Permission granted, register push token and update backend
-          void registerPushTokenWithBackend();
+          void enableLocalNotifications();
           await updateSettings({ notificationsEnabled: true });
+          setNotificationDisabledBySystemPermission(false);
         } else {
+          setNotificationDisabledBySystemPermission(true);
           // Permission denied - show modal
           setShowPermissionModal(true);
         }
       } else {
-        // If user wants to disable, update backend and cancel existing
+        // If user wants to disable, cancel existing schedules and persist setting
         showToast({
           type: 'info',
           title: t("settings.notifications"),
@@ -133,7 +141,8 @@ export default function SettingsScreen() {
         });
         await notificationService.cancelAllNotifications();
         clearAllReminderState();
-        void unregisterPushTokenFromBackend();
+        setNotificationDisabledBySystemPermission(false);
+        void disableLocalNotifications();
         await updateSettings({ notificationsEnabled: false });
       }
     } catch (error) {
@@ -176,13 +185,13 @@ export default function SettingsScreen() {
         text: t("auth.logout"),
         style: "destructive",
         onPress: async () => {
-          setLoading(true);
+          setAuthLoading(true);
           try {
-            await signOut();
-            router.replace(AUTH_ROUTES.login);
+            resetOnboarding();
+            router.replace(ONBOARDING_ROUTES.step1);
           } catch {
           } finally {
-            setLoading(false);
+            setAuthLoading(false);
           }
         },
       },
@@ -205,51 +214,72 @@ export default function SettingsScreen() {
           text: t("common.confirm"),
           onPress: async () => {
             await updateBaseCurrency(currency);
-            await queryClient.invalidateQueries({ predicate: (query) => query.queryKey[0] === "expenses" });
-            await queryClient.invalidateQueries({ predicate: (query) => query.queryKey[0] === "budget" });
-            await queryClient.invalidateQueries({ predicate: (query) => query.queryKey[0] === "health-records" });
           },
         },
       ]
     );
   };
 
-  const handleDeleteAccount = async () => {
-    setDeletingAccount(true);
+  const performClearLocalData = async () => {
+    if (clearingData) {
+      return;
+    }
+
+    setClearingData(true);
     try {
-      const result = await accountService.deleteAccount(deleteConfirmText);
-      if (result.success) {
-        showToast({
-          type: 'success',
-          title: t("settings.accountDeletedTitle"),
-          message: t("settings.accountDeletedMessage"),
-        });
-        setLoading(true);
-        try {
-          await signOut();
-          router.replace(AUTH_ROUTES.login);
-        } catch {
-        } finally {
-          setLoading(false);
-        }
-      } else {
-        showToast({
-          type: 'error',
-          title: t("common.error"),
-          message: t("settings.accountDeleteError"),
-        });
-      }
+      await notificationService.cancelAllNotifications();
+      await notificationService.cancelEventAndFeedingNotifications();
+
+      resetDatabase();
+      clearAllReminderState();
+      notifyLocalDataChanged();
+
+      setNotificationDisabledBySystemPermission(false);
+      setNotificationPermissionEnabled(false);
+      setPermissionRefreshKey((prev) => prev + 1);
+
+      await initialize();
+
+      showToast({
+        type: "success",
+        title: t("settings.clearLocalDataSuccessTitle", "Data cleared"),
+        message: t(
+          "settings.clearLocalDataSuccessMessage",
+          "All local pet data has been removed from this device."
+        ),
+      });
     } catch {
       showToast({
-        type: 'error',
+        type: "error",
         title: t("common.error"),
-        message: t("settings.accountDeleteError"),
+        message: t("settings.clearLocalDataError", "Failed to clear local data. Please try again."),
       });
     } finally {
-      setDeletingAccount(false);
-      setActiveModal("none");
-      setDeleteConfirmText("");
+      setClearingData(false);
     }
+  };
+
+  const handleClearLocalData = () => {
+    Alert.alert(
+      t("settings.clearLocalDataConfirmTitle", "Clear all local data?"),
+      t(
+        "settings.clearLocalDataConfirmMessage",
+        "This will permanently remove pets, events, feeding schedules, health records, and expenses from this device. This action cannot be undone."
+      ),
+      [
+        {
+          text: t("common.cancel"),
+          style: "cancel",
+        },
+        {
+          text: t("settings.clearLocalDataConfirmAction", "Clear Data"),
+          style: "destructive",
+          onPress: () => {
+            void performClearLocalData();
+          },
+        },
+      ]
+    );
   };
 
   const createTimeDate = (hour: number, minute: number) => {
@@ -295,53 +325,8 @@ export default function SettingsScreen() {
           </View>
         )}
 
-        {/* User Profile */}
-        {user && (
-          <Card
-            style={[
-              styles.sectionCard,
-              { backgroundColor: theme.colors.surface },
-            ]}
-          >
-            <View style={styles.cardContent}>
-              <View style={styles.profileContainer}>
-                <View
-                  style={[
-                    styles.avatarContainer,
-                    { backgroundColor: theme.colors.primaryContainer },
-                  ]}
-                >
-                  {user.image ? (
-                    <Image source={{ uri: user.image }} style={styles.avatar} />
-                  ) : (
-                    <Ionicons
-                      name="person"
-                      size={32}
-                      color={theme.colors.primary}
-                    />
-                  )}
-                </View>
-                <View style={styles.profileInfo}>
-                  <Text
-                    variant="titleMedium"
-                    style={{ color: theme.colors.onSurface }}
-                  >
-                    {user.name || t("settings.userPlaceholder")}
-                  </Text>
-                  <Text
-                    variant="bodySmall"
-                    style={{ color: theme.colors.onSurfaceVariant }}
-                  >
-                    {user.email}
-                  </Text>
-                </View>
-              </View>
-            </View>
-          </Card>
-        )}
-
         {/* Subscription Status */}
-        <SubscriptionCard />
+        <SubscriptionCard title={t('events.status')} />
         
         {/* Subscription Note */}
         <Text
@@ -382,10 +367,6 @@ export default function SettingsScreen() {
               >
                 {t("settings.currencyWarning")}
               </Text>
-            </View>
-
-            <View style={styles.timezonePickerContainer}>
-              <TimezoneSettings variant="embedded" />
             </View>
           </View>
         </Card>
@@ -540,42 +521,6 @@ export default function SettingsScreen() {
           </View>
         </Card>
 
-        {/* Data & Privacy */}
-        <Card
-          style={[
-            styles.sectionCard,
-            { backgroundColor: theme.colors.surface },
-          ]}
-        >
-          <View style={styles.cardContent}>
-            <Text
-              variant="titleMedium"
-              style={[styles.sectionTitle, { color: theme.colors.onSurface }]}
-            >
-              {t("settings.dataPrivacy")}
-            </Text>
-            <ListItem
-              title={t("settings.deleteAccount")}
-              description={t("settings.deleteAccountDescription")}
-              left={
-                <MaterialCommunityIcons
-                  name="account-remove"
-                  size={24}
-                  color={theme.colors.error}
-                />
-              }
-              onPress={() => setActiveModal("deleteWarning")}
-              right={
-                <MaterialCommunityIcons
-                  name="chevron-right"
-                  size={24}
-                  color={theme.colors.onSurfaceVariant}
-                />
-              }
-            />
-          </View>
-        </Card>
-
         {/* About */}
         <Card
           style={[
@@ -623,6 +568,46 @@ export default function SettingsScreen() {
           </View>
         </Card>
 
+        {/* Data & Privacy */}
+        <Card
+          style={[
+            styles.sectionCard,
+            { backgroundColor: theme.colors.surface },
+          ]}
+        >
+          <View style={styles.cardContent}>
+            <Text
+              variant="titleMedium"
+              style={[styles.sectionTitle, { color: theme.colors.onSurface }]}
+            >
+              {t("settings.dataPrivacy")}
+            </Text>
+            <ListItem
+              title={t("settings.clearLocalData", "Clear local data")}
+              description={t(
+                "settings.clearLocalDataDescription",
+                "Permanently remove all pets and records from this device"
+              )}
+              left={
+                <MaterialCommunityIcons
+                  name="database-remove"
+                  size={24}
+                  color={theme.colors.error}
+                />
+              }
+              onPress={handleClearLocalData}
+              disabled={clearingData}
+              right={
+                <MaterialCommunityIcons
+                  name="chevron-right"
+                  size={24}
+                  color={theme.colors.onSurfaceVariant}
+                />
+              }
+            />
+          </View>
+        </Card>
+
         {/* Recurrence Management */}
         <Card
           style={[
@@ -647,7 +632,14 @@ export default function SettingsScreen() {
                   color={theme.colors.onSurfaceVariant}
                 />
               }
-              onPress={() => router.push(SETTINGS_ROUTES.recurrence)}
+              onPress={() => {
+                if (!isProUser) {
+                  router.push(`${SUBSCRIPTION_ROUTES.main}?source=settings_recurrence`);
+                  return;
+                }
+
+                router.push(SETTINGS_ROUTES.recurrence);
+              }}
               right={
                 <MaterialCommunityIcons
                   name="chevron-right"
@@ -780,132 +772,21 @@ export default function SettingsScreen() {
         </KeyboardAvoidingView>
       )}
 
-      {/* Delete Account Modal */}
-      {activeModal === "deleteWarning" && (
-        <KeyboardAvoidingView
-          behavior={Platform.OS === "ios" ? "padding" : "height"}
-          style={styles.modalOverlay}
-        >
-          <View style={[styles.modalContent, { backgroundColor: theme.colors.surface }]}>
-            <View style={styles.modalHeader}>
-              <Text variant="titleLarge" style={{ color: theme.colors.error }}>
-                {t("settings.deleteAccount")}
-              </Text>
-              <Pressable onPress={() => { Keyboard.dismiss(); setActiveModal("none"); }}>
-                <Ionicons name="close" size={24} color={theme.colors.onSurfaceVariant} />
-              </Pressable>
-            </View>
-            <View style={styles.modalBody}>
-              <View style={[styles.deleteIconContainer, { backgroundColor: theme.colors.errorContainer }]}>
-                <MaterialCommunityIcons name="alert" size={48} color={theme.colors.error} />
-              </View>
-              <Text variant="bodyLarge" style={[styles.deleteWarningText, { color: theme.colors.onSurface }]}>
-                {t("settings.deleteAccountWarning")}
-              </Text>
-              <Text variant="bodyMedium" style={[styles.deleteSubtext, { color: theme.colors.onSurfaceVariant }]}>
-                {t("settings.deleteAccountWarningDescription")}
-              </Text>
-              <View style={styles.modalButtons}>
-                <Button
-                  mode="outlined"
-                  onPress={() => setActiveModal("none")}
-                  style={styles.modalButton}
-                >
-                  {t("common.cancel")}
-                </Button>
-                <Button
-                  mode="contained"
-                  onPress={() => setActiveModal("deleteConfirm")}
-                  buttonColor={theme.colors.error}
-                  style={styles.modalButton}
-                >
-                  {t("settings.deleteAccount")}
-                </Button>
-              </View>
-            </View>
-          </View>
-        </KeyboardAvoidingView>
-      )}
-
-      {/* Delete Account Confirmation Modal */}
-      {activeModal === "deleteConfirm" && (
-        <KeyboardAvoidingView
-          behavior={Platform.OS === "ios" ? "padding" : "height"}
-          style={styles.modalOverlay}
-        >
-          <View style={[styles.modalContent, { backgroundColor: theme.colors.surface }]}>
-            <View style={styles.modalHeader}>
-              <Text variant="titleLarge" style={{ color: theme.colors.error }}>
-                {t("settings.deleteAccountConfirmTitle", "Confirm Account Deletion")}
-              </Text>
-              <Pressable onPress={() => { Keyboard.dismiss(); setActiveModal("none"); setDeleteConfirmText(""); }}>
-                <Ionicons name="close" size={24} color={theme.colors.onSurfaceVariant} />
-              </Pressable>
-            </View>
-            <View style={styles.modalBody}>
-              <View style={[styles.deleteIconContainer, { backgroundColor: theme.colors.errorContainer }]}>
-                <MaterialCommunityIcons name="alert-octagon" size={48} color={theme.colors.error} />
-              </View>
-              <Text variant="bodyLarge" style={[styles.deleteWarningText, { color: theme.colors.onSurface }]}>
-                {t("settings.deleteAccountFinalWarning", "This action is irreversible")}
-              </Text>
-              <Text variant="bodyMedium" style={[styles.deleteSubtext, { color: theme.colors.onSurfaceVariant }]}>
-                {t("settings.deleteAccountTypeConfirm", "Type DELETE to confirm")}
-              </Text>
-              <View style={styles.confirmInputContainer}>
-                <TextInput
-                  value={deleteConfirmText}
-                  onChangeText={setDeleteConfirmText}
-                  placeholder="DELETE"
-                  placeholderTextColor="#9E9E9E"
-                  style={[
-                    styles.confirmInput,
-                    {
-                      color: theme.colors.onSurface,
-                      borderColor: deleteConfirmText === "DELETE" ? theme.colors.primary : theme.colors.outline,
-                    },
-                  ]}
-                  autoFocus
-                  autoCapitalize="characters"
-                />
-              </View>
-              <View style={styles.modalButtons}>
-                <Button
-                  mode="outlined"
-                  onPress={() => { setActiveModal("none"); setDeleteConfirmText(""); }}
-                  style={styles.modalButton}
-                >
-                  {t("common.cancel")}
-                </Button>
-                <Button
-                  mode="contained"
-                  onPress={handleDeleteAccount}
-                  loading={deletingAccount}
-                  buttonColor={theme.colors.error}
-                  disabled={deleteConfirmText !== "DELETE"}
-                  style={styles.modalButton}
-                >
-                  {t("settings.deleteAccount")}
-                </Button>
-              </View>
-            </View>
-          </View>
-        </KeyboardAvoidingView>
-      )}
-
       <NotificationPermissionPrompt
         visible={showPermissionModal}
         onDismiss={() => setShowPermissionModal(false)}
         onPermissionGranted={async () => {
           setNotificationPermissionEnabled(true);
           setPermissionRefreshKey((prev) => prev + 1);
-          void registerPushTokenWithBackend();
+          void enableLocalNotifications();
           await updateSettings({ notificationsEnabled: true });
+          setNotificationDisabledBySystemPermission(false);
         }}
         onPermissionDenied={async () => {
           setNotificationPermissionEnabled(false);
           setPermissionRefreshKey((prev) => prev + 1);
-          void unregisterPushTokenFromBackend();
+          setNotificationDisabledBySystemPermission(true);
+          void disableLocalNotifications();
           await updateSettings({ notificationsEnabled: false });
         }}
       />
@@ -930,27 +811,6 @@ const styles = StyleSheet.create({
   cardContent: {
     padding: 16,
   },
-  profileContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 16,
-  },
-  avatarContainer: {
-    width: 56,
-    height: 56,
-    borderRadius: 28,
-    justifyContent: "center",
-    alignItems: "center",
-    overflow: "hidden",
-  },
-  avatar: {
-    width: 56,
-    height: 56,
-  },
-  profileInfo: {
-    flex: 1,
-    gap: 4,
-  },
   sectionTitle: {
     marginBottom: 8,
     fontWeight: "600",
@@ -971,9 +831,6 @@ const styles = StyleSheet.create({
   currencyWarning: {
     marginTop: 8,
     lineHeight: 18,
-  },
-  timezonePickerContainer: {
-    marginTop: 16,
   },
   loadingContainer: {
     padding: 20,
@@ -1026,48 +883,5 @@ const styles = StyleSheet.create({
   },
   contactEmail: {
     textAlign: 'center',
-  },
-  deleteIconContainer: {
-    width: 96,
-    height: 96,
-    borderRadius: 48,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginBottom: 16,
-  },
-  deleteWarningText: {
-    textAlign: 'center',
-    marginBottom: 8,
-    fontWeight: '600',
-  },
-  deleteSubtext: {
-    textAlign: 'center',
-    marginBottom: 24,
-    lineHeight: 20,
-  },
-  modalButtons: {
-    flexDirection: 'row',
-    gap: 12,
-    width: '100%',
-  },
-  modalButton: {
-    flex: 1,
-  },
-  confirmInputContainer: {
-    alignSelf: 'center',
-    marginBottom: 16,
-  },
-  confirmInput: {
-    width: 'auto',
-    minWidth: 160,
-    paddingHorizontal: 20,
-    paddingVertical: 14,
-    borderRadius: 12,
-    borderWidth: 2,
-    fontSize: 22,
-    textAlign: 'center',
-    fontWeight: 'bold',
-    letterSpacing: 6,
-    backgroundColor: 'transparent',
   },
 });

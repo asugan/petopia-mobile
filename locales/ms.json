@@ -614,7 +614,15 @@
     },
     "selectCurrency": "Pilih mata wang",
     "timezone": "Zon waktu",
-    "selectTimezone": "Pilih zon waktu"
+    "selectTimezone": "Pilih zon waktu",
+    "clearLocalData": "Kosongkan data tempatan",
+    "clearLocalDataDescription": "Alih keluar semua haiwan peliharaan dan rekod secara kekal daripada peranti ini",
+    "clearLocalDataConfirmTitle": "Kosongkan semua data setempat?",
+    "clearLocalDataConfirmMessage": "Ini akan mengalih keluar haiwan peliharaan, acara, jadual pemakanan, rekod kesihatan dan perbelanjaan secara kekal daripada peranti ini. Tindakan ini tidak boleh dibuat asal.",
+    "clearLocalDataConfirmAction": "Kosongkan Data",
+    "clearLocalDataSuccessTitle": "Data dikosongkan",
+    "clearLocalDataSuccessMessage": "Semua data haiwan peliharaan tempatan telah dialih keluar daripada peranti ini.",
+    "clearLocalDataError": "Gagal mengosongkan data setempat. Sila cuba lagi."
   },
   "common": {
     "loading": "Memuatkan...",
@@ -1317,14 +1325,14 @@
     "screen3": {
       "title": "Anda Sudah Bersedia!",
       "description": "Segala-galanya sedia untuk mengurus data penjagaan dan kesihatan haiwan anda.",
-      "trialNotice": "Tambah haiwan peliharaan pertama anda sekarang, kemudian buka Pro apabila anda perlukan lebih banyak.",
+      "trialNotice": "Tambah haiwan peliharaan pertama anda sekarang. Anda sentiasa boleh menambah lagi kemudian.",
       "addPet": "Tambah Haiwan Anda",
       "skipPet": "Buat kemudian",
       "addYourFirstPet": "Tambah Haiwan Pertama Anda"
     },
     "language": {
       "title": "Pilih bahasa, mata wang dan zon waktu anda",
-      "description": "Kami akan menggunakan pilihan anda pada skrin seterusnya dan menyegerakkannya selepas log masuk. Anda boleh ubah semuanya pada bila-bila masa dalam Tetapan.",
+      "description": "Kami akan menggunakan pilihan anda pada skrin seterusnya. Anda boleh mengubahnya pada bila-bila masa di Tetapan.",
       "continue": "Teruskan"
     }
   },
@@ -1508,6 +1516,14 @@
     "autoRenews": "Diperbaharui secara automatik pada {{date}}",
     "cancelled": "Dibatalkan - tamat {{date}}",
     "paywallError": "Tidak dapat memuatkan pilihan langganan",
+    "loadingPlans": "Memuatkan pelan...",
+    "planLifetime": "Seumur hidup",
+    "oneTimePayment": "Bayaran sekali",
+    "bestValue": "Nilai terbaik",
+    "planYearly": "Tahunan",
+    "planYearlyDescription": "Dicaj setiap tahun",
+    "planMonthly": "Bulanan",
+    "planMonthlyDescription": "Dicaj setiap bulan",
     "trialAlreadySubscribed": "Anda sudah mempunyai langganan aktif",
     "trialAlreadyUsed": "Peranti ini telah menggunakan percubaan percuma",
     "trialStartFailed": "Tidak dapat memulakan percubaan percuma. Sila cuba lagi.",
@@ -1528,13 +1544,19 @@
     "features": {
       "title": "Ciri Pro",
       "unlimited": "Haiwan Tanpa Had",
-      "unlimitedDesc": "Simpan semua profil, rekod dan nota haiwan peliharaan di satu tempat",
+      "unlimitedDesc": "Buka kunci haiwan peliharaan ke-2 dan simpan setiap profil, rekod dan rutin bersama-sama",
       "feedingSchedules": "Jadual Pemakanan Tanpa Had",
       "feedingSchedulesDesc": "Bina rutin yang boleh dipercayai untuk setiap haiwan tanpa had jadual",
-      "budgetTracking": "Penjejakan Bajet & Amaran",
-      "budgetTrackingDesc": "Kesan kenaikan kos awal dengan amaran bajet bulanan",
-      "export": "Eksport Data",
-      "exportDesc": "Kongsi laporan yang jelas dengan keluarga atau doktor haiwan anda",
+      "budgetTracking": "Cerapan Belanjawan Lanjutan",
+      "budgetTrackingDesc": "Kesan lebih awal aliran perbelanjaan berlebihan dengan cerapan Pro dan makluman pintar",
+      "export": "Laporan & Eksport Sedia Vet",
+      "exportDesc": "Eksport CSV, PDF dan ringkasan doktor haiwan untuk dikongsi dengan bersih dalam beberapa saat",
+      "recurrence": "Automasi Penjagaan Berulang",
+      "recurrenceDesc": "Tetapkan sekali, ulang secara automatik dengan rutin berulang lanjutan",
+      "smartReminders": "Pratetap Peringatan Pintar",
+      "smartRemindersDesc": "Gunakan irama peringatan yang lebih kaya supaya tugas penjagaan penting tidak pernah terlepas",
+      "urgentMode": "Fokus Penjagaan Segera",
+      "urgentModeDesc": "Lihat tugas kesihatan yang mendesak serta-merta dan utamakan perkara yang paling penting",
       "priority": "Sokongan Utama",
       "priorityDesc": "Dapatkan bantuan lebih pantas apabila mendesak",
       "petManagement": "Pengurusan Haiwan",
@@ -1546,7 +1568,7 @@
     },
     "paywall": {
       "title": "Buka Petopia Petcare Pro",
-      "subtitle": "Kekal memantau penjagaan, peringatan dan perbelanjaan setiap haiwan peliharaan"
+      "subtitle": "Skala daripada satu haiwan peliharaan kepada sistem penjagaan lengkap dengan eksport, automasi dan cerapan pintar"
     },
     "success": {
       "title": "Langganan Berjaya!",
@@ -1562,10 +1584,21 @@
     "trust": {
       "cancelAnytime": "Batalkan pada bila-bila masa melalui tetapan App Store / Google Play",
       "billedByStore": "Pengebilan diproses dengan selamat melalui akaun gedung aplikasi anda",
-      "secureCheckout": "Tiada kemasukan manual kad kredit diperlukan dalam aplikasi"
+      "secureCheckout": "Tiada kemasukan manual kad kredit diperlukan dalam aplikasi",
+      "cancelAnytimeIos": "Batalkan pada bila-bila masa melalui tetapan App Store",
+      "cancelAnytimeAndroid": "Batalkan pada bila-bila masa melalui tetapan Google Play",
+      "billedByStoreIos": "Pengebilan diproses dengan selamat melalui akaun gedung aplikasi anda",
+      "billedByStoreAndroid": "Pengebilan diproses dengan selamat melalui akaun gedung aplikasi anda",
+      "secureCheckoutIos": "Tiada kemasukan manual kad kredit diperlukan dalam aplikasi",
+      "secureCheckoutAndroid": "Tiada kemasukan manual kad kredit diperlukan dalam aplikasi"
     },
     "verifyingPurchase": "Pembelian diterima. Sedang mengesahkan langganan anda...",
-    "verificationTakingLong": "Pembelian anda sedang disahkan. Akses akan dibuka secara automatik dalam beberapa saat."
+    "verificationTakingLong": "Pembelian anda sedang disahkan. Akses akan dibuka secara automatik dalam beberapa saat.",
+    "noteIos": "Pembayaran dicaj melalui akaun App Store anda. Langganan akan diperbaharui secara automatik melainkan dibatalkan sekurang-kurangnya 24 jam sebelum tamat tempoh semasa. Anda boleh mengurus atau membatalkan pada bila-bila masa daripada tetapan akaun kedai anda.",
+    "noteAndroid": "Pembayaran dicaj melalui akaun Google Play anda. Langganan akan diperbaharui secara automatik melainkan dibatalkan sekurang-kurangnya 24 jam sebelum tamat tempoh semasa. Anda boleh mengurus atau membatalkan pada bila-bila masa daripada tetapan akaun kedai anda.",
+    "restoreConfirmTitle": "Pulihkan pembelian?",
+    "restoreConfirmMessage": "Kami akan menyemak pembelian kedai anda dan memulihkan akses Pro aktif pada peranti ini.",
+    "restoreConfirmAction": "Pulihkan"
   },
   "downgrade": {
     "title": "Pilih Haiwan Anda",

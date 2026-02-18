@@ -1,64 +1,118 @@
 import * as FileSystem from 'expo-file-system/legacy';
+import * as Print from 'expo-print';
 import * as Sharing from 'expo-sharing';
-import { Buffer } from 'buffer';
-
-import { api, ApiError, ApiResponse, download } from '@/lib/api/client';
-import { ENV } from '@/lib/config/env';
+import type { ApiResponse } from '@/lib/contracts/api';
+import { expenseRepository } from '@/lib/repositories/expenseRepository';
 import type {
-  Expense,
   CreateExpenseInput,
-  UpdateExpenseInput,
+  Expense,
   ExpenseStats,
   MonthlyExpense,
-  YearlyExpense
+  UpdateExpenseInput,
+  YearlyExpense,
 } from '@/lib/types';
-import { normalizeToISOString } from '@/lib/utils/dateConversion';
 
-/**
- * Date utility functions for safe date handling
- */
-function convertDateToISOString(dateValue: Date | string | null | undefined): string | undefined {
-  if (!dateValue) {
-    return undefined;
+const escapeCsv = (value: string): string => {
+  if (value.includes(',') || value.includes('"') || value.includes('\n')) {
+    return `"${value.replace(/"/g, '""')}"`;
   }
-  return normalizeToISOString(dateValue);
-}
 
-/**
- * Expense Service - Manages all expense API operations
- */
+  return value;
+};
+
+const toCurrency = (amount: number, currency: string): string => {
+  try {
+    return new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency,
+      maximumFractionDigits: 2,
+    }).format(amount);
+  } catch {
+    return `${amount.toFixed(2)} ${currency}`;
+  }
+};
+
+const buildExpenseRows = (expenses: Expense[]): string => {
+  return expenses
+    .map((expense) => {
+      const cols = [
+        expense._id,
+        expense.petId,
+        expense.category,
+        String(expense.amount),
+        expense.currency,
+        expense.paymentMethod ?? '',
+        String(expense.date),
+      ];
+
+      return cols.map((value) => escapeCsv(String(value))).join(',');
+    })
+    .join('\n');
+};
+
+const buildReportHtml = (title: string, expenses: Expense[]): string => {
+  const rowsHtml = expenses
+    .map(
+      (expense) => `
+      <tr>
+        <td>${expense.petId}</td>
+        <td>${expense.category}</td>
+        <td>${toCurrency(expense.amount, expense.currency)}</td>
+        <td>${new Date(String(expense.date)).toLocaleDateString()}</td>
+      </tr>
+    `,
+    )
+    .join('');
+
+  const total = expenses.reduce((sum, item) => sum + item.amount, 0);
+
+  return `
+    <html>
+      <head>
+        <meta charset="utf-8" />
+        <style>
+          body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; padding: 24px; }
+          h1 { margin: 0 0 8px; }
+          p { margin: 0 0 16px; color: #555; }
+          table { width: 100%; border-collapse: collapse; }
+          th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+          th { background: #f5f5f5; }
+          .total { margin-top: 16px; font-weight: 700; }
+        </style>
+      </head>
+      <body>
+        <h1>${title}</h1>
+        <p>${new Date().toLocaleString()}</p>
+        <table>
+          <thead>
+            <tr>
+              <th>Pet</th>
+              <th>Category</th>
+              <th>Amount</th>
+              <th>Date</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${rowsHtml}
+          </tbody>
+        </table>
+        <div class="total">Total: ${total.toFixed(2)}</div>
+      </body>
+    </html>
+  `;
+};
+
 export class ExpenseService {
-  /**
-   * Create a new expense
-   */
   async createExpense(data: CreateExpenseInput): Promise<ApiResponse<Expense>> {
     try {
-      const cleanedData = {
-        ...data,
-        date: convertDateToISOString(data.date),
-        paymentMethod: data.paymentMethod || undefined
-      };
-      if (!cleanedData.currency) {
-        delete cleanedData.currency;
-      }
-
-      const response = await api.post<Expense>('/api/expenses', cleanedData);
+      const expense = expenseRepository.createExpense(data);
 
       return {
         success: true,
-        data: response.data!,
-        message: 'serviceResponse.expense.createSuccess'
+        data: expense,
+        message: 'serviceResponse.expense.createSuccess',
       };
-    } catch (error) {
-      if (error instanceof ApiError) {
-      return {
-        success: false,
-        error: {
-          code: 'CREATE_ERROR',
-          message: 'serviceResponse.expense.createError',
-        },
-      };
-      }
+    } catch {
       return {
         success: false,
         error: {
@@ -69,9 +123,6 @@ export class ExpenseService {
     }
   }
 
-  /**
-   * Get expenses for a specific pet
-   */
   async getExpensesByPetId(
     petId: string,
     params?: {
@@ -84,44 +135,16 @@ export class ExpenseService {
       maxAmount?: number;
       currency?: string;
       paymentMethod?: string;
-    }
+    },
   ): Promise<ApiResponse<{ expenses: Expense[]; total: number }>> {
     try {
-      const queryParams = new URLSearchParams();
-      if (params?.page) queryParams.append('page', params.page.toString());
-      if (params?.limit) queryParams.append('limit', params.limit.toString());
-      if (params?.category) queryParams.append('category', params.category);
-      if (params?.startDate) queryParams.append('startDate', params.startDate);
-      if (params?.endDate) queryParams.append('endDate', params.endDate);
-      if (params?.minAmount) queryParams.append('minAmount', params.minAmount.toString());
-      if (params?.maxAmount) queryParams.append('maxAmount', params.maxAmount.toString());
-      if (params?.currency) queryParams.append('currency', params.currency);
-      if (params?.paymentMethod) queryParams.append('paymentMethod', params.paymentMethod);
-
-      const url = `/api/pets/${petId}/expenses${queryParams.toString() ? `?${queryParams.toString()}` : ''}`;
-      const response = await api.get<Expense[]>(url);
-
-      // Backend response includes data and meta
-      const expenses = response.data || [];
-      const meta = response.meta || { total: expenses.length };
+      const result = expenseRepository.getExpensesByPetId(petId, params);
 
       return {
         success: true,
-        data: {
-          expenses,
-          total: meta.total ?? expenses.length
-        }
+        data: result,
       };
-    } catch (error) {
-      if (error instanceof ApiError) {
-        return {
-          success: false,
-          error: {
-            code: error.code || 'FETCH_ERROR',
-            message: error.message,
-          },
-        };
-      }
+    } catch {
       return {
         success: false,
         error: {
@@ -132,36 +155,25 @@ export class ExpenseService {
     }
   }
 
-  /**
-   * Get a single expense by ID
-   */
   async getExpenseById(id: string): Promise<ApiResponse<Expense>> {
     try {
-      const response = await api.get<Expense>(`/api/expenses/${id}`);
+      const expense = expenseRepository.getExpenseById(id);
 
-      return {
-        success: true,
-        data: response.data!
-      };
-    } catch (error) {
-      if (error instanceof ApiError) {
-        if (error.status === 404) {
-          return {
-            success: false,
-            error: {
-              code: 'NOT_FOUND',
-              message: 'serviceResponse.expense.notFound',
-            },
-          };
-        }
+      if (!expense) {
         return {
           success: false,
           error: {
-            code: error.code || 'FETCH_ERROR',
-            message: error.message,
+            code: 'NOT_FOUND',
+            message: 'serviceResponse.expense.notFound',
           },
         };
       }
+
+      return {
+        success: true,
+        data: expense,
+      };
+    } catch {
       return {
         success: false,
         error: {
@@ -172,43 +184,26 @@ export class ExpenseService {
     }
   }
 
-  /**
-   * Update an expense
-   */
   async updateExpense(id: string, data: UpdateExpenseInput): Promise<ApiResponse<Expense>> {
     try {
-      const { date, ...rest } = data;
-      const cleanedData: UpdateExpenseInput = {
-        ...rest,
-        ...(date ? { date: convertDateToISOString(date) } : {}),
-      };
+      const expense = expenseRepository.updateExpense(id, data);
 
-      const response = await api.put<Expense>(`/api/expenses/${id}`, cleanedData);
-
-      return {
-        success: true,
-        data: response.data!,
-        message: 'serviceResponse.expense.updateSuccess'
-      };
-    } catch (error) {
-      if (error instanceof ApiError) {
-        if (error.status === 404) {
-          return {
-            success: false,
-            error: {
-              code: 'NOT_FOUND',
-              message: 'serviceResponse.expense.notFoundUpdate',
-            },
-          };
-        }
+      if (!expense) {
         return {
           success: false,
           error: {
-            code: error.code || 'UPDATE_ERROR',
-            message: error.message,
+            code: 'NOT_FOUND',
+            message: 'serviceResponse.expense.notFoundUpdate',
           },
         };
       }
+
+      return {
+        success: true,
+        data: expense,
+        message: 'serviceResponse.expense.updateSuccess',
+      };
+    } catch {
       return {
         success: false,
         error: {
@@ -219,36 +214,25 @@ export class ExpenseService {
     }
   }
 
-  /**
-   * Delete an expense
-   */
   async deleteExpense(id: string): Promise<ApiResponse<void>> {
     try {
-      await api.delete(`/api/expenses/${id}`);
+      const deleted = expenseRepository.deleteExpense(id);
 
-      return {
-        success: true,
-        message: 'serviceResponse.expense.deleteSuccess'
-      };
-    } catch (error) {
-      if (error instanceof ApiError) {
-        if (error.status === 404) {
-          return {
-            success: false,
-            error: {
-              code: 'NOT_FOUND',
-              message: 'serviceResponse.expense.notFoundDelete',
-            },
-          };
-        }
+      if (!deleted) {
         return {
           success: false,
           error: {
-            code: error.code || 'DELETE_ERROR',
-            message: error.message,
+            code: 'NOT_FOUND',
+            message: 'serviceResponse.expense.notFoundDelete',
           },
         };
       }
+
+      return {
+        success: true,
+        message: 'serviceResponse.expense.deleteSuccess',
+      };
+    } catch {
       return {
         success: false,
         error: {
@@ -259,9 +243,6 @@ export class ExpenseService {
     }
   }
 
-  /**
-   * Get expense statistics
-   */
   async getExpenseStats(params?: {
     petId?: string;
     startDate?: string;
@@ -269,29 +250,13 @@ export class ExpenseService {
     category?: string;
   }): Promise<ApiResponse<ExpenseStats>> {
     try {
-      const queryParams = new URLSearchParams();
-      if (params?.petId) queryParams.append('petId', params.petId);
-      if (params?.startDate) queryParams.append('startDate', params.startDate);
-      if (params?.endDate) queryParams.append('endDate', params.endDate);
-      if (params?.category) queryParams.append('category', params.category);
-
-      const url = `/api/expenses/stats${queryParams.toString() ? `?${queryParams.toString()}` : ''}`;
-      const response = await api.get<ExpenseStats>(url);
+      const stats = expenseRepository.getExpenseStats(params);
 
       return {
         success: true,
-        data: response.data!
+        data: stats,
       };
-    } catch (error) {
-      if (error instanceof ApiError) {
-        return {
-          success: false,
-          error: {
-            code: error.code || 'FETCH_STATS_ERROR',
-            message: error.message,
-          },
-        };
-      }
+    } catch {
       return {
         success: false,
         error: {
@@ -302,37 +267,19 @@ export class ExpenseService {
     }
   }
 
-  /**
-   * Get monthly expenses
-   */
   async getMonthlyExpenses(params?: {
     petId?: string;
     year?: number;
     month?: number;
   }): Promise<ApiResponse<MonthlyExpense[]>> {
     try {
-      const queryParams = new URLSearchParams();
-      if (params?.petId) queryParams.append('petId', params.petId);
-      if (params?.year) queryParams.append('year', params.year.toString());
-      if (params?.month !== undefined) queryParams.append('month', params.month.toString());
-
-      const url = `/api/expenses/monthly${queryParams.toString() ? `?${queryParams.toString()}` : ''}`;
-      const response = await api.get<MonthlyExpense[]>(url);
+      const expenses = expenseRepository.getMonthlyExpenses(params);
 
       return {
         success: true,
-        data: response.data || []
+        data: expenses,
       };
-    } catch (error) {
-      if (error instanceof ApiError) {
-        return {
-          success: false,
-          error: {
-            code: error.code || 'FETCH_MONTHLY_ERROR',
-            message: error.message,
-          },
-        };
-      }
+    } catch {
       return {
         success: false,
         error: {
@@ -343,35 +290,18 @@ export class ExpenseService {
     }
   }
 
-  /**
-   * Get yearly expenses
-   */
   async getYearlyExpenses(params?: {
     petId?: string;
     year?: number;
   }): Promise<ApiResponse<YearlyExpense[]>> {
     try {
-      const queryParams = new URLSearchParams();
-      if (params?.petId) queryParams.append('petId', params.petId);
-      if (params?.year) queryParams.append('year', params.year.toString());
-
-      const url = `/api/expenses/yearly${queryParams.toString() ? `?${queryParams.toString()}` : ''}`;
-      const response = await api.get<YearlyExpense[]>(url);
+      const expenses = expenseRepository.getYearlyExpenses(params);
 
       return {
         success: true,
-        data: response.data || []
+        data: expenses,
       };
-    } catch (error) {
-      if (error instanceof ApiError) {
-        return {
-          success: false,
-          error: {
-            code: error.code || 'FETCH_YEARLY_ERROR',
-            message: error.message,
-          },
-        };
-      }
+    } catch {
       return {
         success: false,
         error: {
@@ -382,34 +312,18 @@ export class ExpenseService {
     }
   }
 
-  /**
-   * Get expenses by category
-   */
   async getExpensesByCategory(
     category: string,
-    petId?: string
+    petId?: string,
   ): Promise<ApiResponse<Expense[]>> {
     try {
-      const queryParams = new URLSearchParams();
-      if (petId) queryParams.append('petId', petId);
-
-      const url = `/api/expenses/by-category/${category}${queryParams.toString() ? `?${queryParams.toString()}` : ''}`;
-      const response = await api.get<Expense[]>(url);
+      const expenses = expenseRepository.getExpensesByCategory(category, petId);
 
       return {
         success: true,
-        data: response.data || []
+        data: expenses,
       };
-    } catch (error) {
-      if (error instanceof ApiError) {
-        return {
-          success: false,
-          error: {
-            code: error.code || 'FETCH_BY_CATEGORY_ERROR',
-            message: error.message,
-          },
-        };
-      }
+    } catch {
       return {
         success: false,
         error: {
@@ -420,37 +334,19 @@ export class ExpenseService {
     }
   }
 
-  /**
-   * Get expenses by date range
-   */
   async getExpensesByDateRange(params: {
     petId?: string;
     startDate: string;
     endDate: string;
   }): Promise<ApiResponse<Expense[]>> {
     try {
-      const queryParams = new URLSearchParams();
-      if (params.petId) queryParams.append('petId', params.petId);
-      queryParams.append('startDate', params.startDate);
-      queryParams.append('endDate', params.endDate);
-
-      const url = `/api/expenses/by-date?${queryParams.toString()}`;
-      const response = await api.get<Expense[]>(url);
+      const expenses = expenseRepository.getExpensesByDateRange(params);
 
       return {
         success: true,
-        data: response.data || []
+        data: expenses,
       };
-    } catch (error) {
-      if (error instanceof ApiError) {
-        return {
-          success: false,
-          error: {
-            code: error.code || 'FETCH_BY_DATE_RANGE_ERROR',
-            message: error.message,
-          },
-        };
-      }
+    } catch {
       return {
         success: false,
         error: {
@@ -461,37 +357,39 @@ export class ExpenseService {
     }
   }
 
-  /**
-   * Export expenses as CSV
-   */
   async exportExpensesCSV(params?: {
     petId?: string;
     startDate?: string;
     endDate?: string;
   }): Promise<ApiResponse<string>> {
     try {
-      const queryParams = new URLSearchParams();
-      if (params?.petId) queryParams.append('petId', params.petId);
-      if (params?.startDate) queryParams.append('startDate', params.startDate);
-      if (params?.endDate) queryParams.append('endDate', params.endDate);
+      const expenses = params?.petId
+        ? expenseRepository.getExpensesByPetId(params.petId, {
+          startDate: params.startDate,
+          endDate: params.endDate,
+        }).expenses
+        : expenseRepository.getExpenses({
+          startDate: params?.startDate,
+          endDate: params?.endDate,
+        });
 
-      const url = `${ENV.ENDPOINTS.EXPENSES_EXPORT_CSV}${queryParams.toString() ? `?${queryParams.toString()}` : ''}`;
-      const response = await api.get<string>(url);
+      const header = 'id,petId,category,amount,currency,paymentMethod,date';
+      const body = buildExpenseRows(expenses);
+      const csv = `${header}\n${body}`;
+
+      const cacheDir = FileSystem.cacheDirectory ?? FileSystem.documentDirectory;
+      if (cacheDir) {
+        const uri = `${cacheDir}expenses-report.csv`;
+        await FileSystem.writeAsStringAsync(uri, csv, {
+          encoding: FileSystem.EncodingType.UTF8,
+        });
+      }
 
       return {
         success: true,
-        data: response.data!
+        data: csv,
       };
-    } catch (error) {
-      if (error instanceof ApiError) {
-        return {
-          success: false,
-          error: {
-            code: error.code || 'EXPORT_CSV_ERROR',
-            message: error.message,
-          },
-        };
-      }
+    } catch {
       return {
         success: false,
         error: {
@@ -502,47 +400,31 @@ export class ExpenseService {
     }
   }
 
-  /**
-   * Export expenses as PDF (general report)
-   */
   async exportExpensesPDF(params?: {
     petId?: string;
     startDate?: string;
     endDate?: string;
   }): Promise<ApiResponse<{ uri: string }>> {
     try {
-      const response = await download(ENV.ENDPOINTS.EXPENSES_EXPORT_PDF, params);
-      const base64 = Buffer.from(response.data).toString('base64');
-      const cacheDir = FileSystem.cacheDirectory ?? FileSystem.documentDirectory;
-      if (!cacheDir) {
-        return {
-          success: false,
-          error: {
-            code: 'FILE_SYSTEM_ERROR',
-            message: 'serviceResponse.expense.fileSystemError',
-          },
-        };
-      }
-      const uri = `${cacheDir}expenses-report.pdf`;
-      await FileSystem.writeAsStringAsync(uri, base64, {
-        encoding: FileSystem.EncodingType.Base64,
-      });
+      const expenses = params?.petId
+        ? expenseRepository.getExpensesByPetId(params.petId, {
+          startDate: params.startDate,
+          endDate: params.endDate,
+        }).expenses
+        : expenseRepository.getExpenses({
+          startDate: params?.startDate,
+          endDate: params?.endDate,
+        });
+
+      const html = buildReportHtml('Expense Report', expenses);
+      const file = await Print.printToFileAsync({ html });
 
       return {
         success: true,
-        data: { uri },
+        data: { uri: file.uri },
         message: 'serviceResponse.expense.exportPDFSuccess',
       };
-    } catch (error) {
-      if (error instanceof ApiError) {
-        return { 
-          success: false, 
-          error: {
-            code: error.code || 'EXPORT_PDF_ERROR',
-            message: error.message,
-          },
-        };
-      }
+    } catch {
       return {
         success: false,
         error: {
@@ -553,43 +435,19 @@ export class ExpenseService {
     }
   }
 
-  /**
-   * Export vet summary PDF for a specific pet
-   */
   async exportVetSummaryPDF(petId: string): Promise<ApiResponse<{ uri: string }>> {
     try {
-      const response = await download(ENV.ENDPOINTS.VET_SUMMARY_PDF(petId));
-      const base64 = Buffer.from(response.data).toString('base64');
-      const cacheDir = FileSystem.cacheDirectory ?? FileSystem.documentDirectory;
-      if (!cacheDir) {
-        return {
-          success: false,
-          error: {
-            code: 'FILE_SYSTEM_ERROR',
-            message: 'serviceResponse.expense.fileSystemError',
-          },
-        };
-      }
-      const uri = `${cacheDir}vet-summary-${petId}.pdf`;
-      await FileSystem.writeAsStringAsync(uri, base64, {
-        encoding: FileSystem.EncodingType.Base64,
-      });
+      const expenses = expenseRepository.getExpensesByPetId(petId).expenses;
+      const petName = expenseRepository.getPetNameById(petId);
+      const html = buildReportHtml(`${petName} - Vet Summary`, expenses);
+      const file = await Print.printToFileAsync({ html });
 
       return {
         success: true,
-        data: { uri },
+        data: { uri: file.uri },
         message: 'serviceResponse.expense.exportVetSummaryPDFSuccess',
       };
-    } catch (error) {
-      if (error instanceof ApiError) {
-        return { 
-          success: false, 
-          error: {
-            code: error.code || 'EXPORT_VET_SUMMARY_PDF_ERROR',
-            message: error.message,
-          },
-        };
-      }
+    } catch {
       return {
         success: false,
         error: {
@@ -600,9 +458,6 @@ export class ExpenseService {
     }
   }
 
-  /**
-   * Share a generated PDF if supported on platform
-   */
   async sharePdf(uri: string, dialogTitle: string): Promise<ApiResponse<void>> {
     try {
       const canShare = await Sharing.isAvailableAsync();
@@ -617,7 +472,11 @@ export class ExpenseService {
       }
 
       await Sharing.shareAsync(uri, { dialogTitle });
-      return { success: true, message: 'serviceResponse.expense.sharePDFSuccess' };
+
+      return {
+        success: true,
+        message: 'serviceResponse.expense.sharePDFSuccess',
+      };
     } catch {
       return {
         success: false,
@@ -630,5 +489,4 @@ export class ExpenseService {
   }
 }
 
-// Export a singleton instance
 export const expenseService = new ExpenseService();

@@ -2,12 +2,12 @@
 
 Petopia Petcare is a modern pet management application built with React Native and Expo, designed to help pet owners track their pets' health records, events, and daily activities with a beautiful and intuitive interface.
 
-**🔥 MongoDB Backend Integration**: The app now uses MongoDB as the backend database with ObjectId-based ID format for improved performance and scalability.
+**🔥 Local-First Backendless**: The app runs with on-device SQLite + Drizzle as source of truth (no runtime backend API dependency).
 
 [![Expo Version](https://img.shields.io/badge/Expo-~54.0.20-blue.svg)](https://expo.dev/)
 [![React Native](https://img.shields.io/badge/React%20Native-0.81.5-green.svg)](https://reactnative.dev/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.0-blue.svg)](https://www.typescriptlang.org/)
-[![MongoDB](https://img.shields.io/badge/Database-MongoDB-green.svg)](https://www.mongodb.com/)
+[![SQLite](https://img.shields.io/badge/Database-SQLite-green.svg)](https://www.sqlite.org/)
 
 ## 📱 Features
 
@@ -18,30 +18,29 @@ Petopia Petcare is a modern pet management application built with React Native a
 - 💳 **Expense Tracking** - Monitor and categorize pet-related expenses with multi-currency support
 - 🌍 **Multi-language Support** - English and Turkish languages
 - 🌙 **Dark Mode** - Beautiful light and dark theme support
-- 🔐 **Secure Authentication** - Better Auth integration for secure login
+- 🔓 **Authless Experience** - No login/signup required for core app usage
 - 💳 **Premium Features** - RevenueCat integration for subscription management
 
-## 🗄️ Database Migration
+## 🗄️ Data Architecture
 
-The app has been migrated from SQLite to MongoDB:
-- **ID Format**: Now uses MongoDB ObjectId format (24-character hexadecimal string)
-- **Data Validation**: Enhanced validation with ObjectId format checking
-- **Migration**: Automatic local storage cleanup on first launch after update
-- **Clean Slate**: All existing local data is cleared for fresh start
+The app uses a local-first architecture:
+- **Storage**: SQLite (`expo-sqlite`) with Drizzle ORM
+- **Source of Truth**: On-device database
+- **Network Dependency**: None for core domain CRUD flows
+- **Startup Policy**: Clean-slate compatible (no legacy backend migration)
 
 ## 🧪 Testing the App
 
 ### New User Flow (Recommended)
-Since the app was migrated to MongoDB, users will start with a clean slate:
+The app starts in local-first mode with no account requirement:
 
 1. Install and launch the app
-2. Create a new account
-3. Add your first pet profile
-4. Start adding health records, events, and expenses
-5. All data will be properly stored with ObjectId format
+2. Add your first pet profile
+3. Start adding health records, events, and expenses
+4. Configure notifications/subscription as needed
 
 ### Testing Features
-Test all CRUD operations to ensure proper ObjectId handling:
+Test all CRUD operations to ensure local data flow works correctly:
 
 1. **Pet Management**
    - Create new pets ✅
@@ -64,11 +63,8 @@ Test all CRUD operations to ensure proper ObjectId handling:
    - View analytics ✅
 
 ### Data Consistency
-All IDs are now validated as:
-```regex
-^[0-9a-fA-F]{24}$
-```
-Example valid ID: `507f1f77bcf86cd799439011`
+- Domain data is persisted locally and reused across app sessions.
+- Core CRUD flows are designed to work offline.
 
 ## 🛠 Tech Stack
 
@@ -81,7 +77,7 @@ Example valid ID: `507f1f77bcf86cd799439011`
 ### State Management
 
 - **Zustand** for client state management
-- **TanStack Query** for server state with mobile-optimized caching
+- **Local hooks + repositories** for domain data access (React Query removed)
 
 ### Development & Build
 
@@ -91,7 +87,6 @@ Example valid ID: `507f1f77bcf86cd799439011`
 
 ### Third-party Integrations
 
-- **Better Auth** for authentication
 - **RevenueCat** for subscription management
 - **i18next** for internationalization
 
@@ -100,7 +95,6 @@ Example valid ID: `507f1f77bcf86cd799439011`
 ```
 petopia-petcare/
 ├── app/                    # Expo Router file-based routing
-│   ├── (auth)/            # Authentication screens
 │   ├── (tabs)/            # Main tab navigation
 │   ├── index.tsx          # Landing page
 │   ├── subscription.tsx   # Subscription modal
@@ -111,13 +105,13 @@ petopia-petcare/
 │   ├── subscription/     # Subscription components
 │   └── [feature]/        # Feature-specific components
 ├── lib/                   # Core library code
-│   ├── api/              # API client and endpoints
-│   ├── auth/             # Authentication utilities
+│   ├── db/               # SQLite + Drizzle setup and schema
+│   ├── repositories/     # Local data repositories
 │   ├── hooks/            # Custom React hooks
 │   │   ├── useUserBudget.ts    # Simplified budget management hooks
 │   │   └── ...                  # Other feature hooks
 │   ├── services/         # Business logic services
-│   │   ├── userBudgetService.ts # Simplified budget API service
+│   │   ├── userBudgetService.ts # Simplified local budget service
 │   │   └── ...                  # Other feature services
 │   ├── schemas/          # Zod validation schemas
 │   │   ├── userBudgetSchema.ts  # Budget validation schemas
@@ -219,7 +213,7 @@ npm run test:expo
 ### Navigation
 
 - File-based routing with Expo Router
-- Route groups for authentication (`(auth)`) and main app (`(tabs)`)
+- Route groups for onboarding and main app (`(tabs)`)
 - Modal presentation for subscription screen
 - Deep linking with `petopia-petcare://` scheme
 
@@ -235,11 +229,11 @@ npm run test:expo
 - System-responsive theme switching
 - Zustand store for theme state
 
-### API Integration
+### Local Data Layer
 
-- Axios-based client with interceptors
-- Mobile-optimized TanStack Query configuration
-- Intelligent caching and retry logic for mobile networks
+- SQLite + Drizzle repositories for domain data
+- Service layer wraps business rules and notifications
+- No runtime backend API configuration is required
 
 ### Budget System (New Simplified Architecture)
 
@@ -273,15 +267,11 @@ The Petopia Petcare app features a newly simplified budget management system des
 - **UserBudgetCard**: Detailed budget display with progress tracking
 - **UserBudgetForm**: Intuitive budget setup and editing interface
 
-### API Endpoints
+### Data Layer
 
-```
-GET /api/budget          # Get user's budget
-PUT /api/budget          # Set/update budget
-DELETE /api/budget       # Remove budget
-GET /api/budget/status   # Get spending status with pet breakdown
-GET /api/budget/alerts   # Check budget alerts
-```
+- Budget, pets, events, feeding schedules, expenses, and settings are stored locally on-device.
+- Subscription status is resolved locally via RevenueCat SDK + local trial state.
+- No backend API configuration is required for app runtime.
 
 For detailed technical documentation, see [Budget Simplification Implementation Summary](docs/budget-simplification-implementation-summary.md).
 
@@ -292,12 +282,12 @@ For detailed technical documentation, see [Budget Simplification Implementation 
 Create a `.env` file in the root directory with the following variables:
 
 ```env
-EXPO_PUBLIC_API_URL=https://your-ngrok-url.ngrok-free.app  # For local dev, replace with your actual ngrok URL
 EXPO_PUBLIC_REVENUECAT_API_KEY=your-revenuecat-key
+EXPO_PUBLIC_REVENUECAT_IOS_API_KEY=your-ios-key-optional
+EXPO_PUBLIC_REVENUECAT_ANDROID_API_KEY=your-android-key-optional
+EXPO_PUBLIC_REVENUECAT_ENTITLEMENT_ID=pro
 # Add other environment variables as needed
 ```
-
-**Note**: For local development with ngrok, replace `https://your-ngrok-url.ngrok-free.app` with your actual ngrok tunnel URL (e.g., `https://abc123.ngrok-free.app`). For production, use your actual production API endpoint.
 
 ### Build Configuration
 
@@ -351,7 +341,6 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 - **Expo Team** for the amazing React Native framework
 - **React Navigation** for routing solutions
 - **RevenueCat** for subscription management
-- **Better Auth** for authentication framework
 
 ## 📞 Contact
 

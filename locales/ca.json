@@ -614,7 +614,15 @@
       "indonesian": "Bahasa Indonesia"
     },
     "timezone": "Zona horària",
-    "selectTimezone": "Selecciona la zona horària"
+    "selectTimezone": "Selecciona la zona horària",
+    "clearLocalData": "Esborra les dades locals",
+    "clearLocalDataDescription": "Elimina permanentment totes les mascotes i els registres d'aquest dispositiu",
+    "clearLocalDataConfirmTitle": "Esborrar totes les dades locals?",
+    "clearLocalDataConfirmMessage": "Això eliminarà permanentment les mascotes, els esdeveniments, els horaris d'alimentació, els registres de salut i les despeses d'aquest dispositiu. Aquesta acció no es pot desfer.",
+    "clearLocalDataConfirmAction": "Esborra les dades",
+    "clearLocalDataSuccessTitle": "Dades esborrades",
+    "clearLocalDataSuccessMessage": "Totes les dades locals de les mascotes s'han eliminat d'aquest dispositiu.",
+    "clearLocalDataError": "No s'han pogut esborrar les dades locals. Si us plau, torna-ho a provar."
   },
   "common": {
     "loading": "Carregant...",
@@ -1317,14 +1325,14 @@
     "screen3": {
       "title": "Ja estàs a punt!",
       "description": "Tot està a punt per gestionar les dades de cura i salut de la teva mascota.",
-      "trialNotice": "Afegeix ara la teva primera mascota i desbloqueja Pro quan en necessitis més.",
+      "trialNotice": "Afegeix ara la teva primera mascota. Sempre en pots afegir més més endavant.",
       "addPet": "Afegeix la teva mascota",
       "skipPet": "Fes-ho més tard",
       "addYourFirstPet": "Afegeix la teva primera mascota"
     },
     "language": {
       "title": "Tria idioma, moneda i zona horària",
-      "description": "Farem servir les teves seleccions a les pantalles següents i les sincronitzarem després d’iniciar sessió. Ho pots canviar tot en qualsevol moment a Configuració.",
+      "description": "Farem servir les teves seleccions a les pantalles següents. Les pots canviar en qualsevol moment a Configuració.",
       "continue": "Continua"
     }
   },
@@ -1508,6 +1516,14 @@
     "autoRenews": "Es renova automàticament el {{date}}",
     "cancelled": "Cancel·lat - caduca el {{date}}",
     "paywallError": "No s'han pogut carregar les opcions de subscripció",
+    "loadingPlans": "S'estan carregant els plans...",
+    "planLifetime": "Per a tota la vida",
+    "oneTimePayment": "Pagament unic",
+    "bestValue": "Millor valor",
+    "planYearly": "Anual",
+    "planYearlyDescription": "Facturat anualment",
+    "planMonthly": "Mensual",
+    "planMonthlyDescription": "Facturat mensualment",
     "trialAlreadySubscribed": "Ja tens una subscripció activa",
     "trialAlreadyUsed": "Aquest dispositiu ja ha utilitzat una prova gratuïta",
     "trialStartFailed": "No s'ha pogut iniciar la prova gratuïta. Torna-ho a provar.",
@@ -1528,13 +1544,19 @@
     "features": {
       "title": "Funcions Pro",
       "unlimited": "Mascotes il·limitades",
-      "unlimitedDesc": "Guarda tots els perfils, registres i notes de les teves mascotes en un sol lloc",
+      "unlimitedDesc": "Desbloqueja la segona mascota i manté tots els perfils, registres i rutines junts",
       "feedingSchedules": "Horaris d'alimentació il·limitats",
       "feedingSchedulesDesc": "Crea rutines fiables per a cada mascota sense límits d'horaris",
-      "budgetTracking": "Seguiment del pressupost i alertes",
-      "budgetTrackingDesc": "Detecta l'augment de costos aviat amb alertes mensuals de pressupost",
-      "export": "Exportació de dades",
-      "exportDesc": "Comparteix informes clars amb la família o el veterinari",
+      "budgetTracking": "Estadístiques avançades del pressupost",
+      "budgetTrackingDesc": "Detecteu aviat les tendències de despesa excessiva amb les estadístiques de Pro i les alertes intel·ligents",
+      "export": "Informes preparats per a veterinaris i exportació",
+      "exportDesc": "Exporteu resums CSV, PDF i veterinaris per compartir-los de manera neta en qüestió de segons",
+      "recurrence": "Automatismes d'atenció recurrent",
+      "recurrenceDesc": "Estableix una vegada, repeteix automàticament amb rutines recurrents avançades",
+      "smartReminders": "Preestablerts de recordatori intel·ligents",
+      "smartRemindersDesc": "Utilitzeu cadències de recordatoris més riques perquè no es perdin mai les tasques de cura importants",
+      "urgentMode": "Focus d'atenció urgent",
+      "urgentModeDesc": "Consulta les tasques de salut urgents a l'instant i prioritza allò que més importa",
       "priority": "Suport prioritari",
       "priorityDesc": "Obtén ajuda més ràpida quan sigui urgent",
       "petManagement": "Gestió de mascotes",
@@ -1546,7 +1568,7 @@
     },
     "paywall": {
       "title": "Desbloqueja Petopia Petcare Pro",
-      "subtitle": "Controla la cura, els recordatoris i les despeses de cada mascota"
+      "subtitle": "Escala d'una mascota a un sistema de cura complet amb exportacions, automatització i informació intel·ligent"
     },
     "success": {
       "title": "Subscripció realitzada correctament!",
@@ -1562,10 +1584,21 @@
     "trust": {
       "cancelAnytime": "Pots cancel·lar en qualsevol moment des de la configuració de l'App Store / Google Play",
       "billedByStore": "La facturació es gestiona de manera segura a través del teu compte de la botiga",
-      "secureCheckout": "No cal introduir manualment la targeta dins de l'aplicació"
+      "secureCheckout": "No cal introduir manualment la targeta dins de l'aplicació",
+      "cancelAnytimeIos": "Pots cancel·lar en qualsevol moment des de la configuració de l'App Store",
+      "cancelAnytimeAndroid": "Pots cancel·lar en qualsevol moment des de la configuració de l'Google Play",
+      "billedByStoreIos": "La facturació es gestiona de manera segura a través del teu compte de la botiga",
+      "billedByStoreAndroid": "La facturació es gestiona de manera segura a través del teu compte de la botiga",
+      "secureCheckoutIos": "No cal introduir manualment la targeta dins de l'aplicació",
+      "secureCheckoutAndroid": "No cal introduir manualment la targeta dins de l'aplicació"
     },
     "verifyingPurchase": "S'ha rebut la compra. S'esta verificant la teva subscripcio...",
-    "verificationTakingLong": "S'esta verificant la teva compra. L'acces s'activara automaticament en uns segons."
+    "verificationTakingLong": "S'esta verificant la teva compra. L'acces s'activara automaticament en uns segons.",
+    "noteIos": "El pagament es carrega al teu compte d'App Store. Les subscripcions es renoven automàticament tret que es cancel·lin almenys 24 hores abans del final del període actual. Pots gestionar-les o cancel·lar-les en qualsevol moment des de la configuració del compte de la botiga.",
+    "noteAndroid": "El pagament es carrega al teu compte d'Google Play. Les subscripcions es renoven automàticament tret que es cancel·lin almenys 24 hores abans del final del període actual. Pots gestionar-les o cancel·lar-les en qualsevol moment des de la configuració del compte de la botiga.",
+    "restoreConfirmTitle": "Voleu restaurar les compres?",
+    "restoreConfirmMessage": "Comprovarem les compres de la teva botiga i restaurarem l'accés Pro actiu en aquest dispositiu.",
+    "restoreConfirmAction": "Restaurar"
   },
   "downgrade": {
     "title": "Tria la teva mascota",

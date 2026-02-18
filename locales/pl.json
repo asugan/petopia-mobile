@@ -614,7 +614,15 @@
     },
     "selectCurrency": "Wybierz walutę",
     "timezone": "Strefa czasowa",
-    "selectTimezone": "Wybierz strefę czasową"
+    "selectTimezone": "Wybierz strefę czasową",
+    "clearLocalData": "Wyczyść dane lokalne",
+    "clearLocalDataDescription": "Usuń trwale wszystkie zwierzęta i nagrania z tego urządzenia",
+    "clearLocalDataConfirmTitle": "Wyczyścić wszystkie dane lokalne?",
+    "clearLocalDataConfirmMessage": "Spowoduje to trwałe usunięcie z tego urządzenia zwierząt domowych, wydarzeń, harmonogramów karmienia, dokumentacji zdrowotnej i wydatków. Tej akcji nie można cofnąć.",
+    "clearLocalDataConfirmAction": "Wyczyść dane",
+    "clearLocalDataSuccessTitle": "Dane wyczyszczone",
+    "clearLocalDataSuccessMessage": "Wszystkie lokalne dane zwierząt domowych zostały usunięte z tego urządzenia.",
+    "clearLocalDataError": "Nie udało się wyczyścić danych lokalnych. Spróbuj ponownie."
   },
   "common": {
     "loading": "Ładowanie...",
@@ -1317,14 +1325,14 @@
     "screen3": {
       "title": "Jesteś gotowy!",
       "description": "Wszystko jest gotowe do zarządzania opieką i danymi zdrowotnymi pupila.",
-      "trialNotice": "Dodaj teraz pierwszego pupila, a Pro odblokuj, gdy będziesz potrzebować więcej.",
+      "trialNotice": "Dodaj teraz swojego pierwszego pupila. Zawsze możesz dodać więcej później.",
       "addPet": "Dodaj zwierzaka",
       "skipPet": "Zrobię to później",
       "addYourFirstPet": "Dodaj swoje pierwsze zwierzę"
     },
     "language": {
       "title": "Wybierz język, walutę i strefę czasową",
-      "description": "Użyjemy Twoich wyborów na kolejnych ekranach i zsynchronizujemy je po zalogowaniu. Wszystko możesz zmienić w dowolnym momencie w Ustawieniach.",
+      "description": "Użyjemy Twoich wyborów na kolejnych ekranach. Możesz je zmienić w dowolnym momencie w Ustawieniach.",
       "continue": "Dalej"
     }
   },
@@ -1508,6 +1516,14 @@
     "autoRenews": "Odnowi się automatycznie {{date}}",
     "cancelled": "Anulowana - wygasa {{date}}",
     "paywallError": "Nie można załadować opcji subskrypcji",
+    "loadingPlans": "Ladowanie planow...",
+    "planLifetime": "Dozywotnio",
+    "oneTimePayment": "Platnosc jednorazowa",
+    "bestValue": "Najlepsza wartosc",
+    "planYearly": "Rocznie",
+    "planYearlyDescription": "Rozliczane rocznie",
+    "planMonthly": "Miesiecznie",
+    "planMonthlyDescription": "Rozliczane miesiecznie",
     "trialAlreadySubscribed": "Masz już aktywną subskrypcję",
     "trialAlreadyUsed": "To urządzenie wykorzystało już darmowy okres próbny",
     "trialStartFailed": "Nie można rozpocząć okresu próbnego. Spróbuj ponownie.",
@@ -1528,13 +1544,19 @@
     "features": {
       "title": "Funkcje Pro",
       "unlimited": "Nieograniczona liczba zwierząt",
-      "unlimitedDesc": "Trzymaj wszystkie profile, zapisy i notatki o pupilach w jednym miejscu",
+      "unlimitedDesc": "Odblokuj drugiego zwierzaka i zachowaj wszystkie profile, nagrania i rutyny razem",
       "feedingSchedules": "Nieograniczone harmonogramy karmienia",
       "feedingSchedulesDesc": "Buduj niezawodne rutyny dla każdego pupila bez ograniczeń harmonogramu",
-      "budgetTracking": "Śledzenie budżetu i alerty",
-      "budgetTrackingDesc": "Szybciej wykrywaj rosnące koszty dzięki miesięcznym alertom budżetowym",
-      "export": "Eksport danych",
-      "exportDesc": "Udostępniaj przejrzyste raporty rodzinie lub weterynarzowi",
+      "budgetTracking": "Zaawansowane analizy budżetu",
+      "budgetTrackingDesc": "Wykrywaj na wczesnym etapie tendencje dotyczące nadmiernych wydatków dzięki profesjonalnym statystykom i inteligentnym alertom",
+      "export": "Gotowe raporty i eksport dla weterynarzy",
+      "exportDesc": "Eksportuj streszczenia w formacie CSV, PDF i weterynarza, aby udostępniać je w ciągu kilku sekund",
+      "recurrence": "Powtarzające się automatyzacje opieki",
+      "recurrenceDesc": "Ustaw raz, powtórz automatycznie dzięki zaawansowanym procedurom cyklicznym",
+      "smartReminders": "Ustawienia inteligentnych przypomnień",
+      "smartRemindersDesc": "Używaj bogatszych częstotliwości przypomnień, aby nigdy nie przegapić ważnych zadań związanych z opieką",
+      "urgentMode": "Pilna uwaga dotycząca opieki",
+      "urgentModeDesc": "Natychmiast przeglądaj pilne zadania zdrowotne i ustalaj priorytety tego, co najważniejsze",
       "priority": "Wsparcie priorytetowe",
       "priorityDesc": "Uzyskaj szybszą pomoc, gdy sprawa jest pilna",
       "petManagement": "Zarządzanie zwierzętami",
@@ -1546,7 +1568,7 @@
     },
     "paywall": {
       "title": "Odblokuj Petopia Petcare Pro",
-      "subtitle": "Bądź na bieżąco z opieką, przypomnieniami i wydatkami dla każdego pupila"
+      "subtitle": "Skaluj od jednego zwierzaka do kompletnego systemu opieki z eksportem, automatyzacją i inteligentnymi spostrzeżeniami"
     },
     "success": {
       "title": "Subskrypcja udana!",
@@ -1562,10 +1584,21 @@
     "trust": {
       "cancelAnytime": "Możesz anulować w dowolnym momencie w ustawieniach App Store / Google Play",
       "billedByStore": "Płatność jest bezpiecznie obsługiwana przez konto sklepu z aplikacjami",
-      "secureCheckout": "W aplikacji nie trzeba ręcznie wpisywać danych karty"
+      "secureCheckout": "W aplikacji nie trzeba ręcznie wpisywać danych karty",
+      "cancelAnytimeIos": "Możesz anulować w dowolnym momencie w ustawieniach App Store",
+      "cancelAnytimeAndroid": "Możesz anulować w dowolnym momencie w ustawieniach Google Play",
+      "billedByStoreIos": "Płatność jest bezpiecznie obsługiwana przez konto sklepu z aplikacjami",
+      "billedByStoreAndroid": "Płatność jest bezpiecznie obsługiwana przez konto sklepu z aplikacjami",
+      "secureCheckoutIos": "W aplikacji nie trzeba ręcznie wpisywać danych karty",
+      "secureCheckoutAndroid": "W aplikacji nie trzeba ręcznie wpisywać danych karty"
     },
     "verifyingPurchase": "Zakup otrzymany. Weryfikujemy twoja subskrypcje...",
-    "verificationTakingLong": "Twoj zakup jest weryfikowany. Dostep zostanie automatycznie odblokowany za kilka sekund."
+    "verificationTakingLong": "Twoj zakup jest weryfikowany. Dostep zostanie automatycznie odblokowany za kilka sekund.",
+    "noteIos": "Płatność jest pobierana przez konto App Store. Subskrypcje odnawiają się automatycznie, chyba że zostaną anulowane co najmniej 24 godziny przed końcem bieżącego okresu. Możesz nimi zarządzać lub anulować je w dowolnym momencie w ustawieniach konta sklepu.",
+    "noteAndroid": "Płatność jest pobierana przez konto Google Play. Subskrypcje odnawiają się automatycznie, chyba że zostaną anulowane co najmniej 24 godziny przed końcem bieżącego okresu. Możesz nimi zarządzać lub anulować je w dowolnym momencie w ustawieniach konta sklepu.",
+    "restoreConfirmTitle": "Przywrócić zakupy?",
+    "restoreConfirmMessage": "Sprawdzimy Twoje zakupy w sklepie i przywrócimy aktywny dostęp Pro na tym urządzeniu.",
+    "restoreConfirmAction": "Przywrócić"
   },
   "downgrade": {
     "title": "Wybierz swojego zwierzaka",

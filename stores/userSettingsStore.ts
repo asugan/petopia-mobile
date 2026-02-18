@@ -4,6 +4,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import i18n from "@/lib/i18n";
 import { lightTheme, darkTheme } from "@/lib/theme/themes";
 import { userSettingsService } from "@/lib/services/userSettingsService";
+import { exchangeRateService } from "@/lib/services/exchangeRateService";
 import { getCurrencySymbol as getCurrencySymbolUtil } from "@/lib/utils/currency";
 import { detectDeviceTimezone, isValidTimezone } from "@/lib/utils/timezone";
 import type { Theme, ThemeMode } from "@/lib/theme/types";
@@ -27,22 +28,24 @@ interface UserSettingsState {
   settings: UserSettings | null;
   isLoading: boolean;
   error: string | null;
-  isAuthenticated: boolean;
   isRTL: boolean;
   theme: Theme;
   isDark: boolean;
+  notificationDisabledBySystemPermission: boolean;
 }
 
 interface UserSettingsActions {
   fetchSettings: () => Promise<void>;
   updateSettings: (updates: UserSettingsUpdate) => Promise<void>;
   updateBaseCurrency: (currency: SupportedCurrency) => Promise<void>;
+  syncDeviceTimezone: () => Promise<void>;
+  setNotificationDisabledBySystemPermission: (value: boolean) => void;
   initialize: () => Promise<void>;
   clear: () => void;
-  setAuthenticated: (isAuthenticated: boolean) => void;
 }
 
 const USER_SETTINGS_STORAGE_KEY = "user-settings-storage";
+let timezoneSyncInFlight: Promise<void> | null = null;
 
 const defaultSettings: UserSettings = {
   id: "",
@@ -81,18 +84,12 @@ export const useUserSettingsStore = create<
       settings: null,
       isLoading: false,
       error: null,
-      isAuthenticated: false,
       isRTL: false,
       theme: darkTheme,
       isDark: true,
+      notificationDisabledBySystemPermission: false,
 
       fetchSettings: async () => {
-        const { isAuthenticated } = get();
-
-        if (!isAuthenticated) {
-          return;
-        }
-
         set({ isLoading: true, error: null });
 
         try {
@@ -112,7 +109,7 @@ export const useUserSettingsStore = create<
 
             const deviceTimezone = detectDeviceTimezone();
 
-            if (!settings.timezone || !isValidTimezone(settings.timezone)) {
+            if (!settings.timezone || !isValidTimezone(settings.timezone) || settings.timezone !== deviceTimezone) {
               const updateResponse = await userSettingsService.updateSettings({
                 timezone: deviceTimezone,
               });
@@ -148,11 +145,7 @@ export const useUserSettingsStore = create<
       },
 
       updateSettings: async (updates) => {
-        const { isAuthenticated, settings } = get();
-
-        if (!isAuthenticated) {
-          return;
-        }
+        const { settings } = get();
 
         set({ isLoading: true, error: null });
 
@@ -208,12 +201,6 @@ export const useUserSettingsStore = create<
       },
 
       updateBaseCurrency: async (currency) => {
-        const { isAuthenticated, settings } = get();
-
-        if (!isAuthenticated) {
-          return;
-        }
-
         set({ isLoading: true, error: null });
 
         try {
@@ -228,6 +215,8 @@ export const useUserSettingsStore = create<
               isLoading: false,
               error: null,
             });
+
+            void exchangeRateService.prefetchRates(updatedSettings.baseCurrency);
           } else {
             throw new Error(
               response.message || "Failed to update base currency",
@@ -248,12 +237,48 @@ export const useUserSettingsStore = create<
         }
       },
 
-      initialize: async () => {
-        const { isAuthenticated, settings } = get();
-
-        if (!isAuthenticated) {
+      syncDeviceTimezone: async () => {
+        const { settings } = get();
+        if (!settings) {
           return;
         }
+
+        const deviceTimezone = detectDeviceTimezone();
+        if (!isValidTimezone(deviceTimezone) || settings.timezone === deviceTimezone) {
+          return;
+        }
+
+        if (timezoneSyncInFlight) {
+          await timezoneSyncInFlight;
+          return;
+        }
+
+        timezoneSyncInFlight = (async () => {
+          try {
+            const response = await userSettingsService.updateSettings({
+              timezone: deviceTimezone,
+            });
+
+            if (response.success && response.data) {
+              set({
+                settings: response.data,
+                error: null,
+              });
+            }
+          } finally {
+            timezoneSyncInFlight = null;
+          }
+        })();
+
+        await timezoneSyncInFlight;
+      },
+
+      setNotificationDisabledBySystemPermission: (value) => {
+        set({ notificationDisabledBySystemPermission: value });
+      },
+
+      initialize: async () => {
+        const { settings } = get();
 
         if (settings && i18n.language !== settings.language) {
           i18n.changeLanguage(settings.language);
@@ -267,15 +292,11 @@ export const useUserSettingsStore = create<
           settings: null,
           isLoading: false,
           error: null,
-          isAuthenticated: false,
           isRTL: false,
           theme: darkTheme,
           isDark: true,
+          notificationDisabledBySystemPermission: false,
         });
-      },
-
-      setAuthenticated: (isAuthenticated: boolean) => {
-        set({ isAuthenticated });
       },
     }),
     {
@@ -283,7 +304,8 @@ export const useUserSettingsStore = create<
       storage: createJSONStorage(() => AsyncStorage),
       partialize: (state) => ({
         settings: state.settings,
-        isAuthenticated: state.isAuthenticated,
+        notificationDisabledBySystemPermission:
+          state.notificationDisabledBySystemPermission,
       }),
       onRehydrateStorage: () => (state) => {
         if (state && state.settings) {

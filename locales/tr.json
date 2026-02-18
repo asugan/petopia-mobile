@@ -552,6 +552,14 @@
     "currencyThb": "Tayland Bahtı",
     "currencyZar": "Güney Afrika Randı",
     "dataPrivacy": "Veri ve Gizlilik",
+    "clearLocalData": "Clear local data",
+    "clearLocalDataDescription": "Permanently remove all pets and records from this device",
+    "clearLocalDataConfirmTitle": "Clear all local data?",
+    "clearLocalDataConfirmMessage": "This will permanently remove pets, events, feeding schedules, health records, and expenses from this device. This action cannot be undone.",
+    "clearLocalDataConfirmAction": "Clear Data",
+    "clearLocalDataSuccessTitle": "Data cleared",
+    "clearLocalDataSuccessMessage": "All local pet data has been removed from this device.",
+    "clearLocalDataError": "Failed to clear local data. Please try again.",
     "dataBackup": "Veri Yedekleme",
     "dataBackupDescription": "Verilerinizi bulutta yedekleyin",
     "deleteAccount": "Hesabı Sil",
@@ -1317,14 +1325,14 @@
     "screen3": {
       "title": "Artık Hazırsınız!",
       "description": "Evcil hayvanınızın bakım ve sağlık verilerini yönetmek için her şey hazır.",
-      "trialNotice": "İlk petini şimdi ekle, daha fazlası için dilediğinde Pro'ya geç.",
+      "trialNotice": "İlk petini şimdi ekle. Daha sonra dilediğin zaman yenilerini ekleyebilirsin.",
       "addPet": "Petini Ekle",
       "skipPet": "Sonra Yaparım",
       "addYourFirstPet": "İlk Petini Ekle"
     },
     "language": {
       "title": "Dilini, para birimini ve saat dilimini seç",
-      "description": "Seçimlerini sonraki ekranlarda kullanacağız ve giriş yaptıktan sonra senkronize edeceğiz. Tümünü istediğin zaman Ayarlar’dan değiştirebilirsin.",
+      "description": "Seçimlerini sonraki ekranlarda kullanacağız. Hepsini istediğin zaman Ayarlar'dan değiştirebilirsin.",
       "continue": "Devam et"
     }
   },
@@ -1499,6 +1507,9 @@
     "cancelSubscriptionMessage": "Aboneliğinizi yönetmek için yönlendirileceksiniz; iptali oradan tamamlayabilirsiniz.",
     "cancelSubscriptionAction": "İptale Devam Et",
     "restorePurchases": "Satın Alımları Geri Yükle",
+    "restoreConfirmTitle": "Restore purchases?",
+    "restoreConfirmMessage": "We'll check your store purchases and restore active Pro access on this device.",
+    "restoreConfirmAction": "Restore",
     "restoreSuccess": "Satın alımlar başarıyla geri yüklendi",
     "restoreError": "Satın alımlar geri yüklenemedi",
     "noPurchases": "Satın Alım Bulunamadı",
@@ -1530,13 +1541,19 @@
     "features": {
       "title": "Pro Özellikler",
       "unlimited": "Sınırsız Pet",
-      "unlimitedDesc": "Tüm pet profillerini ve kayıtlarını tek yerde toplayın",
+      "unlimitedDesc": "2. pet kilidini açın, tüm profilleri ve bakım kayıtlarını tek yerde yönetin",
       "feedingSchedules": "Sınırsız Besleme Programı",
       "feedingSchedulesDesc": "Her pet için düzenli rutinler kurun, plan sınırına takılmayın",
-      "budgetTracking": "Bütçe Takibi ve Uyarılar",
-      "budgetTrackingDesc": "Artan harcamaları erkenden fark edip bütçeyi kontrol edin",
-      "export": "Veri Dışa Aktarma",
-      "exportDesc": "Aile veya veterinerle paylaşmak için anlaşılır raporlar oluşturun",
+      "budgetTracking": "Gelişmiş Bütçe İçgörüleri",
+      "budgetTrackingDesc": "Pro içgörüler ve akıllı uyarılarla artan harcamayı erkenden yakalayın",
+      "export": "Veteriner Uyumlu Raporlar",
+      "exportDesc": "CSV, PDF ve veteriner özetlerini saniyeler içinde dışa aktarın",
+      "recurrence": "Tekrar Eden Bakım Otomasyonu",
+      "recurrenceDesc": "Bir kez ayarlayın, gelişmiş tekrar kurallarıyla otomatik sürsün",
+      "smartReminders": "Akıllı Hatırlatma Presetleri",
+      "smartRemindersDesc": "Zengin hatırlatma kademeleriyle kritik bakım adımlarını kaçırmayın",
+      "urgentMode": "Acil Bakım Odağı",
+      "urgentModeDesc": "Acil sağlık görevlerini anında görün ve doğru önceliklendirin",
       "priority": "Öncelikli Destek",
       "priorityDesc": "Acil durumlarda daha hızlı destek alın",
       "petManagement": "Pet Yönetimi",
@@ -1548,7 +1565,7 @@
     },
     "paywall": {
       "title": "Petopia Petcare Pro'yu Açın",
-      "subtitle": "Tüm petlerde bakım, hatırlatma ve harcama takibini tek yerden yönetin"
+      "subtitle": "Tek pet kullanımından tam bakım sistemine geçin: dışa aktarım, otomasyon ve akıllı içgörüler"
     },
     "success": {
       "title": "Abonelik Başarılı!",
@@ -1561,11 +1578,27 @@
       "button": "Anasayfaya Dön"
     },
     "note": "Ödeme App Store / Google Play hesabınızdan tahsil edilir. Abonelikler, mevcut dönemin bitiminden en az 24 saat önce iptal edilmediği sürece otomatik yenilenir. Aboneliğinizi mağaza hesap ayarlarından istediğiniz zaman yönetebilir veya iptal edebilirsiniz.",
+    "noteIos": "Satın alma onaylandığında ödeme Apple Kimliği hesabınızdan tahsil edilir. Abonelik, mevcut dönemin bitiminden en az 24 saat önce iptal edilmediği sürece otomatik olarak yenilenir. Aboneliğinizi App Store hesap ayarlarından yönetebilir ve iptal edebilirsiniz.",
+    "noteAndroid": "Satın alma onaylandığında ödeme Google Play hesabınızdan tahsil edilir. Abonelik, mevcut dönemin bitiminden en az 24 saat önce iptal edilmediği sürece otomatik olarak yenilenir. Aboneliğinizi Google Play hesap ayarlarından yönetebilir ve iptal edebilirsiniz.",
     "trust": {
       "cancelAnytime": "App Store / Google Play ayarlarından istediğiniz zaman iptal edin",
       "billedByStore": "Ödeme altyapısı güvenli şekilde mağaza hesabınız üzerinden çalışır",
-      "secureCheckout": "Uygulama içinde manuel kart bilgisi girmeniz gerekmez"
-    }
+      "secureCheckout": "Uygulama içinde manuel kart bilgisi girmeniz gerekmez",
+      "cancelAnytimeIos": "App Store hesap ayarlarından istediğiniz zaman iptal edin",
+      "billedByStoreIos": "Ödeme altyapısı Apple Kimliği hesabınız üzerinden güvenli şekilde çalışır",
+      "secureCheckoutIos": "Uygulama içinde manuel kart bilgisi girmeniz gerekmez",
+      "cancelAnytimeAndroid": "Google Play hesap ayarlarından istediğiniz zaman iptal edin",
+      "billedByStoreAndroid": "Ödeme altyapısı Google Play hesabınız üzerinden güvenli şekilde çalışır",
+      "secureCheckoutAndroid": "Uygulama içinde manuel kart bilgisi girmeniz gerekmez"
+    },
+    "loadingPlans": "Planlar yükleniyor...",
+    "planLifetime": "Ömür boyu",
+    "oneTimePayment": "Tek seferlik ödeme",
+    "bestValue": "En iyi değer",
+    "planYearly": "Yıllık",
+    "planYearlyDescription": "Yıllık faturalandırılır",
+    "planMonthly": "Aylık",
+    "planMonthlyDescription": "Aylık faturalandırılır"
   },
   "downgrade": {
     "title": "Evcil Hayvanınızı Seçin",

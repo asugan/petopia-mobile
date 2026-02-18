@@ -180,6 +180,7 @@ export default function EventDetailScreen() {
               id: event.recurrenceRuleId,
               date: exceptionDate,
             });
+            await cancelRemindersForEvent(event._id);
             showToast({ type: 'success', title: t('events.eventDeleted') });
             router.back();
           }
@@ -247,7 +248,7 @@ export default function EventDetailScreen() {
 
       void syncMissedStatus();
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps -- mutation object is stable per TanStack Query
+  // eslint-disable-next-line react-hooks/exhaustive-deps -- mutation object is stable for this hook implementation
   }, [cancelRemindersForEvent, derivedStatus, event, markMissed, t]);
 
   const handleMarkCompleted = async () => {

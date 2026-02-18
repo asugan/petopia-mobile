@@ -1,16 +1,16 @@
-import { api, ApiError, ApiResponse } from '../api/client';
-import type { RecurrenceRule, RecurrenceRuleData, UpdateRecurrenceRuleData } from '../schemas/recurrenceSchema';
-import type { Event } from '../types';
+import type { ApiResponse } from '@/lib/contracts/api';
+import { recurrenceRepository } from '@/lib/repositories/recurrenceRepository';
+import type {
+  RecurrenceRule,
+  RecurrenceRuleData,
+  UpdateRecurrenceRuleData,
+} from '@/lib/schemas/recurrenceSchema';
+import type { Event } from '@/lib/types';
 
 /**
- * Recurrence Service - Manages all recurrence rule API operations
+ * Recurrence Service - Manages all recurrence rule operations
  */
 export class RecurrenceService {
-  private baseUrl = '/api/recurrence-rules';
-
-  /**
-   * Get all recurrence rules for the current user
-   */
   async getRules(params?: {
     page?: number;
     limit?: number;
@@ -18,30 +18,14 @@ export class RecurrenceService {
     petId?: string;
   }): Promise<ApiResponse<RecurrenceRule[]>> {
     try {
-      const queryParams = new URLSearchParams();
-      if (params?.page) queryParams.append('page', String(params.page));
-      if (params?.limit) queryParams.append('limit', String(params.limit));
-      if (params?.isActive !== undefined) queryParams.append('isActive', String(params.isActive));
-      if (params?.petId) queryParams.append('petId', params.petId);
-
-      const url = queryParams.toString() ? `${this.baseUrl}?${queryParams}` : this.baseUrl;
-      const response = await api.get<RecurrenceRule[]>(url);
+      const rules = recurrenceRepository.getRules(params);
 
       return {
         success: true,
-        data: response.data || [],
+        data: rules,
         message: 'serviceResponse.recurrence.fetchSuccess',
       };
-    } catch (error) {
-      if (error instanceof ApiError) {
-        return {
-          success: false,
-          error: {
-            code: error.code || 'FETCH_ERROR',
-            message: error.message,
-          },
-        };
-      }
+    } catch {
       return {
         success: false,
         error: {
@@ -52,37 +36,26 @@ export class RecurrenceService {
     }
   }
 
-  /**
-   * Get a single recurrence rule by ID
-   */
   async getRuleById(id: string): Promise<ApiResponse<RecurrenceRule>> {
     try {
-      const response = await api.get<RecurrenceRule>(`${this.baseUrl}/${id}`);
+      const rule = recurrenceRepository.getRuleById(id);
 
-      return {
-        success: true,
-        data: response.data!,
-        message: 'serviceResponse.recurrence.fetchOneSuccess',
-      };
-    } catch (error) {
-      if (error instanceof ApiError) {
-        if (error.status === 404) {
-          return {
-            success: false,
-            error: {
-              code: 'NOT_FOUND',
-              message: 'serviceResponse.recurrence.notFound',
-            },
-          };
-        }
+      if (!rule) {
         return {
           success: false,
           error: {
-            code: error.code || 'FETCH_ERROR',
-            message: error.message,
+            code: 'NOT_FOUND',
+            message: 'serviceResponse.recurrence.notFound',
           },
         };
       }
+
+      return {
+        success: true,
+        data: rule,
+        message: 'serviceResponse.recurrence.fetchOneSuccess',
+      };
+    } catch {
       return {
         success: false,
         error: {
@@ -93,28 +66,16 @@ export class RecurrenceService {
     }
   }
 
-  /**
-   * Create a new recurrence rule
-   */
   async createRule(data: RecurrenceRuleData): Promise<ApiResponse<{ rule: RecurrenceRule; eventsCreated: number }>> {
     try {
-      const response = await api.post<{ rule: RecurrenceRule; eventsCreated: number }>(this.baseUrl, data);
+      const result = recurrenceRepository.createRule(data);
 
       return {
         success: true,
-        data: response.data!,
+        data: result,
         message: 'serviceResponse.recurrence.createSuccess',
       };
-    } catch (error) {
-      if (error instanceof ApiError) {
-        return {
-          success: false,
-          error: {
-            code: error.code || 'CREATE_ERROR',
-            message: error.message,
-          },
-        };
-      }
+    } catch {
       return {
         success: false,
         error: {
@@ -125,37 +86,26 @@ export class RecurrenceService {
     }
   }
 
-  /**
-   * Update a recurrence rule
-   */
   async updateRule(id: string, data: UpdateRecurrenceRuleData): Promise<ApiResponse<{ rule: RecurrenceRule; eventsUpdated: number }>> {
     try {
-      const response = await api.put<{ rule: RecurrenceRule; eventsUpdated: number }>(`${this.baseUrl}/${id}`, data);
+      const result = recurrenceRepository.updateRule(id, data);
 
-      return {
-        success: true,
-        data: response.data!,
-        message: 'serviceResponse.recurrence.updateSuccess',
-      };
-    } catch (error) {
-      if (error instanceof ApiError) {
-        if (error.status === 404) {
-          return {
-            success: false,
-            error: {
-              code: 'NOT_FOUND',
-              message: 'serviceResponse.recurrence.notFoundUpdate',
-            },
-          };
-        }
+      if (!result) {
         return {
           success: false,
           error: {
-            code: error.code || 'UPDATE_ERROR',
-            message: error.message,
+            code: 'NOT_FOUND',
+            message: 'serviceResponse.recurrence.notFoundUpdate',
           },
         };
       }
+
+      return {
+        success: true,
+        data: result,
+        message: 'serviceResponse.recurrence.updateSuccess',
+      };
+    } catch {
       return {
         success: false,
         error: {
@@ -166,37 +116,26 @@ export class RecurrenceService {
     }
   }
 
-  /**
-   * Delete a recurrence rule
-   */
   async deleteRule(id: string): Promise<ApiResponse<{ message: string; eventsDeleted: number }>> {
     try {
-      const response = await api.delete<{ message: string; eventsDeleted: number }>(`${this.baseUrl}/${id}`);
+      const result = recurrenceRepository.deleteRule(id);
 
-      return {
-        success: true,
-        data: response.data,
-        message: 'serviceResponse.recurrence.deleteSuccess',
-      };
-    } catch (error) {
-      if (error instanceof ApiError) {
-        if (error.status === 404) {
-          return {
-            success: false,
-            error: {
-              code: 'NOT_FOUND',
-              message: 'serviceResponse.recurrence.notFoundDelete',
-            },
-          };
-        }
+      if (!result) {
         return {
           success: false,
           error: {
-            code: error.code || 'DELETE_ERROR',
-            message: error.message,
+            code: 'NOT_FOUND',
+            message: 'serviceResponse.recurrence.notFoundDelete',
           },
         };
       }
+
+      return {
+        success: true,
+        data: result,
+        message: 'serviceResponse.recurrence.deleteSuccess',
+      };
+    } catch {
       return {
         success: false,
         error: {
@@ -207,28 +146,26 @@ export class RecurrenceService {
     }
   }
 
-  /**
-   * Regenerate events for a recurrence rule
-   */
   async regenerateEvents(id: string): Promise<ApiResponse<{ eventsDeleted: number; eventsCreated: number }>> {
     try {
-      const response = await api.post<{ eventsDeleted: number; eventsCreated: number }>(`${this.baseUrl}/${id}/regenerate`, {});
+      const result = recurrenceRepository.regenerateEvents(id);
 
-      return {
-        success: true,
-        data: response.data!,
-        message: 'serviceResponse.recurrence.regenerateSuccess',
-      };
-    } catch (error) {
-      if (error instanceof ApiError) {
+      if (!result) {
         return {
           success: false,
           error: {
-            code: error.code || 'REGENERATE_ERROR',
-            message: error.message,
+            code: 'NOT_FOUND',
+            message: 'serviceResponse.recurrence.notFound',
           },
         };
       }
+
+      return {
+        success: true,
+        data: result,
+        message: 'serviceResponse.recurrence.regenerateSuccess',
+      };
+    } catch {
       return {
         success: false,
         error: {
@@ -239,36 +176,16 @@ export class RecurrenceService {
     }
   }
 
-  /**
-   * Get events for a specific recurrence rule
-   */
   async getEventsByRuleId(id: string, options?: { includePast?: boolean; limit?: number }): Promise<ApiResponse<Event[]>> {
     try {
-      const queryParams = new URLSearchParams();
-      if (options?.includePast) queryParams.append('includePast', 'true');
-      if (options?.limit) queryParams.append('limit', String(options.limit));
-
-      const url = queryParams.toString() 
-        ? `${this.baseUrl}/${id}/events?${queryParams}` 
-        : `${this.baseUrl}/${id}/events`;
-      
-      const response = await api.get<Event[]>(url);
+      const events = recurrenceRepository.getEventsByRuleId(id, options);
 
       return {
         success: true,
-        data: response.data || [],
+        data: events,
         message: 'serviceResponse.recurrence.eventsSuccess',
       };
-    } catch (error) {
-      if (error instanceof ApiError) {
-        return {
-          success: false,
-          error: {
-            code: error.code || 'FETCH_ERROR',
-            message: error.message,
-          },
-        };
-      }
+    } catch {
       return {
         success: false,
         error: {
@@ -279,28 +196,26 @@ export class RecurrenceService {
     }
   }
 
-  /**
-   * Add an exception (exclude a specific date)
-   */
   async addException(id: string, date: string): Promise<ApiResponse<{ message: string }>> {
     try {
-      const response = await api.post<{ message: string }>(`${this.baseUrl}/${id}/exceptions`, { date });
+      const result = recurrenceRepository.addException(id, date);
 
-      return {
-        success: true,
-        data: response.data,
-        message: 'serviceResponse.recurrence.exceptionSuccess',
-      };
-    } catch (error) {
-      if (error instanceof ApiError) {
+      if (!result) {
         return {
           success: false,
           error: {
-            code: error.code || 'EXCEPTION_ERROR',
-            message: error.message,
+            code: 'NOT_FOUND',
+            message: 'serviceResponse.recurrence.notFound',
           },
         };
       }
+
+      return {
+        success: true,
+        data: result,
+        message: 'serviceResponse.recurrence.exceptionSuccess',
+      };
+    } catch {
       return {
         success: false,
         error: {
@@ -312,5 +227,4 @@ export class RecurrenceService {
   }
 }
 
-// Singleton instance
 export const recurrenceService = new RecurrenceService();

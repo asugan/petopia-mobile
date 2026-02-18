@@ -2,10 +2,9 @@ import { Alert, View, StyleSheet, Pressable } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { useRouter } from 'expo-router';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { Card, Text, Button, ProgressBar } from '@/components/ui';
+import { Card, Text, Button } from '@/components/ui';
 import { useTheme } from '@/lib/theme';
 import { useSubscription } from '@/lib/hooks/useSubscription';
-import { REVENUECAT_CONFIG } from '@/lib/revenuecat/config';
 import { SUBSCRIPTION_ROUTES } from '@/constants/routes';
 import { useUserTimezone } from '@/lib/hooks/useUserTimezone';
 import { formatInTimeZone } from '@/lib/utils/date';
@@ -14,14 +13,14 @@ interface SubscriptionCardProps {
   showManageButton?: boolean;
   compact?: boolean;
   onUpgrade?: () => void | Promise<void>;
-  onTrialStartSuccess?: () => void;
+  title?: string;
 }
 
 /**
  * SubscriptionCard displays the current subscription status
  * Used in Settings screen and other places where subscription info is needed
  */
-export function SubscriptionCard({ showManageButton = true, compact = false, onUpgrade, onTrialStartSuccess }: SubscriptionCardProps) {
+export function SubscriptionCard({ showManageButton = true, compact = false, onUpgrade, title }: SubscriptionCardProps) {
   const { t, i18n } = useTranslation();
   const { theme } = useTheme();
   const timezone = useUserTimezone();
@@ -29,17 +28,13 @@ export function SubscriptionCard({ showManageButton = true, compact = false, onU
   const {
     subscriptionStatus,
     isProUser,
-    isTrialActive,
     isPaidSubscription,
     isSubscribed,
     isCancelled,
-    daysRemaining,
     expirationDate,
     willRenew,
     isLoading,
     presentCustomerCenter,
-    canStartTrial,
-    startTrial,
   } = useSubscription();
 
   // Format expiration date
@@ -66,13 +61,6 @@ export function SubscriptionCard({ showManageButton = true, compact = false, onU
           text: t('subscription.pro'),
           icon: 'crown' as const,
         };
-      case 'trial':
-        return {
-          color: theme.colors.tertiary,
-          backgroundColor: theme.colors.tertiaryContainer,
-          text: t('subscription.trial'),
-          icon: 'clock-outline' as const,
-        };
       default:
         return {
           color: theme.colors.onSurfaceVariant,
@@ -84,11 +72,6 @@ export function SubscriptionCard({ showManageButton = true, compact = false, onU
   };
 
   const statusConfig = getStatusConfig();
-
-  // Calculate trial progress (0 to 1)
-  const trialProgress = isTrialActive
-    ? (REVENUECAT_CONFIG.TRIAL_DURATION_DAYS - daysRemaining) / REVENUECAT_CONFIG.TRIAL_DURATION_DAYS
-    : 0;
 
   const handleUpgrade = async () => {
     try {
@@ -145,11 +128,6 @@ export function SubscriptionCard({ showManageButton = true, compact = false, onU
           <Text variant="labelMedium" style={{ color: statusConfig.color, marginLeft: 8 }}>
             {statusConfig.text}
           </Text>
-          {isTrialActive && (
-            <Text variant="labelSmall" style={{ color: statusConfig.color, marginLeft: 4 }}>
-              ({t('subscription.trialDaysRemaining', { days: daysRemaining })})
-            </Text>
-          )}
           <MaterialCommunityIcons
             name="chevron-right"
             size={20}
@@ -172,8 +150,8 @@ export function SubscriptionCard({ showManageButton = true, compact = false, onU
               size={24}
               color={statusConfig.color}
             />
-            <Text variant="titleMedium" style={[styles.title, { color: theme.colors.onSurface }]}>
-              {t('subscription.title')}
+            <Text variant="titleMedium" style={[styles.title, { color: theme.colors.onSurface }]}> 
+              {title ?? t('subscription.title')}
             </Text>
           </View>
           <View style={[styles.badge, { backgroundColor: statusConfig.backgroundColor }]}>
@@ -201,25 +179,6 @@ export function SubscriptionCard({ showManageButton = true, compact = false, onU
             </>
           )}
 
-          {/* Trial Status */}
-          {isTrialActive && (
-            <>
-              <Text variant="bodyMedium" style={{ color: theme.colors.onSurfaceVariant }}>
-                {t('subscription.trialActive')}
-              </Text>
-              <View style={styles.trialProgress}>
-                <ProgressBar
-                  progress={trialProgress}
-                  color={theme.colors.tertiary}
-                  style={styles.progressBar}
-                />
-                <Text variant="bodySmall" style={{ color: theme.colors.tertiary, marginTop: 4 }}>
-                  {t('subscription.trialDaysRemaining', { days: daysRemaining })}
-                </Text>
-              </View>
-            </>
-          )}
-
           {/* Free User Status */}
           {!isProUser && (
             <Text variant="bodyMedium" style={{ color: theme.colors.onSurfaceVariant }}>
@@ -227,16 +186,6 @@ export function SubscriptionCard({ showManageButton = true, compact = false, onU
             </Text>
           )}
         </View>
-
-        {/* No CC Required Note for Trial */}
-        {canStartTrial && !isProUser && (
-          <View style={styles.noCcNote}>
-            <MaterialCommunityIcons name="credit-card-off" size={14} color={theme.colors.tertiary} />
-            <Text variant="bodySmall" style={{ color: theme.colors.tertiary, marginLeft: 4 }}>
-              {t('subscription.noCreditCardRequired')}
-            </Text>
-          </View>
-        )}
 
         {/* Action Buttons */}
         {showManageButton && (
@@ -269,34 +218,6 @@ export function SubscriptionCard({ showManageButton = true, compact = false, onU
                   </Button>
                 )}
               </>
-            ) : canStartTrial ? (
-              <Button
-                mode="contained"
-                onPress={() => {
-                  Alert.alert(
-                    t('subscription.confirmStartTrialTitle'),
-                    t('subscription.confirmStartTrialMessage'),
-                    [
-                      { text: t('common.cancel'), style: 'cancel' },
-                      {
-                        text: t('subscription.confirmStartTrialAction'),
-                        onPress: async () => {
-                          await startTrial({
-                            screen: 'subscription_card',
-                            source: 'subscription_card',
-                          });
-                          onTrialStartSuccess?.();
-                        },
-                      },
-                    ]
-                  );
-                }}
-                loading={isLoading}
-                disabled={isLoading}
-                style={styles.actionButton}
-              >
-                {t('subscription.startTrial')}
-              </Button>
             ) : (
               <Button
                 mode="contained"
@@ -344,13 +265,6 @@ const styles = StyleSheet.create({
   statusContainer: {
     marginBottom: 16,
   },
-  trialProgress: {
-    marginTop: 8,
-  },
-  progressBar: {
-    height: 6,
-    borderRadius: 3,
-  },
   actions: {
     marginTop: 8,
   },
@@ -359,13 +273,6 @@ const styles = StyleSheet.create({
   },
   cancelButton: {
     marginTop: 12,
-  },
-  noCcNote: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginBottom: 8,
-    marginTop: 4,
   },
   compactContainer: {
     flexDirection: 'row',

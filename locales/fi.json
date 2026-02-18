@@ -614,7 +614,15 @@
       "indonesian": "Bahasa Indonesia"
     },
     "timezone": "Aikavyöhyke",
-    "selectTimezone": "Valitse aikavyöhyke"
+    "selectTimezone": "Valitse aikavyöhyke",
+    "clearLocalData": "Tyhjennä paikalliset tiedot",
+    "clearLocalDataDescription": "Poista pysyvästi kaikki lemmikit ja tietueet tästä laitteesta",
+    "clearLocalDataConfirmTitle": "Poistetaanko kaikki paikalliset tiedot?",
+    "clearLocalDataConfirmMessage": "Tämä poistaa pysyvästi lemmikit, tapahtumat, ruokintaaikataulut, terveystiedot ja kulut tästä laitteesta. Tätä toimintoa ei voi kumota.",
+    "clearLocalDataConfirmAction": "Tyhjennä tiedot",
+    "clearLocalDataSuccessTitle": "Tiedot tyhjennetty",
+    "clearLocalDataSuccessMessage": "Kaikki paikalliset lemmikkitiedot on poistettu tältä laitteelta.",
+    "clearLocalDataError": "Paikallisten tietojen tyhjennys epäonnistui. Yritä uudelleen."
   },
   "common": {
     "loading": "Ladataan...",
@@ -1317,14 +1325,14 @@
     "screen3": {
       "title": "Olet valmis!",
       "description": "Kaikki on valmista lemmikkisi hoidon ja terveystietojen hallintaan.",
-      "trialNotice": "Lisää ensimmäinen lemmikkisi nyt ja avaa Pro, kun tarvitset enemmän.",
+      "trialNotice": "Lisää ensimmäinen lemmikkisi nyt. Voit aina lisätä myöhemmin lisää.",
       "addPet": "Lisää lemmikkisi",
       "skipPet": "Tee se myöhemmin",
       "addYourFirstPet": "Lisää ensimmäinen lemmikkisi"
     },
     "language": {
       "title": "Valitse kieli, valuutta ja aikavyöhyke",
-      "description": "Käytämme valintojasi seuraavissa näkymissä ja synkronoimme ne kirjautumisen jälkeen. Voit muuttaa kaikkea milloin tahansa Asetuksissa.",
+      "description": "Käytämme valintojasi seuraavissa näkymissä. Voit muuttaa niitä milloin tahansa Asetuksissa.",
       "continue": "Jatka"
     }
   },
@@ -1508,6 +1516,14 @@
     "autoRenews": "Uusiutuu automaattisesti {{date}}",
     "cancelled": "Peruutettu - päättyy {{date}}",
     "paywallError": "Tilausvaihtoehtojen lataaminen epäonnistui",
+    "loadingPlans": "Ladataan tilauksia...",
+    "planLifetime": "Elinikainen",
+    "oneTimePayment": "Kertamaksu",
+    "bestValue": "Paras arvo",
+    "planYearly": "Vuosittainen",
+    "planYearlyDescription": "Laskutetaan vuosittain",
+    "planMonthly": "Kuukausittainen",
+    "planMonthlyDescription": "Laskutetaan kuukausittain",
     "trialAlreadySubscribed": "Sinulla on jo aktiivinen tilaus",
     "trialAlreadyUsed": "Tämä laite on jo käyttänyt ilmaisen kokeilun",
     "trialStartFailed": "Ilmaisen kokeilun aloittaminen epäonnistui. Yritä uudelleen.",
@@ -1528,13 +1544,19 @@
     "features": {
       "title": "Pro-ominaisuudet",
       "unlimited": "Rajattomasti lemmikkejä",
-      "unlimitedDesc": "Pidä kaikkien lemmikkien profiilit, tiedot ja muistiinpanot yhdessä",
+      "unlimitedDesc": "Avaa toinen lemmikki ja pidä kaikki profiilit, tietueet ja rutiini yhdessä",
       "feedingSchedules": "Rajattomat ruokinta-aikataulut",
       "feedingSchedulesDesc": "Rakenna luotettavat rutiinit jokaiselle lemmikille ilman aikataulurajoja",
-      "budgetTracking": "Budjetin seuranta & hälytykset",
-      "budgetTrackingDesc": "Havaitse kasvavat kulut ajoissa kuukausittaisten budjettihälytysten avulla",
-      "export": "Tietojen vienti",
-      "exportDesc": "Jaa selkeät raportit perheen tai eläinlääkärin kanssa",
+      "budgetTracking": "Advanced Budget Insights",
+      "budgetTrackingDesc": "Havaitse ylikulutustrendit ajoissa Pro-näkemysten ja älykkäiden hälytysten avulla",
+      "export": "Vet-Ready raportit ja vienti",
+      "exportDesc": "Vie CSV-, PDF- ja eläinlääkäriyhteenvedot jaettavaksi selkeästi sekunneissa",
+      "recurrence": "Toistuva hoitoautomaatio",
+      "recurrenceDesc": "Aseta kerran, toista automaattisesti kehittyneiden toistuvien rutiinien kanssa",
+      "smartReminders": "Älykkäät muistutuksen esiasetukset",
+      "smartRemindersDesc": "Käytä monipuolisempia muistutuspolkuja, jotta tärkeitä hoitotehtäviä ei koskaan jää huomaamatta",
+      "urgentMode": "Kiireellisen hoidon painopiste",
+      "urgentModeDesc": "Näet kiireelliset terveystehtävät välittömästi ja priorisoi tärkeimmät",
       "priority": "Ensisijainen tuki",
       "priorityDesc": "Saat nopeammin apua, kun on kiire",
       "petManagement": "Lemmikkien hallinta",
@@ -1546,7 +1568,7 @@
     },
     "paywall": {
       "title": "Avaa Petopia Petcare Pro",
-      "subtitle": "Pysy perillä jokaisen lemmikin hoidosta, muistutuksista ja kuluista"
+      "subtitle": "Skaalaa yhdestä lemmikistä täydelliseksi hoitojärjestelmäksi viennin, automaation ja älykkäiden näkemysten avulla"
     },
     "success": {
       "title": "Tilaus onnistui!",
@@ -1562,10 +1584,21 @@
     "trust": {
       "cancelAnytime": "Voit peruuttaa milloin tahansa App Storen / Google Playn asetuksista",
       "billedByStore": "Laskutus hoidetaan turvallisesti sovelluskauppatilisi kautta",
-      "secureCheckout": "Sovelluksessa ei tarvitse syöttää korttitietoja manuaalisesti"
+      "secureCheckout": "Sovelluksessa ei tarvitse syöttää korttitietoja manuaalisesti",
+      "cancelAnytimeIos": "Voit peruuttaa milloin tahansa App Storen / Google Playn asetuksista",
+      "cancelAnytimeAndroid": "Voit peruuttaa milloin tahansa App Storen / Google Playn asetuksista",
+      "billedByStoreIos": "Laskutus hoidetaan turvallisesti sovelluskauppatilisi kautta",
+      "billedByStoreAndroid": "Laskutus hoidetaan turvallisesti sovelluskauppatilisi kautta",
+      "secureCheckoutIos": "Sovelluksessa ei tarvitse syöttää korttitietoja manuaalisesti",
+      "secureCheckoutAndroid": "Sovelluksessa ei tarvitse syöttää korttitietoja manuaalisesti"
     },
     "verifyingPurchase": "Osto vastaanotettu. Vahvistetaan tilaustasi...",
-    "verificationTakingLong": "Ostoasi vahvistetaan. Kaytto avautuu automaattisesti muutaman sekunnin kuluttua."
+    "verificationTakingLong": "Ostoasi vahvistetaan. Kaytto avautuu automaattisesti muutaman sekunnin kuluttua.",
+    "noteIos": "Maksu veloitetaan App Store -tililtäsi. Tilaukset uusiutuvat automaattisesti, ellei niitä peruuteta vähintään 24 tuntia ennen nykyisen jakson päättymistä. Voit hallita tai peruuttaa tilauksen milloin tahansa kauppatilin asetuksista.",
+    "noteAndroid": "Maksu veloitetaan Google Play -tililtäsi. Tilaukset uusiutuvat automaattisesti, ellei niitä peruuteta vähintään 24 tuntia ennen nykyisen jakson päättymistä. Voit hallita tai peruuttaa tilauksen milloin tahansa kauppatilin asetuksista.",
+    "restoreConfirmTitle": "Palauta ostokset?",
+    "restoreConfirmMessage": "Tarkistamme ostoksesi kaupasta ja palautamme aktiivisen Pro-käyttöoikeuden tälle laitteelle.",
+    "restoreConfirmAction": "Palauttaa"
   },
   "downgrade": {
     "title": "Valitse lemmikkisi",

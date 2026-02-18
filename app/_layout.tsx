@@ -1,25 +1,24 @@
-import { useEffect, useRef } from 'react';
-import { AppState, AppStateStatus } from 'react-native';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import { AppState } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { StatusBar } from 'expo-status-bar';
 import * as Notifications from 'expo-notifications';
 import * as SplashScreen from 'expo-splash-screen';
 import { Stack, useRouter, useSegments } from "expo-router";
-import { QueryClient, QueryClientProvider, focusManager } from '@tanstack/react-query';
 import Toast from 'react-native-toast-message';
 import { ApiErrorBoundary } from "@/lib/components/ApiErrorBoundary";
-import { MOBILE_QUERY_CONFIG } from "@/lib/config/queryConfig";
-import { useAuth } from '@/lib/auth';
-import { setOnUnauthorized, setOnProRequired } from '@/lib/api/client';
-import { notificationService } from '@/lib/services/notificationService';
-import { useOnlineManager } from "@/lib/hooks/useOnlineManager";
+import {
+  disableLocalNotifications,
+  enableLocalNotifications,
+  notificationService,
+} from '@/lib/services/notificationService';
 import { useSubscription } from '@/lib/hooks/useSubscription';
 import { useDowngradeStatus } from '@/lib/hooks/useDowngrade';
 import { NetworkStatus } from "@/lib/components/NetworkStatus";
 import { LanguageProvider } from "@/providers/LanguageProvider";
 import { PostHogProviderWrapper } from "@/providers/PostHogProvider";
-import { AuthProvider } from "@/providers/AuthProvider";
+import { AnalyticsIdentityProvider } from "@/providers/AnalyticsIdentityProvider";
 import { SubscriptionProvider } from "@/providers/SubscriptionProvider";
 import { useUserSettingsStore } from '@/stores/userSettingsStore';
 import { useEventReminderStore } from '@/stores/eventReminderStore';
@@ -29,48 +28,25 @@ import { useActiveFeedingSchedules } from '@/lib/hooks/useFeedingSchedules';
 import { useReminderScheduler } from '@/hooks/useReminderScheduler';
 import { useBudgetAlertNotifications } from '@/lib/hooks/useUserBudget';
 import { createToastConfig } from '@/lib/toast/toastConfig';
+import NotificationPermissionPrompt from '@/components/NotificationPermissionPrompt';
+import { resolveNotificationSyncAction } from '@/lib/utils/notificationPermissionSync';
 import { SUBSCRIPTION_ROUTES, TAB_ROUTES } from '@/constants/routes';
 import { LAYOUT } from '@/constants';
+import { initDatabase } from '@/lib/db/init';
 import "../lib/i18n";
 import { AnimatedSplashScreen } from '@/components/SplashScreen/AnimatedSplashScreen';
 
-// Enhanced QueryClient with better configuration
-const queryClient = new QueryClient(MOBILE_QUERY_CONFIG);
-
-// Custom hook for app state management
-function onAppStateChange(status: AppStateStatus) {
-  if (status === 'active') {
-    focusManager.setFocused(true);
-  } else {
-    focusManager.setFocused(false);
-  }
-}
-
-// Enhanced App Providers with better state management
-function SubscriptionGate({ children }: { children: React.ReactNode }) {
-  const { presentPaywall } = useSubscription();
-
-  useEffect(() => {
-    setOnProRequired(() => {
-      queryClient.invalidateQueries({ predicate: (query) => query.queryKey[0] === 'subscription' });
-      void presentPaywall(undefined, { screen: 'system', source: 'api_pro_required' });
-    });
-  }, [presentPaywall]);
-
-  return <>{children}</>;
-}
+initDatabase();
 
 function DowngradeGate({ children }: { children: React.ReactNode }) {
   const router = useRouter();
   const segments = useSegments();
-  const { isAuthenticated } = useAuth();
   const { isProUser, isLoading: isSubscriptionLoading } = useSubscription();
   const { data: downgradeStatus, isLoading: isDowngradeLoading } = useDowngradeStatus();
   const hasRedirectedRef = useRef(false);
 
   useEffect(() => {
-    // Only check downgrade when user is authenticated, not pro, and data is loaded
-    if (!isAuthenticated || isSubscriptionLoading || isDowngradeLoading) {
+    if (isSubscriptionLoading || isDowngradeLoading) {
       return;
     }
 
@@ -90,20 +66,12 @@ function DowngradeGate({ children }: { children: React.ReactNode }) {
       hasRedirectedRef.current = false;
       router.replace(TAB_ROUTES.home);
     }
-  }, [isAuthenticated, isProUser, isSubscriptionLoading, isDowngradeLoading, downgradeStatus, segments, router]);
+  }, [isProUser, isSubscriptionLoading, isDowngradeLoading, downgradeStatus, segments, router]);
 
   return <>{children}</>;
 }
 
 function AppProviders({ children }: { children: React.ReactNode }) {
-  useEffect(() => {
-    setOnUnauthorized(() => {
-      queryClient.clear();
-    });
-  }, []);
-
-
-
   useEffect(() => {
     const receivedSubscription = Notifications.addNotificationReceivedListener(
       (notification) => notificationService.handleNotificationReceived(notification)
@@ -119,58 +87,37 @@ function AppProviders({ children }: { children: React.ReactNode }) {
   }, []);
 
   return (
-    <QueryClientProvider client={queryClient}>
-      <OnlineManagerProvider>
-        <NetworkStatus>
-          <PostHogProviderWrapper>
-            <LanguageProvider>
-              <ApiErrorBoundary>
-                <AuthProvider>
-                  <SubscriptionProvider>
-                    <SubscriptionGate>
-                      <DowngradeGate>{children}</DowngradeGate>
-                    </SubscriptionGate>
-                  </SubscriptionProvider>
-                </AuthProvider>
-              </ApiErrorBoundary>
-            </LanguageProvider>
-          </PostHogProviderWrapper>
-        </NetworkStatus>
-      </OnlineManagerProvider>
-    </QueryClientProvider>
+    <NetworkStatus>
+      <PostHogProviderWrapper>
+        <LanguageProvider>
+          <ApiErrorBoundary>
+            <AnalyticsIdentityProvider>
+              <SubscriptionProvider>
+                <DowngradeGate>{children}</DowngradeGate>
+              </SubscriptionProvider>
+            </AnalyticsIdentityProvider>
+          </ApiErrorBoundary>
+        </LanguageProvider>
+      </PostHogProviderWrapper>
+    </NetworkStatus>
   );
-}
-
-
-// Separate component for online management to ensure QueryClient context is available
-function OnlineManagerProvider({ children }: { children: React.ReactNode }) {
-  useOnlineManager();
-
-  useEffect(() => {
-    const subscription = AppState.addEventListener('change', onAppStateChange);
-    return () => subscription.remove();
-  }, []);
-
-  return <>{children}</>;
 }
 
 function RootLayoutContent() {
   const router = useRouter();
-  const { isAuthenticated } = useAuth();
   const {
     initialize,
     theme,
-    setAuthenticated,
-    clear,
     settings,
     updateSettings,
     updateBaseCurrency,
+    syncDeviceTimezone,
+    setNotificationDisabledBySystemPermission,
   } = useUserSettingsStore();
   const {
     hasSeenOnboarding,
     preferredLanguage,
     preferredCurrency,
-    preferredTimezone,
     preferencesSynced,
     markPreferencesSynced,
   } = useOnboardingStore();
@@ -182,21 +129,90 @@ function RootLayoutContent() {
   useBudgetAlertNotifications();
   const rescheduleSignatureRef = useRef<string | null>(null);
   const preferenceSyncInFlightRef = useRef(false);
+  const hasCheckedLaunchNotificationPromptRef = useRef(false);
+  const lastKnownNotificationPermissionRef = useRef<boolean | null>(null);
+  const [showNotificationPrompt, setShowNotificationPrompt] = useState(false);
 
-  useEffect(() => {
-    setAuthenticated(isAuthenticated);
-  }, [isAuthenticated, setAuthenticated]);
+  const syncNotificationState = useCallback(async () => {
+    const {
+      settings: currentSettings,
+      notificationDisabledBySystemPermission: disabledBySystemPermission,
+      updateSettings: updateSettingsAction,
+      setNotificationDisabledBySystemPermission: setDisabledBySystemPermission,
+    } = useUserSettingsStore.getState();
 
-  useEffect(() => {
-    if (isAuthenticated) {
-      initialize();
-    } else {
-      clear();
+    if (!currentSettings) {
+      return false;
     }
-  }, [isAuthenticated, initialize, clear]);
+
+    const permissionEnabled = await notificationService.areNotificationsEnabled();
+    const previousPermissionEnabled = lastKnownNotificationPermissionRef.current;
+    lastKnownNotificationPermissionRef.current = permissionEnabled;
+    const notificationsEnabled = currentSettings.notificationsEnabled === true;
+    const action = resolveNotificationSyncAction({
+      permissionEnabled,
+      notificationsEnabled,
+      disabledBySystemPermission,
+      previousPermissionEnabled,
+    });
+
+    if (action === 'disable') {
+      setDisabledBySystemPermission(true);
+      void disableLocalNotifications();
+      await updateSettingsAction({ notificationsEnabled: false });
+      return false;
+    }
+
+    if (action === 'enable') {
+      void enableLocalNotifications();
+      await updateSettingsAction({ notificationsEnabled: true });
+      setDisabledBySystemPermission(false);
+      return true;
+    }
+
+    return notificationsEnabled && permissionEnabled;
+  }, []);
 
   useEffect(() => {
-    if (!isAuthenticated || !hasSeenOnboarding || !settings) {
+    initialize();
+  }, [initialize]);
+
+  useEffect(() => {
+    if (hasCheckedLaunchNotificationPromptRef.current || !hasSeenOnboarding || !settings) {
+      return;
+    }
+
+    hasCheckedLaunchNotificationPromptRef.current = true;
+
+    const syncAndMaybePrompt = async () => {
+      const notificationsActive = await syncNotificationState();
+
+      if (!notificationsActive) {
+        setShowNotificationPrompt(true);
+      }
+    };
+
+    void syncAndMaybePrompt();
+  }, [hasSeenOnboarding, settings, syncNotificationState]);
+
+  useEffect(() => {
+    const subscription = AppState.addEventListener('change', (nextState) => {
+      if (nextState === 'active') {
+        void syncDeviceTimezone();
+        void syncNotificationState();
+        setTimeout(() => {
+          void syncNotificationState();
+        }, 600);
+      }
+    });
+
+    return () => {
+      subscription.remove();
+    };
+  }, [syncDeviceTimezone, syncNotificationState]);
+
+  useEffect(() => {
+    if (!hasSeenOnboarding || !settings) {
       return;
     }
 
@@ -208,10 +224,8 @@ function RootLayoutContent() {
       !!preferredLanguage && preferredLanguage !== settings.language;
     const shouldUpdateCurrency =
       !!preferredCurrency && preferredCurrency !== settings.baseCurrency;
-    const shouldUpdateTimezone =
-      !!preferredTimezone && preferredTimezone !== settings.timezone;
 
-    if (!shouldUpdateLanguage && !shouldUpdateCurrency && !shouldUpdateTimezone) {
+    if (!shouldUpdateLanguage && !shouldUpdateCurrency) {
       markPreferencesSynced(true);
       return;
     }
@@ -220,13 +234,10 @@ function RootLayoutContent() {
 
     const syncPreferences = async () => {
       try {
-        if ((shouldUpdateLanguage && preferredLanguage) || (shouldUpdateTimezone && preferredTimezone)) {
+        if (shouldUpdateLanguage && preferredLanguage) {
           await updateSettings({
             ...(shouldUpdateLanguage && preferredLanguage
               ? { language: preferredLanguage }
-              : {}),
-            ...(shouldUpdateTimezone && preferredTimezone
-              ? { timezone: preferredTimezone }
               : {}),
           });
         }
@@ -244,12 +255,10 @@ function RootLayoutContent() {
 
     void syncPreferences();
   }, [
-    isAuthenticated,
     hasSeenOnboarding,
     settings,
     preferredLanguage,
     preferredCurrency,
-    preferredTimezone,
     preferencesSynced,
     markPreferencesSynced,
     updateSettings,
@@ -276,10 +285,6 @@ function RootLayoutContent() {
   }, [router]);
 
   useEffect(() => {
-    if (!isAuthenticated) {
-      return;
-    }
-
     const rescheduleUpcomingReminders = async () => {
       const timezoneForSignature = settings?.timezone ?? 'unknown';
 
@@ -324,12 +329,6 @@ function RootLayoutContent() {
       }
       rescheduleSignatureRef.current = nextSignature;
 
-      const deliveryChannel = await notificationService.getNotificationDeliveryChannel();
-      if (deliveryChannel === 'backend') {
-        await notificationService.cancelEventAndFeedingNotifications();
-        return;
-      }
-
       for (const event of upcomingEvents) {
         if (event.reminder) {
           await scheduleChainForEvent(event, event.reminderPreset);
@@ -345,7 +344,6 @@ function RootLayoutContent() {
 
     void rescheduleUpcomingReminders();
   }, [
-    isAuthenticated,
     upcomingEvents,
     activeFeedingSchedules,
     scheduleChainForEvent,
@@ -366,7 +364,6 @@ function RootLayoutContent() {
       >
         <Stack.Screen name="index" options={{ headerShown: false }} />
         <Stack.Screen name="(onboarding)" options={{ headerShown: false }} />
-        <Stack.Screen name="(auth)" options={{ headerShown: false }} />
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
         <Stack.Screen
           name="subscription"
@@ -388,6 +385,21 @@ function RootLayoutContent() {
         position="bottom"
         bottomOffset={LAYOUT.TAB_BAR_HEIGHT + 12}
         config={createToastConfig(theme)}
+      />
+      <NotificationPermissionPrompt
+        visible={showNotificationPrompt}
+        onDismiss={() => setShowNotificationPrompt(false)}
+        onPermissionGranted={async () => {
+          void enableLocalNotifications();
+          await updateSettings({ notificationsEnabled: true });
+          setNotificationDisabledBySystemPermission(false);
+          setShowNotificationPrompt(false);
+        }}
+        onPermissionDenied={async () => {
+          setNotificationDisabledBySystemPermission(true);
+          void disableLocalNotifications();
+          await updateSettings({ notificationsEnabled: false });
+        }}
       />
     </>
   );

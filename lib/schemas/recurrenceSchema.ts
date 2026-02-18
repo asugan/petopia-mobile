@@ -120,6 +120,8 @@ export const recurrenceRuleSchema = () =>
         z.string().datetime(),
       ])
       .optional(),
+
+    exceptionDates: z.array(z.string().regex(/^\d{4}-\d{2}-\d{2}$/)).optional(),
   });
 
 export type RecurrenceRuleData = z.infer<ReturnType<typeof recurrenceRuleSchema>>;

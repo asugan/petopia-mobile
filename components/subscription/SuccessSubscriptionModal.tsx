@@ -8,7 +8,6 @@ import { useTheme } from '@/lib/theme';
 interface SuccessSubscriptionModalProps {
   visible: boolean;
   onClose: () => void;
-  isTrial?: boolean;
 }
 
 /**
@@ -17,15 +16,15 @@ interface SuccessSubscriptionModalProps {
  */
 const MODAL_VERTICAL_MARGIN = 48;
 
-export function SuccessSubscriptionModal({ visible, onClose, isTrial = false }: SuccessSubscriptionModalProps) {
+export function SuccessSubscriptionModal({ visible, onClose }: SuccessSubscriptionModalProps) {
   const { t } = useTranslation();
   const { theme } = useTheme();
   const { height } = useWindowDimensions();
   const insets = useSafeAreaInsets();
 
-  const title = isTrial ? t('subscription.trialSuccess.title') : t('subscription.success.title');
-  const message = isTrial ? t('subscription.trialSuccess.message') : t('subscription.success.message');
-  const buttonText = isTrial ? t('subscription.trialSuccess.button') : t('subscription.success.button');
+  const title = t('subscription.success.title');
+  const message = t('subscription.success.message');
+  const buttonText = t('subscription.success.button');
 
   const handleClose = () => {
     onClose();

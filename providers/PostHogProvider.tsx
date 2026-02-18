@@ -1,26 +1,20 @@
 import { PostHogProvider } from 'posthog-react-native';
-import { usePublicConfig } from '@/lib/hooks/usePublicConfig';
+import { PUBLIC_CONFIG } from '@/lib/config/publicConfig';
 
 interface PostHogProviderWrapperProps {
   children: React.ReactNode;
 }
 
 function PostHogContent({ children }: { children: React.ReactNode }) {
-  const { data: config, isLoading, error } = usePublicConfig();
-
-  if (isLoading) {
-    return children;
-  }
-
-  if (error || !config?.posthog?.apiKey) {
+  if (!PUBLIC_CONFIG.posthog.apiKey) {
     return children;
   }
 
   return (
     <PostHogProvider
-      apiKey={config.posthog.apiKey}
+      apiKey={PUBLIC_CONFIG.posthog.apiKey}
       options={{
-        host: config.posthog.host,
+        host: PUBLIC_CONFIG.posthog.host,
         captureAppLifecycleEvents: true,
         flushAt: 20,
         enableSessionReplay: true,

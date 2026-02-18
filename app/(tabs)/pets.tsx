@@ -25,7 +25,7 @@ export default function PetsScreen() {
   const { isProUser, isInitialized } = useSubscription();
   const { processPendingPet } = usePendingPet();
 
-  // React Query infinite query for pets
+  // Local infinite hook for pets
   const {
     data,
     isLoading,
@@ -73,12 +73,8 @@ export default function PetsScreen() {
     setModalVisible(true);
   };
 
-  const handleUpgradePress = async () => {
-    router.push(`${SUBSCRIPTION_ROUTES.main}?source=pets_limit_card`);
-  };
-
   const handleModalSuccess = () => {
-    // React Query handles cache invalidation automatically
+    // Local mutation flow already triggers data refresh
     showToast({
       type: 'success',
       title: t('pets.saveSuccess'),
@@ -94,6 +90,15 @@ export default function PetsScreen() {
       fetchNextPage();
     }
   };
+
+  const handleFilterPress = React.useCallback((filter: 'all' | 'dog' | 'cat' | 'urgent') => {
+    if (filter === 'urgent' && !isProUser) {
+      router.push(`${SUBSCRIPTION_ROUTES.main}?source=pets_urgent_filter_limit`);
+      return;
+    }
+
+    setActiveFilter(filter);
+  }, [isProUser, router]);
 
   const handleRefresh = async () => {
     await refetch();
@@ -229,7 +234,7 @@ export default function PetsScreen() {
             return (
               <Pressable
                 key={chip.key}
-                onPress={() => setActiveFilter(chip.key)}
+                onPress={() => handleFilterPress(chip.key)}
                 style={({ pressed }) => [
                   styles.chip,
                   {
@@ -294,34 +299,6 @@ export default function PetsScreen() {
             ))
           )}
 
-          {!isProUser && allPets.length >= 1 && (
-            <Pressable
-              onPress={handleUpgradePress}
-              style={({ pressed }) => [
-                styles.upgradeCard,
-                { borderColor: theme.colors.primary },
-                pressed && styles.chipPressed,
-              ]}
-            >
-              <View style={[styles.upgradeIconWrap, { backgroundColor: theme.colors.primaryContainer }]}
-              >
-                <Ionicons name="lock-closed" size={18} color={theme.colors.primary} />
-              </View>
-              <Text variant="labelLarge" style={[styles.upgradeTitle, { color: theme.colors.onSurface }]}
-              >
-                {t('limits.pets.title')}
-              </Text>
-              <Text variant="bodySmall" style={[styles.upgradeSubtitle, { color: theme.colors.onSurfaceVariant }]}
-              >
-                {t('limits.pets.subtitle')}
-              </Text>
-              <Text variant="labelLarge" style={[styles.upgradeCta, { color: theme.colors.primary }]}
-              >
-                {t('limits.pets.cta')}
-              </Text>
-            </Pressable>
-          )}
-
           {activeFilter === 'urgent' && allPets.length > 0 && !hasNextPage && !urgentSummary.isLoading && !urgentSummary.hasUrgent && (
             <View style={styles.emptyUrgent}>
               <Ionicons name="alert-circle-outline" size={16} color={theme.colors.onSurfaceVariant} />
@@ -344,7 +321,7 @@ export default function PetsScreen() {
             </View>
           )}
 
-          {isProUser && allPets.length > 0 && (
+          {allPets.length > 0 && (
             <Pressable
               onPress={handleAddPet}
               style={({ pressed }) => [
@@ -514,37 +491,6 @@ const styles = StyleSheet.create({
   },
   emptyStateCta: {
     marginTop: 6,
-  },
-  upgradeCard: {
-    borderWidth: 1,
-    borderStyle: 'dashed',
-    borderRadius: 18,
-    paddingVertical: 18,
-    paddingHorizontal: 16,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginBottom: 12,
-    opacity: 0.8,
-  },
-  upgradeIconWrap: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  upgradeTitle: {
-    marginTop: 10,
-    fontWeight: '700',
-    textAlign: 'center',
-  },
-  upgradeSubtitle: {
-    marginTop: 4,
-    textAlign: 'center',
-  },
-  upgradeCta: {
-    marginTop: 10,
-    fontWeight: '700',
   },
   loadMoreContainer: {
     paddingVertical: 16,

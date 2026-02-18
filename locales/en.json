@@ -554,6 +554,14 @@
     "currencyThb": "Thai Baht",
     "currencyZar": "South African Rand",
     "dataPrivacy": "Data & Privacy",
+    "clearLocalData": "Clear local data",
+    "clearLocalDataDescription": "Permanently remove all pets and records from this device",
+    "clearLocalDataConfirmTitle": "Clear all local data?",
+    "clearLocalDataConfirmMessage": "This will permanently remove pets, events, feeding schedules, health records, and expenses from this device. This action cannot be undone.",
+    "clearLocalDataConfirmAction": "Clear Data",
+    "clearLocalDataSuccessTitle": "Data cleared",
+    "clearLocalDataSuccessMessage": "All local pet data has been removed from this device.",
+    "clearLocalDataError": "Failed to clear local data. Please try again.",
     "dataBackup": "Data Backup",
     "dataBackupDescription": "Backup your data to the cloud",
     "deleteAccount": "Delete Account",
@@ -1287,7 +1295,7 @@
   "onboarding": {
     "language": {
       "title": "Choose your language, currency and timezone",
-      "description": "We'll use your selections on the next screens and sync them after sign in. You can change all anytime in Settings.",
+      "description": "We'll use your selections on the next screens. You can change them anytime in Settings.",
       "continue": "Continue"
     },
     "screen1": {
@@ -1322,7 +1330,7 @@
     "screen3": {
       "title": "You Are Ready!",
       "description": "Everything is ready to manage your pet's care and health data.",
-      "trialNotice": "Add your first pet now, then unlock Pro when you need more.",
+      "trialNotice": "Add your first pet now. You can always add more later.",
       "addPet": "Add Your Pet",
       "skipPet": "Do it later",
       "addYourFirstPet": "Add Your First Pet"
@@ -1499,6 +1507,9 @@
     "cancelSubscriptionMessage": "You will be redirected to manage your subscription and can cancel from there.",
     "cancelSubscriptionAction": "Continue to Cancel",
     "restorePurchases": "Restore Purchases",
+    "restoreConfirmTitle": "Restore purchases?",
+    "restoreConfirmMessage": "We'll check your store purchases and restore active Pro access on this device.",
+    "restoreConfirmAction": "Restore",
     "restoreSuccess": "Purchases restored successfully",
     "restoreError": "Failed to restore purchases",
     "noPurchases": "No Purchases Found",
@@ -1508,6 +1519,14 @@
     "autoRenews": "Auto-renews on {{date}}",
     "cancelled": "Cancelled - expires {{date}}",
     "paywallError": "Unable to load subscription options",
+    "loadingPlans": "Loading plans...",
+    "planLifetime": "Lifetime",
+    "oneTimePayment": "One-time payment",
+    "bestValue": "Best value",
+    "planYearly": "Yearly",
+    "planYearlyDescription": "Billed yearly",
+    "planMonthly": "Monthly",
+    "planMonthlyDescription": "Billed monthly",
     "verifyingPurchase": "Purchase received. Verifying your subscription...",
     "verificationTakingLong": "Your purchase is being verified. Access will unlock automatically in a few seconds.",
     "trialAlreadySubscribed": "You already have an active subscription",
@@ -1530,13 +1549,19 @@
     "features": {
       "title": "Pro Features",
       "unlimited": "Unlimited Pets",
-      "unlimitedDesc": "Keep every pet profile, records, and notes together",
+      "unlimitedDesc": "Unlock 2nd pet and keep every profile, record, and routine together",
       "feedingSchedules": "Unlimited Feeding Schedules",
       "feedingSchedulesDesc": "Build reliable routines for each pet without schedule limits",
-      "budgetTracking": "Budget Tracking & Alerts",
-      "budgetTrackingDesc": "Catch rising costs early with monthly budget alerts",
-      "export": "Data Export",
-      "exportDesc": "Share clear reports with family members or your vet",
+      "budgetTracking": "Advanced Budget Insights",
+      "budgetTrackingDesc": "Detect overspending trends early with Pro insights and smart alerts",
+      "export": "Vet-Ready Reports & Export",
+      "exportDesc": "Export CSV, PDF, and vet summaries to share cleanly in seconds",
+      "recurrence": "Recurring Care Automations",
+      "recurrenceDesc": "Set once, repeat automatically with advanced recurring routines",
+      "smartReminders": "Smart Reminder Presets",
+      "smartRemindersDesc": "Use richer reminder cadences so important care tasks are never missed",
+      "urgentMode": "Urgent Care Focus",
+      "urgentModeDesc": "See urgent health tasks instantly and prioritize what matters most",
       "priority": "Priority Support",
       "priorityDesc": "Get faster help when something is urgent",
       "petManagement": "Pet Management",
@@ -1548,7 +1573,7 @@
     },
     "paywall": {
       "title": "Unlock Petopia Petcare Pro",
-      "subtitle": "Stay on top of care, reminders, and spending for every pet"
+      "subtitle": "Scale from one pet to a complete care system with exports, automation, and smart insights"
     },
     "success": {
       "title": "Subscription Successful!",
@@ -1561,10 +1586,18 @@
       "button": "Go to Homepage"
     },
     "note": "Payment is billed via your App Store / Google Play account. Subscriptions renew automatically unless cancelled at least 24 hours before the end of the current period. Manage or cancel anytime from your store account settings.",
+    "noteIos": "Payment will be charged to your Apple ID account at confirmation of purchase. Subscription automatically renews unless cancelled at least 24 hours before the end of the current period. You can manage and cancel your subscription in your App Store account settings.",
+    "noteAndroid": "Payment will be charged to your Google Play account at confirmation of purchase. Subscription automatically renews unless cancelled at least 24 hours before the end of the current period. You can manage and cancel your subscription in your Google Play account settings.",
     "trust": {
       "cancelAnytime": "Cancel anytime from App Store / Google Play settings",
       "billedByStore": "Billing is handled securely through your app store account",
-      "secureCheckout": "No manual credit card entry required in the app"
+      "secureCheckout": "No manual credit card entry required in the app",
+      "cancelAnytimeIos": "Cancel anytime from App Store account settings",
+      "billedByStoreIos": "Billing is handled securely through your Apple ID account",
+      "secureCheckoutIos": "No manual credit card entry required in the app",
+      "cancelAnytimeAndroid": "Cancel anytime from Google Play account settings",
+      "billedByStoreAndroid": "Billing is handled securely through your Google Play account",
+      "secureCheckoutAndroid": "No manual credit card entry required in the app"
     }
   },
   "downgrade": {

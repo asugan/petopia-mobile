@@ -614,7 +614,15 @@
       "indonesian": "Bahasa Indonesia"
     },
     "timezone": "Časové pásmo",
-    "selectTimezone": "Vyberte časové pásmo"
+    "selectTimezone": "Vyberte časové pásmo",
+    "clearLocalData": "Vymazat místní data",
+    "clearLocalDataDescription": "Trvale odstraňte všechna domácí zvířata a záznamy z tohoto zařízení",
+    "clearLocalDataConfirmTitle": "Vymazat všechna místní data?",
+    "clearLocalDataConfirmMessage": "Tím z tohoto zařízení trvale odstraníte domácí mazlíčky, události, plány krmení, zdravotní záznamy a výdaje. Tuto akci nelze vrátit zpět.",
+    "clearLocalDataConfirmAction": "Vymazat data",
+    "clearLocalDataSuccessTitle": "Data vymazána",
+    "clearLocalDataSuccessMessage": "Z tohoto zařízení byla odstraněna všechna místní data domácích mazlíčků.",
+    "clearLocalDataError": "Místní data se nepodařilo vymazat. Zkuste to prosím znovu."
   },
   "common": {
     "loading": "Načítání...",
@@ -1317,14 +1325,14 @@
     "screen3": {
       "title": "Jste připraveni!",
       "description": "Vše je připraveno ke správě péče a zdravotních dat vašeho mazlíčka.",
-      "trialNotice": "Přidejte svého prvního mazlíčka hned teď a Pro odemkněte, až budete potřebovat více.",
+      "trialNotice": "Přidejte svého prvního mazlíčka nyní. Další můžete kdykoli přidat později.",
       "addPet": "Přidat mazlíčka",
       "skipPet": "Udělat později",
       "addYourFirstPet": "Přidat svého prvního mazlíčka"
     },
     "language": {
       "title": "Vyberte jazyk, měnu a časové pásmo",
-      "description": "Vaše volby použijeme na dalších obrazovkách a po přihlášení je synchronizujeme. Vše můžete kdykoli změnit v Nastavení.",
+      "description": "Vaše volby použijeme na následujících obrazovkách. Kdykoli je můžete změnit v Nastavení.",
       "continue": "Pokračovat"
     }
   },
@@ -1508,6 +1516,14 @@
     "autoRenews": "Automaticky se obnoví {{date}}",
     "cancelled": "Zrušeno - vyprší {{date}}",
     "paywallError": "Nepodařilo se načíst možnosti předplatného",
+    "loadingPlans": "Nacitani planu...",
+    "planLifetime": "Dozivotni",
+    "oneTimePayment": "Jednorazova platba",
+    "bestValue": "Nejlepsi hodnota",
+    "planYearly": "Rocni",
+    "planYearlyDescription": "Uctovano rocne",
+    "planMonthly": "Mesicni",
+    "planMonthlyDescription": "Uctovano mesicne",
     "trialAlreadySubscribed": "Již máte aktivní předplatné",
     "trialAlreadyUsed": "Toto zařízení již využilo bezplatnou zkušební verzi",
     "trialStartFailed": "Nepodařilo se zahájit bezplatnou zkušební verzi. Zkuste to prosím znovu.",
@@ -1528,13 +1544,19 @@
     "features": {
       "title": "Pro funkce",
       "unlimited": "Neomezeně mazlíčků",
-      "unlimitedDesc": "Mějte všechny profily, záznamy a poznámky o mazlíčcích pohromadě",
+      "unlimitedDesc": "Odemkněte 2. mazlíčka a udržujte všechny profily, záznamy a rutiny pohromadě",
       "feedingSchedules": "Neomezené plány krmení",
       "feedingSchedulesDesc": "Vytvářejte spolehlivé rutiny pro každého mazlíčka bez omezení plánů",
-      "budgetTracking": "Sledování rozpočtu a upozornění",
-      "budgetTrackingDesc": "Včas zachyťte rostoucí náklady díky měsíčním rozpočtovým upozorněním",
-      "export": "Export dat",
-      "exportDesc": "Sdílejte přehledné reporty s rodinou nebo veterinářem",
+      "budgetTracking": "Pokročilé statistiky rozpočtu",
+      "budgetTrackingDesc": "Odhalte trendy nadměrného utrácení včas pomocí statistik Pro a chytrých upozornění",
+      "export": "Zprávy a export připravené pro veterinární lékaře",
+      "exportDesc": "Exportujte CSV, PDF a shrnutí veterináře a sdílejte je během několika sekund",
+      "recurrence": "Automatizace opakované péče",
+      "recurrenceDesc": "Nastavte jednou, opakujte automaticky s pokročilými opakujícími se rutinami",
+      "smartReminders": "Předvolby inteligentních připomenutí",
+      "smartRemindersDesc": "Použijte bohatší kadenci připomenutí, abyste nikdy nezmeškali důležité úkoly péče",
+      "urgentMode": "Zaměření na urgentní péči",
+      "urgentModeDesc": "Okamžitě uvidíte naléhavé zdravotní úkoly a upřednostněte to, na čem záleží nejvíce",
       "priority": "Prioritní podpora",
       "priorityDesc": "Získejte rychlejší pomoc, když je to urgentní",
       "petManagement": "Správa mazlíčků",
@@ -1546,7 +1568,7 @@
     },
     "paywall": {
       "title": "Odemknout Petopia Petcare Pro",
-      "subtitle": "Mějte péči, připomínky i výdaje každého mazlíčka pod kontrolou"
+      "subtitle": "Škálujte od jednoho domácího mazlíčka po kompletní systém péče s exportem, automatizací a chytrými poznatky"
     },
     "success": {
       "title": "Předplatné úspěšné!",
@@ -1562,10 +1584,21 @@
     "trust": {
       "cancelAnytime": "Předplatné můžete kdykoli zrušit v nastavení App Store / Google Play",
       "billedByStore": "Platba je bezpečně zpracována přes váš účet v obchodě s aplikacemi",
-      "secureCheckout": "V aplikaci není potřeba ručně zadávat údaje platební karty"
+      "secureCheckout": "V aplikaci není potřeba ručně zadávat údaje platební karty",
+      "cancelAnytimeIos": "Předplatné můžete kdykoli zrušit v nastavení App Store",
+      "cancelAnytimeAndroid": "Předplatné můžete kdykoli zrušit v nastavení Google Play",
+      "billedByStoreIos": "Platba je bezpečně zpracována přes váš účet v obchodě s aplikacemi",
+      "billedByStoreAndroid": "Platba je bezpečně zpracována přes váš účet v obchodě s aplikacemi",
+      "secureCheckoutIos": "V aplikaci není potřeba ručně zadávat údaje platební karty",
+      "secureCheckoutAndroid": "V aplikaci není potřeba ručně zadávat údaje platební karty"
     },
     "verifyingPurchase": "Nakup prijat. Overujeme vase predplatne...",
-    "verificationTakingLong": "Vas nakup se overuje. Pristup se automaticky odemkne za par sekund."
+    "verificationTakingLong": "Vas nakup se overuje. Pristup se automaticky odemkne za par sekund.",
+    "noteIos": "Platba bude účtována přes váš účet App Store. Předplatné se automaticky obnovuje, pokud není zrušeno alespoň 24 hodin před koncem aktuálního období. Spravovat nebo zrušit jej můžete kdykoli v nastavení účtu obchodu.",
+    "noteAndroid": "Platba bude účtována přes váš účet Google Play. Předplatné se automaticky obnovuje, pokud není zrušeno alespoň 24 hodin před koncem aktuálního období. Spravovat nebo zrušit jej můžete kdykoli v nastavení účtu obchodu.",
+    "restoreConfirmTitle": "Obnovit nákupy?",
+    "restoreConfirmMessage": "Zkontrolujeme vaše nákupy v obchodě a obnovíme aktivní přístup Pro na tomto zařízení.",
+    "restoreConfirmAction": "Obnovit"
   },
   "downgrade": {
     "title": "Vyberte svého mazlíčka",
